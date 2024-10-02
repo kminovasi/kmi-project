@@ -971,10 +971,7 @@
                 team_id: IdTeam
             },
             success: function(data) {
-                // Menampilkan data yang diterima dari server
-                //console.log(data.data);
                 console.log(data);
-                // var ul = document.getElementById('List')
 
                 if(typeof data.data.member !== 'undefined'){
                     new_div_member = `
@@ -1035,7 +1032,11 @@
                             ul_outsource.appendChild(elemenLi)
                         })
                     }else{
+                    if(document.getElementById(indeks) !== null){
+
                         document.getElementById(indeks).value = data.data[indeks].name
+                    }
+
                     }
                 });
                 var judulElement = document.getElementById('judul');

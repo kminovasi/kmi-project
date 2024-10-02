@@ -57,10 +57,10 @@
                     @endif
                 </div> --}}
                 <table id="datatable-innovator">
-                    
+
                 </table>
             </div>
-            
+
         </div>
     </div>
 
@@ -88,7 +88,7 @@ $(document).ready(function() {
             "data": function (d) {
                     d.role = 'BOD'
             },
-            
+
         },
         "columns": [
             {"data": "DT_RowIndex", "title": "No"},

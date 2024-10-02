@@ -66,10 +66,10 @@
                     @endif
                 </div> --}}
                 <table id="datatable-judges">
-                    
+
                 </table>
             </div>
-            
+
         </div>
     </div>
 
@@ -129,7 +129,7 @@
                     @method('PUT')
                     <div class="modal-body">
                         <input class="form-control" id="inputEmployeId" name="employee_id" type="hidden" value="" readonly/>
-                        
+
                         <p>Apakah yakin akan mencabut role juri ini ?</p>
                     </div>
                     <div class="modal-footer">
@@ -162,14 +162,20 @@
                 }
             },
             "columns": [
-                {"data": "id", "title": "No"},
+                {
+                    "data": null,
+                    "title": "No",
+                    "render": function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
                 {"data": "name", "title": "Judge Name"},
                 {"data": "description", "title": "Description"},
                 {"data": "event_name", "title": "Event"},
                 {"data": "status_juri", "title": "Status"},
                 {"data": "action", "title": "Opsi"}
             ],
-           
+
             "scrollY": true,
             "stateSave": true,
         });
@@ -193,7 +199,7 @@
             },
             success: function(response) {
                 // companyField.value = response[0].company_name
-                document.getElementById("inputEmployeId").value = response[0].employee_id   
+                document.getElementById("inputEmployeId").value = response[0].employee_id
             },
             error: function(xhr, status, error) {
                 // Tangani kesalahan jika ada
@@ -223,7 +229,7 @@
             },
             success: function(response) {
                 // companyField.value = response[0].company_name
-                document.getElementById("inputEmployeId").value = response[0].employee_id   
+                document.getElementById("inputEmployeId").value = response[0].employee_id
             },
             error: function(xhr, status, error) {
                 // Tangani kesalahan jika ada

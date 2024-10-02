@@ -1,30 +1,36 @@
 @extends('layouts.app')
 @section('title', 'Data Paper')
 @push('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-<style type="text/css">
-    .step-one h1 {
-        text-align: center;
-    }
-    .step-one img{
-        width: 75%;
-        height: 75%;
-    }
-    .step-one p{
-        text-align: justify;
-    }
-    .file-review{
-        margin:20px 10px;
-    }
-    .active-link {
-        color: #ffc004;
-        background-color: #e81500;
-    }
-    .display thead th,
-    .display tbody td {
-        border: 0.5px solid #ddd; /* Atur warna dan ketebalan garis sesuai kebutuhan */
-    }
-</style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <style type="text/css">
+        .step-one h1 {
+            text-align: center;
+        }
+
+        .step-one img {
+            width: 75%;
+            height: 75%;
+        }
+
+        .step-one p {
+            text-align: justify;
+        }
+
+        .file-review {
+            margin: 20px 10px;
+        }
+
+        .active-link {
+            color: #ffc004;
+            background-color: #e81500;
+        }
+
+        .display thead th,
+        .display tbody td {
+            border: 0.5px solid #ddd;
+            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+        }
+    </style>
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -37,7 +43,7 @@
                             Data Event
                         </h1>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -45,28 +51,29 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         <div class="mb-3">
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                {{ session('success') }}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
 
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
-            @if(session('errors'))
-            <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                {{ session('errors') }}
+            @if (session('errors'))
+                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                    {{ session('errors') }}
 
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
         </div>
         <div class="card card-header-actions mb-4">
             <div class="card-header">
-            @if (Auth::user()->role == 'Superadmin')
-                <a class="btn btn-sm btn-primary text-white" href="{{ route('management-system.assign.event.create') }}">
-                    <i class="me-1" data-feather="plus"></i>
-                    Assign Event
-                </a>
+                @if (Auth::user()->role == 'Superadmin')
+                    <a class="btn btn-sm btn-primary text-white"
+                        href="{{ route('management-system.assign.event.create') }}">
+                        <i class="me-1" data-feather="plus"></i>
+                        Assign Event
+                    </a>
                 @endif
             </div>
             <div class="card-body">
@@ -76,15 +83,16 @@
                     @endif
                 </div> --}}
                 <table id="datatable-events" class="display">
-                    
+
                 </table>
             </div>
-            
+
         </div>
     </div>
 
     {{-- modal untuk change event --}}
-    <div class="modal fade" id="updateEvent" tabindex="-1" role="dialog" aria-labelledby="updateEventTitle" aria-hidden="true">
+    <div class="modal fade" id="updateEvent" tabindex="-1" role="dialog" aria-labelledby="updateEventTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -100,7 +108,7 @@
                             <label for="upEventName">Nama Event</label>
                             <input class="form-control" id="upEventName" type="text" name="event_name">
                         </div>
-                         <div class="mb-3">
+                        <div class="mb-3">
                             <label for="upCompany">Pilih Perushaan</label>
                             <select name="company_code" id="upCompany" class="form-select">
                                 @foreach ($datas_company as $cp)
@@ -112,7 +120,7 @@
                             <label for="upYear">Pilih Tahun</label>
                             <select name="year" id="upYear" class="form-select">
                                 @foreach ($years as $year)
-                                    <option value="{{$year}}">{{$year}}</option>
+                                    <option value="{{ $year }}">{{ $year }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -126,7 +134,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="upDescription">Deskrispi</label>
-                            <textarea name="description" id="upDescription" cols="30" rows="10" class="form-control" name="data_description"></textarea>
+                            <textarea name="description" id="upDescription" cols="30" rows="10" class="form-control"
+                                name="data_description"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -139,7 +148,8 @@
     </div>
 
     {{-- modal untuk change event --}}
-    <div class="modal fade" id="changeEvent" tabindex="-1" role="dialog" aria-labelledby="changeEventTitle" aria-hidden="true">
+    <div class="modal fade" id="changeEvent" tabindex="-1" role="dialog" aria-labelledby="changeEventTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -175,10 +185,10 @@
 @endsection
 
 @push('js')
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script type="">
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script type="">
     $(document).ready(function() {
         var dataTable = $('#datatable-events').DataTable({
             "processing": true,
@@ -194,7 +204,14 @@
                 }
             },
             "columns": [
-                {"data": "id", "title": "No"},
+                {
+                    "data": null,
+                    "title": "No",
+                    "render": function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+
+                },
                 {"data": "event_name", "title": "Event Name"},
                 {"data": "company", "title": "Company Name"},
                 {"data": "year", "title": "Year"},
@@ -203,7 +220,7 @@
                 {"data": "status", "title": "Status"},
                 {"data": "action", "title": "Action"},
             ],
-           
+
             "scrollY": true,
             "stateSave": true,
         });
@@ -219,13 +236,13 @@
             url: '{{ route('query.custom') }}',
             data: {
                 table: "events",
-                
+
                 where: {
                     "id": eventId
                 },
                 limit: 1,
                 select:[
-                    'event_name', 
+                    'event_name',
                     'company_code',
                     'date_start',
                     'date_end',
@@ -245,7 +262,7 @@
 
                 var selectElement = document.getElementById("upCompany");
                 selectElement.value = response[0].company_code;
-                
+
                 for (var i = 0; i < selectElement.options.length; i++) {
                     var option = selectElement.options[i];
                     if (option.value === response[0].company_code) {
@@ -254,10 +271,10 @@
                         option.selected = false;
                     }
                 }
-                
+
                 var selectElementYear = document.getElementById("upYear");
                 selectElementYear.value = response[0].year.toString();
-                
+
                 for (var x = 0; x < selectElementYear.options.length; x++) {
                     var optionYear = selectElementYear.options[x];
                     if (optionYear.value === response[0].year.toString()) {

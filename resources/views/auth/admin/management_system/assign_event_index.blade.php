@@ -209,8 +209,7 @@
                     "title": "No",
                     "render": function (data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
-                    // stest
-                }
+                    }
 
                 },
                 {"data": "event_name", "title": "Event Name"},

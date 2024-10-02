@@ -25,13 +25,13 @@
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4"> 
+        <div class="container-xl px-4">
             <div class="page-header-content">
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="grid"></i></div>
-                            MANAGEMENT SYSTEM 
+                            MANAGEMENT SYSTEM
                         </h1>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 <!-- Bootstrap Modal for Update -->
@@ -111,8 +111,8 @@
                     <div class="mb-3">
                         <h6 for="inNamaTema" class="small mb-1">Nama Tema</h6>
                         <input type="text" name="theme_name" value="" id="inNamaTema" class="form-control" required>
-                    </div> 
-                    
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
@@ -169,7 +169,13 @@
                 "dataSrc": "" // Empty string or null to indicate that the data is at the root level
             },
             "columns": [
-                {"data": "id", "title": "No"},
+                {
+                    "data": null,
+                    "title": "No",
+                    "render": function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
                 {"data": "theme_name", "title": "Nama Tema"},
                 {
                     "data": null,

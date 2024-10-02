@@ -21,18 +21,18 @@
     .display tbody td {
         border: 0.5px solid #ddd; /* Atur warna dan ketebalan garis sesuai kebutuhan */
     }
-    
+
 </style>
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4"> 
+        <div class="container-xl px-4">
             <div class="page-header-content">
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="grid"></i></div>
-                            MANAGEMENT SYSTEM 
+                            MANAGEMENT SYSTEM
                         </h1>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                             <option id="opsi_Non_Semen" value="Non Semen">Non Semen</option>
                         </select>
                     </div>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -103,7 +103,7 @@
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 
@@ -192,7 +192,13 @@
                 "dataSrc": "" // Empty string or null to indicate that the data is at the root level
             },
             "columns": [
-                {"data": "id", "title": "No"},
+                {
+                    "data": null,
+                    "title": "No",
+                    "render": function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
                 {"data": "company_code", "title": "Kode Perusahaan"},
                 {"data": "company_name", "title": "Nama Perusahaan"},
                 {

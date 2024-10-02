@@ -25,13 +25,13 @@
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4"> 
+        <div class="container-xl px-4">
             <div class="page-header-content">
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="grid"></i></div>
-                            MANAGEMENT SYSTEM 
+                            MANAGEMENT SYSTEM
                         </h1>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 <!-- Bootstrap Modal for Update -->
@@ -118,7 +118,7 @@
                     <div class="mb-3">
                         <h6 for="inNamaKategori" class="small mb-1">Nama Kategori</h6>
                         <input type="text" name="category_name" value="" id="inNamaKategori" class="form-control" required>
-                    </div> 
+                    </div>
                     {{-- <input type="text" id="inJenis"> --}}
                     <div class="mb-3">
                         <h6 class="small mb-1" for="inJenis">Jenis</h6>
@@ -126,8 +126,8 @@
                             <option value="BREAKTHROUGH INNOVATION">BREAKTHROUGH INNOVATION</option>
                             <option value="INCREMENTAL INNOVATION">INCREMENTAL INNOVATION</option>
                             <option value="IDEA BOX">IDEA BOX</option>
-                        </select>         
-                    </div> 
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
@@ -184,7 +184,13 @@
                 "dataSrc": "" // Empty string or null to indicate that the data is at the root level
             },
             "columns": [
-                {"data": "id", "title": "No"},
+                {
+                    "data": null,
+                    "title": "No",
+                    "render": function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
                 {"data": "category_name", "title": "Nama Kategori"},
                 {"data": "category_parent", "title": "Jenis Kategori"},
                 {
@@ -223,7 +229,7 @@
                 document.getElementById("inNamaKategori").value = response[0].category_name;
                 var selectElement = document.getElementById("inJenis");
                 selectElement.value = response[0].category_parent;
-                
+
                 for (var i = 0; i < selectElement.options.length; i++) {
                     var option = selectElement.options[i];
                     if (option.value === response[0].category_parent) {

@@ -16,7 +16,7 @@
     input[type="number"] {
         width: 150px; /* Atur lebar sesuai kebutuhan */
         height: 20px; /* Atur tinggi sesuai kebutuhan */
-        font-size: 12px; 
+        font-size: 12px;
     }
     .btn-right {
         margin-left: auto;
@@ -56,7 +56,7 @@
                     </div>
                 @endif
             </div>
-        
+
             <!-- Account details card-->
             <div class="card mb-4">
                 <div class="card-header">Detail Team</div>
@@ -132,7 +132,7 @@
                     </div>
                 </form>
             </div>
-        </div> 
+        </div>
 {{-- modal add juri --}}
 <div class="modal fade" id="addJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -220,7 +220,7 @@
             "stateSave": true,
             "destroy": true,
             "paging": false
-            
+
         });
         return dataTable;
     }
@@ -279,7 +279,7 @@
         // column = []
         let dataTable = initializeDataTable(column);
     });
-    
+
     // In your Javascript (external .js resource or <script> tag)
     $(document).ready(function() {
         $('#select2-juri').select2({

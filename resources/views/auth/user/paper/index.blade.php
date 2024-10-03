@@ -1215,7 +1215,6 @@
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
                 $('#resultContainer').empty();
                 var container = $('#resultContainer');
                 response.forEach(function(item) {

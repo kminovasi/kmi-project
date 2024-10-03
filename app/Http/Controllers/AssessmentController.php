@@ -1298,7 +1298,6 @@ class AssessmentController extends Controller
             'data_category' => $data_category,
         ]);
     }
-    // FIXME: INI BUAT SUBMIT LANGSUNG KE BOD YA AJG
     public function summaryExecutive(Request $request)
     {
         // dd($request->all());

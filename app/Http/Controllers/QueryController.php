@@ -1701,7 +1701,6 @@ class QueryController extends Controller
                                             ELSE 5
                                         END, pvt_assessment_events.id ASC");
             }
-
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Detail point';
@@ -1709,21 +1708,51 @@ class QueryController extends Controller
                 return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
 
-            $rawColumns[] = 'Rata - Rata Nilai';
-            $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
-                $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
-                    ->where('event_team_id', $request->filterEventTeamId)
-                    ->where('stage', 'on desk')
-                    ->groupBy('assessment_event_id')
-                    ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                    ->get();
+            $data = $data_row->get();
 
-                if ($data_assessment_team_judge->count())
-                    return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                        <br>';
-                else
-                    return '-';
-            });
+            $found = false;
+            foreach ($data as $item) {
+                if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+                    $found = true;
+                    break;
+                }
+            }
+
+            // Output hasil pengecekan
+            if ($found) {
+                $rawColumns[] = 'Rata - Rata Nilai';
+                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                    $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+                        ->where('event_team_id', $request->filterEventTeamId)
+                        ->where('stage', 'presentation')
+                        ->groupBy('assessment_event_id')
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+                        ->get();
+
+                    if ($data_assessment_team_judge->count())
+                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
+                            <br>';
+                    else
+                        return '-';
+                });
+            } else {
+                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                    $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+                        ->where('event_team_id', $request->filterEventTeamId)
+                        ->where('stage', 'on desk')
+                        ->groupBy('assessment_event_id')
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+                        ->get();
+
+                    if ($data_assessment_team_judge->count())
+                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
+                            <br>';
+                    else
+                        return '-';
+                });
+            }
+
+
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
@@ -1775,6 +1804,8 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
+
     public function get_input_caucus_assessment_team(Request $request)
     {
         try {
@@ -1865,21 +1896,50 @@ class QueryController extends Controller
                 return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
 
-            $rawColumns[] = 'Rata - Rata Nilai';
-            $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
-                $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
-                    ->where('event_team_id', $request->filterEventTeamId)
-                    ->where('stage', 'on desk')
-                    ->groupBy('assessment_event_id')
-                    ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                    ->get();
+            $data = $data_row->get();
 
-                if ($data_assessment_team_judge->count())
-                    return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                        <br>';
-                else
-                    return '-';
-            });
+            $found = false;
+            foreach ($data as $item) {
+                if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+                    $found = true;
+                    break;
+                }
+            }
+
+            // Output hasil pengecekan
+            if ($found) {
+                $rawColumns[] = 'Rata - Rata Nilai';
+                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                    $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+                        ->where('event_team_id', $request->filterEventTeamId)
+                        ->where('stage', 'presentation')
+                        ->groupBy('assessment_event_id')
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+                        ->get();
+
+                    if ($data_assessment_team_judge->count())
+                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
+                            <br>';
+                    else
+                        return '-';
+                });
+            } else {
+                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                    $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+                        ->where('event_team_id', $request->filterEventTeamId)
+                        ->where('stage', 'on desk')
+                        ->groupBy('assessment_event_id')
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+                        ->get();
+
+                    if ($data_assessment_team_judge->count())
+                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
+                            <br>';
+                    else
+                        return '-';
+                });
+            }
+
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {

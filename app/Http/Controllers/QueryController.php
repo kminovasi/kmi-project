@@ -760,27 +760,6 @@ class QueryController extends Controller
         }
     }
 
-    // public function update_template(Request $request){
-
-    //     try{
-    //         $template = TemplateAssessmentPoint::where('id', $request->id)->update([
-    //             'point' => $request->point,
-    //             'detail_point' => $request->detail_point,
-    //             'pdca' => $request->pdca,
-    //             'score_max' => $request->score_max,
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => "success",
-    //             'data' => $template
-    //         ], 200);
-    //     }catch(Exception $e){
-    //         return response()->json([
-    //             'error' => $e->getMessage()
-    //         ], 422);
-    //     }
-    // }
-
     public function get_data_point_assessment(Request $request)
     {
         try {
@@ -1858,7 +1837,7 @@ class QueryController extends Controller
                     ->where('category', $category)
                     ->where('pvt_assessment_events.status_point', 'active')
                     ->where('pvt_event_teams.id', $request->filterEventTeamId)
-                    ->where('pvt_assesment_team_judges.stage', 'caucus')
+                    ->where('pvt_assesment_team_judges.stage', 'presentation')
                     ->groupBy('pvt_assessment_events.id')
                     ->select($arr_select_case)
                     ->orderByRaw("CASE
@@ -2321,7 +2300,7 @@ class QueryController extends Controller
                         $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                             ->where('pvt_assessment_events.status_point', 'active')
-                            ->where('pvt_assesment_team_judges.stage', 'caucus')
+                            ->where('pvt_assesment_team_judges.stage', 'presentation')
                             ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
                             ->groupBy('pvt_event_teams.id')
                             ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
@@ -2338,7 +2317,7 @@ class QueryController extends Controller
                 $data_total = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                     ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                     ->where('pvt_assessment_events.status_point', 'active')
-                    ->where('pvt_assesment_team_judges.stage', 'caucus')
+                    ->where('pvt_assesment_team_judges.stage', 'presentation')
                     ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
                     ->groupBy('pvt_event_teams.id')
                     ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))

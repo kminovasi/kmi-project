@@ -1348,13 +1348,6 @@ class AssessmentController extends Controller
             $upPPT->file_ppt = $file;
             $upPPT->save();
 
-
-            //update status pvt_event_team
-            $pvt_event_id = $request->input('pvt_event_teams_id');
-
-            $updateStatus = PvtEventTeam::findOrFail($pvt_event_id);
-            $updateStatus->status = 'Juara';
-            $updateStatus->save();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -1568,6 +1561,12 @@ class AssessmentController extends Controller
                     'val_peringkat' => $data['val_peringkat'][$index],
                 ]);
             }
+
+            //update status pvt_event_team
+            $pvt_event_id = $request->input('pvt_event_teams_id');
+            $updateStatus = PvtEventTeam::findOrFail($pvt_event_id);
+            $updateStatus->status = 'Juara';
+            $updateStatus->save();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();

@@ -2489,7 +2489,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Keputusan BOD';
             $dataTable->addColumn('Keputusan BOD', function ($data_row) {
-                return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '"><input class="form-control small-input"  value="' . $data_row['val_peringkat(removed)'] . '" type="text" name="val_peringkat[]">';
+                return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '">
+                <input class="form-control small-input"  value="' . $data_row['val_peringkat(removed)'] . '" type="number" name="val_peringkat[]" min="-100" max="100">';
+                // Input BOD
             });
 
 
@@ -2591,6 +2593,7 @@ class QueryController extends Controller
                     }
                 }
             }
+
             $dataTable->removeColumn($remove_column);
 
             return $dataTable->toJson();

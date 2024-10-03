@@ -1552,16 +1552,20 @@ class AssessmentController extends Controller
     public function keputusanBOD(Request $request)
     {
         // dd($request->all());
-        $data = $request->only(['pvt_event_teams_id', 'val_peringkat']);
+        $data = $request->only(['pvt_event_teams_id', 'val_peringkat', 'total_score_event']);
         DB::beginTransaction();
         try {
             foreach ($data['pvt_event_teams_id'] as $index => $eventTeamId) {
+                dd($data['total_score_event'][$index]+$data['val_peringkat'][$index]);
                 KeputusanBod::updateOrCreate([
+
                     'pvt_event_teams_id' => $eventTeamId,
-                    'val_peringkat' => $data['val_peringkat'][$index],
+                    // Val_pringkat + total_score_event
+                    'val_peringkat' => $data['total_score_event'][$index]+$data['val_peringkat'][$index],
                 ]);
                 $updateStatus = PvtEventTeam::findOrFail($eventTeamId);
                 $updateStatus->status = 'Juara';
+                $updateStatus->final_score = $data['val_peringkat'][$index]+$data['total_score_event'][$index];
                 $updateStatus->save();
             }
 

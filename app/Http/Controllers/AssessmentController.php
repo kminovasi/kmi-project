@@ -1563,7 +1563,7 @@ class AssessmentController extends Controller
             }
 
             //update status pvt_event_team
-            $pvt_event_id = $request->input('pvt_event_teams_id');
+            $pvt_event_id = $data['pvt_event_teams_id'];
             $updateStatus = PvtEventTeam::findOrFail($pvt_event_id);
             $updateStatus->status = 'Juara';
             $updateStatus->save();

@@ -2552,6 +2552,7 @@ class QueryController extends Controller
                     }
                 }
             }
+
             $dataTable->removeColumn($remove_column);
 
             return $dataTable->toJson();

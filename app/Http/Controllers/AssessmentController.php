@@ -1567,6 +1567,7 @@ class AssessmentController extends Controller
                     'val_peringkat' => $data['val_peringkat'][$index],
                 ]);
             }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();

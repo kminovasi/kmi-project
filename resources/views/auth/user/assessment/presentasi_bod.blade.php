@@ -55,13 +55,13 @@
     <div class="p-2">
 
     <a href="{{route('paper.register.team')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-    
+
     <a href="{{route('paper.index')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah Inovasi</a>
-    
+
     @if (Auth::user()->role == 'Juri' || Auth::user()->role == 'BOD' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
         <a href="{{route('assessment.on_desk')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
     @endif
-    
+
     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
         <a href="{{route('paper.event')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
     @endif
@@ -88,7 +88,7 @@
                     @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
                         <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
                     @endif
-                </div> 
+                </div>
                 <div >
                     <form id="datatable-card" method="post" action="{{route('assessment.keputusanBOD')}}">
                         @csrf
@@ -100,7 +100,7 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 
 {{-- modal untuk filter khusus admin dan juri --}}
@@ -118,7 +118,7 @@
                 <div class="mb-3">
                     <label class="mb-1" for="filter-category">Category</label>
                     <select id="filter-category" name="filter-category" class="form-select">
-                    <option value="" > All </option>    
+                    <option value="" > All </option>
                     @foreach($data_category as $category)
                         <option value="{{ $category->id }}" > {{ $category->category_name }} </option>
                         @endforeach
@@ -179,7 +179,7 @@
                     <div class="mb-2">
                         <label for="InnovationIdea" class="text-gray-900">Innovation Idea </label>
                         <div class="small mb-0" id="InnovationIdea"></div>
-                        
+
                     </div>
                     <hr>
                     <div class="mb-2">
@@ -192,13 +192,13 @@
                         <input type="file" name="file_ppt" id="uploadPPT" class="form-control">
                     </div>
                     <hr>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                    <button class="btn btn-danger" type="submit" data-bs-dismiss="modal">Simpan</button>
                 </div>
-            </form> 
+            </form>
         </div>
     </div>
 </div>
@@ -220,7 +220,7 @@
       </div>
     </div>
   </div>
-  
+
 
 @endsection
 
@@ -239,7 +239,7 @@
 <script src="js/scripts.js"></script>
 <script type="">
     function initializeDataTable(columns) {
-        
+
         var dataTable = $('#datatable-presentasi-bod').DataTable({
             "processing": true,
             "serverSide": true,
@@ -328,7 +328,7 @@
         let column = updateColumnDataTable();
 
         let dataTable = initializeDataTable(column);
-        
+
         $('#filter-event').on('change', function () {
             dataTable.destroy();
             dataTable.destroy();
@@ -348,7 +348,7 @@
         });
     });
 
-    
+
     function setSummaryPPT(team_id){
         console.log(team_id);
         $.ajax({
@@ -402,11 +402,11 @@
                 document.getElementById("TeamName").textContent = response[0].team_name;
                 document.getElementById("InnovationTitle").textContent = response[0].innovation_title;
                 document.getElementById("Company").textContent = response[0].company_name;
-                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id; 
+                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
                 document.getElementById("inputId").value = response[0].summary_executives_id;
                 document.getElementById("ProblemBackground").textContent = response[0].problem_background;
                 document.getElementById("InnovationIdea").textContent = response[0].innovation_idea;
-                document.getElementById("Benefit").textContent = response[0].benefit;              
+                document.getElementById("Benefit").textContent = response[0].benefit;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -461,11 +461,11 @@ function seePPT(team_id) {
             // dataType: 'json',
             success: function(response) {
                 console.log(response)
-                // document.getElementById("idBenefit").value = response[0].benefit; 
+                // document.getElementById("idBenefit").value = response[0].benefit;
                 pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
 
                 // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;           
+                document.getElementById("pptViewer").src = pptUrl;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);

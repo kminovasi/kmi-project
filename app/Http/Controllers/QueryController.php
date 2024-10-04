@@ -158,6 +158,7 @@ class QueryController extends Controller
 
     public function custom_get(Request $request)
     {
+
         try {
             $table = $request->input('table');
             $limit = $request->input('limit');
@@ -2479,7 +2480,7 @@ class QueryController extends Controller
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
-            // dd($data_row->get());
+
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Total';
@@ -2487,23 +2488,19 @@ class QueryController extends Controller
                 return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $data_row['Total(removed)'] . '" readonly>';
             });
 
-            $rawColumns[] = 'Keputusan BOD';
-            $dataTable->addColumn('Keputusan BOD', function ($data_row) {
+            $rawColumns[] = 'Score Keputusan BOD';
+            $dataTable->addColumn('Score Keputusan BOD', function ($data_row) {
                 return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '">
-                <input class="form-control small-input"  value="' . $data_row['val_peringkat(removed)'] . '" type="number" name="val_peringkat[]" min="-100" max="100">';
+                <input class="form-control small-input"  value="0" type="number" name="val_peringkat[]" min="-100" max="100">
+                <br>
+                <button type="submit" class="btn btn-sm btn-primary" onclick="scoreBOD(' . $data_row['event_team_id(removed)'] . ', $(\'input[name="val_peringkat[]"]\').val(), $(\'input[name="total_score_event[]"]\').val()); return false;">Submit</button>
+                ';
                 // Input BOD
             });
-
-
 
             $rawColumns[] = 'Summary';
             $dataTable->addColumn('Summary', function ($data_row) {
                 $filePath = $data_row['file_ppt(removed)'];
-
-                //     // Check if the file path is an array
-                //     // if (is_array($filePath)) {
-                //     //     $filePath = $filePath['team_id'];
-                //     // }
 
                 // Generate the file URL
                 $fileUrl = Storage::url($filePath);
@@ -2511,7 +2508,6 @@ class QueryController extends Controller
                 return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>'
                     . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
             });
-
 
             $dataTable->rawColumns($rawColumns);
 

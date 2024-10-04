@@ -2549,7 +2549,6 @@ class QueryController extends Controller
                 DB::raw('pvt_event_teams.final_score as final_score'),
             ];
 
-
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
@@ -2566,7 +2565,7 @@ class QueryController extends Controller
                 ->select($arr_select_case);
 
 
-            $dataTable = DataTables::of($data_row->get());
+            $dataTable = DataTables::of($data_row->orderBy('final_score', 'desc')->get());
 
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
@@ -2578,6 +2577,18 @@ class QueryController extends Controller
             }
 
             $dataTable->removeColumn($remove_column);
+
+            // Add Ranking column
+            $rank = 1;
+            $prevFinalScore = null;
+            foreach ($dataTable->original as $data_column) {
+                if ($prevFinalScore !== null && $data_column->final_score < $prevFinalScore) {
+                    $rank++;
+                }
+                $data_column->ranking = $rank;
+                $prevFinalScore = $data_column->final_score;
+            }
+
 
             return $dataTable->toJson();
         } catch (Exception $e) {

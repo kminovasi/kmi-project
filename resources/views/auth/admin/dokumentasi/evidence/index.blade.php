@@ -196,11 +196,12 @@
                 }
             },
             "columns": [
-                {"data": "id_evidence", "title": "No"},
+                {"data": null,"title": "No","render": (data, type, row, meta) => meta.row + dataTable.page.info().start + 1},
                 {"data": "team_name", "title": "Nama Tim"},
                 {"data": "innovation_title", "title": "Judul Inovasi"},
                 {"data": "company_name", "title": "Perusahaan"},
                 {"data": "category_name", "title": "Kategori"},
+                {"data": "prestasi", "title": "Prestasi"},
                 {"data": "event_name", "title": "Nama Event"},
                 {"data": "name_employee", "title": "Ketua Inovasi"},
                 {"data": "email", "title": "Email"},

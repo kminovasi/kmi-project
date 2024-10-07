@@ -1114,7 +1114,7 @@ class QueryController extends Controller
 
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'On Desk') {
+                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk') {
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 } else {
                     return '-';
@@ -1323,7 +1323,7 @@ class QueryController extends Controller
             ->whereIn('categories.id', $categoryid)
             ->where('pvt_event_teams.event_id', $request->filterEvent)
             ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_event_teams.status', 'Presentation')->orWhere('pvt_event_teams.status', 'Caucus')
+            ->where('pvt_event_teams.status', 'Presentation')->orWhere('pvt_event_teams.status', 'Caucus')->orWhere('pvt_event_teams.status', 'Presentation BOD')
             ->groupBy('pvt_event_teams.id')
             ->select(
                 'teams.team_name AS Tim',
@@ -1368,7 +1368,7 @@ class QueryController extends Controller
                             ->get()
                             ->toArray();
 
-                        return $data_avg[0]['Nilai'];
+                            return $data_avg[0]['Nilai'];
                     });
                 }
             }
@@ -1406,13 +1406,18 @@ class QueryController extends Controller
                     ->keyBy('id')
                     ->toArray();
 
-                return $data_total[$data_row['event_team_id(removed)']]['Ranking'];
+                    return $data_total[$data_row['event_team_id(removed)']]['Ranking'];
             });
 
+            // if($data_row['status(removed)'] == 'Presentation BOD'){
+            //     Log::debug("ADSASD");
+            // }
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'Presentation')
+                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'Presentation'){
+                    Log::debug("OKOK");
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                }
                 else
                     return '-';
             });

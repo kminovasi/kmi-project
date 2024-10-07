@@ -159,6 +159,7 @@ class QueryController extends Controller
 
     public function custom_get(Request $request)
     {
+
         try {
             $table = $request->input('table');
             $limit = $request->input('limit');
@@ -2425,7 +2426,6 @@ class QueryController extends Controller
     //     }
     // }
 
-
     public function get_caucus(Request $request)
 {
     try {
@@ -2643,10 +2643,7 @@ class QueryController extends Controller
     public function get_presentasi_bod(Request $request)
     {
         try {
-            // $data_category = Category::where('id', $request->filterCategory)
-            //                             ->select('category_name', 'category_parent')
-            //                             ->first()
-            //                             ->toArray();
+
             $data_category = Category::select('id', 'category_name', 'category_parent');
             if (!is_null($request->filterCategory) || $request->filterCategory != "") {
                 $data_category->where('id', $request->filterCategory);
@@ -2667,7 +2664,9 @@ class QueryController extends Controller
             // dd($data_category);
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                 // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
+                ->where('category', $category_parent)
                 ->where('status_point', 'active')
+                ->where('stage', 'presentation')
                 ->select('id', 'pdca', 'point')
                 ->get()
                 ->toArray();
@@ -2698,35 +2697,34 @@ class QueryController extends Controller
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
                 ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
-                // ->where('categories.id', $request->filterCategory)
+                ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
-            // dd($data_row->get());
+
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) {
-                return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $data_row['Total(removed)'] . '" readonly>';
+                $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
+                return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
             });
 
-            $rawColumns[] = 'Keputusan BOD';
-            $dataTable->addColumn('Keputusan BOD', function ($data_row) {
-                return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '"><input class="form-control small-input"  value="' . $data_row['val_peringkat(removed)'] . '" type="text" name="val_peringkat[]">';
+            $rawColumns[] = 'Score Keputusan BOD';
+            $dataTable->addColumn('Score Keputusan BOD', function ($data_row) {
+                return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '">
+                <input class="form-control small-input"  value="0" type="number" name="val_peringkat[]" min="-100" max="100">
+                <br>
+                <button type="submit" class="btn btn-sm btn-primary" onclick="scoreBOD(' . $data_row['event_team_id(removed)'] . ', $(\'input[name="val_peringkat[]"]\').val(), $(\'input[name="total_score_event[]"]\').val()); return false;">Submit</button>
+                ';
+                // Input BOD
             });
-
-
 
             $rawColumns[] = 'Summary';
             $dataTable->addColumn('Summary', function ($data_row) {
                 $filePath = $data_row['file_ppt(removed)'];
-
-                //     // Check if the file path is an array
-                //     // if (is_array($filePath)) {
-                //     //     $filePath = $filePath['team_id'];
-                //     // }
 
                 // Generate the file URL
                 $fileUrl = Storage::url($filePath);
@@ -2734,7 +2732,6 @@ class QueryController extends Controller
                 return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>'
                     . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
             });
-
 
             $dataTable->rawColumns($rawColumns);
 
@@ -2757,19 +2754,25 @@ class QueryController extends Controller
     }
     public function get_penetapan_juara(Request $request)
     {
+
         try {
-            $data_category = Category::where('id', $request->filterCategory)
-                ->select('category_name', 'category_parent')
-                ->first()
+            $data_category = Category::select('id', 'category_name', 'category_parent');
+            if (!is_null($request->filterCategory) || $request->filterCategory != "") {
+                $data_category->where('id', $request->filterCategory);
+            } else {
+                $data_category->where('category_parent', '<>', 'IDEA BOX');
+                // $data_category->where('id', 2);
+            }
+            $data_category = $data_category->get()
                 ->toArray();
-            // dd($data_category);
-            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
-                ->where('status_point', 'active')
-                ->where('stage', 'presentation')
-                ->select('id', 'pdca', 'point')
-                ->get()
-                ->toArray();
+
+            $categoryid = array_column($data_category, 'id');
+            $searchidea = array_column($data_category, 'category_parent');
+            if (in_array("IDEA BOX", $searchidea)) {
+                $category_parent = 'IDEA';
+            } else {
+                $category_parent = 'BI/II';
+            }
             // dd($arr_event_id[0]['id']);
             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
@@ -2777,10 +2780,8 @@ class QueryController extends Controller
                 DB::raw('MIN(innovation_title) as Judul'),
                 DB::raw('MIN(category_name) as Kategori'),
                 'pvt_event_teams.id AS event_team_id(removed)',
+                DB::raw('pvt_event_teams.final_score as final_score'),
             ];
-            if (count($arr_event_id)) {
-                $arr_select_case[] = DB::raw("DENSE_RANK() OVER (ORDER BY ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC) AS \"Ranking\"");
-            }
 
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
@@ -2789,24 +2790,16 @@ class QueryController extends Controller
                 ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                    //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
                 })
-                ->where('categories.id', $request->filterCategory)
+                ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
-                // ->where('pvt_assessment_events.year', $request->filterYear)
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
-            $dataTable = DataTables::of($data_row->get());
 
-            //             $rawColumns[] = 'pdf';
-            //             $dataTable->addColumn('pdf', function ($data_row) {
-            // return '<button class="btn btn-cyan btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#ppt" onclick="seePPT(' . $data_row['team_id'] . ')"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;PDF</button>';
-            //             });
 
-            //             $dataTable->rawColumns($rawColumns);
-
+            $dataTable = DataTables::of($data_row->orderBy('final_score', 'desc')->get());
 
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
@@ -2818,6 +2811,17 @@ class QueryController extends Controller
             }
 
             $dataTable->removeColumn($remove_column);
+
+            // Add Ranking column
+            $rank = 1;
+            $prevFinalScore = null;
+            foreach ($dataTable->original as $data_column) {
+                if ($prevFinalScore !== null && $data_column->final_score < $prevFinalScore) {
+                    $rank++;
+                }
+                $data_column->ranking = $rank;
+                $prevFinalScore = $data_column->final_score;
+            }
 
             return $dataTable->toJson();
         } catch (Exception $e) {

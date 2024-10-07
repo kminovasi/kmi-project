@@ -399,11 +399,13 @@ class AssessmentController extends Controller
     public function submitJuri(Request $request, $event_team_id)
     {
         try {
+
+            // Get Total Score
+            $totalScore = 0;
             foreach ($request->score as $id => $score) {
                 pvtAssesmentTeamJudge::where('id', $id)
-                    ->update([
-                        'score' => $score,
-                    ]);
+                    ->update(['score' => $score,]);
+                $totalScore += $score;
             }
 
             NewSofi::where('event_team_id', $event_team_id)
@@ -413,6 +415,10 @@ class AssessmentController extends Controller
                     'recommend_category' => $request->recommendation,
                     'suggestion_for_benefit' => $request->suggestion_for_benefit
                 ]);
+
+            // Update the final score for the event team
+            PvtEventTeam::where('id', $event_team_id)
+                ->update(['final_score' => $totalScore]);
 
             return redirect()->back()->with('success', 'Submit assessment successfully');
         } catch (\Exception $e) {
@@ -678,7 +684,7 @@ class AssessmentController extends Controller
             ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select( 'pvt_event_teams.id as event_team_id','teams.id as team_id','team_name','innovation_title','inovasi_lokasi','event_name','financial','potential_benefit','potensi_replikasi','recommend_category', 'strength', 'opportunity_for_improvement','suggestion_for_benefit')
+            ->select('pvt_event_teams.id as event_team_id', 'teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
             ->where('pvt_event_teams.id', $id)
             ->first();
 
@@ -1536,6 +1542,7 @@ class AssessmentController extends Controller
     }
     public function penetapanJuara(Request $request)
     {
+
         $currentYear = Carbon::now()->year;
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();
@@ -1551,17 +1558,18 @@ class AssessmentController extends Controller
 
     public function keputusanBOD(Request $request)
     {
-        // dd($request->all());
-        $data = $request->only(['pvt_event_teams_id', 'val_peringkat']);
+        $data = $request->only(['pvt_event_teams_id', 'val_peringkat', 'total_score_event']);
         DB::beginTransaction();
         try {
             foreach ($data['pvt_event_teams_id'] as $index => $eventTeamId) {
-                KeputusanBod::updateOrCreate([
-                    'pvt_event_teams_id' => $eventTeamId,
-                    'val_peringkat' => $data['val_peringkat'][$index],
-                ]);
+                // dd($data['total_score_event'][$index]+$data['val_peringkat'][$index]);
+                KeputusanBod::updateOrCreate(
+                    ['pvt_event_teams_id' => $eventTeamId],
+                    ['val_peringkat' => $data['total_score_event'][$index] + $data['val_peringkat'][$index]]
+                );
                 $updateStatus = PvtEventTeam::findOrFail($eventTeamId);
                 $updateStatus->status = 'Juara';
+                $updateStatus->final_score = $data['val_peringkat'][$index] + $data['total_score_event'][$index];
                 $updateStatus->save();
             }
 

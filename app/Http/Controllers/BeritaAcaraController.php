@@ -29,7 +29,7 @@ class BeritaAcaraController extends Controller
         return view('auth.admin.berita-acara.index', ['data' => $data, 'event' => $event]);
     }
     public function store(Request $request){
-        
+
         try {
             DB::beginTransaction();
             BeritaAcara::create([
@@ -38,11 +38,12 @@ class BeritaAcaraController extends Controller
                 'jenis_event' => $request->input('jenis_event'),
                 'penetapan_juara' => $request->input('penetapan_juara')
             ]);
-            
+
             Event::where('id', $request->input('event_id'))
                 ->update([
                     'status' => 'finish'
                 ]);
+
             $assessment_event_poin_bi = PvtAssessmentEvent::where('event_id', $request->input('event_id'))
                                                     ->where('category', 'BI/II')
                                                     ->where('status_point', 'active')
@@ -56,10 +57,10 @@ class BeritaAcaraController extends Controller
                                                     ->limit(1)
                                                     ->pluck('id')
                                                     ->toArray();
-            
+
             // dd($assessment_event_poin_bi);
             $categoryID_list = Category::whereNot('category_parent', 'IDEA BOX')->pluck('id')->toArray();
-            
+
             if(!empty($assessment_event_poin_bi)){
                 foreach($categoryID_list as $categoryID){
                     $category_name = Category::where('id', '=', $categoryID)->pluck('category_name')[0];
@@ -73,7 +74,7 @@ class BeritaAcaraController extends Controller
                             ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_bi])
                             ->get()
                             ->toArray();
-                    
+
                     if(!empty($id_teams)){
                         $no = 0;
                         foreach($id_teams as $id_team){
@@ -90,22 +91,22 @@ class BeritaAcaraController extends Controller
                                 $prestasi = 'Juara 3';
                             else
                                 $prestasi = 'Peserta';
-                            
+
                             foreach($idMembers as $idMember){
-                                $dataevidence = Evidence::create([
+                                Evidence::create([
                                     'member_id' => $idMember,
                                     'team_id' => $id_team['id'],
                                     'event_name' => Event::where('id', $request->input('event_id'))->pluck('event_name')->first(),
                                     'prestasi' =>  $prestasi,
                                     'year'  => Event::where('id', $request->input('event_id'))->pluck('year')->first()
                                 ]);
-                                
+
                             }
                         }
                     }
                 }
             }
-           
+
             if(!empty($assessment_event_poin_idea)){
                 $id_teams_idea = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                             ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -164,17 +165,17 @@ class BeritaAcaraController extends Controller
                 ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
                 ->first();
         $idEvent = $data->eventID;
-        
+
         $carbonInstance =  Carbon::parse($data->penetapan_juara);
         setlocale(LC_TIME, 'id_ID');
         // dd($carbonInstance->isoFormat('DD'));
-        $day = $carbonInstance->isoFormat('dddd'); 
-        $date = numberToWords($carbonInstance->isoFormat('D'));  
+        $day = $carbonInstance->isoFormat('dddd');
+        $date = numberToWords($carbonInstance->isoFormat('D'));
         $month = $carbonInstance->isoFormat('MMMM');
         $year = numberToWords($carbonInstance->isoFormat('YYYY'));
 
         $carbonInstance_startDate = Carbon::parse($data->date_start);
-        $carbonInstance_endDate = Carbon::parse($data->date_end); 
+        $carbonInstance_endDate = Carbon::parse($data->date_end);
 
         $categoryID_list = Category::whereNot('category_parent', 'IDEA BOX')->pluck('id')->toArray();
 
@@ -192,7 +193,7 @@ class BeritaAcaraController extends Controller
                                                     ->pluck('id')
                                                     ->toArray();
 
-        
+
         // dd($assessment_event_poin_bi);
         $juara = [];
         foreach($categoryID_list as $categoryID){
@@ -216,7 +217,7 @@ class BeritaAcaraController extends Controller
                 $juara[$category_name] = [];
             }
 
-        }        
+        }
         if($assessment_event_poin_idea){
             $juara["IDEA"] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                         ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -255,18 +256,18 @@ class BeritaAcaraController extends Controller
         }else{
             $juara['Best Of The Best'] = [];
         }
-        
+
         $bods = BodEvent::join('users', 'users.employee_id', '=', 'bod_events.employee_id')
                         ->where('event_id', '=', $idEvent)
                         ->select('users.name', 'users.position_title')
                         ->get()
                         ->toArray();
-        
+
 
         $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4-P']);
         $html = view('auth.admin.berita-acara.pdf', compact(
                         'data', 'day', 'date', 'month', 'year', 'carbonInstance', 'juara', 'category', 'bods', 'carbonInstance_startDate', 'carbonInstance_endDate'))->render();
-       
+
         $mpdf->WriteHTML($html);
         $content = $mpdf->Output('', 'S');
 

@@ -246,8 +246,6 @@
                 "type": "GET",
                 "async": false,
                 "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
                     return data.data;
                 },
                 "data": function (d) {

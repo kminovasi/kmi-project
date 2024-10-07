@@ -16,5 +16,6 @@ class PvtEventTeam extends Model
         'event_id',
         'team_id',
         'year',
+        'status'
     ];
 }

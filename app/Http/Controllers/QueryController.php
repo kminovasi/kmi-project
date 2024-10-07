@@ -1322,7 +1322,7 @@ class QueryController extends Controller
             ->whereIn('categories.id', $categoryid)
             ->where('pvt_event_teams.event_id', $request->filterEvent)
             ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_assesment_team_judges.stage', 'presentation')
+            ->where('pvt_event_teams.status', 'Presentation')->orWhere('pvt_event_teams.status', 'Caucus')
             ->groupBy('pvt_event_teams.id')
             ->select(
                 'teams.team_name AS Tim',
@@ -1332,9 +1332,7 @@ class QueryController extends Controller
                 'papers.inovasi_lokasi AS Lokasi',
                 'pvt_event_teams.id AS event_team_id',
                 'pvt_event_teams.status AS status',
-                DB::raw('ROUND(SUM(pvt_assesment_team_judges.score), 2) AS total_score') // Hitung total_score
-            )
-            ->havingRaw('ROUND(SUM(pvt_assesment_team_judges.score), 2) >= ?', [$minimumOda]); // Gunakan perhitungan yang sama di HAVING
+            )->havingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumOda]);
 
 
 
@@ -1344,8 +1342,9 @@ class QueryController extends Controller
             }
             // ->where('pvt_assessment_events.year', $request->filterYear)
             $data_row->groupBy('pvt_event_teams.id')
-                ->select($arr_select_case);
+            ->select($arr_select_case);
 
+            Log::debug($data_row->get());
             // Log::debug($data_row->get());
 
             // $data_row->havingRaw('total_score >= ?', [$minimumPa]);
@@ -2483,7 +2482,7 @@ class QueryController extends Controller
             ->where('pvt_event_teams.event_id', $request->filterEvent)
             ->where('pvt_event_teams.status', 'Caucus') // Tambahkan kondisi untuk status 'Caucus'
             ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_assesment_team_judges.stage', 'presentation') // Sesuaikan dengan kebutuhan
+            ->where('pvt_event_teams.status', 'Caucus')->orWhere('pvt_assesment_team_judges.stage', 'caucus')->orWhere('pvt_event_teams.status', 'Presentation BOD')
             ->groupBy(
                 'teams.team_name',
                 'papers.innovation_title',
@@ -2501,11 +2500,9 @@ class QueryController extends Controller
                 'papers.inovasi_lokasi AS Lokasi',
                 'pvt_event_teams.id AS event_team_id',
                 'pvt_event_teams.status AS status',
-                DB::raw('ROUND(SUM(pvt_assesment_team_judges.score), 2) AS total_score') // Hitung total_score
             )
-            ->havingRaw('ROUND(SUM(pvt_assesment_team_judges.score), 2) >= ?', [$minimumOda])
-            ->orHavingRaw('ROUND(SUM(pvt_assesment_team_judges.score), 2) >= ?', [$minimumPa]);
-            Log::debug($data_row->get());
+            ->havingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumOda])
+            ->orHavingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumPa]);
 
 
             if (auth()->user()->role == "Juri") {

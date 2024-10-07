@@ -2220,10 +2220,7 @@ class QueryController extends Controller
     public function get_caucus(Request $request)
     {
         try {
-            // $data_category = Category::where('id', $request->filterCategory)
-            //                             ->select('category_name', 'category_parent')
-            //                             ->first()
-            //                             ->toArray();
+
             $data_category = Category::select('id', 'category_name', 'category_parent');
             if (!is_null($request->filterCategory) || $request->filterCategory != "") {
                 $data_category->where('id', $request->filterCategory);
@@ -2430,6 +2427,7 @@ class QueryController extends Controller
             $data_category = $data_category->get()
                 ->toArray();
 
+            $categoryid = array_column($data_category, 'id');
             $searchidea = array_column($data_category, 'category_parent');
             if (in_array("IDEA BOX", $searchidea)) {
                 $category_parent = 'IDEA';
@@ -2439,7 +2437,9 @@ class QueryController extends Controller
             // dd($data_category);
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                 // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
+                ->where('category', $category_parent)
                 ->where('status_point', 'active')
+                ->where('stage', 'presentation')
                 ->select('id', 'pdca', 'point')
                 ->get()
                 ->toArray();
@@ -2470,6 +2470,7 @@ class QueryController extends Controller
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
                 ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
+                ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
@@ -2526,19 +2527,25 @@ class QueryController extends Controller
     }
     public function get_penetapan_juara(Request $request)
     {
+
         try {
-            $data_category = Category::where('id', $request->filterCategory)
-                ->select('category_name', 'category_parent')
-                ->first()
+            $data_category = Category::select('id', 'category_name', 'category_parent');
+            if (!is_null($request->filterCategory) || $request->filterCategory != "") {
+                $data_category->where('id', $request->filterCategory);
+            } else {
+                $data_category->where('category_parent', '<>', 'IDEA BOX');
+                // $data_category->where('id', 2);
+            }
+            $data_category = $data_category->get()
                 ->toArray();
-            // dd($data_category);
-            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
-                ->where('status_point', 'active')
-                ->where('stage', 'presentation')
-                ->select('id', 'pdca', 'point')
-                ->get()
-                ->toArray();
+
+            $categoryid = array_column($data_category, 'id');
+            $searchidea = array_column($data_category, 'category_parent');
+            if (in_array("IDEA BOX", $searchidea)) {
+                $category_parent = 'IDEA';
+            } else {
+                $category_parent = 'BI/II';
+            }
             // dd($arr_event_id[0]['id']);
             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
@@ -2557,7 +2564,7 @@ class QueryController extends Controller
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
-                ->where('categories.id', $request->filterCategory)
+                ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
@@ -2588,7 +2595,6 @@ class QueryController extends Controller
                 $data_column->ranking = $rank;
                 $prevFinalScore = $data_column->final_score;
             }
-
 
             return $dataTable->toJson();
         } catch (Exception $e) {

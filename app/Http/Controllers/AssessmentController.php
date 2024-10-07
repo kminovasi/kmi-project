@@ -1542,6 +1542,7 @@ class AssessmentController extends Controller
     }
     public function penetapanJuara(Request $request)
     {
+
         $currentYear = Carbon::now()->year;
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();

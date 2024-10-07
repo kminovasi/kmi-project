@@ -57,11 +57,11 @@
     <a href="{{route('paper.register.team')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
 
     <a href="{{route('paper.index')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah Inovasi</a>
-    
+
     @if (Auth::user()->role == 'Juri' || Auth::user()->role == 'BOD' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
         <a href="{{route('assessment.on_desk')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
     @endif
-    
+
     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
         <a href="{{route('paper.event')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
     @endif
@@ -84,14 +84,14 @@
                 Tabel Penetapan Juara
                 @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                     <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addBeritaAcara"><i class="fa fa-plus" aria-hidden="true"></i> &nbsp;Buat Berita Acara</button>
-                @endif 
+                @endif
             </div>
             <div class="card-body">
                 <div class="mb-3">
                     @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
                         <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
                     @endif
-                </div> 
+                </div>
                 <div >
                     <div id="datatable-card" class="display">
                         <table id="datatable-penetapan-juara"></table>
@@ -100,7 +100,7 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 {{-- modal untuk berita acara --}}
 <div class="modal fade" id="addBeritaAcara" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -146,7 +146,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mb-3"> 
+                    <div class="card mb-3">
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
@@ -176,14 +176,14 @@
                             </table>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="modal-footer">
-                    
+
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 
@@ -202,8 +202,9 @@
                 <div class="mb-3">
                     <label class="mb-1" for="filter-category">Category</label>
                     <select id="filter-category" name="filter-category" class="form-select">
+                        <option value="" > All </option>
                         @foreach($data_category as $category)
-                        <option value="{{ $category->id }}" > {{ $category->category_name }} </option>
+                        <option value="{{ $category->id }}"> {{ $category->category_name }} </option>
                         @endforeach
                     </select>
                 </div>
@@ -252,7 +253,7 @@
 <script src="js/scripts.js"></script>
 <script type="">
     function initializeDataTable(columns) {
-        
+
         var dataTable = $('#datatable-penetapan-juara').DataTable({
             "processing": true,
             "serverSide": true,
@@ -269,6 +270,7 @@
                     d.filterEvent = $('#filter-event').val();
                     // d.filterYear = $('#filter-year').val();
                     d.filterCategory = $('#filter-category').val();
+
                 }
 
             },
@@ -329,7 +331,7 @@
         let column = updateColumnDataTable();
 
         let dataTable = initializeDataTable(column);
-        
+
         $('#filter-event').on('change', function () {
             dataTable.destroy();
             dataTable.destroy();
@@ -384,11 +386,11 @@
             // dataType: 'json',
             success: function(response) {
                 console.log(response)
-                document.getElementById("idBenefit").value = response[0].benefit; 
+                document.getElementById("idBenefit").value = response[0].benefit;
                 pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
 
                 // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;           
+                document.getElementById("pptViewer").src = pptUrl;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -410,11 +412,11 @@
             // dataType: 'json',
             success: function(response) {
                 console.log(response)
-                // document.getElementById("idBenefit").value = response[0].benefit; 
+                // document.getElementById("idBenefit").value = response[0].benefit;
                 // var pptUrl = '{{ asset("storage/") }}' + '/' + response[0].file_ppt;
 
                 // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;           
+                document.getElementById("pptViewer").src = pptUrl;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);

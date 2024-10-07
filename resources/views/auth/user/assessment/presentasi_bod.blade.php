@@ -245,6 +245,7 @@
         </div>
 
 
+
     @endsection
 
     @push('js')
@@ -263,6 +264,7 @@
         <script src="js/scripts.js"></script>
         <script type="">
     function initializeDataTable(columns) {
+
 
         var dataTable = $('#datatable-presentasi-bod').DataTable({
             "processing": true,
@@ -352,6 +354,7 @@
         let column = updateColumnDataTable();
 
         let dataTable = initializeDataTable(column);
+
 
         $('#filter-event').on('change', function () {
             dataTable.destroy();
@@ -447,9 +450,11 @@
                 document.getElementById("InnovationTitle").textContent = response[0].innovation_title;
                 document.getElementById("Company").textContent = response[0].company_name;
                 document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
+                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
                 document.getElementById("inputId").value = response[0].summary_executives_id;
                 document.getElementById("ProblemBackground").textContent = response[0].problem_background;
                 document.getElementById("InnovationIdea").textContent = response[0].innovation_idea;
+                document.getElementById("Benefit").textContent = response[0].benefit;
                 document.getElementById("Benefit").textContent = response[0].benefit;
             },
             error: function(xhr, status, error) {
@@ -506,9 +511,11 @@ function seePPT(team_id) {
             success: function(response) {
                 console.log(response)
                 // document.getElementById("idBenefit").value = response[0].benefit;
+                // document.getElementById("idBenefit").value = response[0].benefit;
                 pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
 
                 // Set the URL as the source for the iframe
+                document.getElementById("pptViewer").src = pptUrl;
                 document.getElementById("pptViewer").src = pptUrl;
             },
             error: function(xhr, status, error) {

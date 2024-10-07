@@ -23,7 +23,6 @@ use App\Models\Evidence;
 use App\Models\Judge;
 use App\Models\BodEvent;
 use App\Models\BeritaAcara;
-use App\Models\MinimumscoreEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -993,6 +992,11 @@ class QueryController extends Controller
     public function get_oda_assessment(Request $request)
     {
         try {
+            // dd($request->all());
+            // $data_category = Category::where('id', $request->filterCategory)
+            //                             ->select('category_name', 'category_parent')
+            //                             ->first()
+            //                             ->toArray();
             $data_category = Category::select('id', 'category_name', 'category_parent');
             if (!is_null($request->filterCategory) || $request->filterCategory != "") {
                 $data_category->where('id', $request->filterCategory);
@@ -1114,21 +1118,21 @@ class QueryController extends Controller
 
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk') {
+                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'On Desk') {
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 } else {
                     return '-';
                 }
             });
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk') {
+                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'On Desk') {
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 } else {
                     return '-';
                 }
             });
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk') {
+                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'On Desk') {
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 } else {
                     return '-';
@@ -1264,8 +1268,11 @@ class QueryController extends Controller
 
     public function get_pa_assessment(Request $request)
     {
-
         try {
+            // $data_category = Category::where('id', $request->filterCategory)
+            //                             ->select('category_name', 'category_parent')
+            //                             ->first()
+            //                             ->toArray();
             $data_category = Category::select('id', 'category_name', 'category_parent');
             if (!is_null($request->filterCategory) || $request->filterCategory != "") {
                 $data_category->where('id', $request->filterCategory);
@@ -1283,7 +1290,6 @@ class QueryController extends Controller
             } else {
                 $category_parent = 'BI/II';
             }
-
             // dd($data_category);
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                 // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
@@ -1309,33 +1315,21 @@ class QueryController extends Controller
                 $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
             }
 
-            $minimumScore = MinimumscoreEvent::where('event_id', $request->filterEvent)->first();
-            $minimumOda = $minimumScore ? $minimumScore->score_minimum_oda : 0;
-
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
-            ->join('categories', 'categories.id', '=', 'teams.category_id')
-            ->join('themes', 'themes.id', '=', 'teams.theme_id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-            ->join('pvt_assessment_events', function ($join) {
-                $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-            })
-            ->whereIn('categories.id', $categoryid)
-            ->where('pvt_event_teams.event_id', $request->filterEvent)
-            ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_event_teams.status', 'Presentation')->orWhere('pvt_event_teams.status', 'Caucus')->orWhere('pvt_event_teams.status', 'Presentation BOD')
-            ->groupBy('pvt_event_teams.id')
-            ->select(
-                'teams.team_name AS Tim',
-                'papers.innovation_title AS Judul',
-                'categories.category_name AS Kategori',
-                'themes.theme_name AS Tema',
-                'papers.inovasi_lokasi AS Lokasi',
-                'pvt_event_teams.id AS event_team_id',
-                'pvt_event_teams.status AS status',
-            )->havingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumOda]);
-
-
+                ->join('categories', 'categories.id', '=', 'teams.category_id')
+                ->join('themes', 'themes.id', '=', 'teams.theme_id')
+                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                // ->join('bod_event_values', 'bod_event_values.event_team_id', '=', 'pvt_event_teams.id')
+                ->join('pvt_assessment_events', function ($join) {
+                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+                    //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+                })
+                // ->where('categories.id', $request->filterCategory)
+                ->whereIn('categories.id', $categoryid)
+                ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->where('pvt_assessment_events.status_point', 'active')
+                ->where('pvt_assesment_team_judges.stage', 'presentation');
 
             if (auth()->user()->role == "Juri") {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
@@ -1343,13 +1337,7 @@ class QueryController extends Controller
             }
             // ->where('pvt_assessment_events.year', $request->filterYear)
             $data_row->groupBy('pvt_event_teams.id')
-            ->select($arr_select_case);
-
-            Log::debug($data_row->get());
-            // Log::debug($data_row->get());
-
-            // $data_row->havingRaw('total_score >= ?', [$minimumPa]);
-            // Log::debug($data_row->get());
+                ->select($arr_select_case);
 
             $dataTable = DataTables::of($data_row->get());
 
@@ -1368,12 +1356,10 @@ class QueryController extends Controller
                             ->get()
                             ->toArray();
 
-                            return $data_avg[0]['Nilai'];
+                        return $data_avg[0]['Nilai'];
                     });
                 }
             }
-
-
 
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
@@ -1406,18 +1392,13 @@ class QueryController extends Controller
                     ->keyBy('id')
                     ->toArray();
 
-                    return $data_total[$data_row['event_team_id(removed)']]['Ranking'];
+                return $data_total[$data_row['event_team_id(removed)']]['Ranking'];
             });
 
-            // if($data_row['status(removed)'] == 'Presentation BOD'){
-            //     Log::debug("ADSASD");
-            // }
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'Presentation'){
-                    Log::debug("OKOK");
+                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'Presentation')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
-                }
                 else
                     return '-';
             });
@@ -1621,7 +1602,6 @@ class QueryController extends Controller
     public function get_input_pa_assessment_team(Request $request)
     {
         try {
-
             // $idEmployee = auth()->user()->employee_id;
             $arr_event_team_id = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
                 ->join('users', 'users.employee_id', '=', 'judges.employee_id')
@@ -1707,10 +1687,19 @@ class QueryController extends Controller
             $dataTable->addColumn('Detail point', function ($data_row) {
                 return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
-            Log::debug($this->getAssessmentUrl());
+
+            $data = $data_row->get();
+
+            $found = false;
+            foreach ($data as $item) {
+                if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+                    $found = true;
+                    break;
+                }
+            }
 
             // Output hasil pengecekan
-            if ($this->getAssessmentUrl()==="assessment-presentation-value") {
+            if ($found) {
                 $rawColumns[] = 'Rata - Rata Nilai';
                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
@@ -1726,28 +1715,11 @@ class QueryController extends Controller
                     else
                         return '-';
                 });
-            } else if($this->getAssessmentUrl() === 'assessment-ondesk-value') {
+            } else {
                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
                         ->where('event_team_id', $request->filterEventTeamId)
                         ->where('stage', 'on desk')
-                        ->groupBy('assessment_event_id')
-                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                        ->get();
-
-                    if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
-                    else
-                        return '-';
-                });
-            }
-            else if($this->getAssessmentUrl() === 'assessment-caucus-value') {
-                Log::debug("ok");
-                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
-                    $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
-                        ->where('event_team_id', $request->filterEventTeamId)
-                        ->where('stage', 'presemtation')
                         ->groupBy('assessment_event_id')
                         ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
                         ->get();
@@ -2082,7 +2054,19 @@ class QueryController extends Controller
         try {
             $data_row = Event::orderBy('id', 'desc') // newest events first
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END")
-                ->get();
+                ->get();            // $data_row = Event::leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
+            //                 ->select([
+            //                     'events.id as event_id',
+            //                     'company_name',
+            //                     'event_name',
+            //                     'description',
+            //                     'events.company_code as company_code',
+            //                     'year',
+            //                     'date_start',
+            //                     'date_end',
+            //                     'status'
+            //                 ])
+            //                 ->get();
             $dataTable = DataTables::of($data_row);
             $rawColumns = [];
 
@@ -2234,89 +2218,75 @@ class QueryController extends Controller
 
 
     public function get_caucus(Request $request)
-{
-    try {
-        // Ambil data kategori
-        $data_category = Category::select('id', 'category_name', 'category_parent');
-        if (!is_null($request->filterCategory) || $request->filterCategory != "") {
-            $data_category->where('id', $request->filterCategory);
-        } else {
-            $data_category->where('category_parent', '<>', 'IDEA BOX');
-        }
-        $data_category = $data_category->get()->toArray();
+    {
+        try {
+            // $data_category = Category::where('id', $request->filterCategory)
+            //                             ->select('category_name', 'category_parent')
+            //                             ->first()
+            //                             ->toArray();
+            $data_category = Category::select('id', 'category_name', 'category_parent');
+            if (!is_null($request->filterCategory) || $request->filterCategory != "") {
+                $data_category->where('id', $request->filterCategory);
+            } else {
+                $data_category->where('category_parent', '<>', 'IDEA BOX');
+                // $data_category->where('id', 2);
+            }
+            $data_category = $data_category->get()
+                ->toArray();
 
-        $categoryid = array_column($data_category, 'id');
-        $searchidea = array_column($data_category, 'category_parent');
-        $category_parent = in_array("IDEA BOX", $searchidea) ? 'IDEA' : 'BI/II';
+            $categoryid = array_column($data_category, 'id');
+            $searchidea = array_column($data_category, 'category_parent');
+            if (in_array("IDEA BOX", $searchidea)) {
+                $category_parent = 'IDEA';
+            } else {
+                $category_parent = 'BI/II';
+            }
+            // dd($data_category);
+            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
+                ->where('category', $category_parent)
+                ->where('status_point', 'active')
+                ->where('stage', 'presentation')
+                ->select('id', 'pdca', 'point')
+                ->get()
+                ->toArray();
+            // dd(count($arr_event_id));
+            $arr_select_case = [
+                DB::raw('MIN(team_name) as Tim'),
+                DB::raw('MIN(innovation_title) as Judul'),
+                DB::raw('MIN(category_name) as Kategori'),
+                DB::raw('MIN(theme_name) as Tema'),
+                DB::raw('MIN(inovasi_lokasi) as Lokasi'),
+                'pvt_event_teams.id AS event_team_id(removed)',
+                'pvt_event_teams.status as status(removed)',
+                'pvt_event_teams.team_id as team_id'
+            ];
 
-        // Ambil ID event assessment
-        $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-            ->where('category', $category_parent)
-            ->where('status_point', 'active')
-            ->where('stage', 'presentation') // Pastikan ini sesuai dengan kebutuhan Anda
-            ->select('id', 'pdca', 'point')
-            ->get()
-            ->toArray();
 
-        $arr_select_case = [
-            DB::raw('MIN(team_name) as Tim'),
-            DB::raw('MIN(innovation_title) as Judul'),
-            DB::raw('MIN(category_name) as Kategori'),
-            DB::raw('MIN(theme_name) as Tema'),
-            DB::raw('MIN(inovasi_lokasi) as Lokasi'),
-            'pvt_event_teams.id AS event_team_id(removed)',
-            'pvt_event_teams.status as status(removed)',
-            'pvt_event_teams.team_id as team_id'
-        ];
+            if (count($arr_event_id)) {
+                $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
+            }
 
-        $minimumScores = MinimumscoreEvent::where('event_id', $request->filterEvent)->first();
-        $minimumOda = $minimumScores ? $minimumScores->score_minimum_oda : 0;
-        $minimumPa = $minimumScores ? $minimumScores->score_minimum_pa : 0;
-
-        if (count($arr_event_id)) {
-            $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
-        }
-
-        $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
-            ->join('categories', 'categories.id', '=', 'teams.category_id')
-            ->join('themes', 'themes.id', '=', 'teams.theme_id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-            ->join('pvt_assessment_events', function ($join) {
-                $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-            })
-            ->whereIn('categories.id', $categoryid)
-            ->where('pvt_event_teams.event_id', $request->filterEvent)
-            ->where('pvt_event_teams.status', 'Caucus') // Tambahkan kondisi untuk status 'Caucus'
-            ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_event_teams.status', 'Caucus')->orWhere('pvt_assesment_team_judges.stage', 'caucus')->orWhere('pvt_event_teams.status', 'Presentation BOD')
-            ->groupBy(
-                'teams.team_name',
-                'papers.innovation_title',
-                'categories.category_name',
-                'themes.theme_name',
-                'papers.inovasi_lokasi',
-                'pvt_event_teams.id',
-                'pvt_event_teams.status'
-            )
-            ->select(
-                'teams.team_name AS Tim',
-                'papers.innovation_title AS Judul',
-                'categories.category_name AS Kategori',
-                'themes.theme_name AS Tema',
-                'papers.inovasi_lokasi AS Lokasi',
-                'pvt_event_teams.id AS event_team_id',
-                'pvt_event_teams.status AS status',
-            )
-            ->havingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumOda])
-            ->orHavingRaw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) >= ?", [$minimumPa]);
-
+            $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
+                ->join('categories', 'categories.id', '=', 'teams.category_id')
+                ->join('themes', 'themes.id', '=', 'teams.theme_id')
+                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                // ->join('bod_event_values', 'bod_event_values.event_team_id', '=', 'pvt_event_teams.id')
+                ->join('pvt_assessment_events', function ($join) {
+                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+                    //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+                })
+                // ->where('categories.id', $request->filterCategory)
+                ->whereIn('categories.id', $categoryid)
+                ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->where('pvt_assessment_events.status_point', 'active')
+                ->where('pvt_assesment_team_judges.stage', 'caucus');
 
             if (auth()->user()->role == "Juri") {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                     ->where('judges.employee_id', auth()->user()->employee_id);
             }
-
             // ->where('pvt_assessment_events.year', $request->filterYear)
             $data_row->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
@@ -2446,7 +2416,6 @@ class QueryController extends Controller
         }
     }
 
-
     public function get_presentasi_bod(Request $request)
     {
         try {
@@ -2461,7 +2430,6 @@ class QueryController extends Controller
             $data_category = $data_category->get()
                 ->toArray();
 
-            $categoryid = array_column($data_category, 'id');
             $searchidea = array_column($data_category, 'category_parent');
             if (in_array("IDEA BOX", $searchidea)) {
                 $category_parent = 'IDEA';
@@ -2471,9 +2439,7 @@ class QueryController extends Controller
             // dd($data_category);
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                 // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
-                ->where('category', $category_parent)
                 ->where('status_point', 'active')
-                ->where('stage', 'presentation')
                 ->select('id', 'pdca', 'point')
                 ->get()
                 ->toArray();
@@ -2504,14 +2470,12 @@ class QueryController extends Controller
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
                 ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
-                ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
-                ->where('pvt_assesment_team_judges.stage', 'caucus')
+                ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
-            Log::debug($data_row->get());
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Total';
@@ -2562,25 +2526,19 @@ class QueryController extends Controller
     }
     public function get_penetapan_juara(Request $request)
     {
-
         try {
-            $data_category = Category::select('id', 'category_name', 'category_parent');
-            if (!is_null($request->filterCategory) || $request->filterCategory != "") {
-                $data_category->where('id', $request->filterCategory);
-            } else {
-                $data_category->where('category_parent', '<>', 'IDEA BOX');
-                // $data_category->where('id', 2);
-            }
-            $data_category = $data_category->get()
+            $data_category = Category::where('id', $request->filterCategory)
+                ->select('category_name', 'category_parent')
+                ->first()
                 ->toArray();
-
-            $categoryid = array_column($data_category, 'id');
-            $searchidea = array_column($data_category, 'category_parent');
-            if (in_array("IDEA BOX", $searchidea)) {
-                $category_parent = 'IDEA';
-            } else {
-                $category_parent = 'BI/II';
-            }
+            // dd($data_category);
+            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
+                ->where('status_point', 'active')
+                ->where('stage', 'presentation')
+                ->select('id', 'pdca', 'point')
+                ->get()
+                ->toArray();
             // dd($arr_event_id[0]['id']);
             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
@@ -2599,7 +2557,7 @@ class QueryController extends Controller
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
-                ->whereIn('categories.id', $categoryid)
+                ->where('categories.id', $request->filterCategory)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
@@ -2630,6 +2588,7 @@ class QueryController extends Controller
                 $data_column->ranking = $rank;
                 $prevFinalScore = $data_column->final_score;
             }
+
 
             return $dataTable->toJson();
         } catch (Exception $e) {
@@ -2696,15 +2655,5 @@ class QueryController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-
-    public function getAssessmentUrl(){
-        $url = url()->previous();  // Mendapatkan URL sebelumnya
-        $path = parse_url($url, PHP_URL_PATH);  // Mengambil bagian path dari URL
-        $segments = explode('/', $path);  // Memecah path menjadi segmen-segmen
-
-        // Mengambil segmen tertentu, misalnya segmen ke-2 terakhir
-        $desiredSegment = $segments[count($segments) - 2];  // "assessment-presentation-value"
-        return $desiredSegment;
     }
 }

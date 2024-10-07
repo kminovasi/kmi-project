@@ -16,7 +16,7 @@ class PvtAssessmentEvent extends Model
                             'point',
                             'detail_point',
                             'pdca',
-                            'score_max', 
+                            'score_max',
                             'year',
                             'stage',
                             'category'

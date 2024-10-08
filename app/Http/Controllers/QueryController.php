@@ -1328,6 +1328,7 @@ class QueryController extends Controller
                 // ->where('categories.id', $request->filterCategory)
                 ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->where('pvt_event_teams.status', '!=', 'tidak lolos On Desk')
                 ->where('pvt_assessment_events.status_point', 'active')
                 ->where('pvt_assesment_team_judges.stage', 'presentation');
 
@@ -1400,7 +1401,7 @@ class QueryController extends Controller
                 if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'Presentation')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else
-                    return '-';
+                return '-';
             });
 
             //             $rawColumns[] = 'Jumlah Juri Sudah Menilai';
@@ -2280,6 +2281,7 @@ class QueryController extends Controller
                 // ->where('categories.id', $request->filterCategory)
                 ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->where('pvt_event_teams.status', '!=', 'tidak lolos Presentation')
                 ->where('pvt_assessment_events.status_point', 'active')
                 ->where('pvt_assesment_team_judges.stage', 'caucus');
 
@@ -2349,6 +2351,7 @@ class QueryController extends Controller
 
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
+                Log::debug($data_row['status(removed)']);
                 if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'Caucus')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else

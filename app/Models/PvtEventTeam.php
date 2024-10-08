@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PvtEventTeam extends Model
 {
     use HasFactory;
+
     protected $table = 'pvt_event_teams';
 
     protected $primaryKey = 'id';
@@ -16,6 +17,10 @@ class PvtEventTeam extends Model
         'event_id',
         'team_id',
         'year',
-        'status'
+        'status',
+        'total_score_on_desk',
+        'total_score_presentation',
+        'total_score_caucus',
+        'final_score', // Jika kamu menggunakan final_score juga
     ];
 }

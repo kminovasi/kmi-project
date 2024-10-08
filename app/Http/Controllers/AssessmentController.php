@@ -32,6 +32,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Route;
 
 class AssessmentController extends Controller
 {
@@ -378,46 +379,47 @@ class AssessmentController extends Controller
         return view('auth.juri.assessment_caucus', compact('datas', 'sofiData', 'datas_juri'));
     }
 
-    // public function scoreJuri(Request $request){
-    //     // dd($request->all());
-    //     $scoreData = $request->input('score');
-
-    //     foreach ($scoreData as $keyId => $score) {
-    //         // Use the key_id as a reference to update the corresponding record
-    //         $data = PvtAssessmentTeam::where('id', $keyId)->first();
-
-    //         if ($data) {
-    //             $data->score = $score;
-    //             $data->save();
-    //         }
-    //     }
-
-    //     return redirect()->back()->with('success', 'Scores updated successfully');
-    // }
-
     // FIXME: INI FUNGSI YG DIPAKE SUBMIT SCORE
     public function submitJuri(Request $request, $event_team_id)
     {
         try {
-
             // Get Total Score
             $totalScore = 0;
             foreach ($request->score as $id => $score) {
                 pvtAssesmentTeamJudge::where('id', $id)
-                    ->update(['score' => $score,]);
+                ->update(['score' => $score,]);
                 $totalScore += $score;
             }
+            $previousFullUrl = url()->previous();
+            $segments = explode('/', $previousFullUrl);
+            $value = $segments[4];
+
+            $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
+            if($value === "assessment-ondesk-value"){
+                $pvtEventTeam->update([
+                    'total_score_on_desk' => $this->calculateAverageTotalScore($event_team_id, "on desk")
+                ]);
+            }elseif($value === "assessment-presentation-value"){
+                $pvtEventTeam->update([
+                    'total_score_presentation' => $this->calculateAverageTotalScore($event_team_id, "presentation")
+                ]);
+            }elseif($value === "assessment-caucus-value"){
+                $pvtEventTeam->update([
+                    'total_score_caucus' => $this->calculateAverageTotalScore($event_team_id, "presentation")
+                ]);
+            }
+
 
             NewSofi::where('event_team_id', $event_team_id)
-                ->update([
+            ->update([
                     'strength' => $request->sofi_strength,
                     'opportunity_for_improvement' => $request->sofi_opportunity,
                     'recommend_category' => $request->recommendation,
                     'suggestion_for_benefit' => $request->suggestion_for_benefit
                 ]);
 
-            // Update the final score for the event team
-            PvtEventTeam::where('id', $event_team_id)
+                // Update the final score for the event team
+                PvtEventTeam::where('id', $event_team_id)
                 ->update(['final_score' => $totalScore]);
 
             return redirect()->back()->with('success', 'Submit assessment successfully');
@@ -775,7 +777,6 @@ class AssessmentController extends Controller
     }
     public function oda_fix(Request $request)
     {
-        // dd($request->all());
         try {
             DB::beginTransaction();
             if (isset($request->event_id)) {
@@ -948,13 +949,12 @@ class AssessmentController extends Controller
 
                 foreach ($request->pvt_event_team_id as $index => $event_team_id) {
                     $event_team = PvtEventTeam::findOrFail($event_team_id);
-
-                    $total_score = intval($request->total_score_event[$index]);
-                    if ($total_score >= $score_oda) {
+                    if ($event_team->total_score_on_desk >= $score_oda) {
                         $event_team->status = 'Presentation';
                     } else {
                         $event_team->status = 'tidak lolos On Desk';
                     }
+
 
                     $event_team->save();
 
@@ -1039,7 +1039,6 @@ class AssessmentController extends Controller
 
     public function pa_fix(Request $request)
     {
-        // dd($request->all());
         try {
             DB::beginTransaction();
             if (isset($request->event_id)) {
@@ -1162,9 +1161,9 @@ class AssessmentController extends Controller
 
                 foreach ($request->pvt_event_team_id as $index => $event_team_id) {
                     $event_team = PvtEventTeam::findOrFail($event_team_id);
-
-                    $total_score = intval($request->total_score_event[$index]);
-                    if ($total_score >= $score_oda) {
+                    // $total_score = intval($request->total_score_event[$index]);
+                    // dd($total_score);
+                    if ($event_team->total_score_presentation >= $score_oda) {
                         $event_team->status = 'Caucus';
                     } else {
                         $event_team->status = 'tidak lolos Presentation';
@@ -1608,4 +1607,39 @@ class AssessmentController extends Controller
             return redirect()->route('assessment.presentasiBOD')->withErrors('Error: ' . $e->getMessage());
         }
     }
+
+    public function calculateAverageTotalScore($event_id, $stage)
+    {
+        // Mengambil semua penilaian berdasarkan event_team_id
+        $pvtAssesmentTeamJudgeByEventTeamIdItems = pvtAssesmentTeamJudge::where('event_team_id', $event_id)->where('stage', $stage)->get()->toArray();
+        // Kategorikan penilaian berdasarkan assessment_event_id
+        $categorizedScores = [];
+        foreach ($pvtAssesmentTeamJudgeByEventTeamIdItems as $item) {
+            $assessmentEventId = $item['assessment_event_id'];
+            // Jika kategori untuk assessment_event_id belum ada, buat array baru
+            if (!isset($categorizedScores[$assessmentEventId])) {
+                $categorizedScores[$assessmentEventId] = [];
+            }
+            // Tambahkan score ke kategori assessment_event_id
+            $categorizedScores[$assessmentEventId][] = $item['score'];
+        }
+
+        // Hitung rata-rata untuk setiap assessment_event_id
+        $averageScores = [];
+        foreach ($categorizedScores as $assessmentEventId => $scores) {
+            $averageScores[$assessmentEventId] = array_sum($scores) / count($scores);
+        }
+
+        // Hitung total dari semua nilai rata-rata
+        $totalAverageScore = array_sum($averageScores);
+
+        return $totalAverageScore;
+
+    }
+
+
+
+
+
+
 }

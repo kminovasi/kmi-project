@@ -677,28 +677,22 @@ class AssessmentController extends Controller
     }
     public function showSofi_caucus($id)
     {
-        // Mengambil data tim yang sama dengan fungsi presentasi
+
         $dataTeam = Team::join('papers', 'papers.team_id', '=', 'teams.id')
             ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->select('pvt_event_teams.id as event_team_id', 'teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
             ->where('pvt_event_teams.id', $id)
             ->first();
 
-        // Mengambil data penilaian untuk tahap Caucus dengan struktur yang sama dengan Presentasi
         $dataNilai = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-            ->select(
-                'pvt_event_teams.id as id_event_team',
-                'pvt_assessment_events.pdca',
-                'pvt_assessment_events.id as id_point',
-                'point',
-                DB::raw('ROUND(AVG(score),2) as average_score')
-            )
+            ->select('pvt_event_teams.id as id_event_team', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id as id_point', 'point', DB::raw('ROUND(AVG(score),2) as average_score'))
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_assesment_team_judges.stage', 'caucus') // Mengambil data untuk stage caucus
+            ->where('pvt_assesment_team_judges.stage', 'presentation')
             ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')
             ->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
@@ -708,18 +702,17 @@ class AssessmentController extends Controller
                         ELSE 5
                     END, pvt_assessment_events.id ASC");
 
-        // Mendapatkan hasil nilai dari tahap Caucus
+
         $individualResults = $dataNilai->get();
         $overallTotal = $individualResults->sum('average_score');
 
-        // Menggabungkan hasil dengan data tim seperti pada presentasi
+        // Combine the results and overall total
         $data = [
             'dataTeam' => $dataTeam,
-            'individualResults' => $individualResults, // Tetap menggunakan individualResults untuk konsistensi
-            'overallTotal' => $overallTotal, // Tetap menggunakan overallTotal untuk konsistensi
+            'individualResults' => $individualResults,
+            'overallTotal' => $overallTotal,
         ];
 
-        // Menampilkan view yang sama dengan tahap presentasi tetapi untuk caucus
         return view('auth.user.assessment.sofi_caucus', compact('data'));
     }
 

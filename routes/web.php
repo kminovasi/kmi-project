@@ -22,6 +22,7 @@ use App\Http\Controllers\ChartDashboardController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\TimelineContoller;
 use App\Models\Flyer;
 use App\Models\Timeline;
@@ -199,6 +200,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/penetapanJuara', [AssessmentController::class, 'penetapanJuara'])->name('penetapanJuara');
         Route::post('/addBODvalue', [AssessmentController::class, 'addBODvalue'])->name('addBODvalue');
         Route::post('/keputusanBOD', [AssessmentController::class, 'keputusanBOD'])->name('keputusanBOD');
+        Route::put('/updateScoreKeputusanBOD', [PvtEventTeamController::class, 'updateScoreKeputusanBOD'])->name('updateScoreKeputusanBOD');
         Route::get('/pdf-summary/{team_id}', [AssessmentController::class, 'pdfSummary'])->name('pdfSummary');
     });
 

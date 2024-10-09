@@ -87,8 +87,18 @@
 
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            @endif
+                @endif
+
+            @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+
+                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
+        @endif
         @include('auth.user.assessment.bar')
         <div class="row">
             <div class="col-md-12">

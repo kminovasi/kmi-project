@@ -171,7 +171,7 @@
                         <div class="card-body d-flex flex-column" style="height: 8rem">
                             <div class="m-auto">
                                 <i class="feather-lg text-secondary mb-3" ></i>
-                                <h5 class="text-primary">IDEA</h5>
+                                <h5 class="text-secondary">IDEA</h5>
                             </div>
                         </div>
                     </a>

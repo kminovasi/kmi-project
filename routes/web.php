@@ -20,6 +20,7 @@ use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\ChartDashboardController;
 use App\Http\Controllers\DokumentasiController;
+use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TimelineContoller;
@@ -279,9 +280,12 @@ Route::middleware('auth')->group(function () {
         Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy']);
     });
 
-    Route::get('/evidence', function () {
-        return view('auth.admin.dokumentasi.evidence.index');
-    })->name('evidence.index');
+
+
+    // Evidence
+    Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidence.index');
+    Route::get('/evidence/{id}', [EvidenceController::class, 'list_winner'])->name('evidence.category');
+    Route::get('/evidence/teams', [EvidenceController::class, 'team_detail'])->name('evidence.detail');
 
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {
         Route::get('/', [DokumentasiController::class, 'index'])->name('index');

@@ -93,6 +93,13 @@
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
+            @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            @endif
+
         </div>
         @include('auth.user.assessment.bar')
         <div class="row">
@@ -373,28 +380,6 @@
         });
     });
 
-
-    function scoreBOD(pvt_event_teams_id, val_peringkat, total_score_event) {
-        console.log(pvt_event_teams_id);
-    // $.ajax({
-    //     headers: {
-    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //     },
-    //     type: 'POST',
-    //     url: '{{ route('assessment.keputusanBOD') }}',
-    //     data: {
-    //         pvt_event_teams_id: pvt_event_teams_id,
-    //         val_peringkat: val_peringkat,
-    //         total_score_event: total_score_event
-    //     },
-    //     success: function(data) {
-    //         console.log('Data sent successfully!');
-    //     },
-    //     error: function(xhr, status, error) {
-    //             console.error(xhr.responseText);
-    //     }
-    // });
-}
 
     function setSummaryPPT(team_id){
         $.ajax({

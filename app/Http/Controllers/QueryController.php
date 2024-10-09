@@ -2536,19 +2536,32 @@ class QueryController extends Controller
     public function get_penetapan_juara(Request $request)
     {
         try {
+            // Cek apakah filterCategory ada atau null
             $data_category = Category::where('id', $request->filterCategory)
                 ->select('category_name', 'category_parent')
-                ->first()
-                ->toArray();
-            // dd($data_category);
-            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
-                ->where('status_point', 'active')
-                ->where('stage', 'presentation')
-                ->select('id', 'pdca', 'point')
-                ->get()
-                ->toArray();
-            // dd($arr_event_id[0]['id']);
+                ->first();
+
+            // Jika tidak ada category yang dipilih (null), ambil semua data
+            if ($data_category) {
+                $category_type = ($data_category->category_parent == 'IDEA BOX') ? 'IDEA' : 'BI/II';
+                $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                    ->where('category', $category_type)
+                    ->where('status_point', 'active')
+                    ->where('stage', 'presentation')
+                    ->select('id', 'pdca', 'point')
+                    ->get()
+                    ->toArray();
+            } else {
+                // Jika category null, ambil semua kategori
+                $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                    ->where('status_point', 'active')
+                    ->where('stage', 'presentation')
+                    ->select('id', 'pdca', 'point')
+                    ->get()
+                    ->toArray();
+            }
+
+            // Query untuk mengambil data tim dan skor
             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
                 DB::raw('MIN(team_name) as Tim'),
@@ -2558,6 +2571,7 @@ class QueryController extends Controller
                 DB::raw('pvt_event_teams.final_score as final_score'),
             ];
 
+            // Query utama untuk mengambil data tim
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
@@ -2566,16 +2580,23 @@ class QueryController extends Controller
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
-                ->where('categories.id', $request->filterCategory)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
+            // Jika filterCategory tidak null, tambahkan filter untuk kategori
+            if ($request->filterCategory) {
+                $data_row->where('categories.id', $request->filterCategory);
+            }
 
-            $dataTable = DataTables::of($data_row->orderBy('final_score', 'desc')->get());
+            // Urutkan berdasarkan MIN(category_name) dan final_score
+            $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) // Gunakan alias dari SELECT
+                ->orderBy('final_score', 'desc') // Kemudian urutkan berdasarkan final_score
+                ->get());
 
+            // Menghapus kolom yang mengandung kata "removed"
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
                 foreach ($data_column->getAttributes() as $column => $value) {
@@ -2584,10 +2605,9 @@ class QueryController extends Controller
                     }
                 }
             }
-
             $dataTable->removeColumn($remove_column);
 
-            // Add Ranking column
+            // Menambahkan kolom Ranking
             $rank = 1;
             $prevFinalScore = null;
             foreach ($dataTable->original as $data_column) {
@@ -2598,7 +2618,6 @@ class QueryController extends Controller
                 $prevFinalScore = $data_column->final_score;
             }
 
-
             return $dataTable->toJson();
         } catch (Exception $e) {
             return response()->json([
@@ -2606,6 +2625,9 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
+
+
     public function coba()
     {
         try {

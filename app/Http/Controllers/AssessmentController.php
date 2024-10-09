@@ -732,7 +732,7 @@ class AssessmentController extends Controller
             ->select('pvt_event_teams.id as id_event_team', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id as id_point', 'point', DB::raw('ROUND(AVG(score),2) as average_score'))
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
-            ->where('pvt_assesment_team_judges.stage', 'caucus')
+            ->where('pvt_assesment_team_judges.stage', 'presentation')
             ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')
             ->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1

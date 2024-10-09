@@ -260,8 +260,6 @@
         <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
             crossorigin="anonymous"></script>
-        <script src="js/datatables/datatables-simple-demo.js"></script>
-        <script src="js/scripts.js"></script>
         <script type="">
     function initializeDataTable(columns) {
 
@@ -377,24 +375,25 @@
 
 
     function scoreBOD(pvt_event_teams_id, val_peringkat, total_score_event) {
-    $.ajax({
-        headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        type: 'POST',
-        url: '{{ route('assessment.keputusanBOD') }}',
-        data: {
-            pvt_event_teams_id: pvt_event_teams_id,
-            val_peringkat: val_peringkat,
-            total_score_event: total_score_event
-        },
-        success: function(data) {
-            console.log('Data sent successfully!');
-        },
-        error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-        }
-    });
+        console.log(pvt_event_teams_id);
+    // $.ajax({
+    //     headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //     },
+    //     type: 'POST',
+    //     url: '{{ route('assessment.keputusanBOD') }}',
+    //     data: {
+    //         pvt_event_teams_id: pvt_event_teams_id,
+    //         val_peringkat: val_peringkat,
+    //         total_score_event: total_score_event
+    //     },
+    //     success: function(data) {
+    //         console.log('Data sent successfully!');
+    //     },
+    //     error: function(xhr, status, error) {
+    //             console.error(xhr.responseText);
+    //     }
+    // });
 }
 
     function setSummaryPPT(team_id){

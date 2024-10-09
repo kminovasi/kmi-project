@@ -2282,6 +2282,7 @@ class QueryController extends Controller
                 ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', '!=', 'tidak lolos Presentation')
+                ->where('pvt_event_teams.status', '!=', 'tidak lolos On Desk')
                 ->where('pvt_assessment_events.status_point', 'active')
                 ->where('pvt_assesment_team_judges.stage', 'caucus');
 
@@ -2351,8 +2352,8 @@ class QueryController extends Controller
 
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
-                Log::debug($data_row['status(removed)']);
-                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'Caucus')
+                Log::debug($data_row);
+                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] === 'Caucus')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else
                     return '-';
@@ -2479,6 +2480,7 @@ class QueryController extends Controller
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
+
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Total';
@@ -2489,13 +2491,17 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score Keputusan BOD';
             $dataTable->addColumn('Score Keputusan BOD', function ($data_row) {
-                return '<input type="hidden" id="text-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_teams_id[]" value="' . $data_row['event_team_id(removed)'] . '">
-                <input class="form-control small-input"  value="0" type="number" name="val_peringkat[]" min="-100" max="100">
-                <br>
-                <button type="submit" class="btn btn-sm btn-primary" onclick="scoreBOD(' . $data_row['event_team_id(removed)'] . ', $(\'input[name="val_peringkat[]"]\').val(), $(\'input[name="total_score_event[]"]\').val()); return false;">Submit</button>
-                ';
-                // Input BOD
+                return '
+                <form method="post" action="' . route('assessment.updateScoreKeputusanBOD') . '">
+                    ' . csrf_field() . '
+                    ' . method_field('PUT') . '
+                    <input type="hidden" value=\'' . json_encode($data_row) . '\' name="selected_data_team" />
+                    <input class="form-control small-input" value="0" type="number" name="val_peringkat" min="0" max="1000">
+                    <br>
+                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                </form>';
             });
+
 
             $rawColumns[] = 'Summary';
             $dataTable->addColumn('Summary', function ($data_row) {

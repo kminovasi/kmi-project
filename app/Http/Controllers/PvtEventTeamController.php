@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PvtEventTeam;
+use App\Models\SummaryExecutive;
 use Illuminate\Http\Request;
 use Log;
 
@@ -21,10 +22,16 @@ class PvtEventTeamController extends Controller
         $event_team_id = $selected_data_team['event_team_id(removed)'] ?? null;
 
         $pvtEventTeamItem = PvtEventTeam::findOrFail($event_team_id);
-        $pvtEventTeamItem->update([
-            'final_score' => $request->val_peringkat
-        ]);
-        return redirect()->route('assessment.presentasiBOD')->with('success', 'keputusan score berhasil di ubah');
+        $summaryExecutive = SummaryExecutive::where('pvt_event_teams_id', $event_team_id)->first();
+        if($summaryExecutive->file_ppt !== null){
+            $pvtEventTeamItem->update([
+                'final_score' => $request->val_peringkat,
+                'status' => 'Juara',
+            ]);
+            return redirect()->route('assessment.presentasiBOD')->with('success', 'keputusan score berhasil di ubah');
+        }else{
+            return redirect()->route('assessment.presentasiBOD')->withErrors('Error : Silahkan upload file summary terlebih dahulu');
+        }
     }
 
 }

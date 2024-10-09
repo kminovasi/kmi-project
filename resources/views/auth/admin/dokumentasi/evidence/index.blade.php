@@ -135,25 +135,54 @@
 
 <!-- Main page content -->
 <div class="container-xl px-4 mt-4">
-    <div class="mb-3">
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                {{ session('success') }}
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                @php
+                    $frames = [
+                        ['title' => 'PRODUK & BAHAN BAKU'],
+                        ['title' => 'TEKHNOLOGY & PROSES PRODUKSI'],
+                        ['title' => 'MANAGEMENT'],
+                        ['title' => 'GKM PLANT'],
+                        ['title' => 'GKM OFFICE'],
+                        ['title' => 'PKM PLANT'],
+                        ['title' => 'PKM OFFICE'],
+                        ['title' => 'SS PLANT'],
+                        ['title' => 'SS OFFICE'],
+                    ];
+                @endphp
+
+                @foreach ($frames as $frame)
+                    <div class="col-xl-4 mb-4">
+                        <a class="card h-100 lift border-start-lg border-start-secondary border-end-lg border-end-secondary" href="#">
+                            <div class="card-body d-flex flex-column" style="height: 8rem">
+                                <div class="m-auto">
+                                    <i class="feather-lg text-secondary mb-3" ></i>
+                                    <h5 class="text-secondary">{{ $frame['title'] }}</h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
             </div>
-        @endif
-    </div>
-    <div class="card mb-4">
-        <div class="card-body">
-            <table id="datatable-evidence" class="display">
-                <!-- DataTable content will be populated by JavaScript -->
-            </table>
+            <div class="row justify-content-center">
+                <div class="col-xl-4 mb-4">
+                    <a class="card h-100 lift border-start-lg border-start-secondary border-end-lg border-end-secondary" href="#">
+                        <div class="card-body d-flex flex-column" style="height: 8rem">
+                            <div class="m-auto">
+                                <i class="feather-lg text-secondary mb-3" ></i>
+                                <h5 class="text-primary">IDEA</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
-@push('js')
+{{-- @push('js')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
@@ -196,12 +225,12 @@
                 }
             },
             "columns": [
-                {"data": null,"title": "No","render": (data, type, row, meta) => meta.row + dataTable.page.info().start + 1},
+                {"data": "id_evidence", "title": "No", "render": function (data, type, row, meta)
+                {return meta.row + meta.settings._iDisplayStart + 1;}, },
                 {"data": "team_name", "title": "Nama Tim"},
                 {"data": "innovation_title", "title": "Judul Inovasi"},
                 {"data": "company_name", "title": "Perusahaan"},
                 {"data": "category_name", "title": "Kategori"},
-                {"data": "prestasi", "title": "Prestasi"},
                 {"data": "event_name", "title": "Nama Event"},
                 {"data": "name_employee", "title": "Ketua Inovasi"},
                 {"data": "email", "title": "Email"},
@@ -228,4 +257,4 @@
         });
     });
 </script>
-@endpush
+@endpush --}}

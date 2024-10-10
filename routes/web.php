@@ -283,9 +283,12 @@ Route::middleware('auth')->group(function () {
 
 
     // Evidence
-    Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidence.index');
-    Route::get('/evidence/{id}', [EvidenceController::class, 'list_winner'])->name('evidence.category');
-    Route::get('/evidence/teams', [EvidenceController::class, 'team_detail'])->name('evidence.detail');
+    Route::prefix('/evidence')->name('evidence.')->group(function () {
+        Route::get('/', [EvidenceController::class, 'index'])->name('index');
+        Route::get('/category/{id}', [EvidenceController::class, 'list_winner'])->name('category');
+        Route::get('/detail-team', [EvidenceController::class, 'team_detail'])->name('detail');
+    });
+
 
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {
         Route::get('/', [DokumentasiController::class, 'index'])->name('index');

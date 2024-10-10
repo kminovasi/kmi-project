@@ -20,16 +20,21 @@ class EvidenceController extends Controller
 
     function list_winner($id)
     {
-        // $teams = Team::where('category_id', $id)->get();
+        $categoryId = $id;
 
-        // $events = Event::all();
+        $winningTeams = \DB::table('teams')
+        ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+        ->join('papers', 'teams.id', '=', 'papers.team_id')
+        ->where('teams.category_id', $id)
+        ->get();
+
+        // dd($winningTeams);
 
         return view('auth.admin.dokumentasi.evidence.list-winner');
     }
 
     function team_detail()
     {
-        // $teams = Team::where('id', $id)->first();
 
         return view('auth.admin.dokumentasi.evidence.detail-team');
     }

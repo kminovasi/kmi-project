@@ -200,12 +200,11 @@
 
                     @foreach ($categories as $category)
                         <div class="col-xl-4 mb-4">
-                            <a class="card h-100 lift border-start-lg border-start-secondary border-end-lg border-end-secondary"
+                            <a class="card h-100 lift border-start-lg border-start-red border-end-lg border-end-red"
                                 href="{{ route('evidence.category', $category->id) }}">
                                 <div class="card-body d-flex flex-column" style="height: 8rem">
                                     <div class="m-auto">
-                                        <i class="feather-lg text-secondary mb-3"></i>
-                                        <h5 class="text-secondary">{{ $category->category_name }}</h5>
+                                        <h5 class="text-black text-center">{{ $category->category_name }}</h5>
                                     </div>
                                 </div>
                             </a>

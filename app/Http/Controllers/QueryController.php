@@ -2377,6 +2377,8 @@ class QueryController extends Controller
             $data_category = $data_category->get()
                 ->toArray();
 
+            $categoryid = array_column($data_category, 'id');
+
             $searchidea = array_column($data_category, 'category_parent');
             if (in_array("IDEA BOX", $searchidea)) {
                 $category_parent = 'IDEA';
@@ -2404,7 +2406,6 @@ class QueryController extends Controller
             ];
             if (count($arr_event_id)) {
                 $arr_select_case[] = DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"Total(removed)\"");
-                $arr_select_case[] = DB::raw("DENSE_RANK() OVER (ORDER BY ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC) AS \"Ranking\"");
             }
 
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -2424,7 +2425,43 @@ class QueryController extends Controller
                 ->select($arr_select_case);
 
 
+
+
             $dataTable = DataTables::of($data_row->get());
+
+            $rawColumns[] = 'Ranking';
+            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+
+                // Mengambil data tim berdasarkan total_score_caucus per kategori
+                $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                    ->join('categories', 'categories.id', '=', 'teams.category_id')
+                    ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
+                    ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
+                    ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
+                    ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
+                    ->select(DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score ASC) AS \"Ranking\""), // Menghitung ranking per kategori
+                             'pvt_event_teams.id as id',
+                             'pvt_event_teams.final_score',
+                             'categories.id as category_id')  // Menambahkan kategori ke dalam hasil
+                    ->get()
+                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
+                    ->toArray();
+
+
+
+                // Cek apakah total_score_presentation null atau 0
+                $eventTeamId = $data_row['event_team_id(removed)'];
+                if (!isset($data_total[$eventTeamId]) || $data_total[$eventTeamId]['final_score'] == 0) {
+                    return 'belum dinilai'; // Kembalikan jika belum ada penilaian atau nilai 0
+                }
+
+                Log::debug('Data sebelum ranking:', $data_total);
+                Log::debug('Total FInal Score: ' . $data_total[$eventTeamId]['final_score']);
+                Log::debug('Ranking: ' . $data_total[$eventTeamId]['Ranking']);
+
+                // Kembalikan ranking untuk event_team_id saat ini
+                return $data_total[$eventTeamId]['Ranking'];
+            });
 
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) {

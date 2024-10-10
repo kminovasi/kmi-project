@@ -2419,7 +2419,7 @@ class QueryController extends Controller
                 ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
-                ->where('pvt_assesment_team_judges.stage', 'presentation')
+                ->where('pvt_assesment_team_judges.stage', 'caucus')
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 

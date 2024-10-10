@@ -10,31 +10,36 @@ use Illuminate\Http\Request;
 
 class EvidenceController extends Controller
 {
+
     function index()
     {
         $categories = Category::all();
 
-        return view('auth.admin.dokumentasi.evidence.index' , compact('categories'));
+        return view('auth.admin.dokumentasi.evidence.index', compact('categories'));
     }
 
 
     function list_winner($id)
     {
-        $categoryId = $id;
-        // $eventId = 50; // get event id from request
+        $eventId = 50; // get event id from request
 
         $winningTeams = \DB::table('teams')
-        ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-        ->join('papers', 'teams.id', '=', 'papers.team_id')
-        ->where('teams.category_id', $id)
-        // ->when($eventId, function ($query, $eventId) {
-        //     return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
-        // })
-        ->get();
+            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->where('teams.category_id', $id)
+            ->when($eventId, function ($query, $eventId) {
+                return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
+            })
+            ->select('teams.id as team_id', 'teams.team_name', 'teams.company_code', 'pvt_event_teams.final_score', 'papers.innovation_title')
+            ->get();
 
-        dd($winningTeams);
+        $events = Event::where('status', 'finish')
+            ->select('id', 'event_name', 'year')
+            ->get();
 
-        return view('auth.admin.dokumentasi.evidence.list-winner');
+        // dd($winningTeams);
+
+        return view('auth.admin.dokumentasi.evidence.list-winner', compact('winningTeams', 'events'));
     }
 
     function team_detail()
@@ -42,5 +47,4 @@ class EvidenceController extends Controller
 
         return view('auth.admin.dokumentasi.evidence.detail-team');
     }
-
 }

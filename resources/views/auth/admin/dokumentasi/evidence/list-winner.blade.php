@@ -28,40 +28,46 @@
     <div class="container-xl px-4 mt-4">
 
         <select class="form-select form-select-md mb-4" aria-label="Small select example">
-            <option selected>Select Event Name</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            @foreach ($events as $event)
+                <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
+            @endforeach
         </select>
 
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card px-4">
-                    <table class="table">
-                        <thead>
+            <div class="card px-4 py-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Nama Team</th>
+                            <th scope="col">Judul Paper</th>
+                            <th scope="col">Final Score</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        @if ($winningTeams->count() > 0)
+                            @foreach ($winningTeams as $teams)
+                                <tr>
+                                    <th scope="row">{{ $loop->iteration }}</th>
+                                    <td>{{ $teams->team_name }}</td>
+                                    <td>{{ $teams->innovation_title }}</td>
+                                    <td>{{ $teams->final_score }}</td>
+                                    <td>
+                                        <a href="{{ route('evidence.detail') }}">Lihat Detail</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
                             <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Nama Team</th>
-                                <th scope="col">Judul Paper</th>
-                                <th scope="col">Juara</th>
-                                <th scope="col">Action</th>
+                                <td class="text-center" colspan="5">Data tidak ditemukan</td>
                             </tr>
-                        </thead>
-                        <tbody class="table-group-divider">
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Test Team</td>
-                                <td>Tata Cara Masuk Islam</td>
-                                <td>1</td>
-                                <td>
-                                    <a href="{{ route('evidence.detail') }}">Lihat Detail</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="pagination">
-                        {{-- {{ $winners->links() }}  <!-- Ini akan menampilkan navigasi pagination --> --}}
-                    </div>
+                        @endif
+
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    {{-- {{ $winners->links() }}  <!-- Ini akan menampilkan navigasi pagination --> --}}
                 </div>
             </div>
 

@@ -1333,20 +1333,29 @@ class AssessmentController extends Controller
     }
     public function summaryPPT(Request $request)
     {
-        dd($request->all());
         try {
             DB::beginTransaction();
 
-            //update PPT
+            // Ambil id summary dari request
             $idSummary = $request->input('id');
             $filePpt = $request->file('file_ppt');
+
+            // Cari data summary berdasarkan id
+            $upPPT = SummaryExecutive::findOrFail($idSummary);
+
+            // Cek apakah file PPT lama ada dan hapus jika ada
+            if ($upPPT->file_ppt && Storage::disk('public')->exists($upPPT->file_ppt)) {
+                Storage::disk('public')->delete($upPPT->file_ppt);
+            }
+
+            // Upload file PPT baru
             $file = $filePpt->storeAs(
                 'summary_executive/file_ppt',
                 Str::slug(pathinfo($filePpt->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $filePpt->getClientOriginalExtension(),
                 'public'
             );
 
-            $upPPT = SummaryExecutive::findOrFail($idSummary);
+            // Update path file PPT di database
             $upPPT->file_ppt = $file;
             $upPPT->save();
 
@@ -1355,6 +1364,7 @@ class AssessmentController extends Controller
             DB::rollback();
             return redirect()->route('assessment.presentasiBOD')->withErrors('Error: ' . $e->getMessage());
         }
+
         return redirect()->route('assessment.presentasiBOD')->with('success', 'PDF berhasil di update');
     }
 
@@ -1554,23 +1564,18 @@ class AssessmentController extends Controller
 
     public function keputusanBOD(Request $request)
     {
-        $data = $request->only(['pvt_event_teams_id', 'val_peringkat', 'total_score_event']);
+        $data = $request->only(['pvt_event_team_id', 'total_score_event']);
         DB::beginTransaction();
         try {
-            foreach ($data['pvt_event_teams_id'] as $index => $eventTeamId) {
-                // dd($data['total_score_event'][$index]+$data['val_peringkat'][$index]);
+            foreach ($data['pvt_event_team_id'] as $index => $eventTeamId) {
+                $updateStatus = PvtEventTeam::findOrFail($eventTeamId);
                 KeputusanBod::updateOrCreate(
                     ['pvt_event_teams_id' => $eventTeamId],
-                    ['val_peringkat' => $data['total_score_event'][$index] + $data['val_peringkat'][$index]]
+                    ['val_peringkat' => $updateStatus->final_score]
                 );
-                $updateStatus = PvtEventTeam::findOrFail($eventTeamId);
                 $updateStatus->status = 'Juara';
-                $updateStatus->final_score = $data['val_peringkat'][$index] + $data['total_score_event'][$index];
                 $updateStatus->save();
             }
-
-            //update status pvt_event_team
-            // $pvt_event_id = $data['pvt_event_teams_id'];
 
             DB::commit();
         } catch (\Exception $e) {
@@ -1633,10 +1638,6 @@ class AssessmentController extends Controller
         return $totalAverageScore;
 
     }
-
-
-
-
 
 
 }

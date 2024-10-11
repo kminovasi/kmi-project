@@ -1101,31 +1101,6 @@ class QueryController extends Controller
             });
 
 
-            // $rawColumns[] = 'Jumlah Juri Sudah Menilai';
-            // $dataTable->addColumn('jumlah_juri', function ($data_row) {
-
-
-            //     // Ambil data juri dari tabel pvt_assesment_team_judges
-            //     $jumlah_juri = DB::table('pvt_assesment_team_judges')
-            //                     ->where('event_team_id', $data_row->event_team_id)
-            //                     ->whereNotNull('score') // Filter untuk hanya menghitung juri yang sudah memberikan nilai
-            //                     ->distinct('judge_id') // Mengambil nilai yang unik dari judge_id
-            //                     ->count(); // Menghitung jumlah juri
-
-            //     // Ambil total jumlah juri untuk event ini
-            //     $total_juri = DB::table('pvt_assesment_team_judges')
-            //                     ->where('event_team_id', $data_row->event_team_id)
-            //                     ->distinct('judge_id')
-            //                     ->count();
-
-            //     // Gabungkan jumlah juri yang telah memberikan nilai dan total jumlah juri sebagai string
-            //     $display_text = "$jumlah_juri dari $total_juri";
-
-            //     return $display_text;
-            // });
-
-
-
 
 
             $rawColumns[] = 'action';
@@ -1148,62 +1123,6 @@ class QueryController extends Controller
                     return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                 }
             });
-
-
-
-            // $rawColumns[] = 'fix';
-            // $dataTable->addColumn('fix', function ($data_row) {
-            //     if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' && $data_row['status(removed)'] == 'On Desk')
-            //         return '<input class="form-check" type="checkbox" id="checkbox-'. $data_row['event_team_id(removed)'] .'" name="pvt_event_team_id[]" value="'. $data_row['event_team_id(removed)'] .'">';
-            //     else
-            //         return '-';
-            // });
-
-            // $rawColumns[] = 'action';
-            // $dataTable->addColumn('action', function ($data_row) {
-            //     // Periksa peran pengguna dan status data
-            //     if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Juri' && $data_row['status(removed)'] == 'On Desk') {
-            //         // Periksa jika skor kosong
-            //         if ($data_row['score_kosong(removed)'] == 0) {
-            //             // Jika skor tidak kosong, tampilkan tombol "Input Penilaian"
-            //             return "<a class=\"btn btn-red btn-xs\" href=\"" . route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Input Penilaian</a>";
-            //         } else {
-            //             // Jika skor kosong, tampilkan tombol "Lihat SOFI"
-            //             return "<a class=\"btn btn-primary btn-xs\" href=\"" . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //         }
-            //     } else {
-            //         // Jika pengguna bukan Admin, Superadmin, atau Juri, atau status data bukan "On Desk", tampilkan tombol "Lihat SOFI"
-            //         return "<a class=\"btn btn-info btn-xs disabled\" href=\"" . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //     }
-            // });
-            // $dataTable->addColumn('action', function ($data_row) {
-            //     if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Juri' && $data_row['status(removed)'] == 'On Desk') {
-            //         if($data_row['score_kosong(removed)'] == 0) {
-            //             return "<a class=\"btn btn-red btn-xs\" href=\" " . route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Input Penilaian</a>";
-            //         } else {
-            //             return "<a class=\"btn btn-primary btn-xs\" href=\" " . route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Input Penilaian</a>";
-            //         }
-            //     } elseif($data_row['status(removed)'] == 'Sudah Disetujui') {
-            //         return "<a class=\"btn btn-info btn-xs\" href=\" " . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //     } else {
-            //         return "<a class=\"btn btn-info btn-xs disabled\" href=\"#\" disabled>Lihat SOFI</a>";
-            //     }
-            // });
-
-            // $dataTable->addColumn('action', function ($data_row) {
-            //         if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Juri' && $data_row['status(removed)'] == 'On Desk'){
-            //             if($data_row['score_kosong(removed)'] == 0){
-            //                 return "<a class=\"btn btn-red btn-xs\" href=\" " . route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Input Penilaian</a>
-            //                         <a class=\"btn btn-info btn-xs\" href=\" " . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //             }else{
-            //                 return "<a class=\"btn btn-primary btn-xs\" href=\" " . route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Input Penilaian</a>
-            //                         <a class=\"btn btn-info btn-xs\" href=\" " . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //             }
-
-            //         }else{
-            //             return "<a class=\"btn btn-info btn-xs\" href=\" " . route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]) . "\">Lihat SOFI</a>";
-            //         }
-            // });
 
 
             $dataTable->rawColumns($rawColumns);
@@ -2404,26 +2323,25 @@ class QueryController extends Controller
                 DB::raw('MIN(val_peringkat) as "val_peringkat(removed)"'),
                 DB::raw('MIN(summary_executives.file_ppt) AS "file_ppt(removed)"'),
                 'pvt_event_teams.id AS event_team_id(removed)',
+                'pvt_event_teams.status AS status', // Tambahkan kolom status
             ];
-            if (count($arr_event_id)) {
-                $arr_select_case[] = DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"Total(removed)\"");
-            }
 
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->join('themes', 'themes.id', '=', 'teams.theme_id')
-                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                ->leftJoin('keputusan_bods', 'keputusan_bods.pvt_event_teams_id', '=', 'pvt_event_teams.id')
-                ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                ->join('pvt_assessment_events', function ($join) {
-                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                })
-                ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
-                ->where('pvt_event_teams.event_id', $request->filterEvent)
-                ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
-                ->where('pvt_assesment_team_judges.stage', 'caucus')
-                ->groupBy('pvt_event_teams.id')
-                ->select($arr_select_case);
+            ->join('categories', 'categories.id', '=', 'teams.category_id')
+            ->join('themes', 'themes.id', '=', 'teams.theme_id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->leftJoin('keputusan_bods', 'keputusan_bods.pvt_event_teams_id', '=', 'pvt_event_teams.id')
+            ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+            ->join('pvt_assessment_events', function ($join) {
+                $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+            })
+            ->join('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
+            ->where('pvt_event_teams.event_id', $request->filterEvent)
+            ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
+            ->where('pvt_assesment_team_judges.stage', 'caucus')
+            ->whereIn('teams.category_id', $categoryid) // Filter berdasarkan kategori
+            ->groupBy('pvt_event_teams.id')
+            ->select($arr_select_case);
 
 
 
@@ -2479,16 +2397,31 @@ class QueryController extends Controller
                 </form>';
             });
 
+            $rawColumns[] = 'fix';
+            $dataTable->addColumn('fix', function ($data_row) {
+                Log::debug($data_row);
+                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status'] === 'Presentation BOD')
+                    return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                else
+                    return '-';
+            });
+
+
 
             $rawColumns[] = 'Summary';
             $dataTable->addColumn('Summary', function ($data_row) {
                 $filePath = $data_row['file_ppt(removed)'];
 
                 // Generate the file URL
-                $fileUrl = Storage::url($filePath);
 
-                return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>'
-                    . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
+                if($filePath !== null){
+                    $fileUrl = Storage::url($filePath);
+                    return '<button class="btn btn-green btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;Edit Summary</button>'
+                        . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
+                }else{
+                    return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>';
+                }
+
             });
 
             $dataTable->rawColumns($rawColumns);

@@ -26,7 +26,6 @@ class PvtEventTeamController extends Controller
         if($summaryExecutive->file_ppt !== null){
             $pvtEventTeamItem->update([
                 'final_score' => $request->val_peringkat,
-                'status' => 'Juara',
             ]);
             return redirect()->route('assessment.presentasiBOD')->with('success', 'keputusan score berhasil di ubah');
         }else{

@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class EvidenceController extends Controller
 {
-
     function index()
     {
         $categories = Category::all();
@@ -26,20 +25,23 @@ class EvidenceController extends Controller
         $winningTeams = \DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
             ->where('teams.category_id', $id)
-            ->when($eventId, function ($query, $eventId) {
-                return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
-            })
-            ->select('teams.id as team_id', 'teams.team_name', 'teams.company_code', 'pvt_event_teams.final_score', 'papers.innovation_title')
+            ->where('events.status', 'finish')
             ->get();
+
+        //     ->when($eventId, function ($query, $eventId) {
+        //         return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
+        //     })
+        // //     ->select('teams.id as team_id', 'teams.team_name', 'teams.company_code', 'pvt_event_teams.final_score', 'papers.innovation_title')
 
         $events = Event::where('status', 'finish')
             ->select('id', 'event_name', 'year')
             ->get();
 
-        // dd($winningTeams);
+        dd($winningTeams);
 
-        return view('auth.admin.dokumentasi.evidence.list-winner', compact('winningTeams', 'events'));
+        return view('auth.admin.dokumentasi.evidence.list-innovations' , compact('winningTeams'));
     }
 
     function team_detail()

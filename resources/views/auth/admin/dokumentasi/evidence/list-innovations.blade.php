@@ -28,9 +28,9 @@
     <div class="container-xl px-4 mt-4">
 
         <select class="form-select form-select-md mb-4" aria-label="Small select example">
-            @foreach ($events as $event)
+            {{-- @foreach ($events as $event)
                 <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
-            @endforeach
+            @endforeach --}}
         </select>
 
         <div class="row">
@@ -39,30 +39,30 @@
                     <thead>
                         <tr>
                             <th scope="col">No</th>
-                            <th scope="col">Nama Team</th>
                             <th scope="col">Judul Paper</th>
-                            <th scope="col">Final Score</th>
-                            <th scope="col">Action</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col">Download</th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
-                        @if ($winningTeams->count() > 0)
-                            @foreach ($winningTeams as $teams)
+                        {{-- @if ($winningTeams->count() > 0)
+                            @foreach ($winningTeams as $teams) --}}
                                 <tr>
-                                    <th scope="row">{{ $loop->iteration }}</th>
-                                    <td>{{ $teams->team_name }}</td>
-                                    <td>{{ $teams->innovation_title }}</td>
-                                    <td>{{ $teams->final_score }}</td>
+                                    <th scope="row">1</th>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     <td>
-                                        <a href="{{ route('evidence.detail') }}">Lihat Detail</a>
+
                                     </td>
                                 </tr>
-                            @endforeach
+                            {{-- @endforeach
                         @else
                             <tr>
                                 <td class="text-center" colspan="5">Data tidak ditemukan</td>
                             </tr>
-                        @endif
+                        @endif --}}
 
                     </tbody>
                 </table>

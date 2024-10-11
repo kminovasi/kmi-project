@@ -2479,16 +2479,30 @@ class QueryController extends Controller
                 </form>';
             });
 
+            $rawColumns[] = 'fix';
+            $dataTable->addColumn('fix', function ($data_row) {
+                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'Presentation BOD')
+                    return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                else
+                    return '-';
+            });
+
+
 
             $rawColumns[] = 'Summary';
             $dataTable->addColumn('Summary', function ($data_row) {
                 $filePath = $data_row['file_ppt(removed)'];
 
                 // Generate the file URL
-                $fileUrl = Storage::url($filePath);
 
-                return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>'
-                    . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
+                if($filePath !== null){
+                    $fileUrl = Storage::url($filePath);
+                    return '<button class="btn btn-green btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;Edit Summary</button>'
+                        . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View PDF</a>';
+                }else{
+                    return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PDF</button>';
+                }
+
             });
 
             $dataTable->rawColumns($rawColumns);

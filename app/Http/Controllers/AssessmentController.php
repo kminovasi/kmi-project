@@ -1333,7 +1333,7 @@ class AssessmentController extends Controller
     }
     public function summaryPPT(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         try {
             DB::beginTransaction();
 

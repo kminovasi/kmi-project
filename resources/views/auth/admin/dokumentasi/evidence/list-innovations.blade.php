@@ -64,7 +64,8 @@
                     <select name="theme" class="form-select form-select-sm">
                         <option value="">-- Pilih theme --</option>
                         @foreach ($themes as $theme)
-                            <option value="{{ $theme->id }}" {{ request('theme') == $theme->theme_name ? 'selected' : '' }}>
+                            <option value="{{ $theme->id }}"
+                                {{ request('theme') == $theme->theme_name ? 'selected' : '' }}>
                                 {{ $theme->theme_name }}
                             </option>
                         @endforeach
@@ -115,10 +116,11 @@
                                             @if ($paper->is_best_of_the_best == false)
                                                 {{ $paper->status }}
                                             @else
-                                                <span class="p-1 m-1 rounded-pill bg-warning text-white">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                                    data-bs-title="Best of The Best">
                                                     <i class="fas fa-trophy" aria-hidden="true"></i>
-                                                </span>
-                                                Best of The Best
+                                                </button>
                                             @endif
 
                                         </td>

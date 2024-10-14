@@ -271,18 +271,26 @@ class BeritaAcaraController extends Controller
         $mpdf->WriteHTML($html);
         $content = $mpdf->Output('', 'S');
 
+        $filename = str_replace(' ', '_', $data->event_name) . '_Berita_Acara.pdf';
+
         return response($content)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="filename.pdf"');
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+
     }
     public function downloadPDF($id)
-    {
-        $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4-P']);
+{
+    $data = BeritaAcara::join('events', 'berita_acaras.event_id', 'events.id')
+            ->where('berita_acaras.id', $id)
+            ->select('berita_acaras.*', 'events.event_name')
+            ->first();
 
-        $html = view('auth.admin.berita-acara.pdf')->render();
+    $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4-P']);
+    $html = view('auth.admin.berita-acara.pdf', compact('data'))->render();
+    $mpdf->WriteHTML($html);
 
-        $mpdf->WriteHTML($html);
+    $filename = str_replace(' ', '_', $data->event_name) . '_Berita_Acara.pdf';
+    $mpdf->Output($filename, 'D');
+}
 
-        $mpdf->Output('filename.pdf', 'D');
-    }
 }

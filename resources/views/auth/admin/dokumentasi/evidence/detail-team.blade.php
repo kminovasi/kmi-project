@@ -51,7 +51,7 @@
                 <p><strong>Presentation</strong> : {{ $paper->total_score_presentation }}</p>
                 <p><strong>Caucus</strong> : {{ $paper->total_score_caucus }}</p>
                 <p><strong>Final Score</strong> : {{ $paper->final_score }}</p>
-                <p><strong>Is Best Of The Best</strong> : {{ $paper->is_best_of_the_best }}</p>
+                <p><strong>Best Of The Best</strong> : {{ $paper->is_best_of_the_best }}</p>
             </div>
         </div>
 

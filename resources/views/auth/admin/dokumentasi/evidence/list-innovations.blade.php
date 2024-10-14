@@ -116,7 +116,7 @@
                                             @if ($paper->is_best_of_the_best == false)
                                                 {{ $paper->status }}
                                             @else
-                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip"
+                                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                                     data-bs-title="Best of The Best">
                                                     <i class="fas fa-trophy" aria-hidden="true"></i>

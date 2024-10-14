@@ -190,19 +190,24 @@ class PvtEventTeamController extends Controller
         $selectedTeams = $request->input('pvt_event_team_id');
 
         // Check if there are selected teams
-        if (empty($selectedTeams)) {
-            return response()->json(['message' => 'No teams selected.'], 400);
+        if (empty($selectedTeams) || count($selectedTeams) !== 1) {
+            return response()->json(['message' => 'Please select exactly one team.'], 400);
         }
 
         try {
-            // Update the selected teams to mark them as best of the best
+            // First, set all existing "Best of the Best" teams to false
+            PvtEventTeam::where('is_best_of_the_best', true)
+                ->update(['is_best_of_the_best' => false]);
+
+            // Now, update the selected team to mark it as the best of the best
             PvtEventTeam::whereIn('id', $selectedTeams)
                 ->update(['is_best_of_the_best' => true]);
 
-            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Team berhasil di pilih menjadi best of the best');
+            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Team berhasil dipilih menjadi Best of the Best');
         } catch (\Exception $e) {
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->withErrors('Error: ' . $e->getMessage());
         }
     }
+
 
 }

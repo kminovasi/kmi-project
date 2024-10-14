@@ -198,12 +198,12 @@
 
                             <div class="mb-3">
                                 <h6 class="small mb-1">Upload Foto Tim (Resmi)</h6>
-                                <input type="file" name="proof_idea" class="form-control">
+                                <input type="file" name="proof_idea" class="form-control" accept="image/*" >
                             </div>
 
                             <div class="mb-3">
                                 <h6 class="small mb-1">Upload Foto Produk Inovasi</h6>
-                                <input type="file" name="innovation_photo" class="form-control">
+                                <input type="file" name="innovation_photo" class="form-control" accept="image/*">
                             </div>
 
                             <!-- Save changes button-->

@@ -997,18 +997,12 @@ class QueryController extends Controller
                 $data_category->where('id', $request->filterCategory);
             } else {
                 $data_category->where('category_parent', '<>', 'IDEA BOX');
-                // $data_category->where('id', 2);
             }
-            $data_category = $data_category->get()
-                ->toArray();
+            $data_category = $data_category->get()->toArray();
             $categoryid = array_column($data_category, 'id');
             $searchidea = array_column($data_category, 'category_parent');
-            if (in_array("IDEA BOX", $searchidea)) {
-                $category_parent = 'IDEA';
-            } else {
-                $category_parent = 'BI/II';
-            }
-            // dd($category_parent);
+            $category_parent = in_array("IDEA BOX", $searchidea) ? 'IDEA' : 'BI/II';
+
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                 ->where('category', $category_parent)
                 ->where('status_point', 'active')
@@ -1016,7 +1010,7 @@ class QueryController extends Controller
                 ->select('id', 'pdca', 'point')
                 ->get()
                 ->toArray();
-            // dd($arr_event_id);
+
             $arr_select_case = [
                 DB::raw('MIN(team_name) as Tim'),
                 DB::raw('MIN(innovation_title) as Judul'),
@@ -1036,12 +1030,9 @@ class QueryController extends Controller
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
                 ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
                 ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                // ->join('bod_event_values', 'bod_event_values.event_team_id', '=', 'pvt_event_teams.id')
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                    //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
                 })
-                // ->where('categories.id', $request->filterCategory)
                 ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_assessment_events.status_point', 'active')
@@ -1051,29 +1042,30 @@ class QueryController extends Controller
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                     ->where('judges.employee_id', auth()->user()->employee_id);
             }
-            // ->where('pvt_assessment_events.year', $request->filterYear)
-            $data_row->groupBy('pvt_event_teams.id')
-                ->select($arr_select_case);
+
+            $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
 
             $dataTable = DataTables::of($data_row->get());
 
-            // Function to insert <br> after every 15 characters
+            // Function to insert <br> after every specified number of characters
             function insertLineBreaks($string, $length = 15)
             {
                 return implode('<br>', str_split($string, $length));
             }
 
-            // In your existing code
             if (count($arr_event_id)) {
                 for ($i = 0; $i < count($arr_event_id); $i++) {
                     // Format the point with line breaks
-                    $formattedPoint = insertLineBreaks($arr_event_id[$i]['point']);
+                    $formattedPoint = insertLineBreaks($arr_event_id[$i]['point'], 15);
 
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $formattedPoint . "\"");
+                    // Format the pdca with line breaks for titles
+                    $formattedPdca = insertLineBreaks($arr_event_id[$i]['pdca'], 30);
 
-                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $formattedPoint;
+                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $formattedPdca . ") : " . $formattedPoint . "\"");
 
-                    $dataTable->addColumn("Penilaian <br>(" . $arr_event_id[$i]['pdca'] . ") :<br> " . $formattedPoint, function ($data_row) use ($i, $arr_event_id) {
+                    $rawColumns[] = "Penilaian (" . $formattedPdca . ") : " . $formattedPoint;
+
+                    $dataTable->addColumn("Penilaian <br>(" . $formattedPdca . ") :<br> " . $formattedPoint, function ($data_row) use ($i, $arr_event_id) {
                         $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                             ->where('pvt_assessment_events.status_point', 'active')
@@ -1135,7 +1127,6 @@ class QueryController extends Controller
                     return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                 }
             });
-
 
             $dataTable->rawColumns($rawColumns);
 

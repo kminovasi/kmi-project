@@ -2323,6 +2323,7 @@ class QueryController extends Controller
                 DB::raw('MIN(val_peringkat) as "val_peringkat(removed)"'),
                 DB::raw('MIN(summary_executives.file_ppt) AS "file_ppt(removed)"'),
                 'pvt_event_teams.id AS event_team_id(removed)',
+                'pvt_event_teams.status AS status',
             ];
 
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -2431,7 +2432,7 @@ class QueryController extends Controller
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
                 foreach ($data_column->getAttributes() as $column => $value) {
-                    if (strstr($column, "removed") !== false) {
+                    if (strstr($column, "removed") !== false || $column === 'status') {
                         $remove_column[] = $column;
                     }
                 }

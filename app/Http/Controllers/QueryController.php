@@ -2323,7 +2323,6 @@ class QueryController extends Controller
                 DB::raw('MIN(val_peringkat) as "val_peringkat(removed)"'),
                 DB::raw('MIN(summary_executives.file_ppt) AS "file_ppt(removed)"'),
                 'pvt_event_teams.id AS event_team_id(removed)',
-                'pvt_event_teams.status AS status', // Tambahkan kolom status
             ];
 
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -2339,7 +2338,7 @@ class QueryController extends Controller
             ->where('pvt_event_teams.event_id', $request->filterEvent)
             ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
             ->where('pvt_assesment_team_judges.stage', 'caucus')
-            ->whereIn('teams.category_id', $categoryid) // Filter berdasarkan kategori
+            ->whereIn('teams.category_id', $categoryid)
             ->groupBy('pvt_event_teams.id')
             ->select($arr_select_case);
 
@@ -2350,7 +2349,6 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Ranking';
             $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
-                // Mengambil data tim berdasarkan total_score_caucus per kategori
                 $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
@@ -2381,7 +2379,11 @@ class QueryController extends Controller
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) {
                 $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
-                return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
+                if($pvtEventTeam->final_score !== null){
+                    return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
+                }else{
+                    return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->total_score_caucus . '" readonly>';
+                }
             });
 
             $rawColumns[] = 'Score Keputusan BOD';

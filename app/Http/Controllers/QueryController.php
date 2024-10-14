@@ -2271,7 +2271,7 @@ class QueryController extends Controller
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
                 foreach ($data_column->getAttributes() as $column => $value) {
-                    if (strstr($column, "removed") !== false) {
+                    if (strstr($column, "removed") !== false || $column === "team_id") {
                         $remove_column[] = $column;
                     }
                 }

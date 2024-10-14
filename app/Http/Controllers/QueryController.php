@@ -2449,30 +2449,35 @@ class QueryController extends Controller
     public function get_penetapan_juara(Request $request)
     {
         try {
-            // Cek apakah filterCategory ada atau null
-            $data_category = Category::where('id', $request->filterCategory)
-                ->select('category_name', 'category_parent')
-                ->first();
+                 // Cek apakah filterCategory ada atau null
+                 $data_category = Category::select('id', 'category_name', 'category_parent');
+                 $data_category = $data_category->get()
+                 ->toArray();
 
-            // Jika tidak ada category yang dipilih (null), ambil semua data
-            if ($data_category) {
-                $category_type = ($data_category->category_parent == 'IDEA BOX') ? 'IDEA' : 'BI/II';
-                $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                    ->where('category', $category_type)
-                    ->where('status_point', 'active')
-                    ->where('stage', 'presentation')
-                    ->select('id', 'pdca', 'point')
-                    ->get()
-                    ->toArray();
-            } else {
-                // Jika category null, ambil semua kategori
-                $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                    ->where('status_point', 'active')
-                    ->where('stage', 'presentation')
-                    ->select('id', 'pdca', 'point')
-                    ->get()
-                    ->toArray();
-            }
+                 $data_category_first = Category::where('id', $request->filterCategory)
+                 ->select('category_name', 'category_parent', 'id')->first();
+
+                 // Jika tidak ada category yang dipilih (null), ambil semua data
+                 if ($data_category_first) {
+                     $category_type = ($data_category_first->category_parent == 'IDEA BOX') ? 'IDEA' : 'BI/II';
+                     $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                     ->where('category', $category_type)
+                     ->where('status_point', 'active')
+                     ->where('stage', 'presentation')
+                     ->select('id', 'pdca', 'point')
+                     ->get()
+                     ->toArray();
+             } else {
+                 // Jika category null, ambil semua kategori
+                 $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                     ->where('status_point', 'active')
+                     ->where('stage', 'presentation')
+                     ->select('id', 'pdca', 'point')
+                     ->get()
+                     ->toArray();
+             }
+
+             $categoryid = array_column($data_category, 'id');
 
             // Query untuk mengambil data tim dan skor
             $arr_select_case = [
@@ -2499,15 +2504,38 @@ class QueryController extends Controller
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
-            // Jika filterCategory tidak null, tambahkan filter untuk kategori
-            if ($request->filterCategory) {
-                $data_row->where('categories.id', $request->filterCategory);
-            }
+          // Jika filterCategory tidak null, tambahkan filter untuk kategori
+          if ($request->filterCategory) {
+            $data_row->where('categories.id', $request->filterCategory);
+        }
 
             // Urutkan berdasarkan MIN(category_name) dan final_score
             $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) // Gunakan alias dari SELECT
                 ->orderBy('final_score', 'desc') // Kemudian urutkan berdasarkan final_score
                 ->get());
+
+                $rawColumns[] = 'Ranking';
+                $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+                    $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                        ->join('categories', 'categories.id', '=', 'teams.category_id')
+                        ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
+                        ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
+                        ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
+                        ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
+                        ->select(DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""), // Menghitung ranking per kategori
+                                 'pvt_event_teams.id as id',
+                                 'pvt_event_teams.final_score',
+                                 'categories.id as category_id')  // Menambahkan kategori ke dalam hasil
+                        ->get()
+                        ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
+                        ->toArray();
+
+                    // Cek apakah total_score_presentation null atau 0
+                    $eventTeamId = $data_row['event_team_id(removed)'];
+
+                    // Kembalikan ranking untuk event_team_id saat ini
+                    return $data_total[$eventTeamId]['Ranking'];
+                });
 
             // Menghapus kolom yang mengandung kata "removed"
             $remove_column = [];
@@ -2519,17 +2547,6 @@ class QueryController extends Controller
                 }
             }
             $dataTable->removeColumn($remove_column);
-
-            // Menambahkan kolom Ranking
-            $rank = 1;
-            $prevFinalScore = null;
-            foreach ($dataTable->original as $data_column) {
-                if ($prevFinalScore !== null && $data_column->final_score < $prevFinalScore) {
-                    $rank++;
-                }
-                $data_column->ranking = $rank;
-                $prevFinalScore = $data_column->final_score;
-            }
 
             return $dataTable->toJson();
         } catch (Exception $e) {

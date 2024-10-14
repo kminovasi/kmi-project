@@ -116,7 +116,7 @@ class PvtEventTeamController extends Controller
             // Urutkan berdasarkan MIN(category_name) dan final_score
             $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) // Gunakan alias dari SELECT
                 ->orderBy('final_score', 'desc') // Kemudian urutkan berdasarkan final_score
-                ->get())->addIndexColumn();;
+                ->get())->addIndexColumn();
 
 
             $rawColumns[] = 'Ranking';

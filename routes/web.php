@@ -149,6 +149,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/get_event', [QueryController::class, 'get_event'])->name('get_event');
         Route::get('/get_bod_event', [QueryController::class, 'get_bod_event'])->name('get_bod_event');
         Route::get('/get_caucus', [QueryController::class, 'get_caucus'])->name('get_caucus');
+        Route::get('/getBestOfTheBest', [PvtEventTeamController::class, 'getBestOfTheBest'])->name('getBestOfTheBest');
         Route::get('/get_presentasi_bod', [QueryController::class, 'get_presentasi_bod'])->name('get_presentasi_bod');
         Route::get('/get_penetapan_juara', [QueryController::class, 'get_penetapan_juara'])->name('get_penetapan_juara');
         Route::get('/get_fasilitator', [QueryController::class, 'get_fasilitator'])->name('get_fasilitator');
@@ -194,9 +195,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/fix-eligible', [AssessmentController::class, 'eligible_fix'])->name('fix.eligible');
         Route::put('/to-caucus', [AssessmentController::class, 'to_caucus_fix'])->name('caucus');
         Route::get('/caucus', [AssessmentController::class, 'caucus'])->name('caucus.data');
+        Route::get('/best-of-the-best-team', [PvtEventTeamController::class, 'showDeterminingTheBestOfTheBestTeam'])->name('showDeterminingTheBestOfTheBestTeam');
         Route::post('/summaryExecutive', [AssessmentController::class, 'summaryExecutive'])->name('summaryExecutive');
         Route::put('/summaryExecutivePPT', [AssessmentController::class, 'summaryPPT'])->name('summaryPPT');
         Route::get('/presentasiBOD', [AssessmentController::class, 'presentasiBOD'])->name('presentasiBOD');
+
+        Route::put('/best-of-the-best', [PvtEventTeamController::class, 'determiningTheBestOfTheBestTeam'])->name('determiningTheBestOfTheBestTeam');
+
         Route::get('/penetapanJuara', [AssessmentController::class, 'penetapanJuara'])->name('penetapanJuara');
         Route::post('/addBODvalue', [AssessmentController::class, 'addBODvalue'])->name('addBODvalue');
         Route::post('/keputusanBOD', [AssessmentController::class, 'keputusanBOD'])->name('keputusanBOD');

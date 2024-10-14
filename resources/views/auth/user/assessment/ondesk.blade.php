@@ -274,7 +274,7 @@
         var dataTable = $('#datatable-competition').DataTable({
             "processing": true,
             "serverSide": true,
-            "responsive": true,
+            // "responsive": true,
             "dom": 'lBfrtip',
             "buttons": [
                 'excel', 'csv'
@@ -284,8 +284,6 @@
                 "type": "GET",
                 "async": false,
                 "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
                     return data.data;
                 },
                 "data": function (d) {
@@ -297,6 +295,12 @@
             "columns": columns,
             "scrollY": true,
             "scrollX": true,
+            "columnDefs": [{
+                "targets": [1, 2, 3, 4, 5], // Nomor kolom yang ingin dibungkus teksnya
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    $(td).css('white-space', 'normal');
+                }
+            }],
             "stateSave": true,
             "destroy": true
         });

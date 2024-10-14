@@ -115,8 +115,10 @@
                                             @if ($paper->is_best_of_the_best == false)
                                                 {{ $paper->status }}
                                             @else
-                                                <span class="p-2 rounded-pill bg-warning text-white"><i class="fa fa-trophy"
-                                                        aria-hidden="true"></i> Best of The Best</span>
+                                                <span class="p-2 rounded-pill bg-warning text-white">
+                                                    <i class="fa fa-trophy" aria-hidden="true"></i>
+                                                </span>
+                                                Best of The Best
                                             @endif
 
                                         </td>

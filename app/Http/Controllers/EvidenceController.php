@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\Paper;
 use App\Models\PvtEventTeam;
+use App\Models\PvtMember;
 use App\Models\Team;
 use Illuminate\Http\Request;
 
@@ -20,33 +22,51 @@ class EvidenceController extends Controller
 
     function list_winner($id)
     {
-        $eventId = 50; // get event id from request
 
-        $winningTeams = \DB::table('teams')
+        $papers = \DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->join('themes', 'teams.theme_id', '=', 'themes.id')
             ->where('teams.category_id', $id)
             ->where('events.status', 'finish')
+            ->select('papers.*', 'teams.team_name', 'pvt_event_teams.final_score', 'events.event_name', 'events.year', 'themes.theme_name')
             ->get();
+
+        // dd($papers);
 
         //     ->when($eventId, function ($query, $eventId) {
         //         return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
         //     })
-        // //     ->select('teams.id as team_id', 'teams.team_name', 'teams.company_code', 'pvt_event_teams.final_score', 'papers.innovation_title')
 
         $events = Event::where('status', 'finish')
             ->select('id', 'event_name', 'year')
             ->get();
 
-        dd($winningTeams);
+        // dd($papers);
 
-        return view('auth.admin.dokumentasi.evidence.list-innovations' , compact('winningTeams'));
+        return view('auth.admin.dokumentasi.evidence.list-innovations' , compact('papers'));
     }
 
-    function team_detail()
+    function paper_detail($id)
     {
 
-        return view('auth.admin.dokumentasi.evidence.detail-team');
+        $team = Team::findOrFail($id);
+        // Ambil tim berdasarkan team_id
+
+        $papers = \DB::table('teams')
+            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->join('themes', 'teams.theme_id', '=', 'themes.id')
+            ->where('papers.team_id', $id)
+            ->get();
+
+        // dd($papers);
+
+        $teamMember = $team->pvtMembers()->with('user')->get();
+
+
+        return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers'));
     }
 }

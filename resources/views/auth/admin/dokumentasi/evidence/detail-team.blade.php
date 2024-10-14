@@ -25,10 +25,46 @@
     </header>
 
     <div class="container-xl px-4 mt-4">
-        <div class="row">
+        @foreach ($papers as $paper)
 
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-header-title">Paper</h5>
+            </div>
+            <div class="card-body">
+                <p> <strong> Judul:</strong>  {{ $paper->innovation_title }}</p>
+                <p><strong>Tema:</strong> {{ $paper->theme_name }}</p>
+                <p><strong>Status Inovasi:</strong> {{ $paper->status_inovasi }}</p>
+                <p><strong>Potensi Replikasi:</strong> {{ $paper->potensi_replikasi }}</p>
+                <p><strong>Abstrak:</strong> {{ $paper->abstract }}</p>
+                <p><strong>Permasalahan:</strong> {{ $paper->problem }}</p>
+                <p><strong>Solusi:</strong> {{ $paper->solution }}</p>
+            </div>
+        </div>
 
+        <div class="card mb-4">
+            <div class="card-header text-black">
+                Benefit
+            </div>
+            <div class="card-body">
+                <p><strong>Financial:</strong> Rp {{ number_format($paper->financial, 0, ',', '.') }}</p>
+                <p><strong>Potential Benefit:</strong> Rp {{ number_format($paper->potential_benefit, 0, ',', '.') }}</p>
+                <p><strong>Non-Financial Impact:</strong> {{ $paper->non_financial }}</p>
+                <p><strong>Final Score:</strong> {{ $paper->final_score }}</p>
+            </div>
+        </div>
 
+        @endforeach
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-header-title">Anggota</h5>
+            </div>
+            <div class="card-body">
+                @foreach ($teamMember as $member )
+                <li>{{ $member->user->name }} {{ $member->status }}</li> <!-- Menampilkan nama anggota tim -->
+                @endforeach
+            </div>
         </div>
     </div>
 

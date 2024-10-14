@@ -286,7 +286,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/evidence')->name('evidence.')->group(function () {
         Route::get('/', [EvidenceController::class, 'index'])->name('index');
         Route::get('/category/{id}', [EvidenceController::class, 'list_winner'])->name('category');
-        Route::get('/detail-team', [EvidenceController::class, 'team_detail'])->name('detail');
+        Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
     });
 
 

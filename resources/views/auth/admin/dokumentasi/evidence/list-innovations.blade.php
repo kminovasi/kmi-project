@@ -35,37 +35,52 @@
 
         <div class="row">
             <div class="card px-4 py-4">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">Judul Paper</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                            <th scope="col">Download</th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
-                        {{-- @if ($winningTeams->count() > 0)
-                            @foreach ($winningTeams as $teams) --}}
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>
-
-                                    </td>
-                                </tr>
-                            {{-- @endforeach
-                        @else
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td class="text-center" colspan="5">Data tidak ditemukan</td>
+                                {{-- <th scope="col">No</th> --}}
+                                <th scope="col">Judul</th>
+                                <th scope="col">Tema</th>
+                                <th scope="col">Event</th>
+                                <th scope="col">Potensi Replikasi</th>
+                                <th scope="col">Financial</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">Final Score</th>
+                                <th scope="col">Action</th>
                             </tr>
-                        @endif --}}
+                        </thead>
+                        <tbody class="table-group-divider">
+                            @if ($papers->count() > 0)
+                                @foreach ($papers as $paper)
+                            <tr>
+                                {{-- <th scope="row">1</th> --}}
+                                <td>{{ $paper->innovation_title }}</td>
+                                <td>{{ $paper->theme_name }}</td>
+                                <td>{{ $paper->event_name }} {{ $paper->year }}</td>
+                                <td>{{ $paper->potensi_replikasi }}</td>
+                                <td>Rp.{{ number_format($paper->financial, 0, ',', '.') }}</td>
+                                <td>{{ $paper->team_name }}</td>
+                                <td>{{ $paper->final_score }}</td>
+                                <td>
+                                    <a href="{{ route('evidence.detail', $paper->team_id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+                                    <a href="{{ asset('storage/' . $paper->full_paper) }}" class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                            @else
+                                <tr>
+                                    <td class="text-center" colspan="5">Data tidak ditemukan</td>
+                                </tr>
+                            @endif
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="pagination">
                     {{-- {{ $winners->links() }}  <!-- Ini akan menampilkan navigasi pagination --> --}}
                 </div>

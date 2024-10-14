@@ -22,5 +22,6 @@ class PvtEventTeam extends Model
         'total_score_presentation',
         'total_score_caucus',
         'final_score', // Jika kamu menggunakan final_score juga
+        'is_best_of_the_best',
     ];
 }

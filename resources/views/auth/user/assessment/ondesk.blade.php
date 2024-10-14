@@ -274,6 +274,7 @@
         var dataTable = $('#datatable-competition').DataTable({
             "processing": true,
             "serverSide": true,
+            "responsive": true,
             "dom": 'lBfrtip',
             "buttons": [
                 'excel', 'csv'
@@ -330,6 +331,7 @@
                             row_column['title'] = key
                             row_column['mData'] = key
                             row_column['sTitle'] = key
+                            row_column['className'] = "dt-body-nowrap";
                             newColumn.push(row_column)
                         }
                     }

@@ -1057,11 +1057,23 @@ class QueryController extends Controller
 
             $dataTable = DataTables::of($data_row->get());
 
+            // Function to insert <br> after every 15 characters
+            function insertLineBreaks($string, $length = 15)
+            {
+                return implode('<br>', str_split($string, $length));
+            }
+
+            // In your existing code
             if (count($arr_event_id)) {
                 for ($i = 0; $i < count($arr_event_id); $i++) {
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
-                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
-                    $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
+                    // Format the point with line breaks
+                    $formattedPoint = insertLineBreaks($arr_event_id[$i]['point']);
+
+                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $formattedPoint . "\"");
+
+                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $formattedPoint;
+
+                    $dataTable->addColumn("Penilaian <br>(" . $arr_event_id[$i]['pdca'] . ") :<br> " . $formattedPoint, function ($data_row) use ($i, $arr_event_id) {
                         $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                             ->where('pvt_assessment_events.status_point', 'active')

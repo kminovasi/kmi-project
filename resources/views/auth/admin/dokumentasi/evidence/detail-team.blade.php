@@ -43,6 +43,19 @@
         </div>
 
         <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-header-title">Penilaian</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>On Desk</strong> : {{ $paper->total_score_on_desk }}</p>
+                <p><strong>Presentation</strong> : {{ $paper->total_score_presentation }}</p>
+                <p><strong>Caucus</strong> : {{ $paper->total_score_caucus }}</p>
+                <p><strong>Final Score</strong> : {{ $paper->final_score }}</p>
+                <p><strong>Is Best Of The Best</strong> : {{ $paper->is_best_of_the_best }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header text-black">
                 Benefit
             </div>

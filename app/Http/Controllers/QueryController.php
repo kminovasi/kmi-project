@@ -325,9 +325,9 @@ class QueryController extends Controller
             $query_data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->join('themes', 'teams.theme_id', '=',  'themes.id')
-                ->join('companies', 'companies.company_code', '=', 'teams.company_code');
+                ->join('companies', 'companies.company_code', '=', 'teams.company_code')
+                ->orderBy('papers.created_at', 'desc');
             // ->where('papers.status', '=', 'not finish') //baru
-            // ->orderBy('papers.created_at', 'desc'); //baru
 
             $select = [
                 'papers.id as paper_id',
@@ -407,18 +407,6 @@ class QueryController extends Controller
                 'papers.step_2 as step_2_initial',
                 'papers.step_8 as step_8_initial',
                 'papers.status as paper_status'
-                // DB::raw('
-                //     CASE
-                //         WHEN papers.status = \'not finish\' THEN \'nf\'
-                //         WHEN papers.status = \'not accepted\' THEN \'na\'
-                //         WHEN papers.status = \'not completed\' THEN \'nc\'
-                //         WHEN papers.status = \'rollback\' THEN \'rb\'
-                //         WHEN papers.status = \'accepted by facilitator\' THEN \'abf\'
-                //         WHEN papers.status = \'rejected by facilitator\' THEN \'rbf\'
-                //         WHEN papers.status = \'accepted by innovation admin\' THEN \'abia\'
-                //         WHEN papers.status = \'rejected by innovation admin\' THEN \'rbia\'
-                //         ELSE papers.status
-                //     END as status')
             ];
             if ($request->filterRole == 'admin') {
                 $query_data->where('companies.company_code', $request->filterCompany);

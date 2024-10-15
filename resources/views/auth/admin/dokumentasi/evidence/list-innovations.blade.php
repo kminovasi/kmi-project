@@ -129,8 +129,8 @@
                                                 class="btn btn-sm btn-primary">
                                                 <i class="fas fa-info-circle"></i>
                                             </a>
-                                            <a href="{{ asset('storage/' . $paper->full_paper) }}"
-                                                class="btn btn-sm btn-secondary">
+                                            <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}"
+                                                class="btn btn-sm btn-secondary" download="{{ $paper->innovation_title }}.pdf">
                                                 <i class="fas fa-download"></i>
                                             </a>
                                         </td>

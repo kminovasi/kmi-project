@@ -102,6 +102,11 @@
                     </div>
                 </div>
             </div>
+            <div class="card-footer">
+                <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}" class="btn btn-primary" download="{{ $paper->innovation_title }}.pdf">
+                    <i class="fas fa-download"></i> Download Paper
+                </a>
+            </div>
         </div>
 
         <div class="card mb-4">

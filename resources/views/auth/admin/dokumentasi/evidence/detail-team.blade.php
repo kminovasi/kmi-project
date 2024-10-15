@@ -74,9 +74,30 @@
                 <h5 class="card-header-title">Anggota</h5>
             </div>
             <div class="card-body">
-                @foreach ($teamMember as $member )
-                <li>{{ $member->user->name }} {{ $member->status }}</li> <!-- Menampilkan nama anggota tim -->
-                @endforeach
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nama</th>
+                                <th scope="col">Posisi</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Perusahaan</th>
+                                <th scope="col">Kode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($teamMember as $member )
+                            <tr>
+                                <td>{{ $member->user->name }}</td>
+                                <td>{{ $member->status }}</td>
+                                <td>{{ $member->user->email }}</td>
+                                <td>{{ $member->user->company_name }}</td>
+                                <td>{{ $member->user->company_code }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

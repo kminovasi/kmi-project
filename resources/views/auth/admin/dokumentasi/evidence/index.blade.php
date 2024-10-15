@@ -192,104 +192,22 @@
 
     <!-- Main page content -->
     <div class="container-xl px-4 mt-4">
-
-
         <div class="row">
-            <div class="col-lg-12">
-                <div class="row">
 
-                    @foreach ($categories as $category)
-                        <div class="col-xl-4 mb-4">
-                            <a class="card h-100 lift border-start-lg border-start-red border-end-lg border-end-red"
-                                href="{{ route('evidence.category', $category->id) }}">
-                                <div class="card-body d-flex flex-column" style="height: 8rem">
-                                    <div class="m-auto">
-                                        <h5 class="text-black text-center">{{ $category->category_name }}</h5>
-                                    </div>
-                                </div>
-                            </a>
+            @foreach ($categories as $category)
+                <div class="col-lg-4 mb-4">
+                    <a class="card h-100 lift border-start-lg border-start-red border-end-lg border-end-red"
+                        href="{{ route('evidence.category', $category->id) }}">
+                        <div class="card-body d-flex flex-column" style="height: 8rem">
+                            <div class="m-auto">
+                                <h5 class="text-black text-center">{{ $category->category_name }}</h5>
+                            </div>
                         </div>
-                    @endforeach
-
+                    </a>
                 </div>
-            </div>
+            @endforeach
+
         </div>
     </div>
 @endsection
 
-{{-- @push('js')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        var dataTable = $('#datatable-evidence').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "responsive": true,
-            "dom": 'lBfrtip',
-            "buttons": [
-                {
-                    extend: 'excelHtml5',
-                    text: 'Excel',
-                    className: 'btn btn-primary btn-sm'
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV',
-                    className: 'btn btn-primary btn-sm'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: 'PDF',
-                    className: 'btn btn-primary btn-sm'
-                }
-            ],
-            "ajax": {
-                "url": "{{ route('query.get_evidence') }}",
-                "type": "GET",
-                "dataSrc": function (data) {
-                    console.log('Jumlah data total: ' + data.recordsTotal);
-                    console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                    console.log('Jumlah data setelah filter: ' + data.data);
-                    return data.data;
-                }
-            },
-            "columns": [
-                {"data": "id_evidence", "title": "No", "render": function (data, type, row, meta)
-                {return meta.row + meta.settings._iDisplayStart + 1;}, },
-                {"data": "team_name", "title": "Nama Tim"},
-                {"data": "innovation_title", "title": "Judul Inovasi"},
-                {"data": "company_name", "title": "Perusahaan"},
-                {"data": "category_name", "title": "Kategori"},
-                {"data": "event_name", "title": "Nama Event"},
-                {"data": "name_employee", "title": "Ketua Inovasi"},
-                {"data": "email", "title": "Email"},
-                {"data": "year", "title": "Tahun"},
-                {
-                    "data": null,
-                    "title": "Download Sertifikat",
-                    "render": function (data, type, row, meta) {
-                        var role = "{{ Auth::user()->role }}";
-                        var templateUrl = '';
-
-                        // Tentukan template URL berdasarkan role pengguna
-                        if (role === 'Admin' || role === 'Juri' || role === 'Innovator') {
-                            templateUrl = 'https://drive.google.com/uc?export=download&id=1lZL9PVxhQ_L2ufx37ANR5B01qKew-q8y'; // LINK SERTIF MASIH ERROR
-                        }
-
-                        return '<a href="' + templateUrl + '" target="_blank" class="btn btn-primary btn-sm">Download</a>';
-                    }
-                }
-            ],
-            "scrollX": true,
-            "scrollY": true,
-            "stateSave": true
-        });
-    });
-</script>
-@endpush --}}

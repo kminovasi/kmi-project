@@ -89,6 +89,7 @@
         <div class="row">
             <div class="card px-2 py-2">
                 <div class="table-responsive">
+
                     <table class="table table-borderless table-hover text-sm">
                         <thead>
                             <tr>
@@ -122,7 +123,6 @@
                                                     <i class="fas fa-trophy" aria-hidden="true"></i>
                                                 </button>
                                             @endif
-
                                         </td>
                                         <td>
                                             <a href="{{ route('evidence.detail', $paper->team_id) }}"
@@ -138,12 +138,13 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td class="text-center" colspan="5">Data tidak ditemukan</td>
+                                    <td class="text-center" colspan="8">Data tidak ditemukan</td>
                                 </tr>
                             @endif
 
                         </tbody>
                     </table>
+
                 </div>
                 <div class="pagination">
                     {{ $papers->links() }}

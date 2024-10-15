@@ -32,12 +32,17 @@
                 <h5 class="card-header-title">Paper</h5>
             </div>
             <div class="card-body">
+                <figure class="figure">
+                    <img src="{{ asset('storage/'.$paper->innovation_photo) }}" class="figure-img img-fluid rounded" alt="...">
+                    {{-- <figcaption class="figure-caption">A caption for the above image.</figcaption> --}}
+                  </figure>
                 <p> <strong> Judul:</strong>  {{ $paper->innovation_title }}</p>
                 <p><strong>Tema:</strong> {{ $paper->theme_name }}</p>
                 <p><strong>Status Inovasi:</strong> {{ $paper->status_inovasi }}</p>
                 <p><strong>Potensi Replikasi:</strong> {{ $paper->potensi_replikasi }}</p>
                 <p><strong>Abstrak:</strong> {{ $paper->abstract }}</p>
                 <p><strong>Permasalahan:</strong> {{ $paper->problem }}</p>
+                <p><strong>Penyebab Utama:</strong> {{ $paper->main_cause }}</p>
                 <p><strong>Solusi:</strong> {{ $paper->solution }}</p>
             </div>
         </div>

@@ -136,7 +136,6 @@ class EvidenceController extends Controller
 
         $teamMember = $team->pvtMembers()->with('user')->get();
 
-
         return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers'));
     }
 }

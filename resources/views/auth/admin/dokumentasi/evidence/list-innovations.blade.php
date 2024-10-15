@@ -62,7 +62,7 @@
                 <!-- Filter berdasarkan tema -->
                 <div class="col-md-3">
                     <select name="theme" class="form-select form-select-sm">
-                        <option value="">-- Pilih theme --</option>
+                        <option value="">-- Pilih Tema --</option>
                         @foreach ($themes as $theme)
                             <option value="{{ $theme->id }}"
                                 {{ request('theme') == $theme->theme_name ? 'selected' : '' }}>

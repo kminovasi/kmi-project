@@ -192,10 +192,10 @@
 
     <!-- Main page content -->
     <div class="container-xl px-4 mt-4">
-        <div class="row">
+        <div class="row gx-3 justify-content-center">
 
             @foreach ($categories as $category)
-                <div class="col-lg-4 mb-4">
+                <div class="col-lg-4 col-md-12 mb-4">
                     <a class="card h-100 lift border-start-lg border-start-red border-end-lg border-end-red"
                         href="{{ route('evidence.category', $category->id) }}">
                         <div class="card-body d-flex flex-column" style="height: 8rem">

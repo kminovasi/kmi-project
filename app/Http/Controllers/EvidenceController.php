@@ -61,12 +61,6 @@ class EvidenceController extends Controller
 
         $papers = $papers->paginate(10);
 
-        // dd($papers);
-
-        //     ->when($eventId, function ($query, $eventId) {
-        //         return $query->where('pvt_event_teams.event_id', $eventId); // Filter berdasarkan event_id jika tersedia
-        //     })
-
         $themes = Theme::all();
 
         $events = Event::where('status', 'finish')
@@ -75,48 +69,6 @@ class EvidenceController extends Controller
 
         return view('auth.admin.dokumentasi.evidence.list-innovations' , compact('papers', 'events', 'themes', 'category'));
     }
-
-    // function search(Request $request){
-
-    //     $search = $request->input('search');
-    //     $status = $request->input('status');
-    //     $tema = $request->input('tema');
-
-    //     $papers = \DB::table('teams')
-    //     ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-    //     ->join('papers', 'teams.id', '=', 'papers.team_id')
-    //     ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
-    //     ->join('themes', 'teams.theme_id', '=', 'themes.id')
-    //     ->where('teams.category_id', $id)
-    //     ->where('events.status', 'finish')
-    //     ->select('papers.*', 'teams.team_name', 'pvt_event_teams.*', 'events.event_name', 'events.year', 'themes.theme_name');
-
-    //     // Filter berdasarkan judul paper (pencarian)
-    //     if ($search) {
-    //         $papers = $papers->where('papers.judul_paper', 'like', '%' . $search . '%');
-    //     }
-
-    //     // Filter berdasarkan status progress
-    //     if ($status) {
-    //         $papers = $papers->where('papers.status_progress', '=', $status);
-    //     }
-
-    //     // Filter berdasarkan tema
-    //     if ($tema) {
-    //         $papers = $papers->where('teams.theme_id', '=', $tema);
-    //     }
-
-    //     $papers = $papers->get();
-
-    //     $themes = Theme::all();
-
-    //     $events = Event::where('status', 'finish')
-    //         ->select('id', 'event_name', 'year')
-    //         ->get();
-
-    //     return view('auth.admin.dokumentasi.evidence.list-innovations' , compact('papers', 'events', 'themes'));
-    // }
-
 
     function paper_detail($id)
     {

@@ -33,8 +33,9 @@
             </div>
             <div class="card-body">
                 <figure class="text-center">
-                    <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}" alt="paper">
+                    <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}" alt="paper" style="max-width: 100%; max-height: 500px;">
                 </figure>
+
                 <hr>
                 <div class="row mb-1">
                     <div class="col-md-3">
@@ -189,10 +190,10 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-3">
-                        <p><strong>Final Score</strong>:</p>
+                        <p><strong>Potensi Replikasi</strong>:</p>
                     </div>
                     <div class="col-md-9">
-                        <p>{{ $paper->final_score }}</p>
+                        <p>{{ $paper->potensi_replikasi }}</p>
                     </div>
                 </div>
             </div>

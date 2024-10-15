@@ -14,7 +14,6 @@
         font-size: 16px;
         font-weight: bold;
         text-transform: uppercase;
-        
     }
     .h2{
         color: #c00000;
@@ -27,10 +26,11 @@
         font-weight: bold;
     }
     .content{
-        text-align: justify;
+        text-align: justify; /* Justify text */
     }
     .opening {
         padding-bottom: 28px;
+        text-align: justify; /* Justify text */
     }
     .kategori p{
         text-align: left;
@@ -54,29 +54,27 @@
         margin-bottom: 2rem;
     }
     .ttd{
-        text-align: center
+        text-align: center;
     }
     * {
         box-sizing: border-box;
     }
-    
-    /* Create three equal columns that floats next to each other */
+
     .column-1 {
         float: left;
         width: 100%;
-        height: 175px; /* Should be removed. Only for demonstration */
+        height: 175px;
     }
     .column-2 {
         float: left;
         width: 50%;
-        height: 175px; /* Should be removed. Only for demonstration */
+        height: 175px;
     }
     .column-3 {
         float: left;
         width: 33.33%;
-        height: 175px; /* Should be removed. Only for demonstration */
+        height: 175px;
     }
-    /* Clear floats after the columns */
     .row:after {
         content: "";
         display: table;
@@ -84,6 +82,10 @@
     }
     .column-1 p, .column-2 p, .column-3 p, {
         padding-top:80px;
+    }
+
+    .justify-text{
+        text-align: justify;
     }
 </style>
 <body>
@@ -94,17 +96,22 @@
             <span class="h6">Nomor: {{$data->no_surat}}</span>
         </p>
     </div>
-    <div class="opening">
+    <div class="opening content">
         <p class="title">BERDASARKAN</p>
-        <span class="content">Pelaksanaan seleksi kompetisi {{$data->jenis_event}} {{$data->event_name}} Tahun {{$data->year}} serta penilaian yang dilakukan melalui On Desk Assessment dan Presentation Assessment yang dimulai pada tanggal {{$carbonInstance_startDate->isoFormat('D MMMM YYYY')}} sampai dengan {{$carbonInstance_endDate->isoFormat('D MMMM YYYY')}}.</span>
+        <span class="justify-text">Pelaksanaan rangkaian seleksi kompetisi {{$data->jenis_event}} {{$data->event_name}} Tahun {{$data->year}} yang telah dilaksanakan secara sistematis dan terstruktur melalui dua tahapan penilaian utama, yaitu On Desk Assessment, Presentation Assessment & Caucus Assessment, yang berlangsung mulai tanggal {{$carbonInstance_startDate->isoFormat('D MMMM YYYY')}} hingga {{$carbonInstance_endDate->isoFormat('D MMMM YYYY')}}.</span>
+        <br>
+        <span>
+            Dengan memperhatikan seluruh kriteria penilaian yang telah ditetapkan oleh unit KMI selaku panitia penyelenggara serta berdasarkan kajian mendalam terhadap performa, inovasi, dan kontribusi setiap peserta dalam kompetisi ini, dan dengan mengacu pada hasil evaluasi komprehensif dari tim juri yang independen dan berkompeten di bidangnya, maka:
+        </span>
         <br>
         <p class="title">MENETAPKAN</p>
-        <span class="content">Pada hari ini {{$day}} tanggal {{ $date }} bulan {{$month}} tahun {{$year}} ({{ $carbonInstance->isoFormat('D MMMM YYYY') }}) menetapkan juara di {{$data->event_name}} Tahun {{$data->year}} sebagai berikut :</span>
-    
+        <span class="justify-text">Pada hari ini {{$day}} tanggal {{ $date }} bulan {{$month}} tahun {{$year}} ({{ $carbonInstance->isoFormat('D MMMM YYYY') }}) berdasarkan hasil keputusan rapat bersama Board of Directors & dewan juri yang diselenggarakan setelah melalui diskusi dan pertimbangan mendalam terkait seluruh aspek yang dinilai dalam kompetisi ini, dengan ini secara resmi diputuskan penetapan para pemenang  {{$data->event_name}} Tahun {{$data->year}} sebagai berikut :</span>
     </div>
+
     <div class="kategori">
         @foreach($juara as $category => $team )
-        
+
+
         @if (count($team) > 0)
         <div class="mb-3">
             <p>{{$category}}</p>
@@ -126,18 +133,18 @@
                 <?php $no++; ?>
             @endforeach
             </table>
-        </div>    
+        </div>
         @endif
         @endforeach
     </div>
-    
+
     <div class="ttd">
         <p>
-            Menyetujui, 
+            Menyetujui,
             <br>Jakarta, {{ $carbonInstance->isoFormat('D MMMM YYYY') }}
         </p>
         <div class="row">
-            <?php 
+            <?php
                 if(count($bods) == 4)
                     $column_ke = 2;
                 elseif(count($bods) >= 5)
@@ -148,7 +155,7 @@
                 $no = 0;
             ?>
             @foreach($bods as $bod)
-                
+
                 @if($no == 5)
                     @break
                 @endif
@@ -160,7 +167,7 @@
                 <?php $no++; ?>
             @endforeach
         </div>
-        
+
     </div>
 </body>
 </html>

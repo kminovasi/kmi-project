@@ -244,25 +244,36 @@ public function updateEvent(Request $request, $id) {
         $datas_event = Event::whereIn('status', ['active', 'not active'])->get();
         return view('auth.admin.management_system.assign-role.bod-role-add',['datas_event' => $datas_event]);
     }
-    public function storeAssignBOD(Request $request){
+    public function storeAssignBOD(Request $request) {
         try {
-            //dd($request->all());
             DB::beginTransaction();
+
+            // Validasi: Periksa apakah employee sudah terdaftar sebagai BOD untuk event yang sama
+            $existingBodEvent = BodEvent::where('employee_id', $request->input('employee_id'))
+                ->where('event_id', $request->input('event_id'))
+                ->first();
+
+            if ($existingBodEvent) {
+                return redirect()->route('management-system.role.bod.event.create')
+                    ->withErrors('Error: Employee sudah terdaftar sebagai BOD untuk event ini.');
+            }
+
+            // Jika tidak ada, lanjutkan untuk menyimpan BOD baru
             BodEvent::create([
                 'employee_id' => $request->input('employee_id'),
                 'event_id' => $request->input('event_id'),
                 'category' => $request->input('category'),
             ]);
 
-            Db::commit();
+            DB::commit();
         } catch (\Exception $e) {
-            //throw $th;
             DB::rollback();
-            dd($e->getMessage());
             return redirect()->route('management-system.role.bod.event.create')->withErrors('Error: ' . $e->getMessage());
         }
-        return redirect()->route('management-system.role.bod.event.create')->with('success', 'Change  successful');
+
+        return redirect()->route('management-system.role.bod.event.create')->with('success', 'Change successful');
     }
+
     public function indexInnovator(){
         return view('auth.admin.management_system.assign-role.innovator-role-index');
     }

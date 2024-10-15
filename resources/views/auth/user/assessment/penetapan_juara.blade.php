@@ -81,14 +81,41 @@
         </div>
 
         <div class="mb-3">
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                    {{ session('success') }}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+
+                    {{-- Cek apakah ada URL untuk tombol --}}
+                    @if (session('bodEventUrl'))
+                        <a href="{{ session('bodEventUrl') }}" class="btn btn-warning">Buat BOD Event</a>
+                    @endif
 
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
+
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
         </div>
+
+
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        </div>
+
+
         @include('auth.user.assessment.bar')
         <div class="row">
             <div class="col-md-12">

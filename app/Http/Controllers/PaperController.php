@@ -509,17 +509,63 @@ class PaperController extends Controller
         try {
             $paper = Paper::findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
-
-            $paper->updateAndHistory([
-                $stage => "w: " . $request->step
-            ]);
+            $category = Category::where('id', $team->category_id)->select('category_name')->first();
+            $categoryName = $category->category_name;
 
             $tcpdf = new TCPDF();
             $tcpdf->AddPage();
             $tcpdf->WriteHTML($request->step);
             $tcpdf->Output(public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $stage . '.pdf'), 'F');
+            $paper->updateAndHistory([
+                $stage => "w: " . $request->step
+            ]);
 
-            if ($stage == 'step_7' && $this->isAllStepComplete($id)) {
+            if($categoryName === "GKM PLANT" || $categoryName === "GKM OFFICE"){
+            if ($stage == 'step_8' && $this->isAllStepComplete($id)) {
+                $team = Team::findOrFail($paper->team_id);
+
+                // / Pastikan relasi Team sudah dimuat dengan benar
+                if ($paper->team) {
+                    $fasilId = PvtMember::where('team_id', $paper->team->id)
+                        ->where('status', 'facilitator')
+                        ->pluck('employee_id')
+                        ->first();
+
+                    $fasilData = User::where('employee_id', $fasilId)
+                        ->select('name', 'email')
+                        ->first();
+
+                    $leaderId = PvtMember::where('team_id', $paper->team->id)
+                        ->where('status', 'leader')
+                        ->pluck('employee_id')
+                        ->first();
+
+                    $leaderData = User::where('employee_id', $leaderId)
+                        ->select('name', 'email')
+                        ->first();
+
+                    $inovasi_lokasi = Paper::where('id', $id)
+                        ->select('inovasi_lokasi')
+                        ->first();
+
+                    // Membuat objek
+                    $mail = new EmailNotificationPaperFasil(
+                        $paper,
+                        'full_paper',
+                        $paper->innovation_title,
+                        $paper->team->team_name,
+                        $leaderData,
+                        $fasilData,
+                        $inovasi_lokasi
+                    );
+
+                    // Mengirim email ke fasilitator
+                    Mail::to($fasilData->email)->send($mail);
+                } else {
+                    throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+                }
+                }
+            }else if ($stage == 'step_7' && $this->isAllStepComplete($id)) {
                 $team = Team::findOrFail($paper->team_id);
 
                 // / Pastikan relasi Team sudah dimuat dengan benar
@@ -705,7 +751,6 @@ class PaperController extends Controller
             }
 
             $t = $paper->full_paper;
-
             if ($t) {
                 return redirect()->route('paper.show.stages', [$id, 'full']);
             }
@@ -1062,7 +1107,6 @@ class PaperController extends Controller
                     $inovasi_lokasi
                 );
 
-                //dd($leaderData);
 
                 // Mengirim email ke inovator (ketua tim)
                 Mail::to($gmData->email)->send($mail);
@@ -1230,8 +1274,6 @@ class PaperController extends Controller
 
     public function approvePaperAdmin(Request $request, $id)
     {
-        // dd($request->all());
-        //$paper = Paper::findOrFail($id);
         $paper = Paper::with('team')->findOrFail($id);
         $status_paper_before = $paper->status;
         if ($request->status == "accept" || $request->status == "reject") {

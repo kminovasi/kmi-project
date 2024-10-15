@@ -87,7 +87,7 @@
         </select> --}}
 
         <div class="row">
-            <div class="card px-2 py-2">
+            <div class="card px-2 pt-2">
                 <div class="table-responsive">
 
                     <table class="table table-borderless table-hover text-sm">

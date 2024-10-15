@@ -24,54 +24,181 @@
         </div>
     </header>
 
-    <div class="container-xl px-4 mt-4">
+    <div class="container-xl md-px-4 mt-4">
         @foreach ($papers as $paper)
 
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-header-title">Paper</h5>
+            <div class="card-header bg-danger">
+                <h5 class="card-header-title text-white">Paper</h5>
             </div>
             <div class="card-body">
-                <p> <strong> Judul:</strong>  {{ $paper->innovation_title }}</p>
-                <p><strong>Tema:</strong> {{ $paper->theme_name }}</p>
-                <p><strong>Status Inovasi:</strong> {{ $paper->status_inovasi }}</p>
-                <p><strong>Potensi Replikasi:</strong> {{ $paper->potensi_replikasi }}</p>
-                <p><strong>Abstrak:</strong> {{ $paper->abstract }}</p>
-                <p><strong>Permasalahan:</strong> {{ $paper->problem }}</p>
-                <p><strong>Solusi:</strong> {{ $paper->solution }}</p>
+                <figure class="text-center">
+                    <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}" alt="paper">
+                </figure>
+                <hr>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Judul</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->innovation_title }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Tema</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->theme_name }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Abstrak</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->abstract }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Status Inovasi</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->status_inovasi }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Potensi Replikasi</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->potensi_replikasi }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Permasalahan</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->problem }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Permasalahan Utama</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->main_cause }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Solusi</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->solution }}</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-header-title">Penilaian</h5>
+            <div class="card-header bg-danger">
+                <h5 class="card-header-title text-white">Penilaian</h5>
             </div>
             <div class="card-body">
-                <p><strong>On Desk</strong> : {{ $paper->total_score_on_desk }}</p>
-                <p><strong>Presentation</strong> : {{ $paper->total_score_presentation }}</p>
-                <p><strong>Caucus</strong> : {{ $paper->total_score_caucus }}</p>
-                <p><strong>Final Score</strong> : {{ $paper->final_score }}</p>
-                <p><strong>Best Of The Best</strong> : {{ $paper->is_best_of_the_best }}</p>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>On Desk</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->total_score_on_desk }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Presentation</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->total_score_presentation }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Caucus</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->total_score_caucus }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Final Score</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->final_score }}</p>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <p><strong>Best Of The Best</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->is_best_of_the_best ? 'Yes' : 'No' }}</p>
+                    </div>
+                </div>
             </div>
+
         </div>
 
         <div class="card mb-4">
-            <div class="card-header text-black">
-                Benefit
+            <div class="card-header bg-danger">
+                <h5 class="card-header-title text-white">Benefit</h5>
             </div>
             <div class="card-body">
-                <p><strong>Financial:</strong> Rp {{ number_format($paper->financial, 0, ',', '.') }}</p>
-                <p><strong>Potential Benefit:</strong> Rp {{ number_format($paper->potential_benefit, 0, ',', '.') }}</p>
-                <p><strong>Non-Financial Impact:</strong> {{ $paper->non_financial }}</p>
-                <p><strong>Final Score:</strong> {{ $paper->final_score }}</p>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <p><strong>Financial</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>Rp {{ number_format($paper->financial, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <p><strong>Potential Benefit</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>Rp {{ number_format($paper->potential_benefit, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <p><strong>Non-Financial Impact</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->non_financial }}</p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <p><strong>Final Score</strong>:</p>
+                    </div>
+                    <div class="col-md-9">
+                        <p>{{ $paper->final_score }}</p>
+                    </div>
+                </div>
             </div>
+
         </div>
 
         @endforeach
 
         <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-header-title">Anggota</h5>
+            <div class="card-header bg-danger">
+                <h5 class="card-header-title text-white">Anggota</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

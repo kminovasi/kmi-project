@@ -100,6 +100,7 @@
         <p class="title">BERDASARKAN</p>
         <span class="justify-text">Pelaksanaan rangkaian seleksi kompetisi {{$data->jenis_event}} {{$data->event_name}} Tahun {{$data->year}} yang telah dilaksanakan secara sistematis dan terstruktur melalui dua tahapan penilaian utama, yaitu On Desk Assessment, Presentation Assessment & Caucus Assessment, yang berlangsung mulai tanggal {{$carbonInstance_startDate->isoFormat('D MMMM YYYY')}} hingga {{$carbonInstance_endDate->isoFormat('D MMMM YYYY')}}.</span>
         <br>
+        <br>
         <span>
             Dengan memperhatikan seluruh kriteria penilaian yang telah ditetapkan oleh unit KMI selaku panitia penyelenggara serta berdasarkan kajian mendalam terhadap performa, inovasi, dan kontribusi setiap peserta dalam kompetisi ini, dan dengan mengacu pada hasil evaluasi komprehensif dari tim juri yang independen dan berkompeten di bidangnya, maka:
         </span>

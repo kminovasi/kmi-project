@@ -32,9 +32,18 @@
                 <h5 class="card-header-title text-white">Paper</h5>
             </div>
             <div class="card-body">
-                <figure class="text-center">
-                    <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}" alt="paper">
-                </figure>
+                <div class="row justify-content-center">
+                <div class="col-md-5 text-center">
+                    <figure>
+                        <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->proof_idea) }}" alt="paper">
+                    </figure>
+                </div>
+                    <div class="col-md-5 text-center">
+                        <figure>
+                            <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}" alt="paper">
+                        </figure>
+                    </div>
+                </div>
                 <hr>
                 <div class="row mb-1">
                     <div class="col-md-3">

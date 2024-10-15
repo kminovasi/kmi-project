@@ -100,10 +100,10 @@
         <p class="title">BERDASARKAN</p>
         <span class="justify-text">Pelaksanaan rangkaian seleksi kompetisi {{$data->jenis_event}} {{$data->event_name}} Tahun {{$data->year}} yang telah dilaksanakan secara sistematis dan terstruktur melalui dua tahapan penilaian utama, yaitu On Desk Assessment, Presentation Assessment & Caucus Assessment, yang berlangsung mulai tanggal {{$carbonInstance_startDate->isoFormat('D MMMM YYYY')}} hingga {{$carbonInstance_endDate->isoFormat('D MMMM YYYY')}}.</span>
         <br>
-        <br>
         <span>
             Dengan memperhatikan seluruh kriteria penilaian yang telah ditetapkan oleh unit KMI selaku panitia penyelenggara serta berdasarkan kajian mendalam terhadap performa, inovasi, dan kontribusi setiap peserta dalam kompetisi ini, dan dengan mengacu pada hasil evaluasi komprehensif dari tim juri yang independen dan berkompeten di bidangnya, maka:
         </span>
+        <br>
         <br>
         <p class="title">MENETAPKAN</p>
         <span class="justify-text">Pada hari ini {{$day}} tanggal {{ $date }} bulan {{$month}} tahun {{$year}} ({{ $carbonInstance->isoFormat('D MMMM YYYY') }}) berdasarkan hasil keputusan rapat bersama Board of Directors & dewan juri yang diselenggarakan setelah melalui diskusi dan pertimbangan mendalam terkait seluruh aspek yang dinilai dalam kompetisi ini, dengan ini secara resmi diputuskan penetapan para pemenang  {{$data->event_name}} Tahun {{$data->year}} sebagai berikut :</span>
@@ -139,7 +139,7 @@
         @endforeach
     </div>
 
-    <div class="ttd">
+    <div class="ttd" style="page-break-before: always;">
         <p>
             Menyetujui,
             <br>Jakarta, {{ $carbonInstance->isoFormat('D MMMM YYYY') }}
@@ -156,7 +156,6 @@
                 $no = 0;
             ?>
             @foreach($bods as $bod)
-
                 @if($no == 5)
                     @break
                 @endif
@@ -168,7 +167,7 @@
                 <?php $no++; ?>
             @endforeach
         </div>
-
     </div>
+
 </body>
 </html>

@@ -287,7 +287,6 @@ class BeritaAcaraController extends Controller
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
-                ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_idea])
                 ->take(3)
                 ->get()
                 ->toArray();
@@ -303,7 +302,6 @@ class BeritaAcaraController extends Controller
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
-                ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_bi])
                 ->take(1)
                 ->get()
                 ->toArray();

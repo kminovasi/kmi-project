@@ -463,10 +463,20 @@ class QueryController extends Controller
             //link benefit
             $rawColumns[] = 'benefit';
             $dataTable->addColumn('benefit', function ($data_row) {
-                if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null)
-                    return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Update</a>";
-                else
-                    return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null){
+                    if($data_row->member_status === "leader" || $data_row->member_status === "member"){
+                        return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Update</a>";
+                    }else{
+                        return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
+                    }
+                }
+                else{
+                    if($data_row->member_status === "leader" || $data_row->member_status === "member"){
+                        return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                    }else{
+                        return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
+                    }
+                }
             });
 
             $rawColumns[] = 'approval';
@@ -599,18 +609,29 @@ class QueryController extends Controller
                 ->get();
 
             $data_anggotas = PvtMember::where('team_id', $request->team_id)->get();
+            Log::debug($data_anggotas);
 
             $data_karyawan = [];
             foreach ($data_anggotas as $data_anggota) {
                 $data_user = User::where('employee_id', $data_anggota->employee_id)->first();
-                if (!isset($data_karyawan[$data_anggota['status']]))
-                    if ($data_anggota['status'] == 'member')
-                        $data_karyawan[$data_anggota['status']][] = $data_user;
-                    else
+
+                // Check if the status already exists in the array
+                if (!isset($data_karyawan[$data_anggota['status']])) {
+                    if ($data_anggota['status'] == 'member') {
+                        // Initialize as an array for members
+                        $data_karyawan[$data_anggota['status']] = [];
+                    } else {
+                        // Initialize as a single User instance for other statuses
                         $data_karyawan[$data_anggota['status']] = $data_user;
-                else
+                    }
+                }
+
+                // For members, push the User into the array
+                if ($data_anggota['status'] == 'member') {
                     array_push($data_karyawan[$data_anggota['status']], $data_user);
+                }
             }
+
 
             $data_ph2_members = ph2Member::where('team_id', $request->team_id)->get();
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\BeritaAcara;
 use App\Models\Event;
 use Illuminate\Support\Str;
+use Exception;
 
 class DokumentasiController extends Controller
 {

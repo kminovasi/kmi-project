@@ -19,6 +19,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\ChartDashboardController;
+use App\Http\Controllers\CvController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
@@ -299,6 +300,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
     });
 
+    // Cv
+    Route::prefix('/cv')->name('cv.')->group(function () {
+        Route::get('/', [CvController::class, 'index'])->name('index');
+    });
 
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {
         Route::get('/', [DokumentasiController::class, 'index'])->name('index');

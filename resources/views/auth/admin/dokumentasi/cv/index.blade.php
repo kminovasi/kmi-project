@@ -192,8 +192,47 @@
 </header>
 
 <div class="container-xl px-4 mt-4">
-    <div class="card">
+    <div class="card text-sm">
+        <div class="card-body">
+            <div class="table-responsive-lg">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tim</th>
+                            <th scope="col">Inovasi</th>
+                            <th scope="col">Tema</th>
+                            <th scope="col">Event</th>
+                            <th scope="col">Status</th>
+                            <th >Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($innovations as $inovasi )
+                        <tr>
+                            <td>{{ $inovasi->team_name }}</td>
+                            <td>{{ $inovasi->innovation_title }}</td>
+                            <td>{{ $inovasi->theme_name }}</td>
+                            <td>{{ $inovasi->event_name }}</td>
+                            <td>{{ $inovasi->event_status }}</td>
+                            <td>
+                                <div class="flex flex-row">
+                                    {{-- Detail Button --}}
+                                    <a href="#" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
 
+                                    {{-- Download Button --}}
+                                    <a href="#" class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 

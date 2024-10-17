@@ -7,12 +7,24 @@ use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
+    public function destroyAll()
+    {
+        // Menghapus semua notifikasi milik pengguna yang sedang login
+        auth()->user()->notifications()->delete();
+
+        return redirect()->route('notifications.index')->with('success', 'Semua notifikasi berhasil dihapus.');
+    }
     public function destroy($id)
     {
-        DatabaseNotification::find($id)->delete();
+        // Pastikan hanya menghapus notifikasi berdasarkan ID yang valid
+        $notification = auth()->user()->notifications()->find($id);
+        if ($notification) {
+            $notification->delete();
+        }
 
-        return back();
+        return back()->with('success', 'Notifikasi berhasil dihapus.');
     }
+
 
     // Tampilkan halaman manajemen notifikasi
     public function index()
@@ -39,10 +51,4 @@ class NotificationController extends Controller
         return redirect()->route('notifications.index')->with('success', 'Semua notifikasi berhasil ditandai sebagai dibaca.');
     }
 
-    public function destroyAll()
-    {
-        auth()->user()->notifications()->delete();
-
-        return redirect()->route('notifications.index')->with('success', 'Semua notifikasi berhasil dihapus.');
-    }
 }

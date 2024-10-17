@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Manajemen Notifikasi')
 @section('content')
 <div class="container">
     <h1 class="mt-3">Manajemen Notifikasi</h1>
@@ -15,6 +15,7 @@
         @method('DELETE')
         <button type="submit" class="btn btn-danger">Hapus Semua Notifikasi</button>
     </form>
+
 
     @if($notifications->count() > 0)
         <ul class="list-group">

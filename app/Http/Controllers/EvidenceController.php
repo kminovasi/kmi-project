@@ -29,12 +29,12 @@ class EvidenceController extends Controller
         $theme = $request->input('theme');
         $event = $request->input('event');
 
+        // mendapatkan semua data paper dengan kategori dan event yang status finish
         $papers = \DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
             ->join('themes', 'teams.theme_id', '=', 'themes.id')
-            // ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->where('teams.category_id', $id)
             ->where('events.status', 'finish')
             ->select(
@@ -69,7 +69,8 @@ class EvidenceController extends Controller
 
         $papers = $papers->paginate(10);
 
-        $themes = Theme::select('id', 'theme_name');
+        // mendapatkan data themes, companies, events untuk kebutuhan filter
+        $themes = Theme::select('id', 'theme_name')->get();
         $companies = Company::select('company_name', 'company_code')->get();
         $events = Event::where('status', 'finish')->select('id', 'event_name', 'year')->get();
 
@@ -80,9 +81,8 @@ class EvidenceController extends Controller
     {
 
         $team = Team::findOrFail($id);
-        // dd($team);
-        // Ambil tim berdasarkan team_id
 
+        // Ambil tim berdasarkan team_id
         $papers = \DB::table('teams')
             ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
@@ -103,8 +103,7 @@ class EvidenceController extends Controller
             )
             ->get();
 
-        // dd($papers);
-
+        // mendapatkan data member berdasarkan id team
         $teamMember = $team->pvtMembers()->with('user')->get();
 
 

@@ -10,11 +10,11 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="book"></i></div>
-                        Dokumentasi - Evidence
+                        Evidence - Daftar Inovasi
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
-                    <a class="btn btn-sm btn-outline-primary" href="{{ route('dokumentasi.index') }}">
+                    <a class="btn btn-sm btn-outline-primary"  onclick="goBack()">
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
@@ -156,3 +156,10 @@
 </div>
 
 @endsection
+@push('js')
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+@endpush

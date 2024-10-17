@@ -69,7 +69,7 @@ class EvidenceController extends Controller
 
         $papers = $papers->paginate(10);
 
-        $themes = Theme::select('id', 'theme_name');
+        $themes = Theme::select('id', 'theme_name')->get();
         $companies = Company::select('company_name', 'company_code')->get();
         $events = Event::where('status', 'finish')->select('id', 'event_name', 'year')->get();
 

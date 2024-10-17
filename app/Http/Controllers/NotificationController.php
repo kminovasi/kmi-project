@@ -13,4 +13,36 @@ class NotificationController extends Controller
 
         return back();
     }
+
+    // Tampilkan halaman manajemen notifikasi
+    public function index()
+    {
+        $notifications = auth()->user()->notifications; // Mendapatkan semua notifikasi user
+        return view('notifications.index', compact('notifications'));
+    }
+
+
+    // Tandai notifikasi sebagai telah dibaca
+    public function markAsRead($id)
+    {
+        $notification = auth()->user()->unreadNotifications()->find($id);
+        if ($notification) {
+            $notification->markAsRead();
+        }
+        return redirect()->route('notifications.index')->with('success', 'Notifikasi berhasil ditandai sebagai dibaca.');
+    }
+
+    // Tandai semua notifikasi sebagai telah dibaca
+    public function markAllAsRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return redirect()->route('notifications.index')->with('success', 'Semua notifikasi berhasil ditandai sebagai dibaca.');
+    }
+
+    public function destroyAll()
+    {
+        auth()->user()->notifications()->delete();
+
+        return redirect()->route('notifications.index')->with('success', 'Semua notifikasi berhasil dihapus.');
+    }
 }

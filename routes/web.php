@@ -53,11 +53,11 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
 
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
-Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 
 Route::middleware('auth')->group(function () {

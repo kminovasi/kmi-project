@@ -67,13 +67,11 @@ class BenefitController extends Controller
 
         $file_content = null;
         if ($row->file_review) {
-            // Perbaiki path ke file sesuai dengan direktori yang benar
-            $file_path = str_replace('/storage/', '', $row->file_review);
 
             // Cek apakah file benar-benar ada sebelum mencoba mengambilnya
-            if (Storage::disk('public')->exists($file_path)) {
+            if (Storage::disk('public')->exists($row->file_review)) {
                 // Ambil konten file
-                $file_content = Storage::disk('public')->get($file_path);
+                $file_content = Storage::disk('public')->get($row->file_review);
             }
         }
 
@@ -123,7 +121,7 @@ class BenefitController extends Controller
         if ($request->hasFile('file_review')) {
             // Hapus file lama jika ada
             if ($record->file_review) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $record->file_review));
+                Storage::disk('public')->delete($record->file_review);
             }
 
             // Simpan file baru
@@ -133,7 +131,7 @@ class BenefitController extends Controller
                 'public'
             );
             // Tambahkan awalan '/'
-            $record->file_review = '/storage/' . $record->file_review;
+            $record->file_review = $record->file_review;
         }
 
         $record->status = 'upload benefit';
@@ -226,7 +224,7 @@ class BenefitController extends Controller
                 $inovasi_lokasi
             );
 
-            // Mail::to($fasilData->email)->send($mail);
+            Mail::to($fasilData->email)->send($mail);
         } else {
             throw new \Exception('Paper tidak memiliki relasi dengan Team.');
         }

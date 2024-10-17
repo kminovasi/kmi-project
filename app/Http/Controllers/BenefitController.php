@@ -132,6 +132,10 @@ class BenefitController extends Controller
             );
             // Tambahkan awalan '/'
             $record->file_review = $record->file_review;
+        }else{
+            if($record->file_review === null){
+                return redirect()->route('benefit.create.user', ['id' => $id])->withErrors("Error: File Review harus di upload");
+            }
         }
 
         $record->status = 'upload benefit';

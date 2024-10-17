@@ -36,15 +36,15 @@
                 <div class="col-md-5 text-center">
                     <figure class="figure">
                         <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->proof_idea) }}" alt="paper"
-                            style="max-width: 100%; max-height: 500px;">
-                            <figcaption class="figure-caption text-center">Foto Profile Team</figcaption>
+                            style="max-width: 100%; max-height: 400px;">
+                        <figcaption class="figure-caption text-center">Foto Profile Team</figcaption>
                     </figure>
                 </div>
                 <div class="col-md-5 text-center">
                     <figure class="figure">
                         <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}"
-                            alt="paper" style="max-width: 100%; max-height: 500px;">
-                            <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
+                            alt="paper" style="max-width: 100%; max-height: 400px;">
+                        <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
                     </figure>
                 </div>
             </div>
@@ -122,11 +122,13 @@
                 data-bs-custom-class="custom-tooltip" data-bs-title="Download Paper">
                 <i class="fas fa-download"></i>
             </a>
+            @if (!empty($paper->path))
             <a href="{{ asset('storage/' . $paper->path) }}" class="btn btn-secondary" download="Supporting Document"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                 data-bs-title="Download Dokumen Pendukung">
                 <i class="fas fa-download "></i>
             </a>
+            @endif
         </div>
     </div>
 

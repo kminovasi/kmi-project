@@ -75,16 +75,18 @@
                                                     <label class="mb-1" for="dataBenefitNonFin{{$row->paper_id}}">Benefit Non Financial</label>
                                                     <textarea class="form-control" id="dataBenefitNonFin{{$row->paper_id}}" type="text" rows="5" name="non_financial" value="" {{ ($row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' ||  $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager') ?  "" :"readonly disabled" }}  {{$is_owner ? '' : 'disabled'}} >{{ $row->non_financial }}</textarea>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <h6 class="small mb-1">Pilih GM</h6>
-                                                    <input type="hidden" name="team_id" value="{{$row->team_id}}" >
-                                                    <select class="form-select" aria-label="Default select example"
-                                                        name="gm_id" id="id_gm" value="{{ old('juri') }}"
-                                                        placeholder="Pilih GM"  {{$is_owner ? '' : 'disabled'}} >
-                                                    </select>
-                                                </div>
+
+                                            <div class="mb-3">
+                                                <h6 class="small mb-1">Pilih GM</h6>
+                                                <input type="hidden" name="team_id" value="{{$row->team_id}}">
+                                                <select class="form-select @error('gm_id') is-invalid @enderror" aria-label="Default select example" name="gm_id" id="id_gm" value="{{ old('gm_id') }}" placeholder="Pilih GM" {{$is_owner ? '' : 'disabled'}}></select>
+                                                @error('gm_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
                                                 @if($gmName !== null)
                                                 <div class="mb-3">
+                                                    <input type="hidden" name="oldGm" value="{{$gmName->employee_id}}">
                                                     <div class="h6">Nama General Manager yang di pilih sebelumnnya : </div>
                                                     <div class="h5">{{$gmName->name}}</div>
                                                     <hr>
@@ -92,7 +94,7 @@
                                                 @endif
                                                 <div class="mb-3" id="file_row_{{$row->paper_id}}">
                                                     <label class="mb-1" for="dataFileReview{{$row->paper_id}}">Berita Acara Benefit (Pdf)</label>
-                                                    <input class="form-control" id="file_review_{{$row->paper_id}}" type="file" name="file_review" accept=".pdf" oninput="check_file('{{$row->paper_id}}')" {{ ($row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager') ?  "" :"readonly disabled" }} required>
+                                                    <input class="form-control" id="file_review_{{$row->paper_id}}" type="file" name="file_review" accept=".pdf" oninput="check_file('{{$row->paper_id}}')" {{ ($row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager') ?  "" :"readonly disabled" }} >
                                                     <!-- <input type="text" id="file_path_{{$row->paper_id}}" value="{{$row->file_review}}" hidden> -->
                                                     <div class="is-invalid" id="invalid_file_{{$row->paper_id}}"></div>
                                                     <div class="invalid-feedback" id="feedback_file_{{$row->paper_id}}"></div>
@@ -224,15 +226,5 @@
             element.innerText = "Process...";
         }
 
-        // document.getElementById("assign-gm-form").addEventListener("submit", function(event) {
-        //     event.preventDefault(); // Mencegah pengiriman langsung
-        //     var id_button = document.getElementById("button_submit")
-        //     id_button.setAttribute('disabled', 'true');;
-        //     id_button.innerText = "Process...";
-
-        //     setTimeout(function() {
-        //         document.getElementById("assign-gm-form").submit();
-        //     }, 1000);
-        // });
     </script>
 </html>

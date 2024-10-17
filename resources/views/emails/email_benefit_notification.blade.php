@@ -68,12 +68,12 @@
             @else
                 <p>Ketua: Tidak ada informasi</p>
             @endif
-            <p>Lokasi Implementasi Inovasi: {{ $inovasi_lokasi->inovasi_lokasi }}</p>
+            <p>Lokasi Implementasi Inovasi: {{ $inovasi_lokasi }}</p>
             <p>Benefit Financial (Real): {{ $financial }}</p>
             <p>Benefit Potential: {{ $potential_benefit }}</p>
             <p>Potensi Replikasi: {{ $potensi_replikasi }}</p>
             <p>Benefit Non Financial : {{ $non_financial }}</p>
-           
+
         </div>
 
     @elseif($status == 'accepted benefit by facilitator')
@@ -109,7 +109,7 @@
 
     <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
     <p>Terimakasih</p>
-    
+
     <p></p>
     <p>Hormat kami,<br>Unit KMI</p>
     </div>

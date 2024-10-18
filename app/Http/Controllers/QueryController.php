@@ -1960,19 +1960,8 @@ class QueryController extends Controller
         try {
             $data_row = Event::orderBy('id', 'desc') // newest events first
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END")
-                ->get();            // $data_row = Event::leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
-            //                 ->select([
-            //                     'events.id as event_id',
-            //                     'company_name',
-            //                     'event_name',
-            //                     'description',
-            //                     'events.company_code as company_code',
-            //                     'year',
-            //                     'date_start',
-            //                     'date_end',
-            //                     'status'
-            //                 ])
-            //                 ->get();
+                ->get();
+            //
             $dataTable = DataTables::of($data_row);
             $rawColumns = [];
 
@@ -2003,15 +1992,18 @@ class QueryController extends Controller
 
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                // if($data_row->status != 'finish'){
-                //     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal('. $data_row['id'] .')" >Action</button><button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal('. $data_row['id'] .')"><i class="fa fa-pencil"></i> Edit</button>';
-                // }
-                // elseif(auth()->user()->role == 'Admin' && $data_row->status != 'finish'){
-                //     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal('. $data_row['id'] .')" >Action</button>';
-                // }
+                Log::debug($data_row);
+                $userCompanyName = Auth::user()->company_name;
+                $getCompanyName = Company::where('company_code', $data_row->company_code)->select('company_name')->first();
+                $isAdmin = Auth::user()->role === "Admin";
                 if (auth()->user()->role == 'Superadmin') {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
+                }
+
+                if($isAdmin && $userCompanyName === $getCompanyName->company_name){
+                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
+                    <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
             });
 

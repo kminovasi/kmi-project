@@ -35,9 +35,7 @@ use App\Mail\EmailApprovalPaperFasil;
 use App\Mail\EmailApprovalBenefit;
 use App\Mail\EmailApprovalFinal;
 use App\Http\Requests\registerRequests;
-use App\Http\Requests\approveFasilRequests;
-use App\Http\Requests\approveAdminRequests;
-use App\Http\Requests\assignEventRequest;
+use Illuminate\Validation\Rules\File;
 use App\Http\Requests\updateTeamPaperRequests;
 use App\Models\History;
 use App\Notifications\PaperNotification;
@@ -1602,6 +1600,31 @@ class PaperController extends Controller
 
     public function uploadDocument(Request $request)
     {
+        $validated = $request->validate([
+            'document_support' => [
+                'required',
+                'array', // Input sebagai array jika mengijinkan multiple file
+            ],
+            'document_support.*' => [
+                'required',
+                'file', // Validasi bahwa ini adalah file
+                'mimes:pdf,jpg,jpeg,png,mp4,avi,mkv', // Validasi untuk menerima format pdf, gambar, atau video
+                function ($attribute, $value, $fail) {
+                    $fileType = $value->getMimeType();
+                    $fileSize = $value->getSize() / 1024; // ukuran dalam KB
+
+                    // Validasi berdasarkan tipe file
+                    if (str_contains($fileType, 'pdf') && $fileSize > 10240) { // PDF maksimal 10MB (10240 KB)
+                        $fail("The {$attribute} must not exceed 10MB.");
+                    } elseif (str_contains($fileType, 'image') && $fileSize > 5120) { // Gambar maksimal 5MB (5120 KB)
+                        $fail("The {$attribute} must not exceed 5MB.");
+                    } elseif (str_contains($fileType, 'video') && $fileSize > 51200) { // Video maksimal 50MB (51200 KB)
+                        $fail("The {$attribute} must not exceed 50MB.");
+                    }
+                },
+            ],
+        ]);
+
         $uploadedFiles = [];
         foreach ($request->file('document_support') as $file) {
             $path = $file->store('document_support', 'public');
@@ -1611,8 +1634,8 @@ class PaperController extends Controller
                 'path' => $path,
             ];
         }
+
         try {
-            // dd($request->all());
             DB::beginTransaction();
             foreach ($uploadedFiles as $fileData) {
                 $document = new DocumentSupport([
@@ -1629,6 +1652,9 @@ class PaperController extends Controller
             return redirect()->back()->withErrors(['upload' => 'Failed to upload documents. Error: ' . $e->getMessage()]);
         }
     }
+
+
+
 
     public function deleteDocument(Request $request)
     {

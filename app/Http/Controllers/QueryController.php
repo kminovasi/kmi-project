@@ -501,26 +501,26 @@ class QueryController extends Controller
                 $teamId = $data_row->team_id;
                 $employeeId = Auth::user()->employee_id;
                 $statusProp = PvtMember::where('team_id', $teamId)->where('employee_id', $employeeId)->select('status')->first();
-                if($statusProp === null){
+                if ($statusProp === null) {
                     return '<div class="d-flex">
                     <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
                 </div>';
-                }else{
+                } else {
 
                     if ($statusProp->status === "leader" || $statusProp->status === "member") {
                         return '<div class="d-flex">
                                     <button class="btn btn-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#uploadDocument" onclick="upload_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-upload"></i></button><br>
                                     <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
                                     </div>';
-                                } else {
+                    } else {
 
-                                return '<div class="d-flex">
+                        return '<div class="d-flex">
                                     <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
                                 </div>';
                     }
                 }
             });
-                // Log::debug($data_row->)
+            // Log::debug($data_row->)
             //modal action
             $rawColumns[] = 'status';
             $dataTable->addColumn('status', function ($data_row) {
@@ -728,25 +728,74 @@ class QueryController extends Controller
     public function get_berita_acara(Request $request)
     {
         try {
-            $data_row = BeritaAcara::select("id", "event_id", "no_surat", "jenis_event", "penetapan_juara", "signed_file");
+            // Ambil data perusahaan dari session atau auth
+            $currentUser = auth()->user(); // Ambil informasi pengguna yang sedang login
+            $companyNameUser = $currentUser->company_name; // Asumsikan pengguna memiliki company_name
+            $getCompanyCode = Company::where('company_name', $companyNameUser)->select('company_code')->first();
+            $currentCompanyCode = $getCompanyCode->company_code;
+
+            // Lakukan join ke tabel events berdasarkan event_id
+            $data_row = BeritaAcara::select("berita_acaras.id", "berita_acaras.event_id", "events.event_name", "berita_acaras.no_surat", "berita_acaras.jenis_event", "berita_acaras.penetapan_juara", "berita_acaras.signed_file")
+                ->join('events', 'berita_acaras.event_id', '=', 'events.id')
+                ->where('events.company_code', $currentCompanyCode); // Pastikan hanya mengambil data untuk perusahaan pengguna
 
             $dataTable = DataTables::of($data_row->get());
 
-            $rawColumns = ['upload'];
-            $dataTable->addColumn('upload', function ($data_row) {
-                return '<button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-upload"></i></button>';
+            $rawColumns = ['upload', 'delete', 'view']; // Tambahkan 'view' ke rawColumns
+
+            $dataTable->addColumn('upload', function ($data_row) use ($currentUser) {
+                // Cek apakah file sudah diupload (kolom signed_file tidak null)
+                if ($data_row['signed_file']) {
+                    // Jika file sudah ada, hanya tampilkan tombol "Lihat" atau "Edit" berdasarkan peran pengguna
+                    if ($currentUser->role === "Admin") {
+                        return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-edit"></i> Edit</button>';
+                    }
+                } else {
+                    // Jika file belum ada, tampilkan tombol "Upload"
+                    return '<button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-upload"></i> Upload</button>';
+                }
+            });
+
+            // Tambahkan kolom hapus jika signed_file sudah ada
+            $dataTable->addColumn('delete', function ($data_row) use ($currentUser) {
+                if ($data_row['signed_file'] && $currentUser->role === "Admin") { // Periksa apakah pengguna adalah admin
+                    // Tampilkan tombol hapus jika file sudah diunggah
+                    return '<form action="' . route('dokumentasi.berita-acara.delete', ['id' => $data_row['id']]) . '" method="POST" onsubmit="return confirm(\'Yakin ingin menghapus file ini?\');">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Hapus</button>
+                        </form>';
+                }
+                return ''; // Jika tidak ada file, tidak ada tombol hapus
+            });
+
+            // Tambahkan kolom view untuk melihat file
+            $dataTable->addColumn('view', function ($data_row) {
+                if ($data_row['signed_file']) {
+                    // Tampilkan tombol lihat jika file sudah diunggah
+                    return '<a href="' . asset('storage/' . $data_row['signed_file']) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Lihat</a>';
+                }
+                return ''; // Jika tidak ada file, tidak ada tombol lihat
             });
 
             $dataTable->rawColumns($rawColumns);
-            // dd($dataTable->addIndexColumn()->toJson());
+
+            // Menambahkan event_name ke dalam DataTable
+            $dataTable->addColumn('event_name', function ($data_row) {
+                return $data_row['event_name'];
+            });
+
             return $dataTable->addIndexColumn()->toJson();
         } catch (Exception $e) {
-            // dd($e->getMessage());
             return response()->json([
                 'error' => $e->getMessage()
             ], 422);
         }
     }
+
+
+
+
 
     public function get_data_template_assessment(Request $request)
     {
@@ -2001,7 +2050,7 @@ class QueryController extends Controller
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
 
-                if($isAdmin && $userCompanyName === $getCompanyName->company_name){
+                if ($isAdmin && $userCompanyName === $getCompanyName->company_name) {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                     <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }

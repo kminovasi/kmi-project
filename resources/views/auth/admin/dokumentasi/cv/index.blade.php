@@ -198,34 +198,47 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Tim</th>
-                            <th scope="col">Inovasi</th>
+                            <th scope="col">No</th>
+                            <th scope="col">Team</th>
+                            <th scope="col">Judul</th>
                             <th scope="col">Tema</th>
                             <th scope="col">Event</th>
+                            <th scope="col">Financial</th>
+                            <th scope="col">Potensi Replikasi</th>
                             <th scope="col">Status</th>
-                            <th >Action</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($innovations as $inovasi )
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $inovasi->team_name }}</td>
                             <td>{{ $inovasi->innovation_title }}</td>
                             <td>{{ $inovasi->theme_name }}</td>
-                            <td>{{ $inovasi->event_name }}</td>
-                            <td>{{ $inovasi->event_status }}</td>
+                            <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
+                            <td>Rp.{{ number_format($inovasi->financial, 0, ',', '.') }}</td>
+                            <td>{{ $inovasi->potensi_replikasi }}</td>
                             <td>
-                                <div class="flex flex-row">
-                                    {{-- Detail Button --}}
-                                    <a href="#" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-info-circle"></i>
-                                    </a>
-
-                                    {{-- Download Button --}}
-                                    <a href="#" class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                </div>
+                                @if ($inovasi->is_best_of_the_best == false)
+                                {{ $inovasi->status }}
+                                @else
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="Best of The Best">
+                                    <i class="fas fa-trophy" aria-hidden="true"></i>
+                                </button>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('evidence.detail', $inovasi->team_id) }}"
+                                    class="btn btn-sm btn-primary">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <a href="{{ asset('storage/' . str_replace('f: ', '', $inovasi->full_paper)) }}"
+                                    class="btn btn-sm btn-secondary" download="{{ $inovasi->innovation_title }}.pdf">
+                                    <i class="fas fa-download"></i>
+                                </a>
                             </td>
                         </tr>
                         @endforeach

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,10 +34,27 @@ class CvController extends Controller
         ->get();
 
 
-        dd($innovations);
-
-        // $innovation = /DB::
+        // dd($innovations);
 
         return view('auth.admin.dokumentasi.cv.index', compact('innovations'));
     }
+
+    public function generateCertificate(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        // Ambil nama dari input
+        $name = $request->input('name');
+
+        // Generate PDF dari view Blade
+        $pdf = Pdf::loadView('certificate_pdf', compact('name'))
+            ->setPaper('a4', 'landscape');
+
+        // Download PDF
+        return $pdf->download('certificate.pdf');
+    }
+
 }

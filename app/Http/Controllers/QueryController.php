@@ -501,19 +501,26 @@ class QueryController extends Controller
                 $teamId = $data_row->team_id;
                 $employeeId = Auth::user()->employee_id;
                 $statusProp = PvtMember::where('team_id', $teamId)->where('employee_id', $employeeId)->select('status')->first();
-                // Log::debug($data_row->)
-                if ($statusProp->status === "leader" || $statusProp->status === "member") {
+                if($statusProp === null){
                     return '<div class="d-flex">
-                                <button class="btn btn-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#uploadDocument" onclick="upload_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-upload"></i></button><br>
-                                <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
-                                </div>';
-                            } else {
+                    <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
+                </div>';
+                }else{
 
-                            return '<div class="d-flex">
-                                <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
-                            </div>';
+                    if ($statusProp->status === "leader" || $statusProp->status === "member") {
+                        return '<div class="d-flex">
+                                    <button class="btn btn-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#uploadDocument" onclick="upload_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-upload"></i></button><br>
+                                    <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
+                                    </div>';
+                                } else {
+
+                                return '<div class="d-flex">
+                                    <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
+                                </div>';
+                    }
                 }
             });
+                // Log::debug($data_row->)
             //modal action
             $rawColumns[] = 'status';
             $dataTable->addColumn('status', function ($data_row) {

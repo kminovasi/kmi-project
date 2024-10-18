@@ -218,6 +218,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('berita-acara')->name('berita-acara.')->group(function () {
         Route::get('/', [BeritaAcaraController::class, 'index'])->name('index');
         Route::get('/create', [BeritaAcaraController::class, 'create'])->name('create');
+        Route::delete('/delete/{id}', [BeritaAcaraController::class, 'destroy'])->name('destroy');
         Route::post('store', [BeritaAcaraController::class, 'store'])->name('store');
         Route::get('/downloadPDF/{id}', [BeritaAcaraController::class, 'downloadPDF'])->name('downloadPDF');
         Route::get('/showPDF/{id}', [BeritaAcaraController::class, 'showPDF'])->name('showPDF');

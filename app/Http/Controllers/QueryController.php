@@ -463,17 +463,16 @@ class QueryController extends Controller
             //link benefit
             $rawColumns[] = 'benefit';
             $dataTable->addColumn('benefit', function ($data_row) {
-                if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null){
-                    if($data_row->member_status === "leader" || $data_row->member_status === "member"){
+                if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null) {
+                    if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
                         return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Update</a>";
-                    }else{
+                    } else {
                         return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
                     }
-                }
-                else{
-                    if($data_row->member_status === "leader" || $data_row->member_status === "member"){
+                } else {
+                    if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
                         return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
-                    }else{
+                    } else {
                         return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
                     }
                 }
@@ -499,10 +498,21 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Dokumen';
             $dataTable->addColumn('Dokumen', function ($data_row) {
-                return '<div class="d-flex">
-                            <button class="btn btn-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#uploadDocument" onclick="upload_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-upload"></i></button><br>
-                            <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
-                        </div>';
+                $teamId = $data_row->team_id;
+                $employeeId = Auth::user()->employee_id;
+                $statusProp = PvtMember::where('team_id', $teamId)->where('employee_id', $employeeId)->select('status')->first();
+                // Log::debug($data_row->)
+                if ($statusProp->status === "leader" || $statusProp->status === "member") {
+                    return '<div class="d-flex">
+                                <button class="btn btn-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#uploadDocument" onclick="upload_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-upload"></i></button><br>
+                                <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
+                                </div>';
+                            } else {
+
+                            return '<div class="d-flex">
+                                <button class="btn btn-outline-primary btn-sm next-2" type="button" data-bs-toggle="modal" data-bs-target="#showDocument" onclick="show_document_modal(' . $data_row->paper_id . ')" ><i class="fa fa-eye"></i>&nbsp</button>
+                            </div>';
+                }
             });
             //modal action
             $rawColumns[] = 'status';
@@ -550,7 +560,7 @@ class QueryController extends Controller
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
                 if ($data_row->status === "accepted benefit by general manager") {
-                    if(auth()->user()->role === "Admin" || auth()->user()->role === "Superadmin"){
+                    if (auth()->user()->role === "Admin" || auth()->user()->role === "Superadmin") {
                         return '<div class="d-flex">
                                     <button class="btn btn-warning btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#updateData" onclick="get_data_modal_update(' . $data_row->team_id . ')">Update</button>
                                     <button class="btn btn-danger btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#rollback" onclick="change_url(' . $data_row->paper_id . ', \'formRollback\' )">Rollback</button>

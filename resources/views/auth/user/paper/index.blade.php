@@ -87,6 +87,19 @@
                 </div>
             </div>
         </div>
+        @if ($errors->any())
+        <div class="container-xl px-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> List Error:
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
     </header>
 
     <div class="container-xl px-4 mt-4">
@@ -95,12 +108,6 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
                     {{ session('success') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if (session('errors'))
-                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                    {{ session('errors') }}
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -444,9 +451,11 @@
                         <div class="mb-3">
                             {{-- <p id="paper_id_input"></p> --}}
                             <input type="hidden" name="paper_id" id="paper_id_input" value="">
-                            <label for="inputBeberapaDokumen">File Berupa PDF, Video, PPT, Excel, Gambar</label>
+                            <label for="inputBeberapaDokumen">File Berupa PDF atau Gambar atau Video</label>
                             <input type="file" name="document_support[]" class="form-control"
+                                accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv"
                                 id="inputBeberapaDokumen" multiple>
+
                         </div>
                         <div class="mb-3">
 
@@ -1219,38 +1228,57 @@
                 var container = $('#resultContainer');
                 response.forEach(function(item) {
                     container.append(deleteBtn);
-                    //extention
+
+                    // Mendapatkan URL file
                     var fileUrl = '{{ route('query.getFile') }}' + '?directory=' + item.path;
+
+                    // Menangani gambar
                     if (item.file_name.toLowerCase().endsWith('.jpg') || item.file_name.toLowerCase().endsWith('.png') || item.file_name.toLowerCase().endsWith('.jpeg')) {
                         var imgElement = $('<img>').attr({
                             'class': "w-100",
                             'src': fileUrl,
                             'alt': item.file_name,
-                            // 'width': 300,  // Ganti dengan lebar yang diinginkan
-                            // 'height': 200  // Ganti dengan tinggi yang diinginkan
                         });
-
                         container.append(imgElement);
-                    } else if(item.file_name.toLowerCase().endsWith('.pdf')) {
-                        // Membuat elemen iframe untuk setiap file PDF
+
+                    // Menangani PDF
+                    } else if (item.file_name.toLowerCase().endsWith('.pdf')) {
                         var iframeElement = document.createElement('iframe');
                         iframeElement.src = fileUrl;
                         iframeElement.width = '100%';
                         iframeElement.height = '720px';
-
-                        // Menambahkan elemen iframe ke dalam resultContainer
                         resultContainer.appendChild(iframeElement);
+
+                    // Menangani video MP4
+                    }  else if (item.file_name.toLowerCase().endsWith('.mp4')) {
+                        var videoElement = document.createElement('video');
+                        videoElement.src = fileUrl;
+                        videoElement.className = 'w-100'; // Menggunakan kelas Bootstrap untuk lebar 100%
+                        videoElement.controls = true;
+                        videoElement.type = 'video/mp4'; // Menambahkan type="video/mp4"
+                        resultContainer.appendChild(videoElement);
+
+                    // Menangani video MKV atau format lain yang mungkin tidak didukung
+                    } else if (item.file_name.toLowerCase().endsWith('.mkv') || item.file_name.toLowerCase().endsWith('.avi')) {
+                        container.append('<p>Browser mungkin tidak mendukung format video ' + item.file_name + '. Silakan unduh file untuk memutar video.</p>');
+                        var downloadLink = $('<a>')
+                            .attr('href', fileUrl)
+                            .attr('download', item.file_name)
+                            .text('Download ' + item.file_name)
+                            .addClass('btn btn-primary');
+                        container.append(downloadLink);
                     }
 
+                    // Form untuk menghapus file
                     var form = $('<form>', {
-                        method: 'POST', // Explicitly set HTTP method to POST
-                        action: '{{ route('paper.deleteDocument') }}' // Dynamically generate route using Laravel's route helper
+                        method: 'POST',
+                        action: '{{ route('paper.deleteDocument') }}'
                     });
 
                     var deleteBtn = $('<button>')
                                     .text('Delete')
-                                    .attr('class', 'btn btn-danger my-3') // Updated class to Bootstrap's btn btn-danger
-                                    .attr('type', 'submit'); // Set button type to submit for form submission
+                                    .attr('class', 'btn btn-danger my-3')
+                                    .attr('type', 'submit');
 
                     form.append($('<input>', {
                         type: 'hidden',
@@ -1261,10 +1289,9 @@
                     form.append($('<input>', {
                         type: 'hidden',
                         name: 'id',
-                        value: item.id // Include hidden field for spoofing DELETE method
+                        value: item.id
                     }));
 
-                    // Include CSRF token if applicable (assuming Laravel's CSRF protection)
                     form.append($('<input>', {
                         type: 'hidden',
                         name: '_token',
@@ -1273,11 +1300,13 @@
 
                     form.append(deleteBtn);
 
-                    // Append the form containing the delete button to the container
+                    // Append form ke container
                     container.append(form);
                     container.append('<hr>');
                 });
             },
+
+
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
             }

@@ -197,9 +197,6 @@
                 "url": "{{ route('query.get_event') }}",
                 "type": "GET",
                 "dataSrc": function (data) {
-                    console.log('Jumlah data total: ' + data.recordsTotal);
-                    console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                    console.log('Jumlah data setelah filter: ' + data.data);
                     return data.data;
                 }
             },

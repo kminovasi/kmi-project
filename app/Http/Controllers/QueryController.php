@@ -2009,11 +2009,9 @@ class QueryController extends Controller
                 // elseif(auth()->user()->role == 'Admin' && $data_row->status != 'finish'){
                 //     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal('. $data_row['id'] .')" >Action</button>';
                 // }
-                if ($data_row->status != 'finish' && auth()->user()->role == 'Superadmin') {
-                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Action</button>
+                if (auth()->user()->role == 'Superadmin') {
+                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
-                } elseif ($data_row->status != 'finish') {
-                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Action</button>';
                 }
             });
 

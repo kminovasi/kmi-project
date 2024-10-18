@@ -172,22 +172,34 @@ class ManagamentSystemController extends Controller
         }
 
 
+        public function changeEvent(Request $request, $id) {
+            try {
+                DB::beginTransaction();
 
+                $event = Event::findOrFail($id);  // Mengambil event berdasarkan ID
 
-public function changeEvent(Request $request, $id) {
-    try {
-        DB::beginTransaction();
-        $event = Event::findOrFail($id);  // Using findOrFail to ensure the event exists
-        $event->update([
-            'status' => $request->status,
-        ]);
-        DB::commit();
-        return redirect()->route('management-system.assign.event')->with('success', 'Change Status Event successful');
-    } catch (\Exception $e) {
-        DB::rollback();
-        return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
-    }
-}
+                // Jika status yang ingin diubah menjadi 'active'
+                if ($request->status === 'active') {
+                    // Cek apakah ada event lain yang aktif
+                    $activeEvent = Event::where('status', 'active')->where('id', '!=', $id)->first();
+                    if ($activeEvent) {
+                        return redirect()->route('management-system.assign.event')->withErrors('Error: Hanya satu event yang dapat aktif pada satu waktu.');
+                    }
+                }
+
+                // Mengupdate status event
+                $event->update([
+                    'status' => $request->status,
+                ]);
+
+                DB::commit();
+                return redirect()->route('management-system.assign.event')->with('success', 'Change Status Event successful');
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
+            }
+        }
+
 
 
 public function updateEvent(Request $request, $id) {

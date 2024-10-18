@@ -10,11 +10,11 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="book"></i></div>
-                        Dokumentasi - Detail Team
+                        Evidence - Detail Team
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
-                    <a class="btn btn-sm btn-outline-primary" href="{{ route('dokumentasi.index') }}">
+                    <a class="btn btn-sm btn-outline-primary" onclick="goBack()">
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
@@ -36,15 +36,15 @@
                 <div class="col-md-5 text-center">
                     <figure class="figure">
                         <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->proof_idea) }}" alt="paper"
-                            style="max-width: 100%; max-height: 500px;">
-                            <figcaption class="figure-caption text-center">Foto Profile Team</figcaption>
+                            style="max-width: 100%; max-height: 400px;">
+                        <figcaption class="figure-caption text-center">Foto Profile Team</figcaption>
                     </figure>
                 </div>
                 <div class="col-md-5 text-center">
                     <figure class="figure">
                         <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}"
-                            alt="paper" style="max-width: 100%; max-height: 500px;">
-                            <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
+                            alt="paper" style="max-width: 100%; max-height: 400px;">
+                        <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
                     </figure>
                 </div>
             </div>
@@ -122,11 +122,13 @@
                 data-bs-custom-class="custom-tooltip" data-bs-title="Download Paper">
                 <i class="fas fa-download"></i>
             </a>
+            @if (!empty($paper->path))
             <a href="{{ asset('storage/' . $paper->path) }}" class="btn btn-secondary" download="Supporting Document"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                 data-bs-title="Download Dokumen Pendukung">
                 <i class="fas fa-download "></i>
             </a>
+            @endif
         </div>
     </div>
 
@@ -257,5 +259,11 @@
     </div>
 </div>
 
-
 @endsection
+@push('js')
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+@endpush

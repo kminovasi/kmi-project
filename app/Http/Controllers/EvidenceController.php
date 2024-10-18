@@ -23,14 +23,13 @@ class EvidenceController extends Controller
     {
 
         $category = Category::find($id);
-
         // Filter dan Pencarian
         $search = $request->input('search');
         $companyCode = $request->input('code');
         $theme = $request->input('theme');
         $event = $request->input('event');
 
-        // join tabel untuk list paper
+        // mendapatkan semua data paper dengan kategori dan event yang status finish
         $papers = \DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
@@ -70,8 +69,8 @@ class EvidenceController extends Controller
 
         $papers = $papers->paginate(10);
 
-        // ambil data themes, companies dan events untuk kebutuhan filter
-        $themes = Theme::select('id', 'theme_name');
+        // mendapatkan data themes, companies, events untuk kebutuhan filter
+        $themes = Theme::select('id', 'theme_name')->get();
         $companies = Company::select('company_name', 'company_code')->get();
         $events = Event::where('status', 'finish')->select('id', 'event_name', 'year')->get();
 
@@ -83,14 +82,14 @@ class EvidenceController extends Controller
 
         $team = Team::findOrFail($id);
 
-        // join tabel untuk data detail
+        // Ambil tim berdasarkan team_id
         $papers = \DB::table('teams')
-            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->join('papers', 'teams.id', '=', 'papers.team_id')
-            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->join('themes', 'teams.theme_id', '=', 'themes.id')
-            ->join('document_supportings', 'papers.id', '=', 'document_supportings.paper_id')
-            ->where('papers.team_id', $id)
+            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
+            ->leftJoin('document_supportings', 'papers.id', '=', 'document_supportings.paper_id')
+            ->where('teams.id', $id)
             ->select(
                 'papers.*',
                 'pvt_event_teams.final_score',
@@ -104,6 +103,7 @@ class EvidenceController extends Controller
             )
             ->get();
 
+        // mendapatkan data member berdasarkan id team
         $teamMember = $team->pvtMembers()->with('user')->get();
 
 

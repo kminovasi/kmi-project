@@ -549,11 +549,13 @@ class QueryController extends Controller
             });
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                if ($data_row->status == "accepted by innovation admin") {
-                    return '<div class="d-flex">
-                                <button class="btn btn-warning btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#updateData" onclick="get_data_modal_update(' . $data_row->team_id . ')">Update</button>
-                                <button class="btn btn-danger btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#rollback" onclick="change_url(' . $data_row->paper_id . ', \'formRollback\' )">Rollback</button>
-                            </div>';
+                if ($data_row->status === "accepted benefit by general manager") {
+                    if(auth()->user()->role === "Admin" || auth()->user()->role === "Superadmin"){
+                        return '<div class="d-flex">
+                                    <button class="btn btn-warning btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#updateData" onclick="get_data_modal_update(' . $data_row->team_id . ')">Update</button>
+                                    <button class="btn btn-danger btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#rollback" onclick="change_url(' . $data_row->paper_id . ', \'formRollback\' )">Rollback</button>
+                                </div>';
+                    }
                 } else {
                     return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#updateData" onclick="get_data_modal_update(' . $data_row->team_id . ')">Update</button>';
                 }

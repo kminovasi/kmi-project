@@ -34,6 +34,15 @@
                             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-11">
                                 <div class="card border-0 mt-5 mb-5">
                                     <div class="card-header">Form Benefit</div>
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
                                         <form action="{{route('benefit.store.user', $row->paper_id)}}" method="POST" enctype="multipart/form-data" id="assign-gm-form">
                                         @csrf
                                             <div class="card-body">

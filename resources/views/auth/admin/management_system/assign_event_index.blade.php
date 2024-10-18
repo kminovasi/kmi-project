@@ -99,7 +99,7 @@
                     <h5 class="modal-title" id="updateEventTitle">Update Data Event</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="updateDataForm" method="POST" enctype="multipart/form-data">
+                <form id="updateDataForm" method="POST" enctype="multipart/form-data" >
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
@@ -224,6 +224,7 @@
 
     });
     function update_modal(eventId) {
+        set_data_on_modal_event(eventId);
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -297,6 +298,13 @@
         // url = url.replace(':assessment_point_id', assessment_point_id);
         // form.action = url;
 
+    }
+    function set_data_on_modal_event(event_id){
+        console.log("OKOKOK");
+        var form = document.getElementById('updateDataForm');
+        var url = `{{ route('management-system.update.event', ['id' => ':event_id']) }}`;
+        url = url.replace(':event_id', event_id);
+        form.action = url;
     }
     function set_data_on_modal(event_id){
         var form = document.getElementById('updateStatusEvent');

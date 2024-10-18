@@ -86,6 +86,27 @@ class BeritaAcaraController extends Controller
         return redirect()->route('assessment.penetapanJuara')->with('success', 'Data Berhasil disimpan');
     }
 
+    public function destroy($id)
+{
+    try {
+        DB::beginTransaction();
+
+        // Temukan berita acara berdasarkan ID
+        $beritaAcara = BeritaAcara::findOrFail($id);
+
+        // Hapus berita acara
+        $beritaAcara->delete();
+
+        DB::commit();
+        return redirect()->route('assessment.penetapanJuara')->with('success', 'Berita Acara berhasil dihapus.');
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->route('assessment.penetapanJuara')->withErrors('Error: ' . $e->getMessage());
+    }
+}
+
+
+
     public function showPDF($id)
     {
         // Get the year

@@ -312,6 +312,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('/berita-acara')->name('berita-acara.')->group(function () {
             Route::get('/', [DokumentasiController::class, 'indexBeritaAcara'])->name('index');
             Route::get('/store', [DokumentasiController::class, 'storeBeritaAcara'])->name('store');
+            Route::delete('/delete/{id}', [DokumentasiController::class, 'delete'])->name('delete');
             Route::put('/upload/{id}', [DokumentasiController::class, 'uploadBeritaAcara'])->name('upload');
         });
     });

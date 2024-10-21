@@ -231,7 +231,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('evidence.detail', $inovasi->team_id) }}"
+                                <a href="{{ route('cv.detail', $inovasi->team_id) }}"
                                     class="btn btn-sm btn-primary">
                                     <i class="fas fa-info-circle"></i>
                                 </a>

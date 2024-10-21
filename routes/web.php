@@ -308,6 +308,7 @@ Route::middleware('auth')->group(function () {
     // Cv
     Route::prefix('/cv')->name('cv.')->group(function () {
         Route::get('/', [CvController::class, 'index'])->name('index');
+        Route::get('/detail/{id}', [CvController::class, 'detail'])->name('detail');
     });
 
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {

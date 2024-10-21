@@ -22,10 +22,12 @@ class CvController extends Controller
         ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
         ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
         ->join('themes', 'teams.theme_id', '=', 'themes.id')
+        ->join('categories', 'teams.category_id', '=', 'categories.id')
         ->select(
             'papers.*',
             'teams.team_name',
             'teams.status_lomba',
+            'categories.category_name as category',
             'events.event_name',
             'events.year',
             'pvt_event_teams.status as event_status',

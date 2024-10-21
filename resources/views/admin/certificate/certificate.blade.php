@@ -76,6 +76,41 @@
                                     data-bs-target="#changeStatusModal-{{ $certificate->id }}">
                                     Status
                                 </button>
+                                {{-- Modal is_active --}}
+                                <div class="modal fade" id="changeStatusModal-{{ $certificate->id }}" tabindex="-1"
+                                    aria-labelledby="changeStatusLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{{ route('certificates.activate', $certificate->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('Post')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="changeStatusLabel">Ubah Status
+                                                        Sertifikat</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="isActiveSwitch-{{ $certificate->id }}" name="is_active"
+                                                            {{ $certificate->is_active ? 'checked' : '' }}>
+                                                        <label class="form-check-label"
+                                                            for="isActiveSwitch-{{ $certificate->id }}">Aktifkan/Nonaktifkan</label>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Tutup</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan
+                                                        Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <form action="{{ route('certificates.destroy', $certificate->id) }}" method="POST"
                                     style="display: inline-block;">
                                     @csrf
@@ -125,34 +160,6 @@
     </div>
 </div>
 
-{{-- Modal is_active --}}
-<div class="modal fade" id="changeStatusModal-{{ $certificate->id }}" tabindex="-1"
-    aria-labelledby="changeStatusLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="{{ route('certificates.activate', $certificate->id) }}" method="POST">
-                @csrf
-                @method('Post')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="changeStatusLabel">Ubah Status Sertifikat</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="isActiveSwitch-{{ $certificate->id }}"
-                            name="is_active" {{ $certificate->is_active ? 'checked' : '' }}>
-                        <label class="form-check-label"
-                            for="isActiveSwitch-{{ $certificate->id }}">Aktifkan/Nonaktifkan</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
 
 @endsection

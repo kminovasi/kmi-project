@@ -203,7 +203,7 @@
                             <th scope="col">Judul</th>
                             <th scope="col">Tema</th>
                             <th scope="col">Event</th>
-                            <th scope="col">Financial</th>
+                            <th scope="col">Kategori</th>
                             <th scope="col">Potensi Replikasi</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
@@ -217,7 +217,7 @@
                             <td>{{ $inovasi->innovation_title }}</td>
                             <td>{{ $inovasi->theme_name }}</td>
                             <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
-                            <td>Rp.{{ number_format($inovasi->financial, 0, ',', '.') }}</td>
+                            <td>{{ $inovasi->category }}</td>
                             <td>{{ $inovasi->potensi_replikasi }}</td>
                             <td>
                                 @if ($inovasi->is_best_of_the_best == false)
@@ -236,8 +236,8 @@
                                     <i class="fas fa-info-circle"></i>
                                 </a>
                                 <a href="{{ asset('storage/' . str_replace('f: ', '', $inovasi->full_paper)) }}"
-                                    class="btn btn-sm btn-secondary" download="{{ $inovasi->innovation_title }}.pdf">
-                                    <i class="fas fa-download"></i>
+                                    class="btn btn-sm btn-warning" download="{{ $inovasi->innovation_title }}.pdf">
+                                    <i data-feather="download"></i>
                                 </a>
                             </td>
                         </tr>

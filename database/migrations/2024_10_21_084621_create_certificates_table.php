@@ -15,9 +15,8 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->string('template_path');
-            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }

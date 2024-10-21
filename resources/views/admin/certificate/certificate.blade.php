@@ -48,9 +48,8 @@
                     <thead class="thead-light">
                         <tr>
                             <th scope="col">No</th>
-                            <th scope="col">Nama</th>
+                            <th scope="col">Event</th>
                             <th scope="col">Template Gambar</th>
-                            <th scope="col">Status</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
@@ -59,58 +58,12 @@
                         @foreach($certificates as $key => $certificate)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ $certificate->title }}</td>
+                            <td>{{ $certificate->event->event_name }} {{ $certificate->event->year }}</td>
                             <td>
                                 <img src="{{ asset('storage/'.$certificate->template_path) }}" alt="Template Gambar"
                                     class="img-fluid" style="max-width: 100px; height: auto;">
                             </td>
                             <td>
-                                @if($certificate->is_active)
-                                <span class="badge bg-success">Aktif</span>
-                                @else
-                                <span class="badge bg-secondary">Nonaktif</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#changeStatusModal-{{ $certificate->id }}">
-                                    Status
-                                </button>
-                                {{-- Modal is_active --}}
-                                <div class="modal fade" id="changeStatusModal-{{ $certificate->id }}" tabindex="-1"
-                                    aria-labelledby="changeStatusLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form action="{{ route('certificates.activate', $certificate->id) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('Post')
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="changeStatusLabel">Ubah Status
-                                                        Sertifikat</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="isActiveSwitch-{{ $certificate->id }}" name="is_active"
-                                                            {{ $certificate->is_active ? 'checked' : '' }}>
-                                                        <label class="form-check-label"
-                                                            for="isActiveSwitch-{{ $certificate->id }}">Aktifkan/Nonaktifkan</label>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Tutup</button>
-                                                    <button type="submit" class="btn btn-primary">Simpan
-                                                        Perubahan</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <form action="{{ route('certificates.destroy', $certificate->id) }}" method="POST"
                                     style="display: inline-block;">
                                     @csrf
@@ -133,7 +86,7 @@
 <!-- Modal Upload -->
 <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form action="#" enctype="multipart/form-data" method="POST">
+        <form action="{{ route('certificates.store') }}" enctype="multipart/form-data" method="POST">
             @method('post')
             @csrf
             <div class="modal-content">
@@ -143,8 +96,13 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="title" class="form-label">Nama Sertifikat</label>
-                        <input type="text" class="form-control" name="title" id="title" required>
+                        <label for="event_id" class="form-label">Event</label>
+                        <select class="form-select" name="event_id" id="event_id" required>
+                            <option value="">Pilih Event</option>
+                            @foreach($eventsWithoutCertificate as $event)
+                                <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="template" class="form-label">Upload Gambar Sertifikat</label>

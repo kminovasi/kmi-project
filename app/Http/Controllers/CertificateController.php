@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Certificate;
+use DB;
 use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
@@ -15,8 +16,20 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $certificates = Certificate::all();
-        return view("admin.certificate.certificate", compact('certificates'));
+        $eventsWithoutCertificate = \DB::table('events')
+            ->leftjoin('certificates' , 'events.id', '=', 'certificates.event_id')
+            ->whereNull('certificates.event_id')
+            ->select(
+                'events.id as event_id',
+                'events.event_name',
+                'events.year',
+                'certificates.template_path')
+            ->get();
+
+        // dd($eventsWithoutCertificate);
+
+        $certificates = Certificate::with('event')->get();
+        return view("admin.certificate.certificate", compact('certificates', 'eventsWithoutCertificate'));
     }
 
     /**
@@ -27,17 +40,19 @@ class CertificateController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
-            'title' => 'required|string|max:255',
+            'event_id' => 'required|exists:events,id',
             'template' => 'required|file|mimes:jpg,jpeg,png'
         ]);
+
+        // dd($request->all());
 
         $path = $request->file('template')->store('certificate', 'public');
 
         Certificate::create([
-            'title' => $request->title,
+            'event_id' => $request->event_id,
             'template_path' => $path,
-            'is_active' => false,
         ]);
 
         return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dibuat.');

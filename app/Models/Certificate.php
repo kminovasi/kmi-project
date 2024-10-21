@@ -9,14 +9,16 @@ class Certificate extends Model
 {
     use HasFactory;
 
+    protected $table = 'certificates';
+
     protected $fillable = [
-        'title',
+        'event_id',
         'template_path',
-        'is_active'
     ];
 
-    // Tentukan tipe data pada kolom yang bertipe boolean atau date
-    protected $casts = [
-        'is_active' => 'boolean'
-    ];
+    // Relasi ke tabel Event
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }

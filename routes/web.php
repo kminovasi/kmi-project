@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChartDashboardController;
 use App\Http\Controllers\CvController;
 use App\Http\Controllers\DokumentasiController;
@@ -292,8 +293,13 @@ Route::middleware('auth')->group(function () {
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);
 
+        // Rute Certificates
+        Route::resource('certificates', CertificateController::class) ->only(['index', 'store', 'destroy']);
+        Route::post('certificates/{id}/activate', [CertificateController::class, 'activate'])->name('certificates.activate');
+
+
         //Rute Timeline
-        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy']);
+        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy', 'activate']);
     });
 
 

@@ -80,7 +80,7 @@ class CvController extends Controller
 
     public function generateCertificate($team_id)
     {
-        $employee_id = Auth::user()->employee_id;
+        $employee = Auth::user();
 
         $data = \DB::table('pvt_members')
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
@@ -90,7 +90,7 @@ class CvController extends Controller
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->join('certificates', 'events.id', '=', 'certificates.event_id')
             ->where('teams.id', $team_id)
-            ->where('pvt_members.employee_id', $employee_id)
+            ->where('pvt_members.employee_id', $employee->employee_id)
             ->select(
                 'teams.team_name',
                 'events.event_name',
@@ -108,6 +108,6 @@ class CvController extends Controller
         // Download PDF
         // return $pdf->download('certificate.pdf');
 
-        return view('auth.admin.dokumentasi.cv.certificate', compact('data', 'image'));
+        return view('auth.admin.dokumentasi.cv.certificate', compact('data', 'employee'));
     }
 }

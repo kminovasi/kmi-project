@@ -246,11 +246,11 @@
     </div>
 
     {{-- Paggination --}}
-    <div class=" mt-2 d-flex justify-content-end">
+    <div class="pagination mt-2 d-flex justify-content-end">
         @if ($innovations->hasPages())
         {{ $innovations->links() }}
         @else
-        <ul class="mt-2 d-flex justify-content-end">
+        <ul class="pagination">
             <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
                 <span class="page-link" aria-hidden="true">&lsaquo;</span>
             </li>

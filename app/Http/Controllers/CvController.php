@@ -81,13 +81,14 @@ class CvController extends Controller
     public function generateCertificate($team_id)
     {
         $employee = Auth::user();
+        $employeeName = $employee->name;
 
         $data = \DB::table('pvt_members')
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->join('categories', 'teams.category_id', '=', 'categories.id')
-            // ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->join('companies', 'events.company_code', '=', 'companies.company_code')
             ->join('certificates', 'events.id', '=', 'certificates.event_id')
             ->where('teams.id', $team_id)
             ->where('pvt_members.employee_id', $employee->employee_id)
@@ -95,19 +96,20 @@ class CvController extends Controller
                 'teams.team_name',
                 'events.event_name',
                 'events.year',
-                'certificates.template_path as certificate'
+                'categories.category_name',
+                'companies.company_name',
+                'certificates.template_path as certificate',
+                'pvt_event_teams.status as pvt_status',
+                'pvt_event_teams.is_best_of_the_best',
+                \DB::raw("'$employeeName' as employee_name")
             )
-            ->get();
-
-        dd($data);
+            ->first();
 
         // Generate PDF dari view Blade
-        // $pdf = Pdf::loadView('certificate_pdf', compact('data', 'image'))
-        //     ->setPaper('a4', 'landscape');
+        $pdf = Pdf::loadView('auth.admin.dokumentasi.cv.certificate', compact('data'))
+            ->setPaper('a4', 'landscape');
 
         // Download PDF
-        // return $pdf->download('certificate.pdf');
-
-        return view('auth.admin.dokumentasi.cv.certificate', compact('data', 'employee'));
+        return $pdf->download('certificate.pdf');
     }
 }

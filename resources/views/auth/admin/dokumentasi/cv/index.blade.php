@@ -246,7 +246,7 @@
     </div>
 
     {{-- Paggination --}}
-    <div class="pagination mt-2 d-flex justify-content-end">
+    <div class="pagination mt-2">
         @if ($innovations->hasPages())
         {{ $innovations->links() }}
         @else

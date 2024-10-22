@@ -16,7 +16,6 @@ class PvtEventTeam extends Model
     protected $fillable = [
         'event_id',
         'team_id',
-        'year',
         'status',
         'total_score_on_desk',
         'total_score_presentation',

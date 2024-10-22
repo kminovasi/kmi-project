@@ -170,7 +170,7 @@
 
 @section('content')
 
-<header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+<header class="page-header page-header-compact page-header-light border-bottom bg-white mb-2">
     <div class="container-xl px-4">
         <div class="page-header-content">
             <div class="row align-items-center justify-content-between pt-3">
@@ -191,61 +191,75 @@
     </div>
 </header>
 
-<div class="container-xl px-4 mt-4">
-    <div class="card text-sm">
-        <div class="card-body">
-            <div class="table-responsive-lg">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">No</th>
-                            <th scope="col">Team</th>
-                            <th scope="col">Judul</th>
-                            <th scope="col">Tema</th>
-                            <th scope="col">Event</th>
-                            <th scope="col">Kategori</th>
-                            <th scope="col">Potensi Replikasi</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($innovations as $inovasi )
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $inovasi->team_name }}</td>
-                            <td>{{ $inovasi->innovation_title }}</td>
-                            <td>{{ $inovasi->theme_name }}</td>
-                            <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
-                            <td>{{ $inovasi->category }}</td>
-                            <td>{{ $inovasi->potensi_replikasi }}</td>
-                            <td>
-                                @if ($inovasi->is_best_of_the_best == false)
-                                {{ $inovasi->status }}
-                                @else
-                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
-                                    data-bs-placement="top" data-bs-custom-class="custom-tooltip"
-                                    data-bs-title="Best of The Best">
-                                    <i class="fas fa-trophy" aria-hidden="true"></i>
-                                </button>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('cv.detail', $inovasi->team_id) }}"
-                                    class="btn btn-sm btn-primary">
-                                    <i class="fas fa-info-circle"></i>
-                                </a>
-                                <a href="{{ asset('storage/' . str_replace('f: ', '', $inovasi->full_paper)) }}"
-                                    class="btn btn-sm btn-warning" download="{{ $inovasi->innovation_title }}.pdf">
-                                    <i data-feather="download"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+<div class="container-xl p-2">
+
+    <div class="card px-2 pt-2">
+        <div class="table-responsive">
+            <table class="table table-borderless table-hover text-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Team</th>
+                        <th scope="col">Judul</th>
+                        <th scope="col">Tema</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">Kategori</th>
+                        <th scope="col">Replikasi</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($innovations as $inovasi )
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $inovasi->team_name }}</td>
+                        <td>{{ $inovasi->innovation_title }}</td>
+                        <td>{{ $inovasi->theme_name }}</td>
+                        <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
+                        <td>{{ $inovasi->category }}</td>
+                        <td>{{ $inovasi->potensi_replikasi }}</td>
+                        <td>
+                            @if ($inovasi->is_best_of_the_best == false)
+                            {{ $inovasi->status }}
+                            @else
+                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                                data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                data-bs-title="Best of The Best">
+                                <i class="fas fa-trophy" aria-hidden="true"></i>
+                            </button>
+                            @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('cv.detail', $inovasi->team_id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                            <a href="{{ route('cv.generateCertificate', $inovasi->team_id) }}" class="btn btn-sm btn-warning">
+                                <i data-feather="download"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+    </div>
+
+    {{-- Paggination --}}
+    <div class="pagination mt-2 d-flex justify-content-end">
+        @if ($innovations->hasPages())
+        {{ $innovations->links() }}
+        @else
+        <ul class="pagination">
+            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
+                <span class="page-link" aria-hidden="true">&lsaquo;</span>
+            </li>
+            <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
+            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.next')">
+                <span class="page-link" aria-hidden="true">&rsaquo;</span>
+            </li>
+        </ul>
+        @endif
     </div>
 </div>
 

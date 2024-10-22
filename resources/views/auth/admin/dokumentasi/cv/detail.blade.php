@@ -186,11 +186,6 @@
                 </div>
             </div>
         </div>
-        <div class="card-footer d-flex justify-content-end">
-            <a href="#" class="btn btn-primary me-2">
-                Sertifikat
-            </a>
-        </div>
     </div>
 
     <div class="card mb-4">
@@ -231,7 +226,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     @endforeach

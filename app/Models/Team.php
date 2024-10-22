@@ -24,15 +24,12 @@ class Team extends Model
     {
         return $this->belongsToMany(User::class, 'pvt_members');
     }
-    // public function users()
-    // {
-    //     return $this->hasMany(PvtMember::class, 'team_id');
-    // }
-    // public function facilitator()
-    // {
-    //     return $this->belongsTo(User::class, 'fasilitator_employee_id', 'employee_id');
-    // }
+
     public function categories()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
@@ -40,10 +37,7 @@ class Team extends Model
     {
         return $this->belongsTo(Theme::class);
     }
-    // public function events()
-    // {
-    //     return $this->belongsTo(Event::class);
-    // }
+
     public function paper()
     {
         return $this->hasOne(Paper::class, 'team_id', 'id');
@@ -56,4 +50,10 @@ class Team extends Model
     {
         return $this->hasMany(PvtMember::class, 'team_id');
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_code', 'company_code'); // Pastikan kolom yang digunakan sesuai
+    }
+
 }

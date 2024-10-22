@@ -11,9 +11,8 @@ class Company extends Model
     protected $table = 'companies';
 
     protected $fillable = [
-        'company_code', 
+        'company_code',
         'company_name',
-        'event_name'
     ];
     public function events()
 {

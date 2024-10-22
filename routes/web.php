@@ -53,6 +53,8 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
 
+
+
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

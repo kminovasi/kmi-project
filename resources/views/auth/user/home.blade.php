@@ -29,9 +29,8 @@
                     />
 
                     <div class="row">
-                        <h5>Semen</h5>
                     </div>
-                    <x-dashboard.semen />
+                    <x-dashboard.semen :year="$year" />
                 </div>
                 <div class="col-md-5">
                     <div class="row">

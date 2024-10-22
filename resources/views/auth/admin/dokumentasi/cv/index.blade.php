@@ -245,22 +245,30 @@
         </div>
     </div>
 
-    {{-- Paggination --}}
-    <div class="pagination mt-2 d-flex justify-content-end">
-        @if ($innovations->hasPages())
-        {{ $innovations->links() }}
-        @else
+
+    @if ($innovations->hasPages())
+    <div class="d-flex justify-content-end mt-2">
         <ul class="pagination">
-            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
-                <span class="page-link" aria-hidden="true">&lsaquo;</span>
+            {{-- Tombol Previous --}}
+            <li class="page-item {{ $innovations->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $innovations->previousPageUrl() }}" rel="prev" aria-label="@lang('pagination.previous')">&lsaquo;</a>
             </li>
-            <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
-            <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.next')">
-                <span class="page-link" aria-hidden="true">&rsaquo;</span>
-            </li>
-        </ul>
-        @endif
+
+            {{-- Nomor Halaman --}}
+            @foreach ($innovations->links()->elements[0] as $page => $url)
+                <li class="page-item {{ $page == $innovations->currentPage() ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                </li>
+            @endforeach
+
+            {{-- Tombol Next --}}
+            <li class="page-item {{ $innovations->hasMorePages() ? '' : 'disabled' }}">
+                <a class="page-link" href="{{ $innovations->nextPageUrl() }}" rel="next" aria-label="@lang('pagination.next')">&rsaquo;</a>
+                </li>
+            </ul>
+        </div>
+    @endif
+
     </div>
-</div>
 
 @endsection

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +12,7 @@ class DashboardController extends Controller
 {
     public function showDashboard(Request $request)
     {
+        $year = $request->input('year');
         // Menghitung jumlah tim berdasarkan kategori utama
         $breakthroughInnovation = DB::table('teams')
             ->join('categories', 'categories.id', '=', 'teams.category_id')
@@ -79,49 +82,12 @@ class DashboardController extends Controller
             ->where('categories.category_name', 'IDEA')
             ->count();
 
-        // $semenCountTeam = Team::join('categories', 'categories.id', '=', 'teams.category_id')
-        //         ->selectRaw('category_name as cat_name, Count(*) as count')
-        //         ->groupBy('cat_name')
-        //         ->orderBy('cat_name')
-        //         ->get();
-
-
-
-        // $labels = [];
-        // $datas = [];
-
-        // $colors = ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40', '#9966FF', '#FFCD56', '#C9CBCF', '#E0AED0', '#FFC004', 'FF9800'];
-
-        // $realisasiCountTeam = Team::join('companies', 'teams.company_code', '=', 'companies.company_code')
-        //         ->selectRaw('company_name as co_name, Count(*) as count')
-        //         ->groupBy('co_name')
-        //         ->orderBy('co_name')
-        //         ->get();
-        // $labelReals = [];
-        // $dataReals = [];
-
-        // foreach ($semenCountTeam as $data) {
-        //     array_push($labels, $data->cat_name);
-        //     array_push($datas, $data->count);
-        // }
-        // $datasetSemens = [
-        //     [
-        //         'label' => 'Team',
-        //         'data' => $datas,
-        //         'backgroundColor' => $colors
-        //     ]
-        // ];
-        // foreach ($realisasiCountTeam as $datareal) {
-        //     array_push($labels, $datareal->co_name);
-        //     array_push($datas, $datareal->count);
-        // }
-        // $datasetReals = [
-        //     [
-        //         'label' => 'Realisasi Team',
-        //         'data' => $datas,
-        //         'backgroundColor' => $colors
-        //     ]
-        // ];
-        return view('auth.user.home', compact('breakthroughInnovation', 'incrementalInnovation', 'ideaBox', 'detailBreakthroughInnovationPBB', 'detailBreakthroughInnovationTPP', 'detailBreakthroughInnovationManagement', 'detailIncrementalInnovationGKMPlant', 'detailIncrementalInnovationGKMOffice', 'detailIncrementalInnovationPKMPlant', 'detailIncrementalInnovationPKMOffice', 'detailIncrementalInnovationSSPlant', 'detailIncrementalInnovationSSOffice', 'detailIdeaBoxIdea'));
+        $availableYears =   Event::select('year')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC')
+            ->pluck('year')
+            ->toArray();
+        return view('auth.user.home', compact('breakthroughInnovation', 'incrementalInnovation', 'ideaBox', 'detailBreakthroughInnovationPBB', 'detailBreakthroughInnovationTPP', 'detailBreakthroughInnovationManagement', 'detailIncrementalInnovationGKMPlant', 'detailIncrementalInnovationGKMOffice', 'detailIncrementalInnovationPKMPlant', 'detailIncrementalInnovationPKMOffice', 'detailIncrementalInnovationSSPlant', 'detailIncrementalInnovationSSOffice', 'detailIdeaBoxIdea', 'year', 'availableYears'));
     }
+
 }

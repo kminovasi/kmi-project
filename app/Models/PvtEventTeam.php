@@ -23,4 +23,9 @@ class PvtEventTeam extends Model
         'final_score', // Jika kamu menggunakan final_score juga
         'is_best_of_the_best',
     ];
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
+    }
 }

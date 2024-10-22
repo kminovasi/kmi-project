@@ -6,6 +6,7 @@ use Illuminate\View\Component;
 use App\Models\Team;
 use App\Models\PvtMember;
 use App\Models\Category;
+use App\Models\Event;
 
 class Semen extends Component
 {
@@ -13,9 +14,17 @@ class Semen extends Component
     public $logos = [];
     public $categories = [];
     public $colors = [];
+    public $availableYears = [];
+    public $year;
 
-    public function __construct()
+    public function __construct($year = null)
     {
+        $this->availableYears =   Event::select('year')
+        ->groupBy('year')
+        ->orderBy('year', 'DESC')
+        ->pluck('year')
+        ->toArray();
+        $this->year = $year;
         // Ambil tahun terbaru dari data pendaftar
         $latestYear = Team::join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
             ->selectRaw("DATE_PART('year', teams.created_at) as year")
@@ -34,7 +43,14 @@ class Semen extends Component
             'rgba(54, 162, 235, 1)',    // Biru
             'rgba(153, 102, 255, 1)',   // Ungu
             'rgba(255, 159, 64, 1)',    // Oranye
-            // Tambahkan lebih banyak warna sesuai kebutuhan
+            'rgba(255, 87, 51, 1)',     // Merah oranye
+            'rgba(144, 238, 144, 1)',   // Hijau muda
+            'rgba(255, 140, 0, 1)',     // Oranye tua
+            'rgba(0, 255, 127, 1)',     // Hijau laut
+            'rgba(0, 191, 255, 1)',     // Biru langit
+            'rgba(238, 130, 238, 1)',   // Violet
+            'rgba(255, 105, 180, 1)',   // Pink cerah
+            'rgba(220, 20, 60, 1)',     // Crimson
         ];
 
 
@@ -94,6 +110,8 @@ class Semen extends Component
             'charts' => $this->charts,
             'logos' => $this->logos,
             'categories' => $this->categories,
+            'availableYears' => $this->availableYears,
+            'year' => $this->year
         ]);
     }
 }

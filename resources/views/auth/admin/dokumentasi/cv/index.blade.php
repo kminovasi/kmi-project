@@ -234,9 +234,22 @@
                             <a href="{{ route('cv.detail', $inovasi->team_id) }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-info-circle"></i>
                             </a>
-                            <a href="{{ route('cv.generateCertificate', $inovasi->team_id) }}" class="btn btn-sm btn-warning">
-                                <i data-feather="download"></i>
-                            </a>
+
+                            <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                @csrf
+                                <!-- Input hidden untuk menyimpan data dari $paper -->
+                                <input type="hidden" name="user_name" value="{{ $employee->name }}">
+                                <input type="hidden" name="team_name" value="{{ $inovasi->team_name }}">
+                                <input type="hidden" name="category" value="{{ $inovasi->category }}">
+                                <input type="hidden" name="template_path" value="{{ $inovasi->certificate }}">
+
+                                <!-- Tombol submit -->
+                                <button type="submit" class="btn btn-sm btn-warning">
+                                    <i data-feather="download"></i>
+                                </button>
+                            </form>
+
+
                         </td>
                     </tr>
                     @endforeach

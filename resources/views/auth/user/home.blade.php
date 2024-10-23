@@ -37,6 +37,7 @@
                         <h6>Productivity</h6>
                     </div>
                     <div class="row">
+                        <h4>Benefit</h4>
                         <x-dashboard.benefit :year="$year" />
                     </div>
                 </div>

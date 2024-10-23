@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function showDashboard(Request $request)
     {
-        $year = $request->input('year');
+        $year = $request->input('year') ?? date('Y');
         // Menghitung jumlah tim berdasarkan kategori utama
         $breakthroughInnovation = DB::table('teams')
             ->join('categories', 'categories.id', '=', 'teams.category_id')

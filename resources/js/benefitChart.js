@@ -1,8 +1,7 @@
-import { Chart, CategoryScale, LinearScale, BarController, BarElement } from 'chart.js';
-import 'chartjs-plugin-annotation';
+import { Chart, CategoryScale, LinearScale, BarController, BarElement, Tooltip } from 'chart.js';
 
 // Register necessary components
-Chart.register(CategoryScale, LinearScale, BarController, BarElement);
+Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
 
 // Define your colors for the chart
 const colors = [
@@ -33,12 +32,19 @@ const imagePlugin = {
 
             // Draw the image if it exists in logoImages
             if (logoImages[index]) {
+                const img = logoImages[index];
+
+                // Calculate aspect ratio
+                const aspectRatio = img.width / img.height;
+                const imgWidth = 30; // Set your desired width
+                const imgHeight = imgWidth / aspectRatio; // Calculate height based on aspect ratio
+
                 ctx.drawImage(
-                    logoImages[index],
+                    img,
                     x,
-                    y - 15, // Center the image vertically
-                    30,     // width
-                    30      // height
+                    y - imgHeight / 2, // Center the image vertically
+                    imgWidth,           // width
+                    imgHeight           // height
                 );
             }
         });
@@ -99,6 +105,18 @@ const initChart = async () => {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (tooltipItems) => {
+                                // Display the label of the hovered item
+                                return labels[tooltipItems[0].dataIndex];
+                            },
+                            label: (tooltipItem) => {
+                                // Display the value of the hovered item
+                                return `Value: ${dataValues[tooltipItem.dataIndex]}`;
+                            }
+                        }
                     }
                 }
             }

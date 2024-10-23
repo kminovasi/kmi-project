@@ -5,8 +5,16 @@
     "src": "resources/css/app.css"
   },
   "resources/js/app.js": {
-    "file": "assets/app-c3828592.js",
+    "dynamicImports": [
+      "resources/js/semenChart.js"
+    ],
+    "file": "assets/app-37ec44ea.js",
     "isEntry": true,
     "src": "resources/js/app.js"
+  },
+  "resources/js/semenChart.js": {
+    "file": "assets/semenChart-f4455533.js",
+    "isDynamicEntry": true,
+    "src": "resources/js/semenChart.js"
   }
 }

@@ -37,13 +37,10 @@
                         <h6>Productivity</h6>
                     </div>
                     <div class="row">
-
+                        <x-dashboard.benefit :year="$year" />
                     </div>
                 </div>
             </div>
-            <!-- Example Colored Cards for Dashboard Demo-->
-
-
         </div>
     </div>
 @endsection

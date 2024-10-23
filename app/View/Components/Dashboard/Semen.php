@@ -20,17 +20,21 @@ class Semen extends Component
     public function __construct($year = null)
     {
         $this->availableYears =   Event::select('year')
-        ->groupBy('year')
-        ->orderBy('year', 'DESC')
-        ->pluck('year')
-        ->toArray();
-        $this->year = $year;
-        // Ambil tahun terbaru dari data pendaftar
-        $latestYear = Team::join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
-            ->selectRaw("DATE_PART('year', teams.created_at) as year")
             ->groupBy('year')
             ->orderBy('year', 'DESC')
-            ->first()->year ?? null;
+            ->pluck('year')
+            ->toArray();
+        $this->year = $year;
+        if ($this->year === null) {
+            $latestYear = Team::join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
+                ->selectRaw("DATE_PART('year', teams.created_at) as year")
+                ->groupBy('year')
+                ->orderBy('year', 'DESC')
+                ->first()->year ?? null;
+        } else {
+            $latestYear = $this->year;
+        }
+        // Ambil tahun terbaru dari data pendaftar
 
         // Ambil semua kategori dari tabel kategori
         $allCategories = Category::all();
@@ -71,9 +75,9 @@ class Semen extends Component
                 ->get();
 
             // Memisahkan data berdasarkan perusahaan
-            $groupedData = $data->groupBy('company_name');
+            // Menyiapkan dataset dan membuat chart per perusahaan (dibatasi 6 chart saja)
+            $groupedData = $data->groupBy('company_name')->take(6); // Hanya ambil 6 perusahaan teratas
 
-            // Menyiapkan dataset dan membuat chart per perusahaan
             foreach ($groupedData as $company => $dataPerCompany) {
                 $categories = $dataPerCompany->pluck('category_name')->toArray();
                 $totalsPerCategory = $dataPerCompany->pluck('total_innovators')->toArray();

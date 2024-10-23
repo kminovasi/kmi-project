@@ -125,6 +125,7 @@
 
     <!-- Div untuk menampilkan warna kategori -->
     <div class="chart-container">
+        <a href="#">Detail chart</a>
         <h5>Kategori</h5>
         <div class="category-list" id="category-colors">
             @foreach ($categories as $categoryName => $color)

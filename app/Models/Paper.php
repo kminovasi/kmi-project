@@ -36,7 +36,8 @@ class Paper extends Model
         'innovation_photo',
         'proof_idea',
         'status_inovasi',
-        'potensi_replikasi'
+        'potensi_replikasi',
+        'status'
 
     ];
 

@@ -26,6 +26,9 @@
                     :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
                     :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP"
                     :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant"
+                    :total-innovators="$totalInnovators"
+                    :total-innovators-male="$totalInnovatorsMale"
+                    :total-innovators-female="$totalInnovatorsFemale"
                     />
 
                     <div class="row">
@@ -33,9 +36,6 @@
                     <x-dashboard.semen :year="$year" />
                 </div>
                 <div class="col-md-5">
-                    <div class="row">
-                        <h6>Productivity</h6>
-                    </div>
                     <div class="row">
                         <h4>Benefit</h4>
                         <x-dashboard.benefit :year="$year" />

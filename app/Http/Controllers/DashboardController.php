@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Paper;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -87,7 +88,52 @@ class DashboardController extends Controller
             ->orderBy('year', 'DESC')
             ->pluck('year')
             ->toArray();
-        return view('auth.user.home', compact('breakthroughInnovation', 'incrementalInnovation', 'ideaBox', 'detailBreakthroughInnovationPBB', 'detailBreakthroughInnovationTPP', 'detailBreakthroughInnovationManagement', 'detailIncrementalInnovationGKMPlant', 'detailIncrementalInnovationGKMOffice', 'detailIncrementalInnovationPKMPlant', 'detailIncrementalInnovationPKMOffice', 'detailIncrementalInnovationSSPlant', 'detailIncrementalInnovationSSOffice', 'detailIdeaBoxIdea', 'year', 'availableYears'));
+
+            $totalInnovatorsMale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->whereYear('pvt_members.created_at', $year) // Filter berdasarkan tahun
+            ->where('users.gender', 'Male') // Filter berdasarkan gender
+            ->where(function($query) {
+                $query->where('pvt_members.status', 'leader')
+                      ->orWhere('pvt_members.status', 'member');
+            })
+            ->distinct('pvt_members.employee_id') // User yang unik
+            ->count();
+
+        $totalInnovatorsFemale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->whereYear('pvt_members.created_at', $year) // Filter berdasarkan tahun
+            ->where('users.gender', 'Female') // Filter berdasarkan gender
+            ->where(function($query) {
+                $query->where('pvt_members.status', 'leader')
+                      ->orWhere('pvt_members.status', 'member');
+            })
+            ->distinct('pvt_members.employee_id') // User yang unik
+            ->count();
+
+        // Menghitung total inovator secara keseluruhan
+        $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale;
+
+        return view('auth.user.home', compact(
+            'breakthroughInnovation',
+            'incrementalInnovation',
+            'ideaBox',
+            'detailBreakthroughInnovationPBB',
+            'detailBreakthroughInnovationTPP',
+            'detailBreakthroughInnovationManagement',
+            'detailIncrementalInnovationGKMPlant',
+            'detailIncrementalInnovationGKMOffice',
+            'detailIncrementalInnovationPKMPlant',
+            'detailIncrementalInnovationPKMOffice',
+            'detailIncrementalInnovationSSPlant',
+            'detailIncrementalInnovationSSOffice',
+            'detailIdeaBoxIdea',
+            'year',
+            'availableYears',
+            'totalInnovators',
+            'totalInnovatorsMale',
+            'totalInnovatorsFemale'
+        ));
     }
 
 }

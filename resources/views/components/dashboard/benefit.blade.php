@@ -1,20 +1,4 @@
-<style>
-    canvas {
-        width: 100% !important;
-        /* Sesuaikan ukuran canvas dengan kontainer */
-        height: auto !important;
-        /* Sesuaikan proporsinya */
-    }
-
-    #benefitChart {
-        background-color: #fff;
-        /* Ganti dengan warna latar belakang yang Anda inginkan */
-        border-radius: 8px;
-        /* Contoh: menambahkan sudut bulat pada canvas */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        /* Contoh: menambahkan bayangan untuk menonjolkan chart */
-    }
-</style>
+@vite(['resources/css/app.css'])
 <div>
     <canvas id="benefitChart"></canvas>
 </div>

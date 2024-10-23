@@ -1,6 +1,7 @@
 <div class="row mb-3">
+    @vite(['resources/css/app.css'])
     <div class="col-lg-6 col-xl-4 mb-4">
-        <div class="card bg-primary text-white h-100">
+        <div class="card bg-primary text-white h-100 " >
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
@@ -104,6 +105,48 @@
                 <a class="text-white stretched-link" href="#" data-bs-toggle="modal"
                     data-bs-target="#ideaBoxModal">View Details</a>
                 <div class="text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card bg-teal text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3">
+                        <div class="text-white-75 small">Total Innovator</div>
+                        <div class="text-lg fw-bold">
+                            {{$totalInnovators}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card bg-blue text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3">
+                        <div class="text-white-75 small">Total Innovator Pria</div>
+                        <div class="text-lg fw-bold">
+                            {{$totalInnovatorsMale}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card bg-pink text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3">
+                        <div class="text-white-75 small">Total Innovator Wanita</div>
+                        <div class="text-lg fw-bold">
+                            {{$totalInnovatorsFemale}}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

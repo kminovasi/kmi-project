@@ -43,7 +43,7 @@ class CertificateController extends Controller
 
         $request->validate([
             'event_id' => 'required|exists:events,id',
-            'template' => 'required|file|mimes:jpg,jpeg,png'
+            'template' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // dd($request->all());

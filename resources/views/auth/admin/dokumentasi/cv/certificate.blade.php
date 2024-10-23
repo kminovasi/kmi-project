@@ -11,8 +11,14 @@
             /* Menghilangkan margin di halaman PDF */
         }
 
+        @font-face {
+            font-family: 'Open Sans';
+            src: url('{{ public_path(' assets/fonts/Open_Sans/OpenSans-Regular.ttf') }}') format('truetype');
+            font-weight: normal;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
 
         .certificate-container {
@@ -25,7 +31,15 @@
 
         .content {
             position: absolute;
-            top: 44%;
+            top: 43%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .team {
+            position: absolute;
+            top: 48%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -40,24 +54,25 @@
         }
 
         .user-name {
-            font-size: 42px;
+            font-size: 30px;
             font-weight: bold;
-            margin-top: 1rem;
-            color: rgb(46, 19, 0);
+            color: rgb(95, 70, 64);
 
         }
 
         .team-name {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
-          color: rgb(46, 19, 0);
+            margin-top: 5px;
+            color: rgb(95, 70, 64);
         }
 
 
         .category {
-            font-size: 24px;
-            font-weight: bold;
-          color: rgb(46, 19, 0);
+            font-size: 18px;
+            font-weight: lighter;
+            font-style: italic;
+            color: rgb(95, 70, 64);
         }
     </style>
 </head>
@@ -66,6 +81,8 @@
     <div class="certificate-container">
         <div class="content">
             <div class="user-name">{{ $user_name }}</div>
+        </div>
+        <div class="team">
             <div class="team-name">{{ $team_name }}</div>
         </div>
         <div class="footer">

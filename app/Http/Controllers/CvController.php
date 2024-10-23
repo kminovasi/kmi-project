@@ -70,7 +70,7 @@ class CvController extends Controller
             ->setPaper('A4', 'landscape');  // Atur ukuran kertas A4, mode portrait
 
         // Return PDF ke browser untuk di-download
-        return $pdf->download('certificate.pdf');
+        return $pdf->download( 'Sertifikat - ' . $userName . '.pdf');
     }
 
     function detail($id)

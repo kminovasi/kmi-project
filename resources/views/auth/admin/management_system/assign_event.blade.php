@@ -57,7 +57,6 @@
                             @csrf
                             <div>
                                 <div class="mb-4">
-
                                     <h6 class="small mb-1">Company</h6>
                                     <select id="selectCompany" class="form-select" aria-label="Default select example"
                                         name="company_code[]" required>
@@ -102,8 +101,12 @@
 
                                 <div class="mb-4">
                                     <h6 class="small mb-1" for="data_description">Description</h6>
-                                    <textarea class="form-control" name="description" id="" cols="30" rows="5" id="data_description"></textarea>
+                                    <textarea class="form-control" name="description" id="data_description" cols="30" rows="5" required></textarea>
+                                    @if ($errors->has('description'))
+                                        <div class="text-danger">{{ $errors->first('description') }}</div>
+                                    @endif
                                 </div>
+
                                 <!-- Save changes button-->
                                 <div class="d-grid">
                                     <button class="btn btn-secondary" type="submit" id="button_submit">
@@ -138,25 +141,20 @@
         }
 
         document.getElementById('selectCompany').addEventListener('change', function() {
-            // Mengambil referensi ke input nama event dan year
             const inputEventName = document.getElementById('inputEventName');
-            // Ambil opsi yang dipilih dari dropdown
             const selectedOptions = this.selectedOptions;
-
-            // Jika opsi dipilih maka akan melakukan mengambil text yang berisi nama perusahaan yang dipilih
             if (selectedOptions.length > 0) {
-                const companyCode = selectedOptions[0].value; // Mengambil kode dari opsi dipilih
-                console.log(companyCode);
-                let companeName = selectedOptions[0].text; // Mengambil teks yang berisi nama perusahaan yang dipilih
-                companeName = companeName.replace(/^PT\.?\s*/i, '').trim(); // Menghapus "PT" dan spasi setelahnya
+                let companyName = selectedOptions[0].text.replace(/^PT\.?\s*/i, '').trim();
 
-                // Ubah nama event menjadi SIG Innovation Award untuk PT Semen Indonesia,Tbk dan PT Semen Indonesia (BUOP Tuban)
-                if (companeName === 'Semen Indonesia,Tbk' || companeName === 'Semen Indonesia (BUOP Tuban)') {
-                    const eventName = `SIG Innovation Award`; // Mengatur nama event menjadi SIG Innovation Award
-                    inputEventName.value = eventName; // Mengatur value input nama event
+                // Jika perusahaan adalah Semen Indonesia
+                if (companyName === 'Semen Indonesia,Tbk' || companyName === 'Semen Indonesia (BUOP Tuban)') {
+                    inputEventName.value = 'SIG INNOVATION AWARD';
+                } else if (companyName === 'Semen Indonesia Logistik') { // Tambahkan kondisi untuk SILOG
+                    inputEventName.value = 'SILOG INNOVATION AWARD';
                 } else {
-                    const eventName = `${companeName} Innovation Award`; // Mengatur nama event sesuai perusahaan yang dipilih
-                    inputEventName.value = eventName; // Mengatur value input nama event
+                    let companyInitial = companyName.split(' ').map(word => word[0]).join(
+                    ''); // Ambil huruf pertama
+                    inputEventName.value = `${companyInitial} INNOVATION AWARD`; // Setel nama event
                 }
             }
         });

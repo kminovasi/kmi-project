@@ -181,7 +181,7 @@
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
-                    <a class="btn btn-sm btn-outline-primary" href="{{ route('dokumentasi.index') }}">
+                    <a class="btn btn-sm btn-outline-primary"  onclick="goBack()">
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
@@ -237,13 +237,12 @@
 
                             <form action="{{ route('cv.generateCertificate') }}" method="POST">
                                 @csrf
-                                <!-- Input hidden untuk menyimpan data dari $paper -->
+
                                 <input type="hidden" name="user_name" value="{{ $employee->name }}">
                                 <input type="hidden" name="team_name" value="{{ $inovasi->team_name }}">
                                 <input type="hidden" name="category" value="{{ $inovasi->category }}">
                                 <input type="hidden" name="template_path" value="{{ $inovasi->certificate }}">
 
-                                <!-- Tombol submit -->
                                 <button type="submit" class="btn btn-sm btn-warning">
                                     <i data-feather="download"></i>
                                 </button>
@@ -285,3 +284,10 @@
     </div>
 
 @endsection
+@push('js')
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+@endpush

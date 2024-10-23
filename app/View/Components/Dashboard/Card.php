@@ -19,6 +19,9 @@ class Card extends Component
     public  $detailBreakthroughInnovationTPP;
     public  $detailIncrementalInnovationGKMPlant;
     public  $detailIncrementalInnovationSSOffice;
+    public  $totalInnovators;
+    public  $totalInnovatorsMale;
+    public  $totalInnovatorsFemale;
     /**
      * Create a new component instance.
      *
@@ -35,7 +38,10 @@ class Card extends Component
         $detailIdeaBoxIdea = null,
         $detailBreakthroughInnovationPBB = null,
         $detailBreakthroughInnovationTPP = null,
-        $detailIncrementalInnovationPKMPlant = null
+        $detailIncrementalInnovationPKMPlant = null,
+        $totalInnovators = null,
+        $totalInnovatorsMale = null,
+        $totalInnovatorsFemale = null,
     ) {
         $this->breakthroughInnovation = $breakthroughInnovation;
         $this->detailBreakthroughInnovationManagement = $detailBreakthroughInnovationManagement;
@@ -48,6 +54,9 @@ class Card extends Component
         $this->detailBreakthroughInnovationPBB = $detailBreakthroughInnovationPBB;
         $this->detailBreakthroughInnovationTPP = $detailBreakthroughInnovationTPP;
         $this->detailIncrementalInnovationPKMPlant = $detailIncrementalInnovationPKMPlant;
+        $this->totalInnovators = $totalInnovators;
+        $this->totalInnovatorsMale = $totalInnovatorsMale;
+        $this->totalInnovatorsFemale = $totalInnovatorsFemale;
     }
 
 

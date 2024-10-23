@@ -25,20 +25,39 @@
 
         .content {
             position: absolute;
-            top: 50%;
+            top: 44%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .footer {
+            position: absolute;
+            top: 64%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
         .user-name {
-            font-size: 40px;
+            font-size: 42px;
             font-weight: bold;
+            margin-top: 1rem;
+            color: rgb(46, 19, 0);
+
         }
 
-        .team-name,
+        .team-name {
+            font-size: 24px;
+            font-weight: bold;
+          color: rgb(46, 19, 0);
+        }
+
+
         .category {
-            font-size: 20px;
+            font-size: 24px;
+            font-weight: bold;
+          color: rgb(46, 19, 0);
         }
     </style>
 </head>
@@ -48,6 +67,8 @@
         <div class="content">
             <div class="user-name">{{ $user_name }}</div>
             <div class="team-name">{{ $team_name }}</div>
+        </div>
+        <div class="footer">
             <div class="category">{{ $category }}</div>
         </div>
     </div>

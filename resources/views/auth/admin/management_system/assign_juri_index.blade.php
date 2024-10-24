@@ -105,8 +105,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Revoke</button>
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Revoke</button> --}}
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" type="submit">Save changes</button>
                 </div>
             </form>
@@ -133,8 +133,8 @@
                         <p>Apakah yakin akan mencabut role juri ini ?</p>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="submit" data-bs-dismiss="modal">Revoke</button>
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
                     </div>
                 </form>
             </div>

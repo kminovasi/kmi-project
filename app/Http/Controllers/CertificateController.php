@@ -23,7 +23,6 @@ class CertificateController extends Controller
         if ($userRole->role == 'Admin') {
             $eventsWithoutCertificate = \DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
-                // ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
                 ->whereNull('certificates.event_id')
                 ->where('events.company_code', '=', $userRole->company_code)
                 ->select(
@@ -34,26 +33,29 @@ class CertificateController extends Controller
                 )
                 ->get();
 
-            $certificates = Certificate::with('event')
+            // ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
+
+            $certificates = Certificate::with(['event.company'])
                 ->whereHas('event', function ($query) use ($userRole) {
                     $query->where('company_code', '=', $userRole->company_code);
                 })
                 ->get();
-
         } else {
             $eventsWithoutCertificate = \DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
+                ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
                 ->whereNull('certificates.event_id')
                 ->select(
                     'events.id as event_id',
                     'events.event_name',
                     'events.year',
+                    'companies.company_name',
                     'certificates.template_path'
                 )
                 ->get();
 
 
-            $certificates = Certificate::with('event')->get();
+            $certificates = Certificate::with('event.company')->get();
         }
 
         return view("admin.certificate.certificate", compact('certificates', 'eventsWithoutCertificate'));

@@ -11,13 +11,13 @@ class Company extends Model
     protected $table = 'companies';
 
     protected $fillable = [
-        'company_code', 
+        'company_code',
         'company_name',
         'event_name'
     ];
-    public function events()
-{
-    return $this->belongsToMany(Event::class, 'company_event');
-}
 
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'company_code', 'company_code');
+    }
 }

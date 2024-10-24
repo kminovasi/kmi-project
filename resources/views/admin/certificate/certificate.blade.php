@@ -49,6 +49,7 @@
                         <tr>
                             <th scope="col">No</th>
                             <th scope="col">Event</th>
+                            <th scope="col">Perusahaan</th>
                             <th scope="col">Template Gambar</th>
                             <th scope="col">Aksi</th>
                         </tr>
@@ -64,6 +65,7 @@
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $certificate->event->event_name }} {{ $certificate->event->year }}</td>
+                            <td>{{ $certificate->event->company->company_name }}</td>
                             <td>
                                 <img src="{{ asset('storage/'.$certificate->template_path) }}" alt="Template Gambar"
                                     class="img-fluid" style="max-width: 100px; height: auto;">

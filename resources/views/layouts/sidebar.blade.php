@@ -48,55 +48,60 @@
                     Profile
                 </a>
                 @if (Auth::user()->role == 'BOD')
-                    {{-- Menu untuk BOD --}}
-                    <div class="sidenav-menu-heading text-white">BOD</div>
+                {{-- Menu untuk BOD --}}
+                <div class="sidenav-menu-heading text-white">BOD</div>
                 @elseif (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                    {{-- Menu untuk Admin --}}
-                    <div class="sidenav-menu-heading text-white">Pengelola Inovasi</div>
-                    <a class="nav-link {{ request()->routeIs('benefit.index') ? 'active' : '' }}"
-                        href="{{ route('benefit.index') }}">
-                        <div class="nav-link-icon"><i data-feather="dollar-sign"></i></div>
-                        Benefit
-                    </a>
+                {{-- Menu untuk Admin --}}
+                <div class="sidenav-menu-heading text-white">Pengelola Inovasi</div>
+                <a class="nav-link {{ request()->routeIs('benefit.index') ? 'active' : '' }}"
+                    href="{{ route('benefit.index') }}">
+                    <div class="nav-link-icon"><i data-feather="dollar-sign"></i></div>
+                    Benefit
+                </a>
 
-                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
-                        data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                        <div class="nav-link-icon"><i data-feather="sliders"></i></div>
-                        Management System
-                        <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapsePages" data-bs-parent="#accordionSidenav">
-                        <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesMenu">
-                            <a class="nav-link {{ request()->routeIs('management-system.assign.event') ? 'active' : '' }}"
-                                href="{{ route('management-system.assign.event') }}">Event</a>
-                            @if (Auth::user()->role == 'Admin')
-                                <a class="nav-link {{ request()->routeIs('assessment.show.point') ? 'active' : '' }}"
-                                    href="{{ route('assessment.show.point') }}">Assessment</a>
-                            @elseif(Auth::user()->role == 'Superadmin')
-                                <a class="nav-link {{ request()->routeIs('assessment.show.template') ? 'active' : '' }}"
-                                    href="{{ route('assessment.show.template') }}">Assessment</a>
-                            @endif
-                            <a class="nav-link {{ request()->routeIs('management-system.role.index') ? 'active' : '' }}"
-                                href="{{ route('management-system.role.index') }}">Assign Role</a>
-                            <a class="nav-link {{ request()->routeIs('management-system.team.category.index') ? 'active' : '' }}"
-                                href="{{ route('management-system.team.category.index') }}">Category Role</a>
+                <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
+                    data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                    <div class="nav-link-icon"><i data-feather="sliders"></i></div>
+                    Management System
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapsePages" data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesMenu">
+                        <a class="nav-link {{ request()->routeIs('management-system.assign.event') ? 'active' : '' }}"
+                            href="{{ route('management-system.assign.event') }}">Event</a>
+                        @if (Auth::user()->role == 'Admin')
+                        <a class="nav-link {{ request()->routeIs('assessment.show.point') ? 'active' : '' }}"
+                            href="{{ route('assessment.show.point') }}">Assessment</a>
+                        @elseif(Auth::user()->role == 'Superadmin')
+                        <a class="nav-link {{ request()->routeIs('assessment.show.template') ? 'active' : '' }}"
+                            href="{{ route('assessment.show.template') }}">Assessment</a>
+                        @endif
+                        <a class="nav-link {{ request()->routeIs('management-system.role.index') ? 'active' : '' }}"
+                            href="{{ route('management-system.role.index') }}">Assign Role</a>
+                        <a class="nav-link {{ request()->routeIs('management-system.team.category.index') ? 'active' : '' }}"
+                            href="{{ route('management-system.team.category.index') }}">Category Role</a>
 
 
 
-                            <!-- Nested Sidenav Accordion (Pages -> Account)-->
-                        </nav>
-                    </div>
-                    <div class="sidenav-menu-heading text-white">Management Event</div>
-                        <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
-                            href="{{ route('flyer.index') }}">
-                            <div class="nav-link-icon"><i data-feather="airplay"></i></div>
-                            <span class="text-white">Flyer</span>
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('timeline.index') ? 'active' : '' }}"
-                            href="{{ route('timeline.index') }}">
-                            <div class="nav-link-icon"><i data-feather="clock"></i></div>
-                            <span class="text-white">Timeline</span>
-                        </a>
+                        <!-- Nested Sidenav Accordion (Pages -> Account)-->
+                    </nav>
+                </div>
+                <div class="sidenav-menu-heading text-white">Management Event</div>
+                <a class="nav-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}"
+                    href="{{ route('certificates.index') }}">
+                    <div class="nav-link-icon"><i data-feather="award"></i></div>
+                    <span class="text-white">Certificate</span>
+                </a>
+                <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
+                    href="{{ route('flyer.index') }}">
+                    <div class="nav-link-icon"><i data-feather="airplay"></i></div>
+                    <span class="text-white">Flyer</span>
+                </a>
+                <a class="nav-link {{ request()->routeIs('timeline.index') ? 'active' : '' }}"
+                    href="{{ route('timeline.index') }}">
+                    <div class="nav-link-icon"><i data-feather="clock"></i></div>
+                    <span class="text-white">Timeline</span>
+                </a>
                 @endif
             </div>
         </div>

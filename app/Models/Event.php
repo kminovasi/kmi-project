@@ -11,7 +11,7 @@ class Event extends Model
     protected $table = 'events';
 
     protected $fillable = [
-        'event_name', 
+        'event_name',
         'company_code',
         'date_start',
         'date_end',
@@ -19,13 +19,18 @@ class Event extends Model
         'year',
         'description'
     ];
-    public function companies()
+    public function company()
     {
-        return $this->belongsToMany(Company::class, 'company_event');
+        return $this->belongsTo(Company::class, 'company_code', 'company_code');
     }
 
     public function teams()
     {
         return $this->hasMany(Team::class, 'foreign_key', 'company_code');
+    }
+
+    public function certificate()
+    {
+        return $this->hasOne(Certificate::class);
     }
 }

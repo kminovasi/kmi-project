@@ -18,7 +18,9 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChartDashboardController;
+use App\Http\Controllers\CvController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
@@ -294,8 +296,13 @@ Route::middleware('auth')->group(function () {
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);
 
+        // Rute Certificates
+        Route::resource('certificates', CertificateController::class) ->only(['index', 'store', 'destroy']);
+        Route::post('certificates/{id}/activate', [CertificateController::class, 'activate'])->name('certificates.activate');
+
+
         //Rute Timeline
-        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy']);
+        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy', 'activate']);
     });
 
 
@@ -307,6 +314,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
     });
 
+    // Cv
+    Route::prefix('/cv')->name('cv.')->group(function () {
+        Route::get('/', [CvController::class, 'index'])->name('index');
+        Route::get('/detail/{id}', [CvController::class, 'detail'])->name('detail');
+        Route::post('/certificate', [CvController::class, 'generateCertificate'])->name('generateCertificate');
+    });
 
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {
         Route::get('/', [DokumentasiController::class, 'index'])->name('index');

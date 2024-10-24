@@ -20,8 +20,6 @@ use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChartDashboardController;
-use App\Http\Controllers\CvController;
-use App\Http\Controllers\DetailCompanyChartController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
@@ -55,9 +53,8 @@ Route::get('dashboard', [
     DashboardController::class,
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
-Route::get('/dashboard/detail-company-chart', [DetailCompanyChartController::class, 'index'])->name('detail-company-chart');
 
-
+Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->name('detail-company-chart');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');

@@ -33,13 +33,17 @@
 
                     <div class="row">
                     </div>
-                    <x-dashboard.semen :year="$year" />
                 </div>
                 <div class="col-md-5">
                     <div class="row">
                         <h4>Benefit</h4>
                         <x-dashboard.benefit :year="$year" />
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10 col-sm-12 col-xs-12">
+                    <x-dashboard.semen :year="$year" />
                 </div>
             </div>
         </div>

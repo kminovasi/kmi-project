@@ -19,9 +19,9 @@ class Event extends Model
         'year',
         'description'
     ];
-    public function companies()
+    public function company()
     {
-        return $this->belongsToMany(Company::class, 'company_event');
+        return $this->belongsTo(Company::class, 'company_code', 'company_code');
     }
 
     public function teams()

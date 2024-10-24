@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Certificate;
+use Auth;
 use DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,19 +17,45 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $eventsWithoutCertificate = \DB::table('events')
-            ->leftjoin('certificates' , 'events.id', '=', 'certificates.event_id')
-            ->whereNull('certificates.event_id')
-            ->select(
-                'events.id as event_id',
-                'events.event_name',
-                'events.year',
-                'certificates.template_path')
-            ->get();
+        $userRole = Auth::user();
+        // dd($userRole);
 
-        // dd($eventsWithoutCertificate);
+        if ($userRole->role == 'Admin') {
+            $eventsWithoutCertificate = \DB::table('events')
+                ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
+                // ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
+                ->whereNull('certificates.event_id')
+                ->where('events.company_code', '=', $userRole->company_code)
+                ->select(
+                    'events.id as event_id',
+                    'events.event_name',
+                    'events.year',
+                    'certificates.template_path'
+                )
+                ->get();
 
-        $certificates = Certificate::with('event')->get();
+            $certificates = Certificate::with('event')
+                ->whereHas('event', function ($query) use ($userRole) {
+                    $query->where('company_code', '=', $userRole->company_code);
+                })
+                ->get();
+
+        } else {
+            $eventsWithoutCertificate = \DB::table('events')
+                ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
+                ->whereNull('certificates.event_id')
+                ->select(
+                    'events.id as event_id',
+                    'events.event_name',
+                    'events.year',
+                    'certificates.template_path'
+                )
+                ->get();
+
+
+            $certificates = Certificate::with('event')->get();
+        }
+
         return view("admin.certificate.certificate", compact('certificates', 'eventsWithoutCertificate'));
     }
 
@@ -45,8 +72,6 @@ class CertificateController extends Controller
             'event_id' => 'required|exists:events,id',
             'template' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        // dd($request->all());
 
         $path = $request->file('template')->store('certificate', 'public');
 

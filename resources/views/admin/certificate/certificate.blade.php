@@ -55,6 +55,11 @@
                     </thead>
                     <tbody>
                         <!-- Contoh data sertifikat -->
+                        @if ($certificates->isEmpty())
+                        <tr class="text-center">
+                            <td colspan="4">Data Tidak Ditemukan</td>
+                        </tr>
+                        @else
                         @foreach($certificates as $key => $certificate)
                         <tr>
                             <td>{{ $key + 1 }}</td>
@@ -76,6 +81,8 @@
                             </td>
                         </tr>
                         @endforeach
+                        @endif
+
                     </tbody>
                 </table>
             </div>
@@ -100,7 +107,7 @@
                         <select class="form-select" name="event_id" id="event_id" required>
                             <option value="">Pilih Event</option>
                             @foreach($eventsWithoutCertificate as $event)
-                                <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}</option>
+                            <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}</option>
                             @endforeach
                         </select>
                     </div>

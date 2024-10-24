@@ -41,10 +41,12 @@ class InnovatorChart extends Component
                 return $item->team->category->category_name; // Ganti dengan nama kategori yang sesuai
             });
 
-        // Hitung total inovator untuk setiap kategori
+        // Hitung total inovator untuk setiap kategori dan siapkan warna acak
         $categoryCounts = [];
+        $colors = []; // Array untuk menyimpan warna acak
         foreach ($innovatorsPerCategory as $category => $members) {
             $categoryCounts[$category] = $members->count();
+            $colors[$category] = $this->generateRandomColor(); // Generate warna acak untuk setiap kategori
         }
 
         return [
@@ -53,12 +55,21 @@ class InnovatorChart extends Component
                 [
                     'label' => 'Total Innovators per Category',
                     'data' => array_values($categoryCounts),
-                    'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'backgroundColor' => array_values($colors), // Menggunakan warna acak
+                    'borderColor' => array_values($colors), // Menggunakan warna acak untuk border
                     'borderWidth' => 1
                 ]
             ]
         ];
+    }
+
+    // Fungsi untuk menghasilkan warna acak dalam format rgba
+    private function generateRandomColor()
+    {
+        $r = rand(0, 255);
+        $g = rand(0, 255);
+        $b = rand(0, 255);
+        return "rgba($r, $g, $b)"; // Mengembalikan warna dengan alpha untuk background
     }
 
     public function render()

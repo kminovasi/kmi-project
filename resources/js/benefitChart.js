@@ -1,24 +1,49 @@
-import { Chart, CategoryScale, LinearScale, BarController, BarElement, Tooltip } from 'chart.js';
+import {
+    Chart,
+    CategoryScale,
+    LinearScale,
+    BarController,
+    BarElement,
+    Tooltip,
+} from "chart.js";
 
 // Register necessary components
 Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
 
 // Define your colors for the chart
 const colors = [
-    'rgba(255, 99, 132)',
-    'rgba(54, 162, 235)',
-    'rgba(255, 206, 86)',
-    // Add more colors as needed
+    "rgba(255, 99, 132)", // Red
+    "rgba(54, 162, 235)", // Blue
+    "rgba(255, 206, 86)", // Yellow
+    "rgba(75, 192, 192)", // Teal
+    "rgba(153, 102, 255)", // Purple
+    "rgba(255, 159, 64)", // Orange
+    "rgba(199, 199, 199)", // Grey
+    "rgba(255, 99, 71)", // Tomato
+    "rgba(60, 179, 113)", // MediumSeaGreen
+    "rgba(218, 112, 214)", // Orchid
+    "rgba(0, 206, 209)", // DarkTurquoise
+    "rgba(220, 20, 60)", // Crimson
+    "rgba(255, 215, 0)", // Gold
+    "rgba(138, 43, 226)", // BlueViolet
+    "rgba(0, 128, 128)", // Teal
+    "rgba(70, 130, 180)", // SteelBlue
+    "rgba(244, 164, 96)", // SandyBrown
+    "rgba(128, 0, 0)", // Maroon
+    "rgba(0, 255, 127)", // SpringGreen
+    "rgba(100, 149, 237)", // CornflowerBlue
 ];
 
 // Get data from the data-attributes
-const labels = JSON.parse(document.getElementById('chartData').dataset.labels);
-const dataValues = JSON.parse(document.getElementById('chartData').dataset.data);
-const logos = JSON.parse(document.getElementById('chartData').dataset.logos);
+const labels = JSON.parse(document.getElementById("chartData").dataset.labels);
+const dataValues = JSON.parse(
+    document.getElementById("chartData").dataset.data
+);
+const logos = JSON.parse(document.getElementById("chartData").dataset.logos);
 
 // Create a custom plugin for drawing images
 const imagePlugin = {
-    id: 'customImagePlugin',
+    id: "customImagePlugin",
     afterDraw: (chart, args, options) => {
         const { ctx, chartArea, scales } = chart;
 
@@ -43,12 +68,12 @@ const imagePlugin = {
                     img,
                     x,
                     y - imgHeight / 2, // Center the image vertically
-                    imgWidth,           // width
-                    imgHeight           // height
+                    imgWidth, // width
+                    imgHeight // height
                 );
             }
         });
-    }
+    },
 };
 
 // Register the custom plugin
@@ -61,50 +86,54 @@ const logoImages = [];
 const initChart = async () => {
     try {
         // Load all images
-        await Promise.all(logos.map((url, index) => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => {
-                    logoImages[index] = img;
-                    resolve();
-                };
-                img.onerror = reject;
-                img.src = url;
-            });
-        }));
+        await Promise.all(
+            logos.map((url, index) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        logoImages[index] = img;
+                        resolve();
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            })
+        );
 
         // Create the chart
-        const ctx = document.getElementById('benefitChart').getContext('2d');
+        const ctx = document.getElementById("benefitChart").getContext("2d");
         const chart = new Chart(ctx, {
-            type: 'bar',
+            type: "bar",
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Benefit',
-                    data: dataValues,
-                    backgroundColor: colors.slice(0, labels.length),
-                }]
+                datasets: [
+                    {
+                        label: "Benefit",
+                        data: dataValues,
+                        backgroundColor: colors.slice(0, labels.length),
+                    },
+                ],
             },
             options: {
-                indexAxis: 'y',
+                indexAxis: "y",
                 layout: {
                     padding: {
-                        left: 50 // Add padding for images
-                    }
+                        left: 50, // Add padding for images
+                    },
                 },
                 scales: {
                     y: {
                         ticks: {
-                            display: false // Hide default labels
-                        }
+                            display: false, // Hide default labels
+                        },
                     },
                     x: {
-                        beginAtZero: true
-                    }
+                        beginAtZero: true,
+                    },
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: false,
                     },
                     tooltip: {
                         callbacks: {
@@ -114,16 +143,17 @@ const initChart = async () => {
                             },
                             label: (tooltipItem) => {
                                 // Display the value of the hovered item
-                                return `Value: ${dataValues[tooltipItem.dataIndex]}`;
-                            }
-                        }
-                    }
-                }
-            }
+                                return `Value: ${
+                                    dataValues[tooltipItem.dataIndex]
+                                }`;
+                            },
+                        },
+                    },
+                },
+            },
         });
-
     } catch (error) {
-        console.error('Error initializing chart:', error);
+        console.error("Error initializing chart:", error);
     }
 };
 

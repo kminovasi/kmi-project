@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Event;
+use App\Models\Paper;
 use App\Models\PvtMember;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -37,7 +38,7 @@ class DetailCompanyChartController extends Controller
             // Ambil total innovator dari setiap perusahaan per tahunnya
             $company->total_innovators = PvtMember::whereHas('team', function ($query) use ($company, $selectedYear) {
                 $query->where('company_code', $company->company_code)
-                      ->whereYear('created_at', $selectedYear);
+                    ->whereYear('created_at', $selectedYear);
             })->whereIn('status', ['leader', 'member'])->count();
         }
 
@@ -50,5 +51,12 @@ class DetailCompanyChartController extends Controller
 
 
         return view('detail_company_chart.index', compact('companies', 'availableYears', 'selectedYear'));
+    }
+    public function show(Request $request, $id)
+    {
+        // Ambil nama perusahaan dan company_code berdasarkan ID
+        $company = Company::select('company_name', 'id')->where('id', $id)->first();
+
+        return view('detail_company_chart.show', compact('company'));
     }
 }

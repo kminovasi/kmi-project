@@ -24,7 +24,7 @@
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4"> 
+        <div class="container-xl px-4">
             <div class="page-header-content">
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
@@ -43,7 +43,7 @@
             </div>
         </div>
     </header>
-     
+
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         <div class="mb-3">
@@ -59,41 +59,15 @@
                 <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             @endif
-        </div>  
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="card mb-4">
                     <div class="card-header">Berita Acara</div>
                     <div class="card-body">
-                        {{-- <table id="datatablesSimple">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Event</th>
-                                    <th>Tahun</th>
-                                    <th>No. Surat</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
                                 <?php
                                     $no = 1;
                                 ?>
-                                @foreach ($data as $d)
-                                <tr>
-                                    <td>{{$no++}}</td>
-                                    <td>{{$d->event_name}}</td>
-                                    <td>{{$d->year}}</td>
-                                    <td>{{$d->no_surat}}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="{{route('berita-acara.showPDF', ['id' => $d->id])}}" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye"></i></a>
-                                            <button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload"><i class="fa fa-upload"></i></button>
-                                        </div>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table> --}}
                         <table id="datatable-beritaacara"></table>
                     </div>
                 </div>
@@ -109,12 +83,12 @@
                             @csrf
                             @method('PUT')
                             <div class="modal-body">
-                                
+
                                 <div class="mb-3">
                                     <label for="uploadPDF">No Surat</label>
-                                    <input type="file" name="signed_file" id="uploadPDF" class="form-control" required>
+                                    <input type="file" name="signed_file" id="uploadPDF" class="form-control" accept=".pdf" required>
                                 </div>
-                                
+
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
@@ -122,7 +96,7 @@
                             </div>
                             </form>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -133,42 +107,64 @@
 @push('js')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script type="">
+    <script type="text/javascript">
         $(document).ready(function() {
-        var dataTable = $('#datatable-beritaacara').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "{{ route('query.get.berita_acara') }}",
-                "type": "GET",
-                "dataSrc": function (data) {
-                    // console.log('Jumlah data total: ' + data.recordsTotal);
-                    // console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                    // console.log('Jumlah data setelah filter: ' + data.data);
-                    return data.data;
+            var dataTable = $('#datatable-beritaacara').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ route('query.get.berita_acara') }}",
+                    "type": "GET",
+                    "dataSrc": function(data) {
+                        return data.data;
+                    },
                 },
-            },
-            "columns": [
-                {"data": "DT_RowIndex", "title": "No"},
-                {"data": "no_surat", "title": "Nomor Surat"},
-                {"data": "jenis_event", "title": "Jenis Event"},
-                {"data": "penetapan_juara", "title": "Penetapan Juara"},
-                {"data": "upload", "title": "Upload"},
-            ],
-            "scrollY": true,
-            "paging": false,
-            "searching" : false,
-            "ordering" : false,
+                "columns": [
+                    {"data": "DT_RowIndex", "title": "No", "className": "text-center"},
+                    {"data": "event_name", "title": "Nama Event", "className": "text-center"},
+                    {"data": "no_surat", "title": "Nomor Surat", "className": "text-center"},
+                    {"data": "jenis_event", "title": "Jenis Event", "className": "text-center"},
+                    {"data": "penetapan_juara", "title": "Penetapan Juara", "className": "text-center"},
+                    {"data": "upload", "title": "Upload", "orderable": false, "searchable": false, "className": "text-center"},
+                    {"data": "delete", "title": "Hapus", "orderable": false, "searchable": false, "className": "text-center"},
+                    {"data": "view", "title": "Lihat", "orderable": false, "searchable": false, "className": "text-center"},
+                ],
+                "scrollY": "50vh", // Scroll vertikal terbatas
+                "scrollCollapse": true,
+                "paging": true, // Aktifkan paging
+                "searching": true, // Aktifkan searching
+                "ordering": true, // Aktifkan ordering
+                "pageLength": 10, // Set default jumlah data per halaman
+                "lengthChange": false, // Tidak memungkinkan pengguna mengubah jumlah data per halaman
+                "language": {
+                    "emptyTable": "Tidak ada data yang tersedia",
+                    "processing": "Memproses...",
+                    "paginate": {
+                        "previous": "<",
+                        "next": ">"
+                    }
+                },
+                "dom": 'Bfrtip', // Menggunakan DOM dengan tombol export
+                "buttons": [
+                    {
+                        extend: 'excel',
+                        text: 'Export to Excel',
+                        className: 'btn btn-success btn-sm'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: 'Export to PDF',
+                        className: 'btn btn-danger btn-sm'
+                    }
+                ]
+            });
         });
-    });
 
-    function modal_update_beritaacara(idEventTeam){
-        var form = document.getElementById('formUpdateBeritaacara');
-    
-        var url = `{{ route('dokumentasi.berita-acara.upload', ['id' => ':idEventTeam']) }}`;
-        url = url.replace(':idEventTeam', idEventTeam);
-        form.action = url;
-    }
-
+        function modal_update_beritaacara(idEventTeam) {
+            var form = document.getElementById('formUpdateBeritaacara');
+            var url = `{{ route('dokumentasi.berita-acara.upload', ['id' => ':idEventTeam']) }}`;
+            url = url.replace(':idEventTeam', idEventTeam);
+            form.action = url;
+        }
     </script>
 @endpush

@@ -9,8 +9,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "akaunting/laravel-apexcharts": "^3.0",
-        "arielmejiadev/larapex-charts": "^6.0",
         "barryvdh/laravel-dompdf": "^2.2",
         "chillerlan/php-qrcode": "^5.0",
         "doctrine/dbal": "^3.6",

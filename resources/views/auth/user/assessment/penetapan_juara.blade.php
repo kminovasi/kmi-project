@@ -193,45 +193,52 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <table id="datatablesSimple">
-                                        <thead>
+                        </form>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Event</th>
+                                            <th>Tahun</th>
+                                            <th>No. Surat</th>
+                                            <th>Opsi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $no = 1;
+                                        ?>
+                                        @foreach ($data as $d)
                                             <tr>
-                                                <th>No</th>
-                                                <th>Event</th>
-                                                <th>Tahun</th>
-                                                <th>No. Surat</th>
-                                                <th>Opsi</th>
+                                                <td>{{ $no++ }}</td>
+                                                <td>{{ $d->event_name }}</td>
+                                                <td>{{ $d->year }}</td>
+                                                <td>{{ $d->no_surat }}</td>
+                                                <td><a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}"
+                                                        class="btn btn-info btn-sm" target="_blank">Show</a>
+                                                    <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}"
+                                                        class="btn btn-primary btn-sm">Download</a>
+                                                        <form action="{{route('berita-acara.destroy', ['id' => $d->id] )}}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $no = 1;
-                                            ?>
-                                            @foreach ($data as $d)
-                                                <tr>
-                                                    <td>{{ $no++ }}</td>
-                                                    <td>{{ $d->event_name }}</td>
-                                                    <td>{{ $d->year }}</td>
-                                                    <td>{{ $d->no_surat }}</td>
-                                                    <td><a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}"
-                                                            class="btn btn-info btn-sm" target="_blank">Show</a>
-                                                        <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}"
-                                                            class="btn btn-primary btn-sm">Download</a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
-
                         </div>
-                        <div class="modal-footer">
 
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+
+                    </div>
                 </div>
 
             </div>

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\Paper;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +13,7 @@ class DashboardController extends Controller
 {
     public function showDashboard(Request $request)
     {
+        $year = $request->input('year') ?? date('Y');
         // Menghitung jumlah tim berdasarkan kategori utama
         $breakthroughInnovation = DB::table('teams')
             ->join('categories', 'categories.id', '=', 'teams.category_id')
@@ -79,49 +83,57 @@ class DashboardController extends Controller
             ->where('categories.category_name', 'IDEA')
             ->count();
 
-        // $semenCountTeam = Team::join('categories', 'categories.id', '=', 'teams.category_id')
-        //         ->selectRaw('category_name as cat_name, Count(*) as count')
-        //         ->groupBy('cat_name')
-        //         ->orderBy('cat_name')
-        //         ->get();
+        $availableYears =   Event::select('year')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC')
+            ->pluck('year')
+            ->toArray();
 
+            $totalInnovatorsMale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->whereYear('pvt_members.created_at', $year) // Filter berdasarkan tahun
+            ->where('users.gender', 'Male') // Filter berdasarkan gender
+            ->where(function($query) {
+                $query->where('pvt_members.status', 'leader')
+                      ->orWhere('pvt_members.status', 'member');
+            })
+            ->distinct('pvt_members.employee_id') // User yang unik
+            ->count();
 
+        $totalInnovatorsFemale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->whereYear('pvt_members.created_at', $year) // Filter berdasarkan tahun
+            ->where('users.gender', 'Female') // Filter berdasarkan gender
+            ->where(function($query) {
+                $query->where('pvt_members.status', 'leader')
+                      ->orWhere('pvt_members.status', 'member');
+            })
+            ->distinct('pvt_members.employee_id') // User yang unik
+            ->count();
 
-        // $labels = [];
-        // $datas = [];
+        // Menghitung total inovator secara keseluruhan
+        $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale;
 
-        // $colors = ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40', '#9966FF', '#FFCD56', '#C9CBCF', '#E0AED0', '#FFC004', 'FF9800'];
-
-        // $realisasiCountTeam = Team::join('companies', 'teams.company_code', '=', 'companies.company_code')
-        //         ->selectRaw('company_name as co_name, Count(*) as count')
-        //         ->groupBy('co_name')
-        //         ->orderBy('co_name')
-        //         ->get();
-        // $labelReals = [];
-        // $dataReals = [];
-
-        // foreach ($semenCountTeam as $data) {
-        //     array_push($labels, $data->cat_name);
-        //     array_push($datas, $data->count);
-        // }
-        // $datasetSemens = [
-        //     [
-        //         'label' => 'Team',
-        //         'data' => $datas,
-        //         'backgroundColor' => $colors
-        //     ]
-        // ];
-        // foreach ($realisasiCountTeam as $datareal) {
-        //     array_push($labels, $datareal->co_name);
-        //     array_push($datas, $datareal->count);
-        // }
-        // $datasetReals = [
-        //     [
-        //         'label' => 'Realisasi Team',
-        //         'data' => $datas,
-        //         'backgroundColor' => $colors
-        //     ]
-        // ];
-        return view('auth.user.home', compact('breakthroughInnovation', 'incrementalInnovation', 'ideaBox', 'detailBreakthroughInnovationPBB', 'detailBreakthroughInnovationTPP', 'detailBreakthroughInnovationManagement', 'detailIncrementalInnovationGKMPlant', 'detailIncrementalInnovationGKMOffice', 'detailIncrementalInnovationPKMPlant', 'detailIncrementalInnovationPKMOffice', 'detailIncrementalInnovationSSPlant', 'detailIncrementalInnovationSSOffice', 'detailIdeaBoxIdea'));
+        return view('auth.user.home', compact(
+            'breakthroughInnovation',
+            'incrementalInnovation',
+            'ideaBox',
+            'detailBreakthroughInnovationPBB',
+            'detailBreakthroughInnovationTPP',
+            'detailBreakthroughInnovationManagement',
+            'detailIncrementalInnovationGKMPlant',
+            'detailIncrementalInnovationGKMOffice',
+            'detailIncrementalInnovationPKMPlant',
+            'detailIncrementalInnovationPKMOffice',
+            'detailIncrementalInnovationSSPlant',
+            'detailIncrementalInnovationSSOffice',
+            'detailIdeaBoxIdea',
+            'year',
+            'availableYears',
+            'totalInnovators',
+            'totalInnovatorsMale',
+            'totalInnovatorsFemale'
+        ));
     }
+
 }

@@ -9,19 +9,8 @@
     <!-- * * * * * * Dimensions: Maximum height: 32px, maximum width: 240px-->
     <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="{{ route('dashboard') }}">SIG Innovation</a>
     <!-- Navbar Search Input-->
-    <!-- * * Note: * * Visible only on and above the lg breakpoint-->
-    @if (request()->routeIs('profile.index'))
-        <form class="form-inline me-auto d-none d-lg-block me-3" action="{{ route('query.search') }}" method="POST">
-            @csrf
 
-            {{-- search bar --}}
-            <div class="input-group input-group-joined input-group-solid d-flex align-items-center">
-                {{-- <select class="form-select" type="text" placeholder="Search" aria-label="Search" name="query" id="search-input"></select> --}}
-                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search Here"><i
-                    data-feather="search" class="mx-3"></i>
-            </div>
-        </form>
-    @endif
+    <!-- * * Note: * * Visible only on and above the lg breakpoint-->
     <!-- Navbar Items-->
     <ul class="navbar-nav align-items-center ms-auto">
         <!-- Documentation Dropdown-->

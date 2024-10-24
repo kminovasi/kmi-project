@@ -55,6 +55,8 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
 
+
+
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
@@ -220,6 +222,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('berita-acara')->name('berita-acara.')->group(function () {
         Route::get('/', [BeritaAcaraController::class, 'index'])->name('index');
         Route::get('/create', [BeritaAcaraController::class, 'create'])->name('create');
+        Route::delete('/delete/{id}', [BeritaAcaraController::class, 'destroy'])->name('destroy');
         Route::post('store', [BeritaAcaraController::class, 'store'])->name('store');
         Route::get('/downloadPDF/{id}', [BeritaAcaraController::class, 'downloadPDF'])->name('downloadPDF');
         Route::get('/showPDF/{id}', [BeritaAcaraController::class, 'showPDF'])->name('showPDF');
@@ -324,6 +327,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('/berita-acara')->name('berita-acara.')->group(function () {
             Route::get('/', [DokumentasiController::class, 'indexBeritaAcara'])->name('index');
             Route::get('/store', [DokumentasiController::class, 'storeBeritaAcara'])->name('store');
+            Route::delete('/delete/{id}', [DokumentasiController::class, 'delete'])->name('delete');
             Route::put('/upload/{id}', [DokumentasiController::class, 'uploadBeritaAcara'])->name('upload');
         });
     });

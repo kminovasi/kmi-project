@@ -10,5 +10,3 @@
 <script>
     window.innovatorDirectorateData = @json($innovatorsByDirectorate);
 </script>
-
-@vite(['resources/js/company/companyDashboardChart.js'])

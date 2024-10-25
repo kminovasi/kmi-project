@@ -7,7 +7,7 @@ use Illuminate\View\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class DirectorateChart extends Component
+class IdeaAndInnovationChart extends Component
 {
     public $companyId;
     public $directorateData;
@@ -23,7 +23,7 @@ class DirectorateChart extends Component
 
     public function render()
     {
-        return view('components.detail-company-chart.directorate-chart', [
+        return view('components.detail-company-chart.idea-and-innovation-chart', [
             'directorateData' => $this->directorateData,
             'organizationUnit' => $this->organizationUnit
         ]);

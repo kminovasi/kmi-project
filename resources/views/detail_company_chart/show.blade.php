@@ -41,7 +41,7 @@
         <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" />
         <div class="row mt-4">
             <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.directorate-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
+                <x-detail-company-chart.idea-and-innovation-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-6 col-md-12">
                 <x-detail-company-chart.innovator-directorate :company-id="$company->id" />
@@ -53,5 +53,5 @@
             </div>
         </div>
     </div>
-
+    @vite(['resources/js/company/companyDashboardChart.js'])
 @endsection

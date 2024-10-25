@@ -16,9 +16,9 @@ class IdeaAndInnovationChart extends Component
     public function __construct($companyId, $organizationUnit)
     {
         $this->companyId = $companyId;
-        $this->organizationUnit = $organizationUnit;
+        $this->organizationUnit = $organizationUnit === null ? 'directorate_name' : $organizationUnit;
         $getCompanyCode = Company::select('company_code')->where('id', $companyId)->first();
-        $this->directorateData = $this->getDirectorateData($getCompanyCode->company_code, $organizationUnit);
+        $this->directorateData = $this->getDirectorateData($getCompanyCode->company_code, $this->organizationUnit);
     }
 
     public function render()

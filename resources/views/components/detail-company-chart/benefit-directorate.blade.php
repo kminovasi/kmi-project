@@ -9,5 +9,3 @@
 <script>
     window.potentialBenefitsData = @json($potentialBenefitsByDirectorate);
 </script>
-
-@vite(['resources/js/company/companyDashboardChart.js'])

@@ -19,10 +19,10 @@
     <div class="chart-legend" id="chartLegend"></div>
 </div>
 
-@vite(['resources/js/company/companyDashboardChart.js'])
+
 
 <script>
-    window.directorateData = @json($directorateData);
+    window.directorateData = @json($directorateData ?? []);
 </script>
 
 <style>

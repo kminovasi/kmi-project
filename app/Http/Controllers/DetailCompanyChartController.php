@@ -6,8 +6,10 @@ use App\Models\Company;
 use App\Models\Event;
 use App\Models\Paper;
 use App\Models\PvtMember;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use DB;
 
 class DetailCompanyChartController extends Controller
 {
@@ -55,8 +57,32 @@ class DetailCompanyChartController extends Controller
     public function show(Request $request, $id)
     {
         // Ambil nama perusahaan dan company_code berdasarkan ID
-        $company = Company::select('company_name', 'id')->where('id', $id)->first();
+        $company = Company::select('company_name', 'id', 'company_code')->where('id', $id)->first();
 
-        return view('detail_company_chart.show', compact('company'));
+        // Hitung total inovator dan berdasarkan gender
+        $innovatorData = PvtMember::join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
+            ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
+            ->where('teams.company_code', $company->company_code)
+            ->whereIn('pvt_members.status', ['leader', 'member'])
+            ->select('users.gender', \DB::raw('count(distinct pvt_members.employee_id) as total'))
+            ->groupBy('users.gender')
+            ->get();
+
+        // Inisialisasi variabel untuk menyimpan hasil
+        $totalInnovators = 0;
+        $maleCount = 0;
+        $femaleCount = 0;
+
+        // Hitung total berdasarkan gender
+        foreach ($innovatorData as $data) {
+            $totalInnovators += $data->total;
+            if ($data->gender === 'Male') {
+                $maleCount = $data->total;
+            } elseif ($data->gender === 'Female') {
+                $femaleCount = $data->total;
+            }
+        }
+
+        return view('detail_company_chart.show', compact('company', 'totalInnovators', 'maleCount', 'femaleCount'));
     }
 }

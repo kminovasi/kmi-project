@@ -77,14 +77,44 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById("directorateChart").getContext("2d");
 
-    const directorateNames = window.directorateData.map(
-        (item) => item.directorate_name
-    );
-    const totalIdeas = window.directorateData.map((item) => item.total_ideas);
-    const totalInnovations = window.directorateData.map(
-        (item) => item.total_innovations
+    // Konversi dan filter data
+    const directorateArray = Object.entries(window.directorateData).map(
+        ([key, value]) => ({
+            directorate_name: key,
+            ...value,
+        })
     );
 
+    const filteredData = directorateArray.filter(
+        (item) =>
+            item.directorate_name &&
+            item.directorate_name !== "-" &&
+            item.directorate_name !== ""
+    );
+
+    filteredData.sort(
+        (a, b) =>
+            b.total_ideas +
+            b.total_innovations -
+            (a.total_ideas + a.total_innovations)
+    );
+
+    // Hitung height yang dibutuhkan berdasarkan jumlah data
+    const itemHeight = 40; // tinggi minimum untuk setiap item
+    const minHeight = 400; // tinggi minimum chart
+    const calculatedHeight = Math.max(
+        minHeight,
+        filteredData.length * itemHeight
+    );
+
+    // Set height chart wrapper
+    document.querySelector(
+        ".chart-wrapper"
+    ).style.height = `${calculatedHeight}px`;
+
+    const directorateNames = filteredData.map((item) => item.directorate_name);
+    const totalIdeas = filteredData.map((item) => item.total_ideas);
+    const totalInnovations = filteredData.map((item) => item.total_innovations);
     new Chart(ctx, {
         type: "bar",
         data: {
@@ -142,7 +172,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         font: {
                             size: 12,
                         },
+                        callback: function (value) {
+                            // Memotong teks yang terlalu panjang
+                            const label = this.getLabelForValue(value);
+                            if (label.length > 30) {
+                                return label.substr(0, 27) + "...";
+                            }
+                            return label;
+                        },
                     },
+                },
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 25,
+                    top: 0,
+                    bottom: 0,
                 },
             },
         },
@@ -155,6 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const legendContainer = document.getElementById("chartLegend");
+    legendContainer.innerHTML = ""; // Clear existing content
     legendItems.forEach((item) => {
         const legendItem = document.createElement("div");
         legendItem.classList.add("legend-item");

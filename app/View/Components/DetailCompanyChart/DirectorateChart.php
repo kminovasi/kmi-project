@@ -11,40 +11,56 @@ class DirectorateChart extends Component
 {
     public $companyId;
     public $directorateData;
+    public $organizationUnit;
 
-    public function __construct($companyId)
+    public function __construct($companyId, $organizationUnit)
     {
         $this->companyId = $companyId;
+        $this->organizationUnit = $organizationUnit;
         $getCompanyCode = Company::select('company_code')->where('id', $companyId)->first();
-        $this->directorateData = $this->getDirectorateData($getCompanyCode->company_code);
+        $this->directorateData = $this->getDirectorateData($getCompanyCode->company_code, $organizationUnit);
     }
 
     public function render()
     {
         return view('components.detail-company-chart.directorate-chart', [
-            'directorateData' => $this->directorateData
+            'directorateData' => $this->directorateData,
+            'organizationUnit' => $this->organizationUnit
         ]);
     }
 
-    private function getDirectorateData($companyCode)
+    private function getDirectorateData($companyCode, $organizationUnit)
     {
         $allDirectorates = User::where('company_code', $companyCode)
+            ->whereNotNull($organizationUnit)  // Tambahkan filter ini
+            ->where($organizationUnit, '!=', '') // Tambahkan filter ini
+            ->where($organizationUnit, '!=', '-') // Tambahkan filter ini
             ->distinct()
-            ->pluck('directorate_name');
+            ->pluck($organizationUnit, $organizationUnit);
 
-        $ideaCounts = $this->getCountsByStatus($companyCode, 'Not Implemented');
-        $innovationCounts = $this->getCountsByStatus($companyCode, ['Implemented', 'Progress']);
+        $ideaCounts = $this->getCountsByStatus($companyCode, 'Not Implemented', $organizationUnit);
+        $innovationCounts = $this->getCountsByStatus($companyCode, ['Implemented', 'Progress'], $organizationUnit);
 
-        return $allDirectorates->map(function ($directorate) use ($ideaCounts, $innovationCounts) {
-            return (object)[
-                'directorate_name' => $directorate,
-                'total_ideas' => $ideaCounts->get($directorate, 0),
-                'total_innovations' => $innovationCounts->get($directorate, 0)
-            ];
-        });
+        // Filter dan map data
+        $filteredData = $allDirectorates->map(function ($organizationUnit) use ($ideaCounts, $innovationCounts) {
+            $totalIdeas = $ideaCounts->get($organizationUnit, 0);
+            $totalInnovations = $innovationCounts->get($organizationUnit, 0);
+
+            // Hanya return data jika ada ide atau inovasi
+            if ($totalIdeas > 0 || $totalInnovations > 0) {
+                return (object)[
+                    'directorate_name' => $organizationUnit,
+                    'total_ideas' => $totalIdeas,
+                    'total_innovations' => $totalInnovations
+                ];
+            }
+            return null;
+        })->filter(); // Hapus semua nilai null
+
+        return $filteredData;
     }
 
-    private function getCountsByStatus($companyCode, $status)
+    private function getCountsByStatus($companyCode, $status, $organizationUnit)
     {
         return DB::table('users')
             ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')
@@ -52,8 +68,8 @@ class DirectorateChart extends Component
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->where('users.company_code', $companyCode)
             ->whereIn('papers.status_inovasi', (array)$status)
-            ->groupBy('users.directorate_name')
-            ->select('users.directorate_name', DB::raw('COUNT(DISTINCT papers.id) as total'))
-            ->pluck('total', 'directorate_name');
+            ->groupBy('users.' . $organizationUnit)
+            ->select('users.' . $organizationUnit, DB::raw('COUNT(DISTINCT papers.id) as total'))
+            ->pluck('total', $organizationUnit, $organizationUnit);
     }
 }

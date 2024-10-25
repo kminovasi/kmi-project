@@ -83,6 +83,8 @@ class DetailCompanyChartController extends Controller
             }
         }
 
-        return view('detail_company_chart.show', compact('company', 'totalInnovators', 'maleCount', 'femaleCount'));
+        $organizationUnit = $request->query('organization-unit');
+
+        return view('detail_company_chart.show', compact('company', 'totalInnovators', 'maleCount', 'femaleCount', 'organizationUnit'));
     }
 }

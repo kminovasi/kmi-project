@@ -32,8 +32,16 @@
             </div>
         </div>
         <div class="row mt-4">
+            <div class="col-md-4 col-sm-4 col-xs-6">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    Filter bedasarkan unit organisasi
+                </button>
+            </div>
+        </div>
+        <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" />
+        <div class="row mt-4">
             <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.directorate-chart :company-id="$company->id" />
+                <x-detail-company-chart.directorate-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-6 col-md-12">
                 <x-detail-company-chart.innovator-directorate :company-id="$company->id" />
@@ -45,5 +53,5 @@
             </div>
         </div>
     </div>
-    @vite(['resources/js/company/companyDashboardChart.js'])
+
 @endsection

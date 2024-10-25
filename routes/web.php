@@ -28,10 +28,12 @@ use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\TimelineContoller;
+use App\Models\Evidence;
 use App\Models\Flyer;
 use App\Models\Timeline;
+use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
-
+use App\Exports\PaperExport;
 use function PHPUnit\Framework\returnSelf;
 
 /*
@@ -314,6 +316,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [EvidenceController::class, 'index'])->name('index');
         Route::get('/category/{id}', [EvidenceController::class, 'List_paper'])->name('category');
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
+        Route::get('/export/{categoryId}', function ($categoryId) {
+            return Excel::download(new PaperExport($categoryId), 'papers_category_'.$categoryId.'.xlsx');
+        })->name('excel');
     });
 
     // Cv

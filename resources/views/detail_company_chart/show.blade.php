@@ -49,7 +49,7 @@
         </div>
         <div class="row mt-4">
             <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.benefit-directorate :company-id="$company->id" />
+                <x-detail-company-chart.benefit-organization :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
         </div>
     </div>

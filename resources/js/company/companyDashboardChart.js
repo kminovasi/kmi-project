@@ -264,7 +264,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .getContext("2d");
     const data = window.potentialBenefitsData;
 
-    const labels = Object.keys(data);
+    // Modifikasi labels
+    const labels = Object.keys(data).map((label) =>
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+    );
     const values = Object.values(data);
 
     new Chart(ctx, {

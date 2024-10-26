@@ -44,7 +44,7 @@
                 <x-detail-company-chart.idea-and-innovation-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.innovator-directorate :company-id="$company->id" />
+                <x-detail-company-chart.innovator-organization :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
         </div>
         <div class="row mt-4">

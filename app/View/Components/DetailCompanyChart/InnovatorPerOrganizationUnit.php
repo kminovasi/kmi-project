@@ -2,12 +2,13 @@
 
 namespace App\View\Components\DetailCompanyChart;
 
-use App\Models\Company;
-use App\Models\User;
-use DB;
 use Illuminate\View\Component;
+use App\Models\Company;
+use App\Models\Team;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
-class InnovatorOrganization extends Component
+class InnovatorPerOrganization extends Component
 {
     public $companyId;
     public $innovatorsByDirectorate;
@@ -32,7 +33,7 @@ class InnovatorOrganization extends Component
      */
     public function render()
     {
-        return view('components.detail-company-chart.innovator-organization', [
+        return view('components.detail-company-chart.innovator-per-organization-unit', [
             'innovatorsByDirectorate' => $this->innovatorsByDirectorate
         ]);
     }

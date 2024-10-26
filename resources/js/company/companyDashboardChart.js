@@ -212,18 +212,20 @@ document.addEventListener("DOMContentLoaded", function () {
         legendContainer.appendChild(legendItem);
     });
 });
-
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document
         .getElementById("innovatorDirectorateChart")
         .getContext("2d");
     const data = window.innovatorDirectorateData;
 
-    const labels = Object.keys(data);
+    // Modifikasi labels
+    const labels = Object.keys(data).map((label) =>
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+    );
     const values = Object.values(data);
 
     new Chart(ctx, {
-        type: "bar", // Tetap menggunakan 'bar', tapi kita akan mengubah orientasinya
+        type: "bar",
         data: {
             labels: labels,
             datasets: [
@@ -237,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ],
         },
         options: {
-            indexAxis: "y", // Ini mengubah orientasi menjadi horizontal
+            indexAxis: "y",
             responsive: true,
             plugins: {
                 legend: {
@@ -256,7 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
 });
-
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document
         .getElementById("potentialBenefitChart")

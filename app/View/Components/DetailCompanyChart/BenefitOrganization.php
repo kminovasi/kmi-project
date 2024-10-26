@@ -4,22 +4,24 @@ namespace App\View\Components\DetailCompanyChart;
 
 use App\Models\Company;
 use App\Models\Paper;
-use Illuminate\Support\Facades\DB;
+use DB;
 use Illuminate\View\Component;
 
-class BenefitDirectorate extends Component
+class BenefitOrganization extends Component
 {
     public $companyId;
     public $potentialBenefitsByDirectorate;
+    public $organizationUnit;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($companyId)
+    public function __construct($companyId, $organizationUnit = null)
     {
         $this->companyId = $companyId;
+        $this->organizationUnit = $organizationUnit === null ? 'directorate_name' : $organizationUnit;
         $this->potentialBenefitsByDirectorate = $this->getPotentialBenefitsByDirectorate();
     }
 
@@ -30,7 +32,7 @@ class BenefitDirectorate extends Component
      */
     public function render()
     {
-        return view('components.detail-company-chart.benefit-directorate', [
+        return view('components.detail-company-chart.benefit-organization', [
             'potentialBenefitsByDirectorate' => $this->potentialBenefitsByDirectorate,
         ]);
     }
@@ -39,15 +41,15 @@ class BenefitDirectorate extends Component
     {
         $company = Company::findOrFail($this->companyId);
 
-        return Paper::select('users.directorate_name', DB::raw('SUM(papers.potential_benefit) as total_potential_benefit'))
+        return Paper::select('users.' . $this->organizationUnit, DB::raw('SUM(papers.potential_benefit) as total_potential_benefit'))
             ->join('teams', 'papers.team_id', '=', 'teams.id')
             ->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
             ->join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
             ->where('teams.company_code', $company->company_code)
-            ->groupBy('users.directorate_name')
+            ->groupBy('users.' . $this->organizationUnit)
             ->get()
             ->mapWithKeys(function ($item) {
-                return [$item['directorate_name'] => $item['total_potential_benefit']];
+                return [$item[$this->organizationUnit] => $item['total_potential_benefit']];
             });
     }
 }

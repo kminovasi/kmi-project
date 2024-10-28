@@ -1,4 +1,8 @@
 @import 'dashboard.css';
+/* Import Bootstrap CSS */
+
+
+/* CSS kustom Anda di sini */
 #benefitChart {
     background-color: #fff;
     /* Ganti dengan warna latar belakang yang Anda inginkan */

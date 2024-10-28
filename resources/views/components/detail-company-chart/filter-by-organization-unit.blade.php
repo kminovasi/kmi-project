@@ -20,6 +20,15 @@
                             <option value="sub_section_of">Sub Seksi</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="year">Pilih Tahun:</label>
+                        <select name="year" id="year" class="form-control">
+                            <option value="">Pilih Tahun</option>
+                            @foreach ($availableYears as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

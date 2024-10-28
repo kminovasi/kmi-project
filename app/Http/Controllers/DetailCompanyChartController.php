@@ -84,7 +84,26 @@ class DetailCompanyChartController extends Controller
         }
 
         $organizationUnit = $request->query('organization-unit');
+        $availableYears = Event::select('year')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC')
+            ->pluck('year')
+            ->toArray();
 
-        return view('detail_company_chart.show', compact('company', 'totalInnovators', 'maleCount', 'femaleCount', 'organizationUnit'));
+
+        $year = $request->query('year');
+        if ($year === null) {
+            $year = Carbon::now()->year;
+        }
+
+        return view('detail_company_chart.show', compact(
+            'company',
+            'totalInnovators',
+            'maleCount',
+            'femaleCount',
+            'organizationUnit',
+            'availableYears',
+            'year'
+        ));
     }
 }

@@ -48,16 +48,6 @@ use setasign\Fpdi\PdfParser\StreamReader;
 use setasign\Fpdi\PdfParser\PdfParser;
 use Carbon\Carbon;
 use Exception;
-// use FilippoToso\PdfWatermarker\Support\Pdf;
-// use FilippoToso\PdfWatermarker\Watermarks\ImageWatermark;
-// use FilippoToso\PdfWatermarker\PdfWatermarker;
-// use QrCode;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
-// use Dompdf\Dompdf;
-// use Dompdf\Options;
-// use chillerlan\QRCode\QRCode;
-// use chillerlan\QRCode\QROptions;
 
 class PaperController extends Controller
 {
@@ -518,52 +508,52 @@ class PaperController extends Controller
                 $stage => "w: " . $request->step
             ]);
 
-            if($categoryName === "GKM PLANT" || $categoryName === "GKM OFFICE"){
-            if ($stage == 'step_8' && $this->isAllStepComplete($id)) {
-                $team = Team::findOrFail($paper->team_id);
+            if ($categoryName === "GKM PLANT" || $categoryName === "GKM OFFICE") {
+                if ($stage == 'step_8' && $this->isAllStepComplete($id)) {
+                    $team = Team::findOrFail($paper->team_id);
 
-                // / Pastikan relasi Team sudah dimuat dengan benar
-                if ($paper->team) {
-                    $fasilId = PvtMember::where('team_id', $paper->team->id)
-                        ->where('status', 'facilitator')
-                        ->pluck('employee_id')
-                        ->first();
+                    // / Pastikan relasi Team sudah dimuat dengan benar
+                    if ($paper->team) {
+                        $fasilId = PvtMember::where('team_id', $paper->team->id)
+                            ->where('status', 'facilitator')
+                            ->pluck('employee_id')
+                            ->first();
 
-                    $fasilData = User::where('employee_id', $fasilId)
-                        ->select('name', 'email')
-                        ->first();
+                        $fasilData = User::where('employee_id', $fasilId)
+                            ->select('name', 'email')
+                            ->first();
 
-                    $leaderId = PvtMember::where('team_id', $paper->team->id)
-                        ->where('status', 'leader')
-                        ->pluck('employee_id')
-                        ->first();
+                        $leaderId = PvtMember::where('team_id', $paper->team->id)
+                            ->where('status', 'leader')
+                            ->pluck('employee_id')
+                            ->first();
 
-                    $leaderData = User::where('employee_id', $leaderId)
-                        ->select('name', 'email')
-                        ->first();
+                        $leaderData = User::where('employee_id', $leaderId)
+                            ->select('name', 'email')
+                            ->first();
 
-                    $inovasi_lokasi = Paper::where('id', $id)
-                        ->select('inovasi_lokasi')
-                        ->first();
+                        $inovasi_lokasi = Paper::where('id', $id)
+                            ->select('inovasi_lokasi')
+                            ->first();
 
-                    // Membuat objek
-                    $mail = new EmailNotificationPaperFasil(
-                        $paper,
-                        'full_paper',
-                        $paper->innovation_title,
-                        $paper->team->team_name,
-                        $leaderData,
-                        $fasilData,
-                        $inovasi_lokasi
-                    );
+                        // Membuat objek
+                        $mail = new EmailNotificationPaperFasil(
+                            $paper,
+                            'full_paper',
+                            $paper->innovation_title,
+                            $paper->team->team_name,
+                            $leaderData,
+                            $fasilData,
+                            $inovasi_lokasi
+                        );
 
-                    // Mengirim email ke fasilitator
-                    Mail::to($fasilData->email)->send($mail);
-                } else {
-                    throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+                        // Mengirim email ke fasilitator
+                        Mail::to($fasilData->email)->send($mail);
+                    } else {
+                        throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+                    }
                 }
-                }
-            }else if ($stage == 'step_7' && $this->isAllStepComplete($id)) {
+            } else if ($stage == 'step_7' && $this->isAllStepComplete($id)) {
                 $team = Team::findOrFail($paper->team_id);
 
                 // / Pastikan relasi Team sudah dimuat dengan benar

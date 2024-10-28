@@ -19,7 +19,6 @@ use App\Models\Event;
 use App\Models\Team;
 use App\Models\History;
 use App\Models\PvtEventTeam;
-use App\Models\Evidence;
 use App\Models\Judge;
 use App\Models\BodEvent;
 use App\Models\BeritaAcara;
@@ -27,7 +26,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use App\Models\PvtAssessmentTeam;
 use DataTables;
 use Exception;
@@ -56,15 +54,6 @@ class QueryController extends Controller
     public function get_role(Request $request)
     {
         try {
-            // $role = $request->input('role');
-            // $data_row = User::select("name", "username", "position_title", "job_level", "companies.company_name as co_name")
-            //             ->join('companies', 'companies.company_code', '=', 'users.company_code')
-            //             ->where('users.role', 'ilike', "%$role%")
-            //             ->get();
-
-            //$dataTable = DataTables::of($data_row);
-
-            // $dataTable->rawColumns($rawColumns);
             $role = $request->input('role');
             $user = Auth::user();
             $query = User::select("name", "username", "position_title", "job_level", "companies.company_name as co_name")
@@ -1132,17 +1121,9 @@ class QueryController extends Controller
 
             if (count($arr_event_id)) {
                 for ($i = 0; $i < count($arr_event_id); $i++) {
-                    // Format the point with line breaks
-                    $formattedPoint = insertLineBreaks($arr_event_id[$i]['point'], 15);
-
-                    // Format the pdca with line breaks for titles
-                    $formattedPdca = insertLineBreaks($arr_event_id[$i]['pdca'], 30);
-
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $formattedPdca . ") : " . $formattedPoint . "\"");
-
-                    $rawColumns[] = "Penilaian (" . $formattedPdca . ") : " . $formattedPoint;
-
-                    $dataTable->addColumn("Penilaian <br>(" . $formattedPdca . ") :<br> " . $formattedPoint, function ($data_row) use ($i, $arr_event_id) {
+                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
+                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
+                    $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
                         $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
                             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                             ->where('pvt_assessment_events.status_point', 'active')

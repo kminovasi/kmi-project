@@ -12,15 +12,17 @@ class InnovatorOrganization extends Component
     public $companyId;
     public $innovatorsByDirectorate;
     public $organizationUnit;
+    public $year;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($companyId = null, $organizationUnit = null)
+    public function __construct($companyId = null, $organizationUnit = null, $year = null)
     {
         $this->companyId = $companyId;
+        $this->year = $year;
         $this->organizationUnit = $organizationUnit === null ? 'directorate_name' : $organizationUnit;
         $this->innovatorsByDirectorate = $this->getInnovatorsByDirectorate();
     }
@@ -45,6 +47,7 @@ class InnovatorOrganization extends Component
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->where('teams.company_code', $company->company_code)
             ->where('pvt_members.status', 'member')
+            ->whereYear('teams.created_at', $this->year)
             ->groupBy($this->organizationUnit)
             ->get()
             ->mapWithKeys(function ($item) {

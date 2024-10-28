@@ -12,15 +12,17 @@ class BenefitOrganization extends Component
     public $companyId;
     public $potentialBenefitsByDirectorate;
     public $organizationUnit;
+    public $year;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($companyId, $organizationUnit = null)
+    public function __construct($companyId, $organizationUnit = null, $year)
     {
         $this->companyId = $companyId;
+        $this->year = $year;
         $this->organizationUnit = $organizationUnit === null ? 'directorate_name' : $organizationUnit;
         $this->potentialBenefitsByDirectorate = $this->getPotentialBenefitsByDirectorate();
     }
@@ -46,6 +48,7 @@ class BenefitOrganization extends Component
             ->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
             ->join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
             ->where('teams.company_code', $company->company_code)
+            ->whereYear('teams.created_at', $this->year)
             ->groupBy('users.' . $this->organizationUnit)
             ->get()
             ->mapWithKeys(function ($item) {

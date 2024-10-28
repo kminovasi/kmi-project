@@ -101,7 +101,7 @@
                     </div>
                     <div class="mb-4">
                         <h6 class="small mb-1">Deskripsi</h6>
-                        <textarea name="description" id="inDeskripsi" cols="30" rows="10" class="form-control"></textarea>
+                        <textarea name="description" id="inDeskripsi" cols="30" rows="10" class="form-control" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

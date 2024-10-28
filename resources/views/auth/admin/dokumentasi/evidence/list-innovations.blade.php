@@ -14,7 +14,13 @@
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
-                    <a class="btn btn-sm btn-outline-primary"  onclick="goBack()">
+                    <!-- Tombol Print -->
+                    <a class="btn btn-sm btn-outline-success" href="{{ route('evidence.excel', $category->id) }}">
+                        <i class="me-1" data-feather="table"></i>
+                        Excel
+                    </a>
+
+                    <a class="btn btn-sm btn-outline-primary" onclick="goBack()">
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
@@ -78,13 +84,6 @@
         </div>
     </form>
 
-
-    {{-- <select class="form-select form-select-md mb-4" aria-label="Small select example">
-        @foreach ($events as $event)
-        <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
-        @endforeach
-    </select> --}}
-
     <div class="row">
         <div class="card px-2 pt-2">
             <div class="table-responsive">
@@ -139,7 +138,7 @@
                         @endforeach
                         @else
                         <tr>
-                            <td class="text-center" colspan="8">Data tidak ditemukan</td>
+                            <td class="text-center" colspan="9">Data tidak ditemukan</td>
                         </tr>
                         @endif
 
@@ -147,10 +146,32 @@
                 </table>
 
             </div>
-            <div class="pagination">
-                {{ $papers->links() }}
-            </div>
         </div>
+
+        @if ($papers->hasPages())
+        <div class="d-flex justify-content-end mt-2">
+            <ul class="pagination">
+                {{-- Tombol Previous --}}
+                <li class="page-item {{ $papers->onFirstPage() ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ $papers->previousPageUrl() }}" rel="prev"
+                        aria-label="@lang('pagination.previous')">&lsaquo;</a>
+                </li>
+
+                {{-- Nomor Halaman --}}
+                @foreach ($innovations->links()->elements[0] as $page => $url)
+                <li class="page-item {{ $page == $innovations->currentPage() ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                </li>
+                @endforeach
+
+                {{-- Tombol Next --}}
+                <li class="page-item {{ $innovations->hasMorePages() ? '' : 'disabled' }}">
+                    <a class="page-link" href="{{ $innovations->nextPageUrl() }}" rel="next"
+                        aria-label="@lang('pagination.next')">&rsaquo;</a>
+                </li>
+            </ul>
+        </div>
+        @endif
 
     </div>
 </div>

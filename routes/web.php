@@ -21,16 +21,19 @@ use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChartDashboardController;
 use App\Http\Controllers\CvController;
+use App\Http\Controllers\DetailCompanyChartController;
 use App\Http\Controllers\DokumentasiController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\TimelineContoller;
+use App\Models\Evidence;
 use App\Models\Flyer;
 use App\Models\Timeline;
+use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
-
+use App\Exports\PaperExport;
 use function PHPUnit\Framework\returnSelf;
 
 /*
@@ -55,13 +58,14 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
 
+Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->name('detail-company-chart');
+Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->name('detail-company-chart-show');
 
-
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
-    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 
 Route::middleware('auth')->group(function () {
@@ -297,7 +301,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);
 
         // Rute Certificates
-        Route::resource('certificates', CertificateController::class) ->only(['index', 'store', 'destroy']);
+        Route::resource('certificates', CertificateController::class)->only(['index', 'store', 'destroy']);
         Route::post('certificates/{id}/activate', [CertificateController::class, 'activate'])->name('certificates.activate');
 
 
@@ -312,6 +316,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [EvidenceController::class, 'index'])->name('index');
         Route::get('/category/{id}', [EvidenceController::class, 'List_paper'])->name('category');
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
+        Route::get('/export/{categoryId}', function ($categoryId) {
+            return Excel::download(new PaperExport($categoryId), 'papers_category_'.$categoryId.'.xlsx');
+        })->name('excel');
     });
 
     // Cv

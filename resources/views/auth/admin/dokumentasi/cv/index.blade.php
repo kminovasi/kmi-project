@@ -181,7 +181,7 @@
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
-                    <a class="btn btn-sm btn-outline-primary"  onclick="goBack()">
+                    <a class="btn btn-sm btn-outline-primary" onclick="goBack()">
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
@@ -210,48 +210,54 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($innovations as $inovasi )
+                    @if ( $innovations->isEmpty() )
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $inovasi->team_name }}</td>
-                        <td>{{ $inovasi->innovation_title }}</td>
-                        <td>{{ $inovasi->theme_name }}</td>
-                        <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
-                        <td>{{ $inovasi->category }}</td>
-                        <td>{{ $inovasi->potensi_replikasi }}</td>
-                        <td>
-                            @if ($inovasi->is_best_of_the_best == false)
-                            {{ $inovasi->status }}
-                            @else
-                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
-                                data-bs-placement="top" data-bs-custom-class="custom-tooltip"
-                                data-bs-title="Best of The Best">
-                                <i class="fas fa-trophy" aria-hidden="true"></i>
-                            </button>
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('cv.detail', $inovasi->team_id) }}" class="btn btn-sm btn-primary">
-                                <i class="fas fa-info-circle"></i>
-                            </a>
-
-                            <form action="{{ route('cv.generateCertificate') }}" method="POST">
-                                @csrf
-
-                                <input type="hidden" name="user_name" value="{{ $employee->name }}">
-                                <input type="hidden" name="team_name" value="{{ $inovasi->team_name }}">
-                                <input type="hidden" name="category" value="{{ $inovasi->category }}">
-                                <input type="hidden" name="template_path" value="{{ $inovasi->certificate }}">
-
-                                <button type="submit" class="btn btn-sm btn-warning">
-                                    <i data-feather="download"></i>
-                                </button>
-                            </form>
-
-
-                        </td>
+                        <td colspan="9" class="text-center">Tidak ada data</td>
                     </tr>
-                    @endforeach
+                    @else
+                        @foreach ($innovations as $inovasi )
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $inovasi->team_name }}</td>
+                            <td>{{ $inovasi->innovation_title }}</td>
+                            <td>{{ $inovasi->theme_name }}</td>
+                            <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
+                            <td>{{ $inovasi->category }}</td>
+                            <td>{{ $inovasi->potensi_replikasi }}</td>
+                            <td>
+                                @if ($inovasi->is_best_of_the_best == false)
+                                {{ $inovasi->status }}
+                                @else
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="Best of The Best">
+                                    <i class="fas fa-trophy" aria-hidden="true"></i>
+                                </button>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('cv.detail', $inovasi->team_id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+
+                                <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                    @csrf
+
+                                    <input type="hidden" name="user_name" value="{{ $employee->name }}">
+                                    <input type="hidden" name="team_name" value="{{ $inovasi->team_name }}">
+                                    <input type="hidden" name="category" value="{{ $inovasi->category }}">
+                                    <input type="hidden" name="template_path" value="{{ $inovasi->certificate }}">
+
+                                    <button type="submit" class="btn btn-sm btn-warning">
+                                        <i data-feather="download"></i>
+                                    </button>
+                                </form>
+
+
+                            </td>
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -263,25 +269,27 @@
         <ul class="pagination">
             {{-- Tombol Previous --}}
             <li class="page-item {{ $innovations->onFirstPage() ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ $innovations->previousPageUrl() }}" rel="prev" aria-label="@lang('pagination.previous')">&lsaquo;</a>
+                <a class="page-link" href="{{ $innovations->previousPageUrl() }}" rel="prev"
+                    aria-label="@lang('pagination.previous')">&lsaquo;</a>
             </li>
 
             {{-- Nomor Halaman --}}
             @foreach ($innovations->links()->elements[0] as $page => $url)
-                <li class="page-item {{ $page == $innovations->currentPage() ? 'active' : '' }}">
-                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                </li>
+            <li class="page-item {{ $page == $innovations->currentPage() ? 'active' : '' }}">
+                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+            </li>
             @endforeach
 
             {{-- Tombol Next --}}
             <li class="page-item {{ $innovations->hasMorePages() ? '' : 'disabled' }}">
-                <a class="page-link" href="{{ $innovations->nextPageUrl() }}" rel="next" aria-label="@lang('pagination.next')">&rsaquo;</a>
-                </li>
-            </ul>
-        </div>
+                <a class="page-link" href="{{ $innovations->nextPageUrl() }}" rel="next"
+                    aria-label="@lang('pagination.next')">&rsaquo;</a>
+            </li>
+        </ul>
+    </div>
     @endif
 
-    </div>
+</div>
 
 @endsection
 @push('js')

@@ -125,7 +125,11 @@
 
     <!-- Div untuk menampilkan warna kategori -->
     <div class="chart-container">
-        <a href="{{route('detail-company-chart')}}">Detail chart</a>
+        @if ($isSuperadmin)
+            <a href="{{ route('detail-company-chart') }}">Detail chart</a>
+        @else
+            <a href="{{ route('detail-company-chart-show', ['id' => $companyId]) }}">Detail chart</a>
+        @endif
         <h5>Kategori</h5>
         <div class="category-list" id="category-colors">
             @foreach ($categories as $categoryName => $color)
@@ -136,6 +140,7 @@
             @endforeach
         </div>
     </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="yearFilterInnovator" tabindex="-1" aria-labelledby="yearFilterInnovatorLabel"

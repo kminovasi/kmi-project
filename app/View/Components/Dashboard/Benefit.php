@@ -10,14 +10,18 @@ class Benefit extends Component
 {
     public $year;
     public $charts = [
-        'labels' => [], // Inisialisasi array kosong untuk labels
-        'data' => [], // Inisialisasi array kosong untuk data
-        'logos' => [] // Inisialisasi array kosong untuk logo perusahaan
+        'labels' => [],
+        'data' => [],
+        'logos' => []
     ];
+    public $isSuperadmin;
+    public $userCompanyCode;
 
-    public function __construct($year = null)
+    public function __construct($year = null, $isSuperadmin, $userCompanyCode)
     {
         $this->year = $year;
+        $this->isSuperadmin = $isSuperadmin;
+        $this->userCompanyCode = $userCompanyCode;
 
         // Status benefit yang sudah disetujui
         $acceptedStatuses = [
@@ -33,6 +37,10 @@ class Benefit extends Component
             ->selectRaw('companies.company_name, SUM(papers.potential_benefit) as total_benefit')
             ->whereYear('papers.created_at', $this->year)
             ->whereIn('papers.status', $acceptedStatuses)
+            ->when(!$this->isSuperadmin, function ($query) {
+                // Filter berdasarkan company_code jika bukan Superadmin
+                $query->where('teams.company_code', $this->userCompanyCode);
+            })
             ->groupBy('companies.company_name')
             ->orderBy('total_benefit', 'DESC')
             ->get();

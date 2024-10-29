@@ -6,7 +6,7 @@
 @section('content')
     <!-- Your content for the home page here -->
     <div class="bgBase1">
-        <x-dashboard.header/>
+        <x-dashboard.header />
 
         <!-- Main page content-->
         <div class="container-xl px-4 ">
@@ -14,26 +14,12 @@
                 <div class="col-md-7 col-sm-6">
                     <div class="row mb-3">
                     </div>
-                <x-dashboard.card
-                    :breakthrough-innovation="$breakthroughInnovation"
-                    :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement"
-                    :incremental-innovation="$incrementalInnovation"
-                    :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
-                    :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice"
-                    :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant"
-                    :idea-box="$ideaBox"
-                    :detail-idea-box-idea="$detailIdeaBoxIdea"
-                    :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
-                    :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP"
-                    :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant"
-                    :total-innovators="$totalInnovators"
-                    :total-innovators-male="$totalInnovatorsMale"
-                    :total-innovators-female="$totalInnovatorsFemale"
-                    />
+                    <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
+                        :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
+                        :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
 
                     <div class="row">
                     </div>
-                    <x-dashboard.semen :year="$year" />
                 </div>
                 <div class="col-md-5">
                     <div class="row">
@@ -42,6 +28,12 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-10 col-sm-12 col-xs-12">
+                    <x-dashboard.semen :year="$year" />
+                </div>
+            </div>
         </div>
     </div>
 @endsection
+@vite(['resources/benefitChart.js']);

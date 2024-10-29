@@ -85,9 +85,11 @@
             <div class="card-body">
                 <div class="mb-3">
                     <div class="filter-container col-md-4">
-                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                        @if (Auth::user()->role == 'Superadmin')
                             <button class="btn btn-primary btn-sm me-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#filterModal">Filter</button>
+                        @endif
+                        @if (Auth::user()->role === 'Superadmin' || Auth::user()->role === 'Admin')
                             <select id="filter-status-inovasi" name="filter-status-inovasi" class="form-select">
                                 <option value="Not Implemented">Not Implemented</option>
                                 <option value="Progress">Progress</option>
@@ -233,7 +235,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="mb-1" for="filter-company">Company</label>
-                        <select id="filter-company" name="filter-company" class="form-select" disabled>
+                        <select id="filter-company" name="filter-company" class="form-select">
                             @foreach ($data_company as $company)
                                 <option value="{{ $company->company_code }}"
                                     {{ $company->company_code == Auth::user()->company_code ? 'selected' : '' }}>

@@ -1,26 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Presentasi - Portal Inovasi')
 @push('css')
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
     <style type="text/css">
-        .step-one h1 {
-            text-align: center;
-        }
-
-        .step-one img {
-            width: 75%;
-            height: 75%;
-        }
-
-        .step-one p {
-            text-align: justify;
-        }
-
-        .file-review {
-            margin: 20px 10px;
-        }
-
         .active-link {
             color: #ffc004;
             background-color: #e81500;
@@ -61,8 +46,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p-2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                    <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                    @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                        <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -202,134 +187,130 @@
 @endsection
 
 @push('js')
-    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script> --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
     <script type="">
 
-    function initializeDataTable(columns) {
-        var dataTable = $('#datatable-competition').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "dom": 'lBfrtip',
-            "buttons": [
-                'excel', 'csv'
-            ],
-            "ajax": {
-                "url": "{{ route('query.get_pa_assessment') }}",
-                "type": "GET",
-                "async": false,
-                "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
-                    return data.data;
-                },
-                "data": function (d) {
-                    d.filterEvent = $('#filter-event').val();
-                    // d.filterYear = $('#filter-year').val();
-                    d.filterCategory = $('#filter-category').val();
-                }
-            },
-            "columns": columns,
-            "scrollY": true,
-            "scrollX": true,
-            "stateSave": true,
-            "destroy": true
-        });
-        return dataTable;
-    }
-
-    function updateColumnDataTable() {
-        newColumn = []
-        $.ajax({
-            url: "{{ route('query.get_pa_assessment') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
-            method: 'GET',
-            // dataType: 'json',
-            data:{
-                filterEvent: $('#filter-event').val(),
-                // filterYear: $('#filter-year').val(),
-                filterCategory: $('#filter-category').val()
-            },
-            async: false,
-            success: function (data) {
-                if(data.data.length){
-                    let row_column = {};
-                    row_column['data'] = "DT_RowIndex"
-                    row_column['title'] = "No"
-                    row_column['mData'] = "DT_RowIndex"
-                    row_column['sTitle'] = "No"
-                    newColumn.push(row_column)
-                    for( var key in data.data[0]){
-                        if(key != "DT_RowIndex"){
-                            let row_column = {};
-                            row_column['data'] = key
-                            row_column['title'] = key
-                            row_column['mData'] = key
-                            row_column['sTitle'] = key
-                            newColumn.push(row_column)
-                        }
+        function initializeDataTable(columns) {
+            var dataTable = $('#datatable-competition').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "dom": 'lBfrtip',
+                "buttons": [
+                    'excel', 'csv'
+                ],
+                "ajax": {
+                    "url": "{{ route('query.get_pa_assessment') }}",
+                    "type": "GET",
+                    "async": false,
+                    "dataSrc": function (data) {
+                        // console.log(columns);
+                        // console.log(data.data);
+                        return data.data;
+                    },
+                    "data": function (d) {
+                        d.filterEvent = $('#filter-event').val();
+                        // d.filterYear = $('#filter-year').val();
+                        d.filterCategory = $('#filter-category').val();
                     }
-                }else{
-                    let row_column = {};
-                    row_column['data'] = ''
-                    row_column['title'] = ''
-                    row_column['mData'] = ''
-                    row_column['sTitle'] = ''
-                    newColumn.push(row_column)
+                },
+                "columns": columns,
+                "scrollY": true,
+                "scrollX": true,
+                "stateSave": true,
+                "destroy": true
+            });
+            return dataTable;
+        }
+
+        function updateColumnDataTable() {
+            newColumn = []
+            $.ajax({
+                url: "{{ route('query.get_pa_assessment') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
+                method: 'GET',
+                // dataType: 'json',
+                data:{
+                    filterEvent: $('#filter-event').val(),
+                    // filterYear: $('#filter-year').val(),
+                    filterCategory: $('#filter-category').val()
+                },
+                async: false,
+                success: function (data) {
+                    if(data.data.length){
+                        let row_column = {};
+                        row_column['data'] = "DT_RowIndex"
+                        row_column['title'] = "No"
+                        row_column['mData'] = "DT_RowIndex"
+                        row_column['sTitle'] = "No"
+                        newColumn.push(row_column)
+                        for( var key in data.data[0]){
+                            if(key != "DT_RowIndex"){
+                                let row_column = {};
+                                row_column['data'] = key
+                                row_column['title'] = key
+                                row_column['mData'] = key
+                                row_column['sTitle'] = key
+                                newColumn.push(row_column)
+                            }
+                        }
+                    }else{
+                        let row_column = {};
+                        row_column['data'] = ''
+                        row_column['title'] = ''
+                        row_column['mData'] = ''
+                        row_column['sTitle'] = ''
+                        newColumn.push(row_column)
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Gagal mengambil kolom: ' + error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('Gagal mengambil kolom: ' + error);
-            }
-        });
-        return newColumn
-    }
+            });
+            return newColumn
+        }
 
-    $(document).ready(function() {
+        $(document).ready(function() {
 
-        let column = updateColumnDataTable();
+            let column = updateColumnDataTable();
 
-        let dataTable = initializeDataTable(column);
+            let dataTable = initializeDataTable(column);
 
-        $("#category-pa").val($(`#filter-category`).val())
-        $('#fix-all-pa').val($(`#filter-event`).val())
-
-        $('#filter-event').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
-
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
+            $("#category-pa").val($(`#filter-category`).val())
             $('#fix-all-pa').val($(`#filter-event`).val())
 
-            column = updateColumnDataTable();
-            dataTable = initializeDataTable(column);
+            $('#filter-event').on('change', function () {
+                dataTable.destroy();
+                dataTable.destroy();
+
+                document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
+                $('#fix-all-pa').val($(`#filter-event`).val())
+
+                column = updateColumnDataTable();
+                dataTable = initializeDataTable(column);
+            });
+            $('#filter-category').on('change', function () {
+                dataTable.destroy();
+                dataTable.destroy();
+
+                document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
+                $("#category-pa").val($(`#filter-category`).val())
+
+                column = updateColumnDataTable();
+                dataTable = initializeDataTable(column);
+            });
         });
-        $('#filter-category').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
 
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
-            $("#category-pa").val($(`#filter-category`).val())
+        function change_url(id, elementid) {
+            //link untuk update
+            var form = document.getElementById(elementid);
+            var url = `{{ route('paper.rollback', ['id' => ':id']) }}`;
+            url = url.replace(':id', id);
+            form.action = url;
 
-            column = updateColumnDataTable();
-            dataTable = initializeDataTable(column);
-        });
-    });
-
-    function change_url(id, elementid) {
-        //link untuk update
-        var form = document.getElementById(elementid);
-        var url = `{{ route('paper.rollback', ['id' => ':id']) }}`;
-        url = url.replace(':id', id);
-        form.action = url;
-
-    }
-
-</script>
+        }
+    </script>
 @endpush

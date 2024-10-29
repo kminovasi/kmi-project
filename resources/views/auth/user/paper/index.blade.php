@@ -3,70 +3,39 @@
 @section('title', 'Data Makalah - Portal Inovasi')
 
 @push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-    <style type="text/css">
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Menambah jarak antar elemen */
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <style>
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 20px;
         }
 
-        #filter-status-inovasi {
-            width: 160px;
-            height: 45px;
-            border: 1px solid #d6d8db;
-            /* Border abu-abu cerah */
-            border-radius: 4px;
-            /* Radius sudut border */
-            padding: 8px 12px;
-            /* Padding di dalam dropdown */
-            background-color: #ffffff;
-            /* Background putih */
-            color: #000000;
-            /* Teks hitam */
-            font-size: 14px;
-            /* Ukuran font */
-            transition: border-color 0.3s;
-            /* Transisi untuk perubahan warna border */
+        .dataTables_wrapper .dt-buttons {
+            margin-bottom: 20px;
         }
 
-        #filter-status-inovasi:focus {
-            outline: none;
-            /* Menghilangkan outline default */
-            border-color: #d6d8db;
-            /* Border abu-abu cerah saat fokus */
-        }
-
-        .btn-download {
-            background-color: #ffffff;
-            /* Warna latar belakang putih */
-            color: #000000;
-            /* Teks hitam */
-            border: 1px solid #d6d8db;
-            /* Border abu-abu cerah */
-            border-radius: 4px;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            /* Efek timbul */
-            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .btn-download:hover {
+        .table thead th {
             background-color: #f8f9fa;
-            /* Warna putih cerah saat hover */
-            border-color: #d6d8db;
-            /* Border tetap abu-abu cerah saat hover */
-            color: #000000;
+            font-weight: 600;
         }
 
-        .btn-download:focus {
-            outline: none;
-            /* Menghilangkan outline default */
+        .table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dt-button {
+            background-color: #0d6efd !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 5px 15px !important;
+            margin-right: 5px !important;
+        }
+
+        .dt-button:hover {
+            background-color: #0b5ed7 !important;
         }
     </style>
 @endpush
@@ -88,18 +57,18 @@
             </div>
         </div>
         @if ($errors->any())
-        <div class="container-xl px-4">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error!</strong> List Error:
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="container-xl px-4">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> List Error:
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             </div>
-        </div>
-    @endif
+        @endif
     </header>
 
     <div class="container-xl px-4 mt-4">
@@ -115,7 +84,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
-                    <div class="filter-container">
+                    <div class="filter-container col-md-4">
                         @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                             <button class="btn btn-primary btn-sm me-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#filterModal">Filter</button>
@@ -453,8 +422,7 @@
                             <input type="hidden" name="paper_id" id="paper_id_input" value="">
                             <label for="inputBeberapaDokumen">File Berupa PDF atau Gambar atau Video</label>
                             <input type="file" name="document_support[]" class="form-control"
-                                accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv"
-                                id="inputBeberapaDokumen" multiple>
+                                accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv" id="inputBeberapaDokumen" multiple>
 
                         </div>
                         <div class="mb-3">
@@ -645,125 +613,6 @@
 
 @endsection
 
-@push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-    <style type="text/css">
-        /* Menambahkan garis pada tabel dengan sudut yang membulat */
-        table.dataTable {
-            border-collapse: separate;
-            /* Memisahkan border untuk efek modern */
-            border-spacing: 0;
-            /* Menghilangkan jarak antara sel */
-        }
-
-        table.dataTable th,
-        table.dataTable td {
-            border: 1px solid #d6d8db;
-            /* Garis border abu-abu cerah */
-            padding: 8px;
-            /* Jarak dalam sel tabel */
-            text-align: left;
-            /* Penataan teks ke kiri */
-            border-radius: 4px;
-            /* Sudut border yang membulat pada sel tabel */
-        }
-
-        table.dataTable thead th {
-            background-color: #f9f9f9;
-            /* Latar belakang header tabel */
-            font-weight: bold;
-            /* Menebalkan font header tabel */
-        }
-
-        table.dataTable tbody tr:nth-child(odd) {
-            background-color: #f9f9f9;
-            /* Warna latar belakang baris ganjil */
-        }
-
-        table.dataTable tbody tr:nth-child(even) {
-            background-color: #ffffff;
-            /* Warna latar belakang baris genap */
-        }
-
-        table.dataTable tbody tr {
-            transition: background-color 0.3s;
-            /* Transisi halus untuk perubahan warna latar belakang */
-        }
-
-        table.dataTable tbody tr:hover {
-            background-color: #f1f1f1;
-            /* Warna latar belakang baris saat hover */
-        }
-
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Menambah jarak antar elemen */
-        }
-
-        #filter-status-inovasi {
-            width: 160px;
-            height: 45px;
-            border: 1px solid #d6d8db;
-            /* Border abu-abu cerah tipis */
-            border-radius: 4px;
-            /* Radius sudut border */
-            padding: 8px 12px;
-            /* Padding di dalam dropdown */
-            background-color: #ffffff;
-            /* Background putih */
-            color: #000000;
-            /* Teks hitam */
-            font-size: 14px;
-            /* Ukuran font */
-            transition: border-color 0.3s;
-            /* Transisi untuk perubahan warna border */
-        }
-
-        #filter-status-inovasi:focus {
-            outline: none;
-            /* Menghilangkan outline default */
-            border-color: #d6d8db;
-            /* Border abu-abu cerah saat fokus */
-        }
-
-        .btn-red {
-            background-color: #ffffff;
-            /* Warna putih cerah */
-            color: #000000;
-            /* Teks hitam */
-            border: 1px solid #d6d8db;
-            /* Border abu-abu cerah tipis */
-            border-radius: 4px;
-            padding: 8px 16px;
-            /* Jarak dalam tombol */
-            font-size: 14px;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Efek timbul */
-            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .btn-red:hover {
-            background-color: #f0f0f0;
-            /* Warna abu-abu sangat cerah saat hover */
-            border-color: #d6d8db;
-            /* Border abu-abu cerah */
-            color: #000000;
-            /* Teks hitam */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            /* Efek timbul lebih dalam saat hover */
-        }
-
-        .btn-red:focus {
-            outline: none;
-            /* Menghilangkan outline default */
-        }
-    </style>
-@endpush
 
 <script>
     $(document).ready(function() {
@@ -883,14 +732,12 @@
 
 
 @push('js')
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
     <script type="">
     $(document).ready(function() {
         var dataTable = $('#datatable-makalah').DataTable({
@@ -905,9 +752,6 @@
                 "url": "{{ route('query.getmakalah') }}",
                 "type": "GET",
                 "dataSrc": function (data) {
-                    // console.log('Jumlah data total: ' + data.recordsTotal);
-                    // console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                    // console.log('Jumlah data setelah filter: ' + data.data);
                     return data.data;
                 },
                 data: function (d) {

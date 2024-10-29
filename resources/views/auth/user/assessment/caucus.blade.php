@@ -1,9 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Data Paper')
 @push('css')
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
     <style type="text/css">
         .step-one h1 {
             text-align: center;
@@ -23,10 +23,35 @@
             background-color: #e81500;
         }
 
-        .display thead th,
-        .display tbody td {
-            border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+        /* Menambahkan border pada tabel */
+        #datatable-caucus {
+            border-collapse: collapse;
+            /* Menghilangkan jarak antara border sel */
+            width: 100%;
+            /* Mengatur lebar tabel */
+        }
+
+        /* Menambahkan border pada sel tabel */
+        #datatable-caucus th,
+        #datatable-caucus td {
+            border: 1px solid #ddd;
+            /* Border abu-abu muda */
+            padding: 8px;
+            /* Padding di dalam sel */
+            text-align: center;
+            /* Teks terpusat di dalam sel */
+        }
+
+        /* Menambahkan border pada header tabel */
+        #datatable-caucus th {
+            background-color: #f2f2f2;
+            /* Warna latar belakang untuk header */
+        }
+
+        /* Jika ingin border pada seluruh tabel */
+        #datatable-caucus {
+            border: 1px solid #ddd;
+            /* Border di sekitar tabel */
         }
     </style>
 @endpush
@@ -51,8 +76,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                                <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                                @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -87,16 +112,16 @@
 
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                @endif
+            @endif
 
             @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                @foreach ($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
+                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
 
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
         </div>
         @endif
         @include('auth.user.assessment.bar')
@@ -228,25 +253,18 @@
 
 
     @push('js')
-        {{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script> --}}
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-            crossorigin="anonymous"></script>
-        <script src="js/datatables/datatables-simple-demo.js"></script>
-        <script src="js/scripts.js"></script>
+        <script
+            src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
         <script type="">
     function initializeDataTable(columns) {
 
         var dataTable = $('#datatable-caucus').DataTable({
             "processing": true,
             "serverSide": true,
+            "responsive": true,
             "dom": 'lBfrtip',
             "buttons": [
                 'excel', 'csv'
@@ -265,7 +283,12 @@
                 }
 
             },
-            "columns": columns,
+           "columns": columns.map(column => {
+                    return {
+                        ...column,
+                        className: 'text-center' // Menambahkan kelas CSS
+                    };
+                }),
             "scrollY": true,
             "scrollX": true,
             "stateSave": true,

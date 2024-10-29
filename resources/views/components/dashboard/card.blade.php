@@ -1,7 +1,7 @@
 <div class="row mb-3">
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/dashboard.css'])
     <div class="col-lg-6 col-xl-4 mb-4">
-        <div class="card bg-primary text-white h-100 " >
+        <div class="card bg-primary text-white h-100 ">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
@@ -115,7 +115,7 @@
                     <div class="me-3">
                         <div class="text-white-75 small">Total Innovator</div>
                         <div class="text-lg fw-bold">
-                            {{$totalInnovators}}
+                            {{ $totalInnovators }}
                         </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                     <div class="me-3">
                         <div class="text-white-75 small">Total Innovator Pria</div>
                         <div class="text-lg fw-bold">
-                            {{$totalInnovatorsMale}}
+                            {{ $totalInnovatorsMale }}
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                     <div class="me-3">
                         <div class="text-white-75 small">Total Innovator Wanita</div>
                         <div class="text-lg fw-bold">
-                            {{$totalInnovatorsFemale}}
+                            {{ $totalInnovatorsFemale }}
                         </div>
                     </div>
                 </div>

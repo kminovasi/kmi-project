@@ -317,7 +317,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/category/{id}', [EvidenceController::class, 'List_paper'])->name('category');
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
         Route::get('/export/{categoryId}', function ($categoryId) {
-            return Excel::download(new PaperExport($categoryId), 'papers_category_'.$categoryId.'.xlsx');
+            return Excel::download(new PaperExport($categoryId), 'papers_category_' . $categoryId . '.xlsx');
         })->name('excel');
     });
 

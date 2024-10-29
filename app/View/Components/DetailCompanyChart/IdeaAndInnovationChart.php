@@ -69,21 +69,23 @@ class IdeaAndInnovationChart extends Component
     private function getCountsByStatus($companyCode, $status, $organizationUnit)
     {
         try {
-            return DB::table('users')
-                ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')
-                ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
-                ->join('papers', 'teams.id', '=', 'papers.team_id')
+            return DB::table('papers')
+                ->join('teams', 'papers.team_id', '=', 'teams.id')
+                ->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
+                ->join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
                 ->where('users.company_code', $companyCode)
                 ->whereIn('papers.status_inovasi', (array)$status)
                 ->whereYear('papers.created_at', $this->year)
                 ->whereNotNull('users.' . $organizationUnit)
                 ->where('users.' . $organizationUnit, '!=', '')
+                // Tambahkan where untuk role ketua/leader jika perlu
+                ->where('pvt_members.status', 'leader')  // atau sesuai dengan role leader di sistem Anda
                 ->groupBy('users.' . $organizationUnit)
                 ->select('users.' . $organizationUnit, DB::raw('COUNT(DISTINCT papers.id) as total'))
                 ->pluck('total', $organizationUnit);
         } catch (\Exception $e) {
             \Log::error('Error in getCountsByStatus: ' . $e->getMessage());
-            return collect([]); // Return empty collection in case of error
+            return collect([]);
         }
     }
 }

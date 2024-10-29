@@ -24,16 +24,16 @@
                 <div class="col-md-5">
                     <div class="row">
                         <h4>Benefit</h4>
-                        <x-dashboard.benefit :year="$year" />
+                        <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-10 col-sm-12 col-xs-12">
-                    <x-dashboard.semen :year="$year" />
+                    <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                 </div>
             </div>
         </div>
     </div>
 @endsection
-@vite(['resources/benefitChart.js']);
+@vite(['resources/js/benefitChart.js'])

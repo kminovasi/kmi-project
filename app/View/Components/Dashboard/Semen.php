@@ -6,6 +6,7 @@ use Illuminate\View\Component;
 use App\Models\Team;
 use App\Models\PvtMember;
 use App\Models\Category;
+use App\Models\Company;
 use App\Models\Event;
 
 class Semen extends Component
@@ -16,10 +17,17 @@ class Semen extends Component
     public $colors = [];
     public $availableYears = [];
     public $year;
+    public $isSuperadmin;
+    public $userCompanyCode;
+    public $companyId;
 
-    public function __construct($year = null)
+    public function __construct($year = null, $isSuperadmin, $userCompanyCode)
     {
-        $this->availableYears =   Event::select('year')
+        $this->isSuperadmin = $isSuperadmin;
+        $this->userCompanyCode = $userCompanyCode;
+        $company = Company::where('company_code', $userCompanyCode)->first();
+        $this->companyId = $company->id;
+        $this->availableYears = Event::select('year')
             ->groupBy('year')
             ->orderBy('year', 'DESC')
             ->pluck('year')
@@ -34,7 +42,6 @@ class Semen extends Component
         } else {
             $latestYear = $this->year;
         }
-        // Ambil tahun terbaru dari data pendaftar
 
         // Ambil semua kategori dari tabel kategori
         $allCategories = Category::all();
@@ -57,7 +64,6 @@ class Semen extends Component
             'rgba(220, 20, 60, 1)',     // Crimson
         ];
 
-
         // Mengasosiasikan warna dengan kategori
         foreach ($allCategories as $index => $category) {
             $this->categories[$category->category_name] = $this->colors[$index % count($this->colors)];
@@ -70,6 +76,9 @@ class Semen extends Component
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->selectRaw("companies.company_name, categories.category_name, COUNT(pvt_members.id) as total_innovators")
                 ->whereYear('teams.created_at', $latestYear)
+                ->when(!$this->isSuperadmin, function ($query) {
+                    $query->where('teams.company_code', $this->userCompanyCode);
+                })
                 ->groupBy('companies.company_name', 'categories.category_name')
                 ->orderBy('companies.company_name')
                 ->get();
@@ -115,7 +124,9 @@ class Semen extends Component
             'logos' => $this->logos,
             'categories' => $this->categories,
             'availableYears' => $this->availableYears,
-            'year' => $this->year
+            'year' => $this->year,
+            'isSuperadmin' => $this->isSuperadmin,
+            'companyId' => $this->companyId
         ]);
     }
 }

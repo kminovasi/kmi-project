@@ -128,8 +128,8 @@
             @endforeach
 
 
-            <li class="page-item {{ $innovations->hasMorePages() ? '' : 'disabled' }}">
-                <a class="page-link" href="{{ $innovations->nextPageUrl() }}" rel="next"
+            <li class="page-item {{ $judges->hasMorePages() ? '' : 'disabled' }}">
+                <a class="page-link" href="{{ $judges->nextPageUrl() }}" rel="next"
                     aria-label="@lang('pagination.next')">&rsaquo;</a>
             </li>
         </ul>

@@ -747,7 +747,7 @@ class QueryController extends Controller
                 // Cek apakah file sudah diupload (kolom signed_file tidak null)
                 if ($data_row['signed_file']) {
                     // Jika file sudah ada, hanya tampilkan tombol "Lihat" atau "Edit" berdasarkan peran pengguna
-                    if ($currentUser->role === "Admin") {
+                    if ($currentUser->role === "Admin" || $currentUser->role === "Superadmin") {
                         return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-edit"></i> Edit</button>';
                     }
                 } else {
@@ -758,7 +758,7 @@ class QueryController extends Controller
 
             // Tambahkan kolom hapus jika signed_file sudah ada
             $dataTable->addColumn('delete', function ($data_row) use ($currentUser) {
-                if ($data_row['signed_file'] && $currentUser->role === "Admin") { // Periksa apakah pengguna adalah admin
+                if ($data_row['signed_file'] && ($currentUser->role === "Admin" || $currentUser->role === "Superadmin")) { //periksa apakah pengguna admin & superadmin
                     // Tampilkan tombol hapus jika file sudah diunggah
                     return '<form action="' . route('dokumentasi.berita-acara.delete', ['id' => $data_row['id']]) . '" method="POST" onsubmit="return confirm(\'Yakin ingin menghapus file ini?\');">
                             ' . csrf_field() . '

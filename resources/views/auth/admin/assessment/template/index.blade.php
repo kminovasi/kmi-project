@@ -1,7 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Data Assessment Template')
 @push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
     <style>
         #textarea {
             width: 100%;
@@ -12,9 +15,11 @@
             color: #ffc004;
             background-color: #e81500;
         }
+
         .display thead th,
         .display tbody td {
-            border: 0.5px solid #ddd; /* Atur warna dan ketebalan garis sesuai kebutuhan */
+            border: 0.5px solid #ddd;
+            /* Atur warna dan ketebalan garis sesuai kebutuhan */
         }
     </style>
 @endpush
@@ -44,11 +49,17 @@
     <div class="container-xl px-4 mt-4">
         <div class="p-2 border-bottom">
             @if (Auth::user()->role == 'Admin')
-                <a href="{{route('assessment.show.point')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment Point</a>
+                <a href="{{ route('assessment.show.point') }}"
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
+                    Point</a>
             @elseif (auth()->check() && auth()->user()->role == 'Superadmin')
-                <a href="{{route('assessment.show.template')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template Assessment</a>
-                <a href="{{route('assessment.show.point')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment Point Setting</a>
-             @endif
+                <a href="{{ route('assessment.show.template') }}"
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
+                    Assessment</a>
+                <a href="{{ route('assessment.show.point') }}"
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
+                    Point Setting</a>
+            @endif
 
         </div>
         <div class="mb-3">
@@ -69,8 +80,8 @@
         <div class="card mb-4 col-12">
             <div class="card-body">
                 <div class="mb-3">
-                    <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal"
-                    data-bs-target="#filterModal">Filter</button>
+                    <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button"
+                        data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
                     <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
                 </div>
                 <form action="{{ route('assessment.store.assign.point') }}" method="POST">
@@ -94,15 +105,16 @@
                                 <input type="text" name="category" id="inputCategory" hidden>
                                 <h6 for="">Pilih Event</h6>
                                 @foreach ($events as $event)
-                                    <input value="{{ $event->id }}" type="checkbox" name="events[]" value="item1" onchange="cek()"> {{ $event->event_name }} - {{ $event->year }}
+                                    <input value="{{ $event->id }}" type="checkbox" name="events[]" value="item1"
+                                        onchange="cek()"> {{ $event->event_name }} - {{ $event->year }}
                                     <br>
                                 @endforeach
                                 <!-- <select name="year" id="year" class="form-control" onchange="cek()">
-                                    <option value="" disabled selected>Choose Year</option>
-                                    @foreach ($events as $event)
-                                        <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
-                                    @endforeach
-                                </select> -->
+                                                <option value="" disabled selected>Choose Year</option>
+                                                @foreach ($events as $event)
+    <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
+    @endforeach
+                                            </select> -->
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -211,7 +223,7 @@
                         <label class="mb-1" for="facilitator">Category</label>
                         <select id="filter-category" class="form-select" name="filter-category">
                             <option value="IDEA" selected> IDEA Box </option>
-                            <option value="BI/II" selected> Implemented  </option>
+                            <option value="BI/II" selected> Implemented </option>
                         </select>
                     </div>
                 </div>
@@ -225,8 +237,13 @@
 
 @endsection
 @push('js')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script type="">
     $(document).ready(function() {
 

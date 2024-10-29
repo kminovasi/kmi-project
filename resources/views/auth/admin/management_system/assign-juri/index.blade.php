@@ -27,43 +27,44 @@
 <div class="container-xl px-4 mt-4">
 
     <!-- Form Pencarian dan Filter -->
-    <form action="{{ route('management-system.juri') }}" method="GET" class="mb-4 p-0 ">
-
-        <div class="flex row">
-            <!-- Pencarian berdasarkan nama user -->
-            <div class="col-md-5">
-                <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari judul paper..."
-                    value="{{ request('search') }}">
-            </div>
-
-            <!-- Filter berdasarkan company  -->
-            <div class="col-md-3">
-                <select name="company" class="form-select form-select-sm">
-                    <option value="">-- Pilih Perusahaan --</option>
-                    @foreach ( $companies as $company )
-                    <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Filter berdasarkan Event -->
-            <div class="col-md-3">
-                <select name="event" class="form-select form-select-sm">
-                    <option value="">-- Pilih Event --</option>
-                    @foreach ($events as $event)
-                    <option value="{{ $event->id }}" {{ request('event')==$event->id ? 'selected' : '' }}>
-                        {{ $event->event_name }} - {{ $event->year }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Tombol Submit -->
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-primary btn-sm">Cari</button>
-            </div>
+ @if (Auth::user()->role == 'Superadmin')
+ <form action="{{ route('management-system.juri') }}" method="GET" class="mb-4 p-0 ">
+    <div class="flex row">
+        <!-- Pencarian berdasarkan nama user -->
+        <div class="col-md-5">
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama juri..."
+                value="{{ request('search') }}">
         </div>
-    </form>
+
+        <!-- Filter berdasarkan company  -->
+        <div class="col-md-3">
+            <select name="company" class="form-select form-select-sm">
+                <option value="">-- Pilih Perusahaan --</option>
+                @foreach ( $companies as $company )
+                <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Filter berdasarkan Event -->
+        <div class="col-md-3">
+            <select name="event" class="form-select form-select-sm">
+                <option value="">-- Pilih Event --</option>
+                @foreach ($events as $event)
+                <option value="{{ $event->id }}" {{ request('event')==$event->id ? 'selected' : '' }}>
+                    {{ $event->event_name }} - {{ $event->year }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Tombol Submit -->
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+        </div>
+    </div>
+</form>
+ @endif
 
     <div class="card px-2 pt-2">
         <div class="table-responsive">
@@ -95,7 +96,7 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary">test</button>
+                                <button class="btn btn-sm btn-outline-primary"><i ></i></button>
                             </td>
                         </tr>
                         @endforeach

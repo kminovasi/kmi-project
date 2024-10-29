@@ -6,10 +6,8 @@ use App\Models\Company;
 use App\Models\Event;
 use App\Models\Paper;
 use App\Models\PvtMember;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use DB;
 
 class DetailCompanyChartController extends Controller
 {
@@ -96,6 +94,11 @@ class DetailCompanyChartController extends Controller
             $year = Carbon::now()->year;
         }
 
+        $totalPotentialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+            ->where('teams.company_code', $company->company_code)
+            ->sum('papers.potential_benefit');
+        $formattedTotalPotentialBenefit = number_format($totalPotentialBenefit, 0, ',', '.');
+
         return view('detail_company_chart.show', compact(
             'company',
             'totalInnovators',
@@ -103,7 +106,8 @@ class DetailCompanyChartController extends Controller
             'femaleCount',
             'organizationUnit',
             'availableYears',
-            'year'
+            'year',
+            'formattedTotalPotentialBenefit'
         ));
     }
 }

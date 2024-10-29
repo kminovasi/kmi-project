@@ -4,6 +4,33 @@
 
 @vite(['resources/css/detailCompanyChart.css'])
 
+@push('css')
+    <style>
+        .benefit-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .benefit-stat {
+            text-align: center;
+        }
+
+        .benefit-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="container mt-4">
         <h2 class="mb-4">Dashboard: <span class="company-name">{{ $company->company_name }}</span></h2>
@@ -27,6 +54,14 @@
                             <div class="gender-value">{{ $femaleCount }}</div>
                             <div class="gender-label">Perempuan</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
+                <div class="benefit-card">
+                    <h3 class="benefit-title">Total Potential Benefit</h3>
+                    <div class="benefit-stat">
+                        <span class="benefit-value">Rp {{ $formattedTotalPotentialBenefit }}</span>
                     </div>
                 </div>
             </div>

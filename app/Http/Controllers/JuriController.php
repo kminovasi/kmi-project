@@ -18,7 +18,7 @@ class JuriController extends Controller
 
         if ($user->role == 'Admin') {
 
-            $judge = Judge::with('event')
+            $judges = Judge::with('event')
             ->join('users', 'judges.employee_id', '=', 'users.employee_id')
             ->where('users.company_code', $companyCode)
             ->select(

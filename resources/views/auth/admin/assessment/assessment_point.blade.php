@@ -1,8 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Data Assessment')
 @push('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-<style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
+    <style>
         #textarea {
             width: 100%;
             height: auto;
@@ -12,9 +15,11 @@
             color: #ffc004;
             background-color: #e81500;
         }
+
         .display thead th,
         .display tbody td {
-            border: 0.5px solid #ddd; /* Atur warna dan ketebalan garis sesuai kebutuhan */
+            border: 0.5px solid #ddd;
+            /* Atur warna dan ketebalan garis sesuai kebutuhan */
         }
     </style>
 @endpush
@@ -39,22 +44,26 @@
     <div class="container-xl px-4 mt-4">
         @if (auth()->check() && auth()->user()->role == 'Superadmin')
             <div class="p-2 border-bottom">
-                <a href="{{route('assessment.show.template')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template Assessment</a>
-                <a href="{{route('assessment.show.point')}}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment Point Setting</a>
+                <a href="{{ route('assessment.show.template') }}"
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
+                    Assessment</a>
+                <a href="{{ route('assessment.show.point') }}"
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
+                    Point Setting</a>
             </div>
         @endif
         <div class="mb-3">
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                {{ session('success') }}
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
-            @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                {{ session('error') }}
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                    {{ session('error') }}
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
         </div>
 
@@ -88,9 +97,10 @@
         </div>
         <div class="card mb-4 col-12">
             <div class="card-body">
-                <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
+                <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button"
+                    data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
                 <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
-                <form id="formAssign" action="{{route('assessment.update.status')}}" method="POST">
+                <form id="formAssign" action="{{ route('assessment.update.status') }}" method="POST">
                     @csrf
                     @method('PUT')
                     <!-- <input type="text" name="year" id="inputYear" hidden> -->
@@ -103,22 +113,25 @@
                         <div class="card-body">
                             <h6 class="card-title text-primary mb-2">
                                 <i class="me-2" data-feather="info"></i>
-                                    Information
+                                Information
                             </h6>
                             <div id="konfirmasiScore"></div>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-5 mb-3">
-                            <input class="form-control" type="number" name="minimumscore_oda" id="minimumscore_oda" onInput="validasi_minimum_score(this, 900)" placeholder="Masukkan skor minimum On Desk Assessment"
-                            {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
+                            <input class="form-control" type="number" name="minimumscore_oda" id="minimumscore_oda"
+                                onInput="validasi_minimum_score(this, 900)"
+                                placeholder="Masukkan skor minimum On Desk Assessment"
+                                {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                             <div class="invalid-feedback">
                                 skor minimum tidak boleh melebihi batas.
                             </div>
                         </div>
                         <div class="col-md-5 mb-3">
-                            <input class="form-control" type="number" name="minimumscore_pa" id="minimumscore_pa" onInput="validasi_minimum_score(this, 950)" placeholder="Masukkan skor minimum presentasi"
-                            {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
+                            <input class="form-control" type="number" name="minimumscore_pa" id="minimumscore_pa"
+                                onInput="validasi_minimum_score(this, 950)" placeholder="Masukkan skor minimum presentasi"
+                                {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                             <div class="invalid-feedback">
                                 skor minimum tidak boleh melebihi batas.
                             </div>
@@ -129,8 +142,8 @@
 
 
 
-                            <button type="submit" class="btn btn-primary" id="btnAssign" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}
-                            >Kirim</button>
+                                <button type="submit" class="btn btn-primary" id="btnAssign"
+                                    {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
 
                             </div>
                         </div>
@@ -141,7 +154,8 @@
     </div>
 
     {{-- modal untuk update template --}}
-    <div class="modal fade" id="updatePoint" tabindex="-1" role="dialog" aria-labelledby="updateTemplatePoint" aria-hidden="true">
+    <div class="modal fade" id="updatePoint" tabindex="-1" role="dialog" aria-labelledby="updateTemplatePoint"
+        aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -156,7 +170,8 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="mb-1" for="inputPoint">Point Assessment</label>
-                            <input type="text" class="form-control" name="point" id="inputPoint" value="" readonly>
+                            <input type="text" class="form-control" name="point" id="inputPoint" value=""
+                                readonly>
                         </div>
                         <div class="mb-3">
                             <label class="small mb-1" for="inputDetailPoint">Detail</label>
@@ -164,7 +179,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="mb-1" for="inputScoreMax">Max Score</label>
-                            <input type="text" class="form-control" name="score_max" id="inputScoreMax" value="">
+                            <input type="text" class="form-control" name="score_max" id="inputScoreMax"
+                                value="">
                         </div>
                     </div>
 
@@ -178,11 +194,12 @@
     </div>
 
     {{-- modal untuk delete template --}}
-    <div class="modal fade" id="deletePoint" tabindex="-1" role="dialog" aria-labelledby="deletePointTitle" aria-hidden="true">
+    <div class="modal fade" id="deletePoint" tabindex="-1" role="dialog" aria-labelledby="deletePointTitle"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="deletePointAssessment" method="POST">
                 @csrf
-                @method("DELETE")
+                @method('DELETE')
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="deletePointTitle">Konfirmasi Hapus Data</h5>
@@ -217,18 +234,19 @@
                             <option value="BI/II" selected> Implemented </option>
                         </select>
                     </div>
-                    <div class="mb-3" {{ Auth::user()->role == "Admin"? 'hidden' : '' }}>
+                    <div class="mb-3" {{ Auth::user()->role == 'Admin' ? 'hidden' : '' }}>
                         <label class="mb-1" for="filter-event">Event</label>
                         <select id="filter-event" name="filter-event" class="form-select">
-                            @foreach($data_event as $event)
-                            <option value="{{ $event->id }}"> {{ $event->event_name }} - {{ $event->year }}</option>
+                            @foreach ($data_event as $event)
+                                <option value="{{ $event->id }}"> {{ $event->event_name }} - {{ $event->year }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                     {{-- <div class="mb-3">
                         <label class="mb-1" for="filter-year">Year</label>
                         <select id="filter-year" name="filter-year" class="form-select">
-                            @foreach($data_year as $year)
+                            @foreach ($data_year as $year)
                             <option value="{{ $year }}" {{ $year == now()->year ? 'selected' : '' }}> {{ $year }} </option>
                             @endforeach
                         </select>
@@ -242,10 +260,12 @@
     </div>
 @endsection
 @push('js')
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script type="">
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script type="">
     $(document).ready(function() {
 
         get_data_min_score($('#filter-event').val(), $('#filter-category').val())

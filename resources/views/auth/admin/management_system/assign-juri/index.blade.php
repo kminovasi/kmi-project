@@ -24,7 +24,7 @@
     </div>
 </header>
 
-<div class="container-xl p-2">
+<div class="container-xl px-4 mt-4">
 
     <!-- Form Pencarian dan Filter -->
     <form action="{{ route('management-system.juri') }}" method="GET" class="mb-4 p-0 ">
@@ -79,6 +79,7 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     @if ($judges->count() > 0)
                         @foreach ($judges as $j)
                         <tr>

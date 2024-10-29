@@ -67,11 +67,23 @@ class JuriController extends Controller
         return view('auth.admin.management_system.assign-juri.index', compact('judges', 'events', 'companies'));
     }
 
-    function create() {}
+    function create() {
+        return view('auth.admin.management_system.assign-juri.create');
+    }
 
     function store() {}
 
-    function destroy() {}
+    function destroy(Request $request) {
+
+        $judge = Judge::find($request->id);
+        try {
+            $judge->delete();
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Juri Gagal Dihapus');
+        }
+
+        return redirect()->back()->with('success', 'Juri Berhasil Dihapus');
+    }
 
     function edit() {}
 }

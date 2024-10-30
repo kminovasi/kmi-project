@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\Event;
 use App\Models\Judge;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -61,17 +62,34 @@ class JuriController extends Controller
             $judges = $judges->paginate(10);
         }
 
-        $companies = Company::all();
-        $events = Event::all();
-
-        return view('auth.admin.management_system.assign-juri.index', compact('judges', 'events', 'companies'));
+        return view('auth.admin.management_system.assign-juri.index', compact('judges'));
     }
 
     function create() {
         return view('auth.admin.management_system.assign-juri.create');
     }
 
-    function store() {}
+    function store(Request $request) {
+
+        $request->validate([
+            'event' => 'required|exists:events,id',
+            'employee_id' => 'required|exists:users,employee_id',
+            'status' => 'required',
+        ]);
+
+        try {
+            $judge = new Judge();
+            $judge->event_id = $request->event;
+            $judge->employee_id = $request->employee_id;
+            $judge->status = $request->status;
+            $judge->save();
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Juri Gagal Ditambahkan');
+        }
+
+        return redirect(route('management-system.juri'))->with('success', 'Juri Berhasil Ditambahkan');
+
+    }
 
     function destroy(Request $request) {
 

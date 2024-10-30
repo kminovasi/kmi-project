@@ -42,24 +42,12 @@
 
             <!-- Filter berdasarkan company  -->
             <div class="col-md-3">
-                <select name="company" class="form-select form-select-sm">
-                    <option value="">-- Pilih Perusahaan --</option>
-                    @foreach ( $companies as $company )
-                    <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
-                    @endforeach
-                </select>
+                @livewire('company-select')
             </div>
 
             <!-- Filter berdasarkan Event -->
             <div class="col-md-3">
-                <select name="event" class="form-select form-select-sm">
-                    <option value="">-- Pilih Event --</option>
-                    @foreach ($events as $event)
-                    <option value="{{ $event->id }}" {{ request('event')==$event->id ? 'selected' : '' }}>
-                        {{ $event->event_name }} {{ $event->year }}
-                    </option>
-                    @endforeach
-                </select>
+                @livewire('event-select')
             </div>
 
             <!-- Tombol Submit -->
@@ -109,9 +97,9 @@
                         <td>{{ $j->event->event_name }} {{ $j->event->year }}</td>
                         <td>
                             @if ($j->status == 'active')
-                            <span class="badge bg-success">Active</span>
+                            <span class="badge bg-success">{{$j->status}}</span>
                             @else
-                            <span class="badge bg-danger">Inactive</span>
+                            <span class="badge bg-danger">{{$j->status}}</span>
                             @endif
                         </td>
                         <td>

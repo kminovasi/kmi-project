@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('title', 'Kategori Event')
-
 @section('content')
 
 <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-2">
@@ -26,25 +25,55 @@
 
 <div class="container-xl px-4 mt-4">
 
-    <div class="card">
-        <div class="card-header">
-
+    <div class="mb-3">
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            {{ session('success') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="card-body">
-
+        @endif
+        @if (session('errors'))
+        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+            {{ session('errors') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="card-footer">
+        @endif
+    </div>
 
+    <div class="card p-4">
+
+        <div class="row ">
+            <form action="{{ route('management-system.juri-store') }}" method="POST">
+                @csrf
+                <div class="col-6 mb-3">
+                    @livewire('user-select')
+                </div>
+
+                <div class="col-6 mb-3">
+                    <label for="eventSelect"> Event</label>
+                    @livewire('event-select')
+                </div>
+
+                <div class="col-6 mb-3">
+                    <label for="switch">Status</label>
+                    @livewire('switches')
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            </form>
         </div>
+
     </div>
 
 </div>
 
 @endsection
 @push('js')
+
 <script>
     function goBack() {
         window.history.back();
     }
 </script>
+
 @endpush

@@ -18,6 +18,10 @@
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
+                    <a href="{{ route('management-system.juri-create') }}" class="btn btn-sm btn-primary ms-auto">
+                        <i class="me-1" data-feather="plus"></i>
+                        Tambah Juri
+                    </a>
                 </div>
             </div>
         </div>
@@ -27,44 +31,47 @@
 <div class="container-xl px-4 mt-4">
 
     <!-- Form Pencarian dan Filter -->
- @if (Auth::user()->role == 'Superadmin')
- <form action="{{ route('management-system.juri') }}" method="GET" class="mb-4 p-0 ">
-    <div class="flex row">
-        <!-- Pencarian berdasarkan nama user -->
-        <div class="col-md-5">
-            <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama juri..."
-                value="{{ request('search') }}">
-        </div>
+    @if (Auth::user()->role == 'Superadmin')
+    <form action="{{ route('management-system.juri') }}" method="GET" class="mb-4 p-0 ">
+        <div class="flex row">
+            <!-- Pencarian berdasarkan nama user -->
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama juri..."
+                    value="{{ request('search') }}">
+            </div>
 
-        <!-- Filter berdasarkan company  -->
-        <div class="col-md-3">
-            <select name="company" class="form-select form-select-sm">
-                <option value="">-- Pilih Perusahaan --</option>
-                @foreach ( $companies as $company )
-                <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <!-- Filter berdasarkan company  -->
+            <div class="col-md-3">
+                @livewire('company-select')
+            </div>
 
-        <!-- Filter berdasarkan Event -->
-        <div class="col-md-3">
-            <select name="event" class="form-select form-select-sm">
-                <option value="">-- Pilih Event --</option>
-                @foreach ($events as $event)
-                <option value="{{ $event->id }}" {{ request('event')==$event->id ? 'selected' : '' }}>
-                    {{ $event->event_name }} - {{ $event->year }}
-                </option>
-                @endforeach
-            </select>
-        </div>
+            <!-- Filter berdasarkan Event -->
+            <div class="col-md-3">
+                @livewire('event-select')
+            </div>
 
-        <!-- Tombol Submit -->
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+            <!-- Tombol Submit -->
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+            </div>
         </div>
+    </form>
+    @endif
+
+    <div class="mb-3">
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            {{ session('success') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+        @if (session('errors'))
+        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+            {{ session('errors') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
     </div>
-</form>
- @endif
 
     <div class="card px-2 pt-2">
         <div class="table-responsive">
@@ -76,34 +83,77 @@
                         <th>Perusahaan</th>
                         <th>Event</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
 
                     @if ($judges->count() > 0)
-                        @foreach ($judges as $j)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $j->name }}</td>
-                            <td>{{ $j->company_name }}</td>
-                            <td>{{ $j->event->event_name }} - {{ $j->event->year }}</td>
-                            <td>
-                                @if ($j->status == 'active')
-                                <span class="badge bg-success">Active</span>
-                                @else
-                                <span class="badge bg-danger">Inactive</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary"><i ></i></button>
-                            </td>
-                        </tr>
-                        @endforeach
+                    @foreach ($judges as $j)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $j->name }}</td>
+                        <td>{{ $j->company_name }}</td>
+                        <td>{{ $j->event->event_name }} {{ $j->event->year }}</td>
+                        <td>
+                            @if ($j->status == 'active')
+                            <span class="badge bg-success">{{$j->status}}</span>
+                            @else
+                            <span class="badge bg-danger">{{$j->status}}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i data-feather="more-horizontal"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#editModal{{ $loop->iteration }}">Edit</a></li>
+                                    <li><a class="dropdown-item" href="#">Lihat Dokumen</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ $loop->iteration }}">Hapus</a></li>
+                                </ul>
+                            </div>
+
+                            {{-- Modal Delete --}}
+                            <div class="modal fade" id="deleteModal{{ $loop->iteration }}" tabindex="-1"
+                                aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="deleteModalLabel">Konfirmasi Hapus Data
+                                            </h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Apakah yakin data ini akan dihapus ?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <form action="{{ route('management-system.juri-delete', $j->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
                     @else
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada data</td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data</td>
+                    </tr>
                     @endif
 
                 </tbody>

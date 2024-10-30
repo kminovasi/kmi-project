@@ -19,6 +19,7 @@
                         :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
 
                     <div class="row">
+                        <x-dashboard.innovation-status-total />
                     </div>
                 </div>
                 <div class="col-md-5">

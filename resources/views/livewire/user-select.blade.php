@@ -1,5 +1,4 @@
 <div>
-    <label for="userSearch">Pilih Juri</label>
     <input type="text" id="userSearch" class="form-control form-control-sm" wire:model="query" placeholder="Cari Karyawan..." />
 
     @if(!empty($users))

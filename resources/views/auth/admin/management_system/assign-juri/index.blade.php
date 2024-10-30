@@ -65,9 +65,9 @@
             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
-        @if (session('errors'))
+        @if ($errors->has('error'))
         <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-            {{ session('errors') }}
+            {{ $errors->first('error') }}
             <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
@@ -91,7 +91,7 @@
                     @if ($judges->count() > 0)
                     @foreach ($judges as $j)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $j->id }}</td>
                         <td>{{ $j->name }}</td>
                         <td>{{ $j->company_name }}</td>
                         <td>{{ $j->event->event_name }} {{ $j->event->year }}</td>
@@ -109,14 +109,15 @@
                                     <i data-feather="more-horizontal"></i>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#editModal{{ $loop->iteration }}">Edit</a></li>
-                                    <li><a class="dropdown-item" href="#">Lihat Dokumen</a></li>
+                                    <li><a class="dropdown-item" type="button" href="{{ route('management-system.juri-edit', [$j->id, $j->name]) }}">Edit</a></li>
+                                    <li><a class="dropdown-item" href="{{ asset('storage/surat-juri/' . $j->letter_path) }}" target="_blank">Lihat Surat</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal{{ $loop->iteration }}">Hapus</a></li>
+                                    <li>
+                                        <a class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ $loop->iteration }}">Hapus</a>
+                                    </li>
                                 </ul>
                             </div>
 

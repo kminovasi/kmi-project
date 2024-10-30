@@ -1,40 +1,91 @@
+<!-- resources/views/home.blade.php -->
 @extends('layouts.app')
 @section('title', 'Dashboard')
 @section('css')
+    <style>
+        .bgBase1 {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 767.98px) {
+            .container-xl {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+
+            h4 {
+                font-size: 1.25rem;
+                margin-top: 1.5rem;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .dashboard-section {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Better spacing for all devices */
+        .dashboard-section {
+            margin-bottom: 2rem;
+        }
+
+        /* Card adjustments */
+        .card {
+            height: 100%;
+            margin-bottom: 1rem;
+        }
+    </style>
 @endsection
 
 @section('content')
-    <!-- Your content for the home page here -->
     <div class="bgBase1">
         <x-dashboard.header />
 
         <!-- Main page content-->
-        <div class="container-xl px-4 ">
-            <div class="row">
-                <div class="col-md-7 col-sm-6">
-                    <div class="row mb-3">
+        <div class="container-xl px-4">
+            <!-- Main Dashboard Content -->
+            <div class="row g-4"> <!-- Added g-4 for better gap spacing -->
+                <!-- Left Column - Innovation Data -->
+                <div class="col-12 col-lg-7 dashboard-section">
+                    <!-- Innovation Cards -->
+                    <div class="mb-4">
+                        <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
+                            :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
+                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
                     </div>
-                    <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
-                        :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
-                        :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
 
-                    <div class="row">
+                    <!-- Innovation Status Total -->
+                    <div>
                         <x-dashboard.innovation-status-total />
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <div class="row">
-                        <h4>Benefit</h4>
+
+                <!-- Right Column - Benefits -->
+                <div class="col-12 col-lg-5 dashboard-section">
+                    <!-- Benefit Section -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">Benefit</h4>
                         <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    </div>
+
+                    <!-- Total Value Custom Benefit -->
+                    <div>
+                        <x-dashboard.total-value-custom-benefit />
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-10 col-sm-12 col-xs-12">
+
+            <!-- Bottom Section - Semen -->
+            <div class="row mt-4">
+                <div class="col-12 col-xl-10 mx-auto"> <!-- Changed to center on large screens -->
                     <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
 @vite(['resources/js/benefitChart.js'])

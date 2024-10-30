@@ -1,0 +1,45 @@
+<!-- resources/views/components/dashboard/total-value-custom-benefit.blade.php -->
+<div class="card">
+    <div class="card-header bg-primary text-white mt-2">
+        <h5 class="card-title mb-0 text-white">Total Value per Custom Benefit</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nama Benefit</th>
+                        <th class="text-end">Total Value</th>
+                        <th class="text-end">Persentase</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($benefitTotals as $benefit)
+                        <tr>
+                            <td>{{ $benefit->name_benefit }}</td>
+                            <td class="text-end">
+                                Rp {{ number_format($benefit->total_value, 0, ',', '.') }}
+                            </td>
+                            <td class="text-end">
+                                @if ($grandTotal > 0)
+                                    {{ number_format(($benefit->total_value / $grandTotal) * 100, 1) }}%
+                                @else
+                                    0%
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="table-primary">
+                    <tr>
+                        <th>Total</th>
+                        <th class="text-end">
+                            Rp {{ number_format($grandTotal, 0, ',', '.') }}
+                        </th>
+                        <th class="text-end">100%</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -58,12 +58,15 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
-                <div class="benefit-card">
-                    <h3 class="benefit-title">Total Potential Benefit</h3>
-                    <div class="benefit-stat">
-                        <span class="benefit-value">Rp {{ $formattedTotalPotentialBenefit }}</span>
+                <div class="row">
+                    <div class="benefit-card">
+                        <h3 class="benefit-title">Total Potential Benefit</h3>
+                        <div class="benefit-stat">
+                            <span class="benefit-value">Rp {{ $formattedTotalPotentialBenefit }}</span>
+                        </div>
                     </div>
                 </div>
+                <x-detail-company-chart.total-custom-benefit :company-id="$company->id" />
             </div>
         </div>
         <div class="row mt-4">

@@ -9,7 +9,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="book"></i></div>
-                        Management System - Tambah Juri
+                        Management System - Edit Juri
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
@@ -43,11 +43,12 @@
     <div class="card p-4">
 
         <div class="row ">
-            <form action="{{ route('management-system.juri-store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('management-system.juri-update', $judges->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
                 <div class="col-6 mb-3">
                     <label class="form-label text-sm" for="userSearch">Pilih Juri</label>
-                    @livewire('user-select')
+                    <input class="form-control form-control-sm" type="text" value="{{ $name }}" aria-label="{{ $name }}" readonly>
                 </div>
 
                 <div class="col-6 mb-3">

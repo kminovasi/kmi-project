@@ -257,7 +257,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
         Route::post('/juri-store', [JuriController::class, 'store'])->name('juri-store');
-        // Route::get('/juri-edit/{id}', [JuriController::class, 'edit'])->name('juri.edit');
+        Route::get('/juri-edit/{id}/{name}', [JuriController::class, 'edit'])->name('juri-edit');
         Route::put('/juri-update/{id}', [JuriController::class, 'update'])->name('juri-update');
         Route::delete('/juri-delete/{id}', [JuriController::class, 'destroy'])->name('juri-delete');
 

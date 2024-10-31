@@ -91,7 +91,7 @@
                     @if ($judges->count() > 0)
                     @foreach ($judges as $j)
                     <tr>
-                        <td>{{ $j->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $j->name }}</td>
                         <td>{{ $j->company_name }}</td>
                         <td>{{ $j->event->event_name }} {{ $j->event->year }}</td>

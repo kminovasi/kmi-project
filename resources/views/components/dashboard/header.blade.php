@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-6">
+            <div class="col-md-3 col-sm-3 col-xs-6 justify-content-end">
                 @php
                     $formattedDateTime = now()->isoFormat('dddd · D MMMM YYYY') . ' · ' . now()->format('H:i');
                 @endphp

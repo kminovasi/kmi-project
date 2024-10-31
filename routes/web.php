@@ -242,19 +242,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:Superadmin,Admin'])->prefix('management-system')->name('management-system.')->group(function () {
-        Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
+        // Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
 
-        // Assign Juri
-        // Route::get('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::get('/assign-juri-create', [ManagamentSystemController::class, 'assignJuriCreate'])->name('assign.juri.create');
-        // Route::post('/assign-juri-store', [ManagamentSystemController::class, 'assignJuriStore'])->name('assign.juri.store'); // hal;amanm assign juri
-        // Route::post('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::put('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::put('/revoke-juri/{id}', [ManagamentSystemController::class, 'revokeJuri'])->name('revoke.juri');
-        // Route::put('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
-        // Route::get('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
-
-        // New Juri
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
         Route::post('/juri-store', [JuriController::class, 'store'])->name('juri-store');

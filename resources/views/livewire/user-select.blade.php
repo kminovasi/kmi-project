@@ -2,7 +2,7 @@
     <input type="text" id="userSearch" class="form-control form-control-sm" wire:model="query" placeholder="Cari Karyawan..." required/>
 
     @if(!empty($users))
-        <ul class="list-group mt-2 text-sm">
+        <ul class="list-group mt-2 text-sm position-fixed">
             @foreach($users as $user)
                 <li class="list-group-item list-group-item-action" wire:click="selectUser('{{ $user->employee_id }}')">
                     {{ $user->name }} - {{ $user->company_name }}

@@ -45,9 +45,9 @@
         <x-dashboard.header />
 
         <!-- Main page content-->
-        <div class="container-xl px-4">
+        <div class="container">
             <!-- Main Dashboard Content -->
-            <div class="row g-4"> <!-- Added g-4 for better gap spacing -->
+            <div class="row"> <!-- Added g-4 for better gap spacing -->
                 <!-- Left Column - Innovation Data -->
                 <div class="col-12 col-lg-7 dashboard-section">
                     <!-- Innovation Cards -->
@@ -67,7 +67,7 @@
                 <div class="col-12 col-lg-5 dashboard-section">
                     <!-- Benefit Section -->
                     <div class="mb-4">
-                        <h4 class="mb-3">Benefit</h4>
+                        <h4 class="mb-3">Akumulasi Total benefit</h4>
                         <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
 
@@ -80,7 +80,7 @@
 
             <!-- Bottom Section - Semen -->
             <div class="row mt-4">
-                <div class="col-12 col-xl-10 mx-auto"> <!-- Changed to center on large screens -->
+                <div class="col-12">
                     <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import { Chart } from "chart.js/auto";
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Paper Count Chart
     const chartElement = document.getElementById("paperCountChart");
     if (chartElement) {
         const chartData = JSON.parse(chartElement.dataset.chart);
@@ -69,15 +70,32 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                     },
                 },
+                plugins: [
+                    {
+                        afterDraw: function (chart) {
+                            var ctx = chart.ctx;
+                            chart.data.datasets.forEach(function (dataset, i) {
+                                var meta = chart.getDatasetMeta(i);
+                                meta.data.forEach(function (bar, index) {
+                                    var data = dataset.data[index];
+                                    ctx.fillStyle = "black";
+                                    ctx.textAlign = "center";
+                                    ctx.textBaseline = "middle";
+                                    ctx.fillText(data, bar.x, bar.y - 5);
+                                });
+                            });
+                        },
+                    },
+                ],
             },
         });
     }
 });
 
+// Directorate Chart
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById("directorateChart").getContext("2d");
 
-    // Konversi dan filter data
     const directorateArray = Object.entries(window.directorateData).map(
         ([key, value]) => ({
             directorate_name: key,
@@ -99,15 +117,13 @@ document.addEventListener("DOMContentLoaded", function () {
             (a.total_ideas + a.total_innovations)
     );
 
-    // Hitung height yang dibutuhkan berdasarkan jumlah data
-    const itemHeight = 40; // tinggi minimum untuk setiap item
-    const minHeight = 400; // tinggi minimum chart
+    const itemHeight = 40;
+    const minHeight = 400;
     const calculatedHeight = Math.max(
         minHeight,
         filteredData.length * itemHeight
     );
 
-    // Set height chart wrapper
     document.querySelector(
         ".chart-wrapper"
     ).style.height = `${calculatedHeight}px`;
@@ -115,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const directorateNames = filteredData.map((item) => item.directorate_name);
     const totalIdeas = filteredData.map((item) => item.total_ideas);
     const totalInnovations = filteredData.map((item) => item.total_innovations);
+
     new Chart(ctx, {
         type: "bar",
         data: {
@@ -173,7 +190,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             size: 12,
                         },
                         callback: function (value) {
-                            // Memotong teks yang terlalu panjang
                             const label = this.getLabelForValue(value);
                             if (label.length > 30) {
                                 return label.substr(0, 27) + "...";
@@ -192,16 +208,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
+        plugins: [
+            {
+                afterDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, i) {
+                        var meta = chart.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            if (data > 0) {
+                                // Only show if value is greater than 0
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = "center";
+                                ctx.textBaseline = "middle";
+                                var padding = 5;
+                                // For horizontal bar chart (indexAxis: 'y')
+                                var xPos = bar.x - bar.width / 2;
+                                ctx.fillText(data, xPos + padding, bar.y);
+                            }
+                        });
+                    });
+                },
+            },
+        ],
     });
 
-    // Custom legend
     const legendItems = [
         { label: "Total Ide", color: "rgba(54, 162, 235, 0.7)" },
         { label: "Total Innovasi", color: "rgba(255, 99, 132, 0.7)" },
     ];
 
     const legendContainer = document.getElementById("chartLegend");
-    legendContainer.innerHTML = ""; // Clear existing content
+    legendContainer.innerHTML = "";
     legendItems.forEach((item) => {
         const legendItem = document.createElement("div");
         legendItem.classList.add("legend-item");
@@ -212,13 +250,14 @@ document.addEventListener("DOMContentLoaded", function () {
         legendContainer.appendChild(legendItem);
     });
 });
+
+// Innovator Directorate Chart
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document
         .getElementById("innovatorDirectorateChart")
         .getContext("2d");
     const data = window.innovatorDirectorateData;
 
-    // Modifikasi labels
     const labels = Object.keys(data).map((label) =>
         label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
     );
@@ -256,15 +295,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
+        plugins: [
+            {
+                afterDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, i) {
+                        var meta = chart.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = "left";
+                                ctx.textBaseline = "middle";
+                                var padding = 5;
+                                var xPos = bar.x - bar.width / 2;
+                                ctx.fillText(data, xPos + padding, bar.y);
+                            }
+                        });
+                    });
+                },
+            },
+        ],
     });
 });
+
+// Potential Benefit Chart
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document
         .getElementById("potentialBenefitChart")
         .getContext("2d");
     const data = window.potentialBenefitsData;
 
-    // Modifikasi labels
     const labels = Object.keys(data).map((label) =>
         label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
     );
@@ -316,5 +377,114 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
+        plugins: [
+            {
+                afterDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, i) {
+                        var meta = chart.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = "left";
+                                ctx.textBaseline = "middle";
+                                var padding = 5;
+                                var xPos = bar.x - bar.width / 2;
+                                ctx.fillText(
+                                    data.toLocaleString(),
+                                    xPos + padding,
+                                    bar.y
+                                );
+                            }
+                        });
+                    });
+                },
+            },
+        ],
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document
+        .getElementById("financialBenefitOrganization")
+        .getContext("2d");
+    const data = window.financialBenefitsData;
+
+    const labels = Object.keys(data).map((label) =>
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+    );
+    const values = Object.values(data);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Total Financial Benefit",
+                    data: values,
+                    backgroundColor: [
+                        "rgba(255, 99, 132, 0.8)",
+                        "rgba(54, 162, 235, 0.8)",
+                        "rgba(255, 206, 86, 0.8)",
+                        "rgba(75, 192, 192, 0.8)",
+                        "rgba(153, 102, 255, 0.8)",
+                        "rgba(255, 159, 64, 0.8)",
+                    ],
+                    borderColor: [
+                        "rgba(255, 99, 132, 1)",
+                        "rgba(54, 162, 235, 1)",
+                        "rgba(255, 206, 86, 1)",
+                        "rgba(75, 192, 192, 1)",
+                        "rgba(153, 102, 255, 1)",
+                        "rgba(255, 159, 64, 1)",
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            indexAxis: "y",
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Direktorat",
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Potential Benefit",
+                    },
+                },
+            },
+        },
+        plugins: [
+            {
+                afterDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, i) {
+                        var meta = chart.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            var data = dataset.data[index];
+                            if (data > 0) {
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = "left";
+                                ctx.textBaseline = "middle";
+                                var padding = 5;
+                                var xPos = bar.x - bar.width / 2;
+                                ctx.fillText(
+                                    data.toLocaleString(),
+                                    xPos + padding,
+                                    bar.y
+                                );
+                            }
+                        });
+                    });
+                },
+            },
+        ],
     });
 });

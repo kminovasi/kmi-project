@@ -99,6 +99,11 @@ class DetailCompanyChartController extends Controller
             ->sum('papers.potential_benefit');
         $formattedTotalPotentialBenefit = number_format($totalPotentialBenefit, 0, ',', '.');
 
+        $totalFinancialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+            ->where('teams.company_code', $company->company_code)
+            ->sum('papers.financial');
+        $formattedTotalFinancialBenefit = number_format($totalFinancialBenefit, 0, ',', '.');
+
         return view('detail_company_chart.show', compact(
             'company',
             'totalInnovators',
@@ -107,7 +112,8 @@ class DetailCompanyChartController extends Controller
             'organizationUnit',
             'availableYears',
             'year',
-            'formattedTotalPotentialBenefit'
+            'formattedTotalPotentialBenefit',
+            'formattedTotalFinancialBenefit'
         ));
     }
 }

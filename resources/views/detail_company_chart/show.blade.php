@@ -66,6 +66,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="benefit-card">
+                        <h3 class="benefit-title">Total Real Financial Benefit</h3>
+                        <div class="benefit-stat">
+                            <span class="benefit-value">Rp {{ $formattedTotalFinancialBenefit }}</span>
+                        </div>
+                    </div>
+                </div>
                 <x-detail-company-chart.total-custom-benefit :company-id="$company->id" />
             </div>
         </div>
@@ -92,7 +100,12 @@
             <div class="col-lg-6 col-md-12">
                 <x-detail-company-chart.benefit-organization :organization-unit="$organizationUnit" :company-id="$company->id" :year="$year" />
             </div>
+            <div class="col-lg-6 col-md-12">
+                <x-detail-company-chart.financial-benefit-organization :organization-unit="$organizationUnit" :company-id="$company->id"
+                    :year="$year" />
+            </div>
         </div>
+
     </div>
     @vite(['resources/js/company/companyDashboardChart.js'])
 @endsection

@@ -2,6 +2,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        .dashboard-section {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
         .logo-image {
             width: 60px;
             height: 60px;
@@ -10,58 +18,55 @@
         }
 
         .chart-container {
-            flex: 1;
-            min-width: 200px;
-            text-align: center;
-            padding: 20px;
-            background-color: rgba(240, 240, 240, 0.9);
-            /* Latar abu-abu sangat terang agar chart terpisah dari latar belakang */
+            background-color: #ffffff;
             border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .category-list {
             display: flex;
             flex-wrap: wrap;
-            /* Membuat baris baru jika tidak muat */
-            margin-top: 10px;
-            /* Jarak antara judul dan daftar kategori */
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        .chart-container canvas {
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            /* Tambahkan bayangan ringan */
-            border-radius: 10px;
-            /* Membuat sudut canvas lebih halus */
-            background-color: rgba(255, 255, 255, 0.9);
-            /* Latar belakang putih semi-transparan */
+        .category-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
         }
 
         .badge-a {
-            display: inline-block;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            margin-right: 10px;
-            vertical-align: middle;
-            border: 1px solid #000;
-            /* Berikan border hitam untuk menonjolkan badge */
+            margin-right: 5px;
+            border: 1px solid #ddd;
         }
 
-        .category-list span {
-            color: #000;
-            /* Teks hitam agar terlihat jelas di latar putih */
+        .btn-filter {
+            margin-bottom: 20px;
         }
     </style>
 
-    <div>
-        <h4>Jumlah Pendaftar Inovasi per Kategori per Perusahaan </h4>
-        <button type="button" class="btn btn-primary btn-sm mb-2" data-bs-toggle="modal"
-            data-bs-target="#yearFilterInnovator">
-            Filter
-        </button>
+    <div class="dashboard-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Jumlah Pendaftar Inovasi per Kategori per Perusahaan</h4>
+            <button type="button" class="btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
+                data-bs-target="#yearFilterInnovator">
+                <i class="fas fa-filter me-1"></i> Filter
+            </button>
+        </div>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <div class="chart-grid">
             @foreach ($charts as $index => $chart)
                 <div class="chart-container">
                     <img src="{{ $logos[$index] }}" alt="Logo Perusahaan" class="logo-image">
@@ -70,6 +75,32 @@
 
                 <script>
                     (function() {
+                        // Plugin kustom untuk menggambar nilai
+                        const drawValuePlugin = {
+                            id: 'drawValue',
+                            afterDatasetsDraw: (chart, args, options) => {
+                                const ctx = chart.ctx;
+                                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                                    const meta = chart.getDatasetMeta(datasetIndex);
+                                    if (!meta.hidden) {
+                                        meta.data.forEach((element, index) => {
+                                            const value = dataset.data[index];
+                                            const position = element.tooltipPosition();
+
+                                            ctx.fillStyle = 'black';
+                                            ctx.font = '12px Arial';
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+                                            ctx.fillText(value, position.x, position.y);
+                                        });
+                                    }
+                                });
+                            }
+                        };
+
+                        // Register plugin
+                        Chart.register(drawValuePlugin);
+
                         let ctx = document.getElementById('chart-{{ $index }}').getContext('2d');
                         new Chart(ctx, {
                             type: 'bar',
@@ -80,10 +111,9 @@
                                     data: {!! json_encode($chart['data']) !!},
                                     backgroundColor: {!! json_encode(
                                         array_map(function ($cat) use ($categories) {
-                                            return $categories[$cat] ?? '#ffffff'; // Warna default jika kategori tidak ada
+                                            return $categories[$cat] ?? '#ffffff';
                                         }, $chart['categories']),
                                     ) !!},
-
                                     borderWidth: 1,
                                     barThickness: 10
                                 }]
@@ -93,81 +123,83 @@
                                     y: {
                                         beginAtZero: true,
                                         ticks: {
-                                            color: '#000' // Teks hitam
+                                            color: '#000'
                                         },
                                         grid: {
-                                            color: 'rgba(0, 0, 0, 0.1)' // Grid abu-abu terang
+                                            color: 'rgba(0, 0, 0, 0.1)'
                                         }
                                     },
                                     x: {
                                         display: false,
                                         grid: {
-                                            color: 'rgba(0, 0, 0, 0.1)' // Grid sumbu X abu-abu terang
+                                            color: 'rgba(0, 0, 0, 0.1)'
                                         }
                                     }
                                 },
                                 plugins: {
                                     legend: {
                                         labels: {
-                                            color: '#000' // Teks hitam untuk legend
+                                            color: '#000'
                                         }
-                                    }
+                                    },
+                                    drawValue: true // Enable custom plugin
                                 }
                             }
-
                         });
                     })
                     ();
                 </script>
             @endforeach
         </div>
-    </div>
 
-    <!-- Div untuk menampilkan warna kategori -->
-    <div class="chart-container">
-        @if ($isSuperadmin)
-            <a href="{{ route('detail-company-chart') }}">Detail chart</a>
-        @else
-            <a href="{{ route('detail-company-chart-show', ['id' => $companyId]) }}">Detail chart</a>
-        @endif
-        <h5>Kategori</h5>
-        <div class="category-list" id="category-colors">
-            @foreach ($categories as $categoryName => $color)
-                <div>
-                    <div class="badge-a" style="background-color: {{ $color }};"></div>
-                    <span class="text-black">{{ $categoryName }}</span>
-                </div>
-            @endforeach
+        <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Kategori</h5>
+                @if ($isSuperadmin)
+                    <a href="{{ route('detail-company-chart') }}" class="btn btn-outline-primary btn-sm">Detail
+                        chart</a>
+                @else
+                    <a href="{{ route('detail-company-chart-show', ['id' => $companyId]) }}"
+                        class="btn btn-outline-primary btn-sm">Detail chart</a>
+                @endif
+            </div>
+            <div class="category-list" id="category-colors">
+                @foreach ($categories as $categoryName => $color)
+                    <div class="category-item">
+                        <div class="badge-a" style="background-color: {{ $color }};"></div>
+                        <span>{{ $categoryName }}</span>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
-
 
     <!-- Modal -->
     <div class="modal fade" id="yearFilterInnovator" tabindex="-1" aria-labelledby="yearFilterInnovatorLabel"
         aria-hidden="true">
         <div class="modal-dialog">
-            <form action="{{ route('dashboard') }}" method="GET"> <!-- Pastikan rute sudah disiapkan -->
+            <form action="{{ route('dashboard') }}" method="GET">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="yearFilterInnovatorLabel">Filter berdasarkan Tahun</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <label for="year">Pilih Tahun</label>
-                        <select name="year" id="year" class="form-control">
+                        <label for="year" class="form-label">Pilih Tahun</label>
+                        <select name="year" id="year" class="form-select">
                             @foreach ($availableYears as $yearOption)
                                 <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>
-                                    {{ $yearOption }}</option>
+                                    {{ $yearOption }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
 </div>

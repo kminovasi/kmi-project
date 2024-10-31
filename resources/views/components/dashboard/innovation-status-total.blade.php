@@ -59,7 +59,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1"> <!-- Added flex-grow-1 -->
-                        <h6 class="card-subtitle mb-2 text-warning text-nowrap">Progress Makalah</h6>
+                        <h6 class="card-subtitle mb-2 text-warning">Progress Makalah</h6>
                         <h2 class="card-title mb-0">{{ $totals['Progress'] }}</h2>
                     </div>
                     <div class="bg-warning bg-opacity-10 rounded-circle p-3 ms-2"> <!-- Added ms-2 -->

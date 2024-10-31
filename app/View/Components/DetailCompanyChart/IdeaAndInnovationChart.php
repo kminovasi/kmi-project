@@ -48,8 +48,8 @@ class IdeaAndInnovationChart extends Component
             ->distinct()
             ->pluck($organizationUnit, $organizationUnit);
 
-        $ideaCounts = $this->getCountsByStatus($companyCode, 'Not Implemented', $organizationUnit);
-        $innovationCounts = $this->getCountsByStatus($companyCode, ['Implemented', 'Progress'], $organizationUnit);
+        $ideaCounts = $this->getCountsByStatus($companyCode, 'IDEA BOX', $organizationUnit);
+        $innovationCounts = $this->getCountsByStatus($companyCode, ['BREAKTHROUGH INNOVATION', 'INCREMENTAL INNOVATION'], $organizationUnit);
 
         return $allDirectorates->map(function ($organizationUnit) use ($ideaCounts, $innovationCounts) {
             $totalIdeas = $ideaCounts->get($organizationUnit, 0);
@@ -73,8 +73,9 @@ class IdeaAndInnovationChart extends Component
                 ->join('teams', 'papers.team_id', '=', 'teams.id')
                 ->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
                 ->join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
+                ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->where('users.company_code', $companyCode)
-                ->whereIn('papers.status_inovasi', (array)$status)
+                ->whereIn('categories.category_parent', (array)$status)
                 ->whereYear('papers.created_at', $this->year)
                 ->whereNotNull('users.' . $organizationUnit)
                 ->where('users.' . $organizationUnit, '!=', '')

@@ -7,7 +7,7 @@
     <!-- * * Tip * * You can use text or an image for your navbar brand.-->
     <!-- * * * * * * When using an image, we recommend the SVG format.-->
     <!-- * * * * * * Dimensions: Maximum height: 32px, maximum width: 240px-->
-    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="{{ route('dashboard') }}">SIG Innovation</a>
+    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="{{ route('dashboard') }}">Portal inovasi SIG</a>
     <!-- Navbar Search Input-->
 
     <!-- * * Note: * * Visible only on and above the lg breakpoint-->
@@ -78,7 +78,8 @@
                 aria-expanded="false">
                 <i data-feather="bell" id="alert-icon"></i>
                 @if ($notifications->count())
-                    <span class="badge badge-warning navbar-badge text-warning text-bold absolute z-10">{{ $notifications->count() }}</span>
+                    <span
+                        class="badge badge-warning navbar-badge text-warning text-bold absolute z-10">{{ $notifications->count() }}</span>
                 @endif
             </a>
             <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
@@ -88,24 +89,28 @@
                     Alerts Center
                 </h6>
 
-                @foreach($notifications as $notification)
-                <div class="d-flex justify-content-around mt-2">
-                    <div class="flex flex-column">
-                        <a href="{{ $notification->data['url'] }}" class="text-black">
-                            {{ $notification->data['message'] }}
-                        </a>
-                        <br>
-                        <span class="float-right text-muted text-sm text-right">{{ $notification->created_at->diffForHumans() }}</span>
+                @foreach ($notifications as $notification)
+                    <div class="d-flex justify-content-around mt-2">
+                        <div class="flex flex-column">
+                            <a href="{{ $notification->data['url'] }}" class="text-black">
+                                {{ $notification->data['message'] }}
+                            </a>
+                            <br>
+                            <span
+                                class="float-right text-muted text-sm text-right">{{ $notification->created_at->diffForHumans() }}</span>
+                        </div>
+                        <form action="{{ route('notifications.destroy', $notification->id) }}" method="POST"
+                            style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="btn btn-sm btn-hover-warning mt-1 text-bold font-weight-bold">x</button>
+                        </form>
                     </div>
-                    <form action="{{ route('notifications.destroy', $notification->id) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-hover-warning mt-1 text-bold font-weight-bold">x</button>
-                    </form>
-                </div>
-                <div class="dropdown-divider"></div>
+                    <div class="dropdown-divider"></div>
                 @endforeach
-                <a class="dropdown-item dropdown-notifications-footer" href="{{ route('notifications.index') }}">Lihat Semua Notifikasi</a>
+                <a class="dropdown-item dropdown-notifications-footer" href="{{ route('notifications.index') }}">Lihat
+                    Semua Notifikasi</a>
             </div>
         </li>
 

@@ -31,13 +31,19 @@
                     @endforeach
                 </tbody>
                 <tfoot class="table-primary">
-                    <tr>
-                        <th>Total</th>
-                        <th class="text-end">
-                            Rp {{ number_format($grandTotal, 0, ',', '.') }}
-                        </th>
-                        <th class="text-end">100%</th>
-                    </tr>
+                    @if ($grandTotal !== 0)
+                        <tr>
+                            <th>Total</th>
+                            <th class="text-end">
+                                Rp {{ number_format($grandTotal, 0, ',', '.') }}
+                            </th>
+                            <th class="text-end">100%</th>
+                        </tr>
+                    @else
+                        <tr>
+                            <th colspan="3">Data tidak ada</th>
+                        </tr>
+                    @endif
                 </tfoot>
             </table>
         </div>

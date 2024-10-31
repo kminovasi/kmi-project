@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Company;
-use App\Models\Event;
 use App\Models\Team;
-use App\Models\Theme;
 use Illuminate\Http\Request;
 
 class EvidenceController extends Controller
@@ -69,12 +66,7 @@ class EvidenceController extends Controller
 
         $papers = $papers->paginate(10);
 
-        // mendapatkan data themes, companies, events untuk kebutuhan filter
-        $themes = Theme::select('id', 'theme_name')->get();
-        $companies = Company::select('company_name', 'company_code')->get();
-        $events = Event::where('status', 'finish')->select('id', 'event_name', 'year')->get();
-
-        return view('auth.admin.dokumentasi.evidence.list-innovations', compact('papers', 'events', 'themes', 'category', 'companies'));
+        return view('auth.admin.dokumentasi.evidence.list-innovations', compact('papers', 'category'));
     }
 
     function paper_detail($id)

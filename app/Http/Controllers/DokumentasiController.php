@@ -74,7 +74,7 @@ class DokumentasiController extends Controller
         }
 
         return redirect()->back()->with('success', 'File berhasil dihapus');
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         return redirect()->back()->withErrors('Error: ' . $e->getMessage());
     }
 }

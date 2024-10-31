@@ -27,7 +27,7 @@
         </div>
     </header>
     <div class="container-xl px-4 mt-4">
-       
+
             <div class="row justify-content-center">
                 <!-- Join Organization-->
                 <div class="div mb-3">
@@ -65,7 +65,7 @@
                                     placeholder="Pilih User" required>
                                 </select>
                             </div>
-                           
+
                             <div class="mb-4">
                                 <h6 class="small mb-1" for="data_description">Pilih Role</h6>
                                 <select name="role" id="" class="form-control">
@@ -77,7 +77,7 @@
                             </div>
                             <!-- Save changes button-->
                             <div class="d-grid">
-                                <button class="btn btn-secondary" type="submit" id="button_submit">
+                                <button class="btn btn-primary" type="submit" id="button_submit">
                                     Submit</button>
                                 <!-- <a class="btn btn-secondary">Save</a> -->
                             </div>
@@ -101,7 +101,7 @@
             document.addEventListener("DOMContentLoaded", function() {
                 var selectElements = document.querySelectorAll('select');
                 selectElements.forEach(function(select) {
-                    
+
                 });
                 search_select2('id_employee')
             });

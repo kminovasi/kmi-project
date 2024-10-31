@@ -59,7 +59,7 @@
 
     <div class="dashboard-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Jumlah Pendaftar Inovasi per Kategori per Perusahaan</h4>
+            <h4 class="mb-0">Persebaran inovasi setiap perusahaan (kategori)</h4>
             <button type="button" class="btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
                 data-bs-target="#yearFilterInnovator">
                 <i class="fas fa-filter me-1"></i> Filter

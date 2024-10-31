@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\JuriExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 //use Illuminate\Support\Facades\Mail;
@@ -34,6 +35,8 @@ use App\Models\Timeline;
 use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
+use App\Http\Controllers\JuriController;
+
 use function PHPUnit\Framework\returnSelf;
 
 /*
@@ -240,14 +243,29 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['role:Superadmin,Admin'])->prefix('management-system')->name('management-system.')->group(function () {
         Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
-        Route::get('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        Route::get('/assign-juri-create', [ManagamentSystemController::class, 'assignJuriCreate'])->name('assign.juri.create');
-        Route::post('/assign-juri-store', [ManagamentSystemController::class, 'assignJuriStore'])->name('assign.juri.store');
-        Route::post('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        Route::put('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        Route::put('/revoke-juri/{id}', [ManagamentSystemController::class, 'revokeJuri'])->name('revoke.juri');
-        Route::put('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
-        Route::get('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
+
+        // Assign Juri
+        // Route::get('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
+        // Route::get('/assign-juri-create', [ManagamentSystemController::class, 'assignJuriCreate'])->name('assign.juri.create');
+        // Route::post('/assign-juri-store', [ManagamentSystemController::class, 'assignJuriStore'])->name('assign.juri.store'); // hal;amanm assign juri
+        // Route::post('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
+        // Route::put('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
+        // Route::put('/revoke-juri/{id}', [ManagamentSystemController::class, 'revokeJuri'])->name('revoke.juri');
+        // Route::put('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
+        // Route::get('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
+
+        // New Juri
+        Route::get('/juri', [JuriController::class, 'index'])->name('juri');
+        Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
+        Route::post('/juri-store', [JuriController::class, 'store'])->name('juri-store');
+        Route::get('/juri-edit/{id}/{name}', [JuriController::class, 'edit'])->name('juri-edit');
+        Route::put('/juri-update/{id}', [JuriController::class, 'update'])->name('juri-update');
+        Route::put('/juri-update-status/{id}', [JuriController::class, 'updateStatus'])->name('juri-updateStatus');
+        Route::delete('/juri-delete/{id}', [JuriController::class, 'destroy'])->name('juri-delete');
+        Route::get('/juri-export', function () {
+            return Excel::download(new JuriExport(), 'DATA_JURI.xlsx');
+        })->name('juri-export');
+
         Route::get('/assign-event', [ManagamentSystemController::class, 'assignEvent'])->name('assign.event');
         Route::get('/assign-event-create', [ManagamentSystemController::class, 'assignEventCreate'])->name('assign.event.create');
         Route::post('/assign-event-store', [ManagamentSystemController::class, 'assignEventStore'])->name('assign.event.store');

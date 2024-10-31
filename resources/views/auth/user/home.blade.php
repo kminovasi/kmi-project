@@ -59,7 +59,7 @@
 
                     <!-- Innovation Status Total -->
                     <div>
-                        <x-dashboard.innovation-status-total />
+                        <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
                 </div>
 
@@ -73,7 +73,7 @@
 
                     <!-- Total Value Custom Benefit -->
                     <div>
-                        <x-dashboard.total-value-custom-benefit />
+                        <x-dashboard.total-value-custom-benefit :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
                 </div>
             </div>

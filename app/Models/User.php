@@ -71,4 +71,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(PvtMember::class, 'employee_id', 'employee_id');
     }
+    // Relasi ke model Judge
+    public function judges()
+    {
+        return $this->hasMany(Judge::class, 'employee_id');
+    }
 }

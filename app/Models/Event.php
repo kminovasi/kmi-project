@@ -33,4 +33,9 @@ class Event extends Model
     {
         return $this->hasOne(Certificate::class);
     }
+    // Relasi ke model Judge
+    public function judges()
+    {
+        return $this->hasMany(Judge::class, 'event_id');
+    }
 }

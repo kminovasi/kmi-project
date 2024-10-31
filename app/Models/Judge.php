@@ -12,8 +12,21 @@ class Judge extends Model
     protected $fillable = [
         'employee_id',
         'event_id',
-        'description',
-        'year',
+        'letter_path',
         'status'
     ];
+
+    // Relasi ke model User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'employee_id');
+    }
+
+    // Relasi ke model Event
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+
 }

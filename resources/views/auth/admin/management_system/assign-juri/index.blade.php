@@ -18,13 +18,13 @@
                         <i class="me-1" data-feather="arrow-left"></i>
                         Kembali
                     </a>
-                    <a href="{{ route('management-system.juri-create') }}" class="btn btn-sm btn-primary ms-auto">
-                        <i class="me-1" data-feather="plus"></i>
-                        Tambah Juri
-                    </a>
                     <a class="btn btn-sm btn-outline-success" href="{{ route('management-system.juri-export') }}">
                         <i class="me-1" data-feather="table"></i>
                         Excel
+                    </a>
+                    <a href="{{ route('management-system.juri-create') }}" class="btn btn-sm btn-primary ms-auto">
+                        <i class="me-1" data-feather="plus"></i>
+                        Tambah Juri
                     </a>
                 </div>
             </div>

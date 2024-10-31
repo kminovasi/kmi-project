@@ -27,6 +27,7 @@ class ManagamentSystemController extends Controller
     {
         return 'ok';
     }
+    // --------------------------- Juri ---------------------------
     public function assignJuri()
     {
         $datas_event = Event::all();
@@ -99,6 +100,8 @@ class ManagamentSystemController extends Controller
             return redirect()->route('management-system.assign.juri')->withErrors('Error: ' . $e->getMessage());
         }
     }
+    // ------------------- End Juri -------------------
+
     public function assignEvent()
     {
         $datas_company = Company::all();

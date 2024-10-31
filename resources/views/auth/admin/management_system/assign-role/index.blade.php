@@ -12,7 +12,7 @@
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
         <div class="container-xl px-4">
-            
+
             <div class="page-header-content">
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
@@ -72,7 +72,7 @@
                         </div>
                         <div class="col-xl-4 mb-4">
                             <!-- Dashboard example card 3-->
-                            <a class="card lift h-100 border-start-lg border-start-info" href="{{route('management-system.assign.juri')}}">
+                            <a class="card lift h-100 border-start-lg border-start-info" href="{{route('management-system.juri')}}">
                                 <div class="card-body d-flex flex-column">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="me-3">
@@ -96,7 +96,7 @@
                                             <i class="feather-xl text-secondary mb-3" data-feather="user"></i>
                                             <h5 class="text-secondary">Admin</h5>
                                             <div class="text-muted small">
-                                                Pengelola Inovasi masing-masing perusahaan yang akan memnentukan role pada Inovator, Juri, 
+                                                Pengelola Inovasi masing-masing perusahaan yang akan memnentukan role pada Inovator, Juri,
                                                 BOD serta menentukan aturan kegiatan kompetisi inovasi
                                             </div>
                                         </div>
@@ -122,7 +122,7 @@
                     @endif
                 </div>
             </div>
-           
+
         </div>
     </div>
 @endsection

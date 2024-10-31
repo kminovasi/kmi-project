@@ -34,7 +34,7 @@ class Benefit extends Component
         // Mengambil data total benefit untuk setiap perusahaan berdasarkan status yang sudah disetujui
         $data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
-            ->selectRaw('companies.company_name, SUM(papers.potential_benefit) as total_benefit')
+            ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
             ->whereYear('papers.created_at', $this->year)
             ->whereIn('papers.status', $acceptedStatuses)
             ->when(!$this->isSuperadmin, function ($query) {

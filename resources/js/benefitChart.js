@@ -6,9 +6,37 @@ import {
     BarElement,
     Tooltip,
 } from "chart.js";
+const drawValuePlugin = {
+    id: "drawValue",
+    afterDatasetsDraw: (chart, args, options) => {
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            if (!meta.hidden) {
+                meta.data.forEach((element, index) => {
+                    const value = dataset.data[index];
+                    const position = element.tooltipPosition();
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "12px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(value, position.x, position.y);
+                });
+            }
+        });
+    },
+};
 
 // Register necessary components
-Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    BarController,
+    BarElement,
+    Tooltip,
+    drawValuePlugin
+);
 
 // Define your colors for the chart
 const colors = [
@@ -149,6 +177,7 @@ const initChart = async () => {
                             },
                         },
                     },
+                    drawValue: true,
                 },
             },
         });

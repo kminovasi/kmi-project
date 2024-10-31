@@ -58,7 +58,7 @@
 
                 <div class="col-6 mb-3">
                     <label for="document" class="form-label text-sm">Dokumen Pendukung</label>
-                    <input class="form-control form-control-sm" name="document" id="document" type="file">
+                    <input class="form-control form-control-sm" name="document" id="document" type="file"  accept="application/pdf">
                 </div>
 
                 <div class="col-6 mb-3">

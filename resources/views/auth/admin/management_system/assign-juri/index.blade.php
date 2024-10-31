@@ -22,6 +22,10 @@
                         <i class="me-1" data-feather="plus"></i>
                         Tambah Juri
                     </a>
+                    <a class="btn btn-sm btn-outline-success" href="{{ route('management-system.juri-export') }}">
+                        <i class="me-1" data-feather="table"></i>
+                        Excel
+                    </a>
                 </div>
             </div>
         </div>
@@ -89,9 +93,9 @@
                 <tbody>
 
                     @if ($judges->count() > 0)
-                    @foreach ($judges as $j)
+                    @foreach ($judges as $index => $j)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ ($currentPage - 1) * $perPage + $index + 1 }}</td>
                         <td>{{ $j->name }}</td>
                         <td>{{ $j->company_name }}</td>
                         <td>{{ $j->event->event_name }} {{ $j->event->year }}</td>
@@ -110,6 +114,13 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" type="button" href="{{ route('management-system.juri-edit', [$j->id, $j->name]) }}">Edit</a></li>
+                                    <li>
+                                        <form action="{{ route('management-system.juri-updateStatus', $j->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <button class="dropdown-item" type="submit">Update Status</button>
+                                        </form>
+                                    </li>
                                     <li><a class="dropdown-item" href="{{ asset('storage/surat-juri/' . $j->letter_path) }}" target="_blank">Lihat Surat</a></li>
                                     <li>
                                         <hr class="dropdown-divider">

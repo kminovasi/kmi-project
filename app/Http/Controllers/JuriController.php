@@ -61,10 +61,13 @@ class JuriController extends Controller
                 $judges = $judges->where('users.name', 'ILIKE', '%' . $search . '%');
             }
 
-            $judges = $judges->paginate(10);
+            $judges = $judges->orderBy('judges.updated_at', 'desc')->paginate(10);
         }
 
-        return view('auth.admin.management_system.assign-juri.index', compact('judges'));
+        $currentPage = $judges->currentPage();
+        $perPage = $judges->perPage();
+
+        return view('auth.admin.management_system.assign-juri.index', compact('judges', 'currentPage', 'perPage'));
     }
 
     function create()
@@ -92,6 +95,7 @@ class JuriController extends Controller
         }
 
         try {
+
             $judge = new Judge();
             $judge->event_id = $request->event;
             $judge->employee_id = $request->employee_id;
@@ -181,5 +185,21 @@ class JuriController extends Controller
         }
 
         return redirect(route('management-system.juri'))->with('success', 'Juri Berhasil Diubah');
+    }
+
+    function updateStatus ($id){
+
+        $judge = Judge::findOrFail($id);
+
+        if ($judge->status == 'active') {
+            $judge->status = 'nonactive';
+        } else {
+            $judge->status = 'active';
+        }
+
+        $judge->save();
+
+        return redirect()->back()->with('success', 'Status Juri berhasil di update' );
+
     }
 }

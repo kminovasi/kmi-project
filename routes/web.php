@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\JuriExport;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 //use Illuminate\Support\Facades\Mail;
@@ -259,7 +260,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/juri-store', [JuriController::class, 'store'])->name('juri-store');
         Route::get('/juri-edit/{id}/{name}', [JuriController::class, 'edit'])->name('juri-edit');
         Route::put('/juri-update/{id}', [JuriController::class, 'update'])->name('juri-update');
+        Route::put('/juri-update-status/{id}', [JuriController::class, 'updateStatus'])->name('juri-updateStatus');
         Route::delete('/juri-delete/{id}', [JuriController::class, 'destroy'])->name('juri-delete');
+        Route::get('/juri-export', function () {
+            return Excel::download(new JuriExport(), 'DATA_JURI.xlsx');
+        })->name('juri-export');
 
         Route::get('/assign-event', [ManagamentSystemController::class, 'assignEvent'])->name('assign.event');
         Route::get('/assign-event-create', [ManagamentSystemController::class, 'assignEventCreate'])->name('assign.event.create');

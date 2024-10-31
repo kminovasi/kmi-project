@@ -1,5 +1,5 @@
 <div>
-    <input type="text" id="userSearch" class="form-control form-control-sm" wire:model="query" placeholder="Cari Karyawan..." />
+    <input type="text" id="userSearch" class="form-control form-control-sm" wire:model="query" placeholder="Cari Karyawan..." required/>
 
     @if(!empty($users))
         <ul class="list-group mt-2 text-sm">

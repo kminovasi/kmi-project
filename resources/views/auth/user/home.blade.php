@@ -61,6 +61,12 @@
                     <div>
                         <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
+                    <div>
+                        <x-dashboard.financial-benefit-total-chart :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    </div>
+                    <div>
+                        <x-dashboard.potential-benefit-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    </div>
                 </div>
 
                 <!-- Right Column - Benefits -->

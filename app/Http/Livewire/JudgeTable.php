@@ -12,10 +12,10 @@ class JudgeTable extends Component
 
     public $search = '';
     public $company = '';
-    public $event_id = '';
+    public $event = '';
     public $perPage = 10;
 
-    protected $queryString = ['search'];
+    protected $queryString = ['search', 'company', 'event', 'perPage'];
     protected $paginationTheme = 'bootstrap';
 
     protected $listeners = [
@@ -24,7 +24,7 @@ class JudgeTable extends Component
 
     public function updateEvent($eventId)
     {
-        $this->event_id = $eventId;
+        $this->event = $eventId;
         $this->resetPage();
     }
 
@@ -36,11 +36,6 @@ class JudgeTable extends Component
     public function updatingSearch()
     {
         $this->resetPage();
-    }
-
-    public function resetPage()
-    {
-        $this->gotoPage(1);
     }
 
     public function render()
@@ -64,8 +59,8 @@ class JudgeTable extends Component
                 $query->where('company_code', $this->company);
             }
 
-            if ($this->event_id) {
-                $query->where('event_id', $this->event_id);
+            if ($this->event) {
+                $query->where('event_id', $this->event);
             }
 
             if ($this->search) {
@@ -73,12 +68,9 @@ class JudgeTable extends Component
             }
         }
 
-        $judges = $query->orderBy('judges.updated_at', 'desc')->paginate($this->perPage);
+        $judges = $query->orderBy('users.name', 'asc')->paginate($this->perPage);
+        $currentPage = $judges->currentPage();
 
-
-        return view('livewire.judge-table', [
-            'judges' => $judges,
-            'currentPage' => $judges->currentPage()
-        ]);
+        return view('livewire.judge-table', compact('judges', 'currentPage'));
     }
 }

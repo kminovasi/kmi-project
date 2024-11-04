@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
-use App\Models\Event;
 use App\Models\Judge;
-use App\Models\User;
-use Auth;
 use Illuminate\Http\Request;
 use Storage;
 
 class JuriController extends Controller
 {
-    function index(Request $request)
+    function index()
     {
-
         return view('auth.admin.management_system.assign-juri.index');
     }
 

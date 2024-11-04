@@ -46,7 +46,7 @@ class InnovatorOrganization extends Component
             ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->where('teams.company_code', $company->company_code)
-            ->where('pvt_members.status', 'member')
+            ->where('pvt_members.status', 'member')->orWhere('pvt_members.status', 'leader')
             ->whereYear('teams.created_at', $this->year)
             ->groupBy($this->organizationUnit)
             ->get()

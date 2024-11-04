@@ -19,6 +19,8 @@ use App\Http\Requests\eventRequest;
 use App\Http\Requests\judgeRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\getEvents;
+use Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class ManagamentSystemController extends Controller
 {
@@ -234,9 +236,43 @@ class ManagamentSystemController extends Controller
     {
         return view('auth.admin.management_system.assign-role.innovator-role-index');
     }
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        return view('auth.admin.management_system.assign-role.admin-role-index');
+        // Get list of companies for filter dropdown
+        $companies = Company::orderBy('company_name')->get();
+
+        if (request()->ajax()) {
+            $query = User::query()
+                ->where('role', 'Admin')
+                ->select([
+                    'id',
+                    'name',
+                    'company_name',
+                    'position_title',
+                    'department_name',
+                    'job_level',
+                ]);
+
+            // Filter based on user role
+            if (Auth::user()->role === 'Admin') {
+                // If Admin, only show users from same company
+                $query->where('company_code', Auth::user()->company_code);
+            } else if (Auth::user()->role === 'Superadmin' && $request->company_code) {
+                // If Super Admin and company filter is applied
+                $query->where('company_code', $request->company_code);
+            }
+
+            $users = $query->get();
+
+            return DataTables::of($users)
+                ->addIndexColumn()
+                ->addColumn('DT_RowIndex', function ($row) {
+                    return '';
+                })
+                ->toJson();
+        }
+
+        return view('auth.admin.management_system.assign-role.admin-role-index', compact('companies'));
     }
     public function indexSuperAdmin()
     {

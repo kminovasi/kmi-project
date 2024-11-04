@@ -7,14 +7,16 @@ use Livewire\Component;
 
 class CompanySelect extends Component
 {
-    public $companies = [];
+    public $selectedCompany = '';
 
-    public function mount()
+    public function updatedSelectedCompany()
     {
-        $this->companies = Company::all();
+        $this->emit('companySelected', $this->selectedCompany);
     }
+
     public function render()
     {
-        return view('livewire.company-select');
+        $companies = Company::all();
+        return view('livewire.company-select', compact('companies'));
     }
 }

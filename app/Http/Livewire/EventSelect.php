@@ -7,14 +7,16 @@ use Livewire\Component;
 
 class EventSelect extends Component
 {
-    public $events = [];
+    public $selectedEvent = '';
 
-    public function mount()
+    public function updatedSelectedEvent()
     {
-        $this->events = Event::all();
+        $this->emit('eventSelected', $this->selectedEvent);
     }
+
     public function render()
     {
-        return view('livewire.event-select');
+        $events = Event::orderBy('year','desc')->get();
+        return view('livewire.event-select', compact('events'));
     }
 }

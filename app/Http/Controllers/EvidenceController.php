@@ -22,7 +22,7 @@ class EvidenceController extends Controller
         $category = Category::find($id);
         // Filter dan Pencarian
         $search = $request->input('search');
-        $companyCode = $request->input('code');
+        $companyCode = $request->input('company');
         $theme = $request->input('theme');
         $event = $request->input('event');
 

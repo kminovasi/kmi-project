@@ -61,17 +61,18 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware(['auth']);
 
-Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->name('detail-company-chart');
-Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->name('detail-company-chart-show');
+Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
+Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
-Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('/notifications/delete-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
     });
@@ -242,19 +243,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:Superadmin,Admin'])->prefix('management-system')->name('management-system.')->group(function () {
-        Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
+        // Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
 
-        // Assign Juri
-        // Route::get('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::get('/assign-juri-create', [ManagamentSystemController::class, 'assignJuriCreate'])->name('assign.juri.create');
-        // Route::post('/assign-juri-store', [ManagamentSystemController::class, 'assignJuriStore'])->name('assign.juri.store'); // hal;amanm assign juri
-        // Route::post('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::put('/assign-juri', [ManagamentSystemController::class, 'assignJuri'])->name('assign.juri');
-        // Route::put('/revoke-juri/{id}', [ManagamentSystemController::class, 'revokeJuri'])->name('revoke.juri');
-        // Route::put('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
-        // Route::get('/update-juri', [ManagamentSystemController::class, 'updateJuri'])->name('update.juri');
-
-        // New Juri
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
         Route::post('/juri-store', [JuriController::class, 'store'])->name('juri-store');

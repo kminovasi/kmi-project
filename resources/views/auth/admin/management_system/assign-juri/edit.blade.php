@@ -25,17 +25,30 @@
 
 <div class="container-xl px-4 mt-4">
 
-    <div class="mb-3">
+    <div class="toast-container position-fixed top-0 end-0 p-3">
         @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-            {{ session('success') }}
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header text-bg-success">
+                <strong class="me-auto">Success</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ session('success') }}
+            </div>
         </div>
         @endif
+
         @if ($errors->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-            {{ $errors->first('error') }}
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header text-bg-danger">
+                <strong class="me-auto">Error</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ session('error') }}
+            </div>
         </div>
         @endif
     </div>
@@ -81,6 +94,17 @@
     function goBack() {
         window.history.back();
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 3000
+                });
+            });
+            toastList.forEach(toast => toast.show());
+        });
 </script>
 
 @endpush

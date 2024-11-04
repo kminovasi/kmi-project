@@ -1,17 +1,22 @@
 @extends('layouts.app')
 @section('title', 'Role | Super Admin')
 @push('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-<style type="text/css">
-    .active-link {
-        color: #ffc004;
-        background-color: #e81500;
-    }
-    .display thead th,
-    .display tbody td {
-        border: 0.5px solid #ddd; /* Atur warna dan ketebalan garis sesuai kebutuhan */
-    }
-</style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
+    <style type="text/css">
+        .active-link {
+            color: #ffc004;
+            background-color: #e81500;
+        }
+
+        .display thead th,
+        .display tbody td {
+            border: 0.5px solid #ddd;
+            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+        }
+    </style>
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -37,12 +42,12 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         <div class="mb-3">
-            @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                {{ session('success') }}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
 
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
         </div>
         <div class="card mb-4">
@@ -53,20 +58,24 @@
                     @endif
                 </div> --}}
                 <table id="datatable-innovator">
-                    
+
                 </table>
             </div>
-            
+
         </div>
     </div>
 
 @endsection
 
 @push('js')
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script type="">
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
+
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="">
 $(document).ready(function() {
     var dataTable = $('#datatable-innovator').DataTable({
         "processing": true,
@@ -84,7 +93,7 @@ $(document).ready(function() {
             "data": function (d) {
                     d.role = 'Superadmin'
             },
-            
+
         },
         "columns": [
             {"data": "DT_RowIndex", "title": "No"},

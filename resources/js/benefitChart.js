@@ -104,9 +104,6 @@ const imagePlugin = {
     },
 };
 
-// Register the custom plugin
-Chart.register(imagePlugin);
-
 // Array to store loaded images
 const logoImages = [];
 
@@ -178,8 +175,10 @@ const initChart = async () => {
                         },
                     },
                     drawValue: true,
+                    customImagePlugin: imagePlugin,
                 },
             },
+            plugins: [imagePlugin],
         });
     } catch (error) {
         console.error("Error initializing chart:", error);

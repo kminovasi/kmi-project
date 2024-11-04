@@ -99,7 +99,7 @@ $(document).ready(function() {
             "data": function (d) {
                     //d.role = 'Admin'
                     d.company_code = '{{ Auth::user()->company_code }}'; // sending logged-in user's company code
-                    d.role = '{{ Auth::user()->role }}';
+                    d.role = 'Admin';
             },
 
         },

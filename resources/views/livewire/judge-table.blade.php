@@ -55,25 +55,30 @@
 
                                     <ul class="dropdown-menu">
                                         <li><a class="dropdown-item" type="button"
-                                                href="{{ route('management-system.juri-edit', [$j->id, $j->name]) }}">Edit</a>
+                                                href="{{ route('management-system.juri-edit', [$j->id, $j->name]) }}">
+                                                <i class="fas fa-edit dropdown-item-icon"></i> Edit</a>
                                         </li>
                                         <li>
                                             <form action="{{ route('management-system.juri-updateStatus', $j->id) }}"
                                                 method="POST">
                                                 @csrf
                                                 @method('PUT')
-                                                <button class="dropdown-item" type="submit">Update Status</button>
+                                                <button class="dropdown-item" type="submit">
+                                                    <i class="fas fa-refresh dropdown-item-icon"></i>Update Status</button>
                                             </form>
                                         </li>
                                         <li><a class="dropdown-item"
                                                 href="{{ asset('storage/surat-juri/' . $j->letter_path) }}"
-                                                target="_blank">Lihat Surat</a></li>
+                                                target="_blank">
+                                                <i class="fas fa-file-text dropdown-item-icon"></i>Lihat Surat</a></li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal{{ $loop->iteration }}">Hapus</a>
+                                            <a class="dropdown-item text-danger" data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal{{ $loop->iteration }}">
+                                                <i class="fas fa-trash dropdown-item-icon"></i> Hapus
+                                            </a>
                                         </li>
                                     </ul>
 
@@ -102,7 +107,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger">Ya,
-                                                        Hapus</button>
+                                                         Hapus</button>
                                                 </form>
                                             </div>
                                         </div>

@@ -57,8 +57,13 @@ class QueryController extends Controller
             $role = $request->input('role');
             $user = Auth::user();
             $query = User::select("name", "username", "position_title", "job_level", "companies.company_name as co_name")
-                ->join('companies', 'companies.company_code', '=', 'users.company_code')
-                ->where('users.role', 'ilike', "%$role%");
+                ->join('companies', 'companies.company_code', '=', 'users.company_code');
+
+            if ($role === "Superadmin" || $role === "Admin") {
+                $query = $query->where('users.role', 'like', "$role");
+            } else {
+                $query = $query->where('users.role', 'like', "%$role%");
+            }
 
             // Restrict to same company if the user is an admin
             if ($user->role === 'Admin') { //note: superadmin masih bug karena cuma tampil nama dia saja

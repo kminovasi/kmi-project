@@ -11,6 +11,7 @@ use App\Models\CustomBenefitFinancial;
 use App\Models\PvtCustomBenefit;
 use App\Models\PvtMember;
 use App\Mail\EmailNotificationBenefit;
+use App\Models\PvtEventTeam;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -60,10 +61,15 @@ class BenefitController extends Controller
             )
             ->where('papers.id', $id)->first();
 
-        $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
-            ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
-            ->where('status', ['leader', 'member']) // Atau status lain yang menunjukkan pemilik benefit
-            ->exists(); // Gunakan exists() untuk cek keberadaan pemilik benefit
+        if (Auth::user()->role === 'Superadmin') {
+            $is_owner = true;
+        } else {
+            $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
+                ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
+                ->whereIn('status', ['member', 'leader']) // Atau status lain yang menunjukkan pemilik benefit
+                ->exists(); // Gunakan exists() untuk cek keberadaan pemilik benefit
+        }
+
 
         $file_content = null;
         if ($row->file_review) {
@@ -95,6 +101,19 @@ class BenefitController extends Controller
             $gmName = User::where('employee_id', $gm->employee_id)->select('name', 'employee_id')->first();
         } else {
             $gmName = null;
+        }
+
+        $statusEventTeam = PvtEventTeam::where('team_id', $row->team_id)->first();
+        $isWinnerStatusTeam = $statusEventTeam->status === 'Juara' ? true : false;
+        if (Auth::user()->role === 'Superadmin') {
+            // Superadmin bisa edit jika tim berstatus Juara
+            $is_owner = $isWinnerStatusTeam;
+        } else {
+            // Untuk user biasa (pemilik paper/benefit)
+            $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
+                ->where('team_id', $row->team_id)
+                ->whereIn('status', ['member', 'leader'])
+                ->exists() && !$isWinnerStatusTeam; // Tambahkan pengecekan NOT isWinnerStatusTeam
         }
         return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName'));
     }
@@ -132,8 +151,8 @@ class BenefitController extends Controller
             );
             // Tambahkan awalan '/'
             $record->file_review = $record->file_review;
-        }else{
-            if($record->file_review === null){
+        } else {
+            if ($record->file_review === null) {
                 return redirect()->route('benefit.create.user', ['id' => $id])->withErrors("Error: File Review harus di upload");
             }
         }
@@ -164,27 +183,27 @@ class BenefitController extends Controller
         if ($existingGM !== null) {
             if ($request->gm_id !== null) {
                 PvtMember::where('team_id', $idTeam)
-                ->where('employee_id', $existingGM->employee_id)
-                ->update([
-                    'employee_id' => $request->gm_id,
-                    'status' => 'gm'
-                ]);
-            }else{
+                    ->where('employee_id', $existingGM->employee_id)
+                    ->update([
+                        'employee_id' => $request->gm_id,
+                        'status' => 'gm'
+                    ]);
+            } else {
                 PvtMember::where('team_id', $idTeam)
-                ->where('employee_id', $existingGM->employee_id)
-                ->update([
-                    'employee_id' => $request->oldGm,
-                    'status' => 'gm'
-                ]);
+                    ->where('employee_id', $existingGM->employee_id)
+                    ->update([
+                        'employee_id' => $request->oldGm,
+                        'status' => 'gm'
+                    ]);
             }
         } else {
-            if($request->gm_id !== null){
+            if ($request->gm_id !== null) {
                 PvtMember::create([
                     'team_id' => $idTeam,
                     'employee_id' => $request->gm_id,
                     'status' => 'gm'
                 ]);
-            }else{
+            } else {
                 return redirect()->route('benefit.create.user', [$id])->withErrors("Error: Gm tidak boleh kosong");
             }
         }

@@ -1,7 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Data Paper')
 @push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
+        rel="stylesheet">
     <style type="text/css">
         .step-one h1 {
             text-align: center;
@@ -55,10 +58,14 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
-                    @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri' || Auth::user()->role == 'Superadmin')
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
-                            data-bs-target="#filterModal">Filter</button>
-                    @endif
+                    <select id="event-select" class="form-select" style="width: 200px; display: inline-block;">
+                        <option value="">Select Event</option>
+                        @foreach ($data_event as $event)
+                            <option value="{{ $event->id }}">{{ $event->event_name }}</option>
+                        @endforeach
+                    </select>
+                    <button id="assign-to-event" class="btn btn-primary">Assign to Event</button>
+                    <span id="selected-count" class="ms-3">0 team(s) selected</span>
                 </div>
                 <table id="datatable-competition">
                 </table>
@@ -67,210 +74,128 @@
         </div>
     </div>
 
-    {{-- modal untuk detail team --}}
-    <div class="modal fade" id="detailTeamMember" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Detail Team Member</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="modal-card-form">
-                        <div class="mb-3">
-                            <label class="mb-1" for="facilitator">Fasilitator</label>
-                            <input class="form-control" id="facilitator" type="text" value="" readonly />
-                        </div>
-                        <div class="mb-3">
-                            <label class="mb-1" for="leader">Leader</label>
-                            <input class="form-control" id="leader" type="text" value="" readonly />
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- modal untuk filter khusus admin dan juri --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-role">Role</label>
-                        <select id="filter-role" name="filter-role" class="form-select">
-                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                                <option value="admin"> Admin </option>
-                            @endif
-                            @if (Auth::user()->role == 'Juri')
-                                <option value="juri"> Juri </option>
-                            @endif
-                            <option value="innovator" selected> Innovator </option>
-                        </select>
-                    </div>
-                    @if (Auth::user()->role == 'Admin')
-                        <div class="mb-3">
-                            <label class="mb-1" for="filter-event">Event</label>
-                            <select id="filter-event" name="filter-event" class="form-select" disabled>
-                                @foreach ($data_event as $event)
-                                    <option value="{{ $event->id }}"
-                                        {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                        {{ $event->event_name }} </option>
-                                @endforeach
-                                <option value="" selected> - </option>
-                            </select>
-                        </div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- modal untuk execute --}}
-    <div class="modal fade" id="getExecute" role="dialog" aria-labelledby="getExecuteTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="getExecuteTitle">Execute</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('paper.register.team') }}">
-                    <div class="modal-body">
-                        <input type="hidden" name="team_id" id="teamIdInput" value="">
-                        <div class="mb-3">
-                            <label class="mb-1" for="nextevent">Event</label>
-                            <select id="nextevent" name="nextevent" class="form-select">
-                                <option value="Group">SIG (Group)</option>
-                                <option value="External">External</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- modal untuk rollback --}}
-    <div class="modal fade" id="deletePoint" tabindex="-1" role="dialog" aria-labelledby="deletePointTitle"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form id="form_rollback" method="POST">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deletePointTitle">Konfirmasi Rollback Data</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Apakah yakin data ini akan dirollback ?
-                        <div class="mb">
-                            <label class="mb-1" for="commentadmin">Comment</label>
-                            <textarea name="comment" class="form-control" id="commentadmin" cols="30" rows="3"></textarea>
-                        </div>
-                        <input type="text" name="evaluatedBy" value="innovation admin" hidden>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-danger" type="button" data-bs-target="">Rollback</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
 
 @endsection
 
 @push('js')
-    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script> --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
     <script type="">
-    $(document).ready(function() {
-        var dataTable = $('#datatable-competition').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "{{ route('query.get_competition') }}",
-                "type": "GET",
-                "dataSrc": function (data) {
-                    // console.log('Jumlah data total: ' + data.recordsTotal);
-                    // console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                    // console.log('Jumlah data setelah filter: ' + data.data);
-                    return data.data;
-                },
-                data: function (d) {
-                    d.filterRole = $('#filter-role').val();
-                    d.filterEvent = $('#filter-event').val();
-                }
+ // Add this script to your existing JavaScript
+$(document).ready(function() {
+  let table = $('#datatable-competition').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "{{ route('group-event.getAllPaper') }}",
+    columns: [
+        {
+            title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
+            data: 'checkbox',
+            name: 'checkbox',
+            orderable: false,
+            searchable: false,
+            width: '5%'
+        },
+        {
+            title: 'No',
+            data: 'DT_RowIndex',
+            name: 'DT_RowIndex',
+            orderable: false,
+            searchable: false,
+            width: '5%'
+        },
+        {
+            title: 'Team',
+            data: 'team_name',
+            name: 'teams.team_name'
+        },
+        {
+            title: 'Perusahaan',
+            data: 'company_name',
+            name: 'companies.company_name'
+        },
+        {
+            title: 'Judul Inovasi',
+            data: 'innovation_title',
+            name: 'papers.innovation_title'
+        },
+        {
+            title: 'Event yang diikuti',
+            data: 'registered_events',
+            name: 'registered_events',
+            orderable: false,
+            searchable: false
+        }
+    ],
+    responsive: true
+});
 
-            },
-            "columns": [
-                {"data":"pvt_event_team_id", "title": "No"},
-                {"data": "team_name", "title": "Team Name"},
-                {"data": "team_id", "title": "ID tim"},
-                {"data": "innovation_title", "title": "Innovation Title"},
-                {"data": "event_name", "title": "Event Name"},
-                {"data": "status", "title": "Status"},
-                {"data": "action", "title": "Action"},
-                // {"data": "financial", "title": "Financial"},
-                // {"data": "potential_benefit", "title": "Potential Benefit"}
-            ],
-            "scrollY": true,
-            "stateSave": true,
-        });
-
-        $('#filter-role').on('change', function () {
-            dataTable.ajax.reload();
-
-            if($('#filter-role').val() == 'admin'){
-                $('#filter-event').removeAttr("disabled");
-            }else{
-                $("#filter-event").attr("disabled", "disabled");
-            }
-
-        });
-        $('#filter-event').on('change', function () {
-            dataTable.ajax.reload();
-        });
+    // Handle click on "Select all" control
+    $('#select-all').on('click', function(){
+        var rows = table.rows({ 'search': 'applied' }).nodes();
+        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        updateSelectedCount();
     });
 
-    function change_url(id, elementid) {
-        //link untuk update
-        var form = document.getElementById(elementid);
-        var url = `{{ route('paper.rollback', ['id' => ':id']) }}`;
-        url = url.replace(':id', id);
-        form.action = url;
+    // Handle click on checkbox
+    $('#datatable-competition tbody').on('change', 'input[type="checkbox"]', function(){
+        if(!this.checked){
+            var el = $('#select-all').get(0);
+            if(el && el.checked && ('indeterminate' in el)){
+                el.indeterminate = true;
+            }
+        }
+        updateSelectedCount();
+    });
 
+    // Function to update selected count
+    function updateSelectedCount() {
+        var count = $('.paper_checkbox:checked').length;
+        $('#selected-count').text(count + ' team(s) selected');
     }
-    function setTeamId(teamId) {
-        var teamIdInput = document.getElementById('teamIdInput');
-        teamIdInput.value = teamId;
-        // Jika perlu, Anda dapat juga menambahkan kode lain untuk mengirimkan formulir setelah mengatur nilainya.
-    }
-    // function redirectToPage(){
-    //     var optionValue = document.getElementById('nextevent').value;
-    //     if (optionValue === "Group") {
-    //        window.location.href = '/paper/register-team'
-    //     } else {
-    //         window.location.href = '/event/externalEvent'
-    //     }
-    // }
+
+    // Handle assign to event
+    $('#assign-to-event').click(function(){
+        var selectedIds = [];
+        $('.paper_checkbox:checked').each(function(){
+            selectedIds.push($(this).val());
+        });
+
+        if(selectedIds.length === 0) {
+            alert('Please select at least one team');
+            return;
+        }
+
+        var eventId = $('#event-select').val();
+        if(!eventId) {
+            alert('Please select an event');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('group-event.assignTeams') }}",
+            type: 'POST',
+            data: {
+                team_ids: selectedIds,
+                event_id: eventId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if(response.success) {
+                    alert('Teams successfully assigned to event');
+                    table.ajax.reload();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('Error occurred while assigning teams');
+            }
+        });
+    });
+});
 
 
 </script>
 @endpush
-<!-- JavaScript untuk mengatur action formulir -->

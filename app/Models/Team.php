@@ -56,4 +56,11 @@ class Team extends Model
     {
         return $this->belongsTo(Company::class, 'company_code', 'company_code'); // Pastikan kolom yang digunakan sesuai
     }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'pvt_event_teams')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
 }

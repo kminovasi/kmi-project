@@ -12,7 +12,6 @@
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     @vite(['resources/css/app.css'])
     @livewireStyles
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
     <link href="{{ asset('template/dist/css/styles.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">

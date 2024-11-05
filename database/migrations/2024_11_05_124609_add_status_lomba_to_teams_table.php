@@ -33,7 +33,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('teams', function (Blueprint $table) {
-            $table->dropColumn('status_lomba'); // Hapus kolom status_lomba jika ada
+            $table->dropColumn('status_lomba');
         });
     }
 };

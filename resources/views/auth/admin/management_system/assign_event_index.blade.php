@@ -136,6 +136,15 @@
                             <input class="form-control" id="upEndDate" type="date" name="end_date">
                         </div>
                         <div class="mb-3">
+                            <label for="upType">Tipe Event</label>
+                            <select name="type" id="upType" class="form-select">
+                                <option value="anak_perusahaan">Anak Perusahaan</option>
+                                <option value="group">Group</option>
+                                <option value="national">National</option>
+                                <option value="international">International</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="upDescription">Deskrispi</label>
                             <textarea name="description" id="upDescription" cols="30" rows="10" class="form-control"
                                 name="data_description"></textarea>
@@ -254,6 +263,7 @@
                     'status',
                     'year',
                     'description',
+                     'type'
                 ]
             },
             // dataType: 'json',
@@ -264,6 +274,7 @@
                 document.getElementById("upStartDate").value = response[0].date_start;
                 document.getElementById("upEndDate").value = response[0].date_end;
                 document.getElementById("upDescription").value = response[0].description;
+                 document.getElementById("upType").value = response[0].type;
 
                 var selectElement = document.getElementById("upCompany");
                 selectElement.value = response[0].company_code;
@@ -307,7 +318,6 @@
 
     }
     function set_data_on_modal_event(event_id){
-        console.log("OKOKOK");
         var form = document.getElementById('updateDataForm');
         var url = `{{ route('management-system.update.event', ['id' => ':event_id']) }}`;
         url = url.replace(':event_id', event_id);

@@ -13,15 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('teams', function (Blueprint $table) {
-            $table->enum('status_lomba', [
-                'AP',
+        Schema::table('events', function (Blueprint $table) {
+            $table->enum('type', [
+                'anak_perusahaan',
                 'group',
                 'national',
-                'international',
-                'group, national',
-                'group, international'
-            ])->nullable();
+                'international'
+            ])->nullable(); // Menambahkan kolom 'type'
         });
     }
 
@@ -32,8 +30,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('teams', function (Blueprint $table) {
-            $table->dropColumn('status_lomba'); // Hapus kolom status_lomba jika ada
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropColumn('type'); // Menghapus kolom 'type' jika rollback
         });
     }
 };

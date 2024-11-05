@@ -77,7 +77,7 @@
                                     id="id_category" value="{{ old('category') }}" placeholder="Pilih Kategori Inovasi Anda"
                                     onChange="addRow(this)" required>
                                     <!-- <option selected disabled>Select a category :</option>
-                                                                            @foreach ($datas_category as $row)
+                                                                                @foreach ($datas_category as $row)
     <option value="{{ $row->id }}">{{ $row->category_name }}</option>
     @endforeach -->
                                 </select>
@@ -146,7 +146,7 @@
                                 <select class="form-select" aria-label="Default select example" name="theme"
                                     id="id_theme" value="{{ old('theme') }}" required>
                                     <!-- <option selected disabled>Select a theme :</option>
-                                            @foreach ($datas_theme as $row)
+                                                @foreach ($datas_theme as $row)
     <option value="{{ $row->id }}">{{ $row->theme_name }}</option>
     @endforeach -->
                                 </select>
@@ -198,7 +198,7 @@
 
                             <div class="mb-3">
                                 <h6 class="small mb-1">Upload Foto Tim (Resmi)</h6>
-                                <input type="file" name="proof_idea" class="form-control" accept="image/*" >
+                                <input type="file" name="proof_idea" class="form-control" accept="image/*">
                             </div>
 
                             <div class="mb-3">

@@ -13,11 +13,8 @@ class Team extends Model
     protected $fillable = [
         'team_name',
         'company_code',
-        // 'fasilitator_employee_id',
         'category_id',
         'theme_id',
-        // 'event_id',
-        'status_lomba',
         'phone_number'
     ];
 

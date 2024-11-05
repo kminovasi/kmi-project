@@ -25,33 +25,10 @@
 
 <div class="container-xl px-4 mt-4">
 
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        @if (session('success'))
-        <div class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header text-bg-success">
-                <strong class="me-auto">Success</strong>
-                <small>Just now</small>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                {{ session('success') }}
-            </div>
-        </div>
-        @endif
-
-        @if ($errors->has('error'))
-        <div class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header text-bg-danger">
-                <strong class="me-auto">Error</strong>
-                <small>Just now</small>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                {{ session('error') }}
-            </div>
-        </div>
-        @endif
-    </div>
+        {{-- Menampilkan pesan sukses --}}
+        <x-toast-alert type="success" message="{{ session('success') }}" />
+        {{-- Menampilkan pesan error --}}
+        <x-toast-alert type="danger" message="{{ $errors->first('error') }}" />
 
     <div class="card p-4">
 

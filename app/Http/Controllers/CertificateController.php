@@ -86,34 +86,6 @@ class CertificateController extends Controller
     }
 
     /**
-     * Update the specified certificate in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    // public function update(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'template' => 'nullable|file|mimes:jpg,jpeg,png'
-    //     ]);
-
-    //     $certificate = Certificate::findOrFail($id);
-
-    //     if ($request->hasFile('template')) {
-    //         $path = $request->file('template')->store('certificates', 'public');
-    //         $certificate->template_path = $path;
-    //     }
-
-    //     $certificate->update([
-    //         'title' => $request->title,
-    //     ]);
-
-    //     return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil diperbarui.');
-    // }
-
-    /**
      * Remove the specified certificate from storage.
      *
      * @param  int  $id

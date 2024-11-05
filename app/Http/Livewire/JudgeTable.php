@@ -40,7 +40,6 @@ class JudgeTable extends Component
 
     public function render()
     {
-        $user = auth()->user();
         $query = Judge::with('event')
             ->join('users', 'judges.employee_id', '=', 'users.employee_id')
             ->select(
@@ -52,9 +51,6 @@ class JudgeTable extends Component
                 'users.unit_name',
             );
 
-        if ($user->role == 'Admin') {
-            $query->where('users.company_code', $user->company_code);
-        } else {
             if ($this->company) {
                 $query->where('company_code', $this->company);
             }
@@ -66,7 +62,6 @@ class JudgeTable extends Component
             if ($this->search) {
                 $query->where('users.name', 'ILIKE', '%' . $this->search . '%');
             }
-        }
 
         $judges = $query->orderBy('users.name', 'asc')->paginate($this->perPage);
         $currentPage = $judges->currentPage();

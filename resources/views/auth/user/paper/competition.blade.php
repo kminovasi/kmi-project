@@ -5,6 +5,7 @@
     <link
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style type="text/css">
         .step-one h1 {
             text-align: center;
@@ -26,6 +27,32 @@
         .active-link {
             color: #ffc004;
             background-color: #e81500;
+        }
+
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        .loading-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
         }
     </style>
 @endpush
@@ -74,6 +101,16 @@
         </div>
     </div>
 
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mt-2">Sedang memproses...</h5>
+            <p>Mohon tunggu sebentar</p>
+        </div>
+    </div>
+
 
 @endsection
 
@@ -81,6 +118,7 @@
     <script
         src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="">
  // Add this script to your existing JavaScript
 $(document).ready(function() {
@@ -156,45 +194,103 @@ $(document).ready(function() {
     }
 
     // Handle assign to event
-    $('#assign-to-event').click(function(){
-        var selectedIds = [];
-        $('.paper_checkbox:checked').each(function(){
-            selectedIds.push($(this).val());
-        });
+  // Handle assign to event
+ $('#assign-to-event').click(function(){
+            var selectedIds = [];
+            $('.paper_checkbox:checked').each(function(){
+                selectedIds.push($(this).val());
+            });
 
-        if(selectedIds.length === 0) {
-            alert('Please select at least one team');
-            return;
-        }
-
-        var eventId = $('#event-select').val();
-        if(!eventId) {
-            alert('Please select an event');
-            return;
-        }
-
-        $.ajax({
-            url: "{{ route('group-event.assignTeams') }}",
-            type: 'POST',
-            data: {
-                team_ids: selectedIds,
-                event_id: eventId,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                if(response.success) {
-                    alert('Teams successfully assigned to event');
-                    table.ajax.reload();
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function(xhr) {
-                alert('Error occurred while assigning teams');
+            if(selectedIds.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Silakan pilih minimal satu team',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
             }
+
+            var eventId = $('#event-select').val();
+            if(!eventId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: 'Silakan pilih event',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
+
+            // Konfirmasi sebelum assign
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah Anda yakin ingin menugaskan team yang dipilih ke event ini?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Tugaskan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading overlay
+                    $('#loading-overlay').fadeIn();
+
+                    // Disable the assign button
+                    $('#assign-to-event').prop('disabled', true);
+
+                    $.ajax({
+                        url: "{{ route('group-event.assignTeams') }}",
+                        type: 'POST',
+                        data: {
+                            team_ids: selectedIds,
+                            event_id: eventId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if(response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: 'Tim berhasil ditugaskan ke event',
+                                    confirmButtonColor: '#3085d6'
+                                });
+                                table.ajax.reload();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Error: ' + response.message,
+                                    confirmButtonColor: '#3085d6'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Terjadi kesalahan saat menugaskan tim',
+                                confirmButtonColor: '#3085d6'
+                            });
+                        },
+                        complete: function() {
+                            // Hide loading overlay
+                            $('#loading-overlay').fadeOut();
+
+                            // Re-enable the assign button
+                            $('#assign-to-event').prop('disabled', false);
+
+                            // Clear checkboxes
+                            $('.paper_checkbox').prop('checked', false);
+                            $('#select-all').prop('checked', false);
+                            updateSelectedCount();
+                        }
+                    });
+                }
+            });
         });
     });
-});
 
 
 </script>

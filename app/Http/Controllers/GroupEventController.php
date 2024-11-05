@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EventAssignmentNotification;
 use App\Models\Paper;
 use App\Models\Team;
 use App\Models\Event;
@@ -9,6 +10,7 @@ use App\Models\PvtEventTeam;
 use Auth;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Mail as FacadesMail;
 use Log;
 
 class GroupEventController extends Controller
@@ -108,9 +110,10 @@ class GroupEventController extends Controller
         try {
             $paperIds = $request->team_ids;
             $eventId = $request->event_id;
+            $event = Event::findOrFail($eventId);
 
             foreach ($paperIds as $paperId) {
-                $paper = Paper::find($paperId);
+                $paper = Paper::with(['team.pvtMembers.user'])->find($paperId);
 
                 if (!$paper) {
                     continue;
@@ -126,17 +129,31 @@ class GroupEventController extends Controller
                     PvtEventTeam::create([
                         'team_id' => $teamId,
                         'event_id' => $eventId,
-                        'status' => 'Registered' // atau status awal yang sesuai
                     ]);
-                } else {
-                    // Jika sudah terdaftar, bisa update status atau biarkan saja
-                    // $existingEntry->update(['status' => 'Updated']);
+
+                    // Kirim email ke semua anggota tim
+                    foreach ($paper->team->pvtMembers as $member) {
+                        // Pastikan user memiliki email
+                        if ($member->user && $member->user->email) {
+                            try {
+                                FacadesMail::to($member->user->email)->send(
+                                    new EventAssignmentNotification(
+                                        $paper->team->team_name,
+                                        $event->event_name,
+                                        $member->user->name
+                                    )
+                                );
+                            } catch (\Exception $e) {
+                                Log::error('Failed to send email to ' . $member->user->email . ': ' . $e->getMessage());
+                            }
+                        }
+                    }
                 }
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Teams successfully assigned to event'
+                'message' => 'Teams successfully assigned to event and notifications sent'
             ]);
         } catch (\Exception $e) {
             Log::error('Error assigning teams to event: ' . $e->getMessage());

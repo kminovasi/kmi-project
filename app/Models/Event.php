@@ -17,7 +17,8 @@ class Event extends Model
         'date_end',
         'status',
         'year',
-        'description'
+        'description',
+        'type'
     ];
     public function company()
     {

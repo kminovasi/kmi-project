@@ -83,15 +83,16 @@ class ManagamentSystemController extends Controller
             // Join the filtered company codes into a comma-separated string
             $companyCodesString = implode(',', $companyCodes);
 
-            // Create the event with the combined company codes
+            // Create the event with the combined company codes and the new 'type' field
             Event::create([
                 'event_name' => $validatedData['event_name'],
-                'date_start' => $validatedData['start_date'],
-                'date_end' => $validatedData['end_date'],
+                'date_start' => $validatedData['start_date'], // Pastikan menggunakan 'date_start'
+                'date_end' => $validatedData['end_date'], // Pastikan menggunakan 'date_end'
                 'year' => $validatedData['year'],
                 'company_code' => $companyCodesString, // Store as comma-separated string
                 'status' => 'not active',
-                'description' => $validatedData['description'] ?? '', // Provide default value if not set
+                'description' => $request['description'] ?? '', // Provide default value if not set
+                'type' => $validatedData['type'], // Tambahkan kolom 'type' di sini
             ]);
 
             // Commit the transaction
@@ -145,7 +146,7 @@ class ManagamentSystemController extends Controller
     {
         try {
             DB::beginTransaction();
-            $event = Event::findOrFail($id);  // Using findOrFail to ensure the event exists
+            $event = Event::findOrFail($id);
             $event->update([
                 'event_name' => $request->input('event_name'),
                 'date_start' => $request->input('start_date'),
@@ -154,6 +155,7 @@ class ManagamentSystemController extends Controller
                 'company_code' => $request->input('company_code'),
                 'status' => $request->input('status'),
                 'description' => $request->input('description'),
+                'type' => $request->input('type'),
             ]);
             DB::commit();
             return redirect()->route('management-system.assign.event')->with('success', 'Data Event updated successfully');

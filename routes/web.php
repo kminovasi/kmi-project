@@ -35,6 +35,7 @@ use App\Models\Timeline;
 use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
+use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
 
@@ -359,6 +360,10 @@ Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(fu
     Route::get('getAllPaper', [GroupEventController::class, 'getAllPaper'])->name('getAllPaper')->middleware(['role:Superadmin,Admin']);
     Route::post('assign-teams', [GroupEventController::class, 'assignTeamsToEvent'])->name('assignTeams')->middleware(['role:Superadmin,Admin']);
 });
+Route::middleware('auth')->prefix('event')->name('event-team.')->group(function () {
+    Route::get('/', [EventTeamController::class, 'index'])->name('index');
+});
+
 
 Route::get('/ck5', function () {
     return view('coba.coba');

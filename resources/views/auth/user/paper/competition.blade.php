@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Data Paper')
+@section('title', 'Pendaftaran Event Group')
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link
@@ -120,178 +120,186 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="">
- // Add this script to your existing JavaScript
-$(document).ready(function() {
-  let table = $('#datatable-competition').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: "{{ route('group-event.getAllPaper') }}",
-    columns: [
-        {
-            title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
-            data: 'checkbox',
-            name: 'checkbox',
-            orderable: false,
-            searchable: false,
-            width: '5%'
-        },
-        {
-            title: 'No',
-            data: 'DT_RowIndex',
-            name: 'DT_RowIndex',
-            orderable: false,
-            searchable: false,
-            width: '5%'
-        },
-        {
-            title: 'Team',
-            data: 'team_name',
-            name: 'teams.team_name'
-        },
-        {
-            title: 'Perusahaan',
-            data: 'company_name',
-            name: 'companies.company_name'
-        },
-        {
-            title: 'Judul Inovasi',
-            data: 'innovation_title',
-            name: 'papers.innovation_title'
-        },
-        {
-            title: 'Event yang diikuti',
-            data: 'registered_events',
-            name: 'registered_events',
-            orderable: false,
-            searchable: false
-        }
-    ],
-    responsive: true
-});
+        $(document).ready(function() {
+            // Constants
+            const DATATABLE_CONFIG = {
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('group-event.getAllPaper') }}",
+                columns: [
+                    {
+                        title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
+                        data: 'checkbox',
+                        name: 'checkbox',
+                        orderable: false,
+                        searchable: false,
+                        width: '5%'
+                    },
+                    {
+                        title: 'No',
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        width: '5%'
+                    },
+                    {
+                        title: 'Team',
+                        data: 'team_name',
+                        name: 'teams.team_name'
+                    },
+                    {
+                        title: 'Perusahaan',
+                        data: 'company_name',
+                        name: 'companies.company_name'
+                    },
+                    {
+                        title: 'Judul Inovasi',
+                        data: 'innovation_title',
+                        name: 'papers.innovation_title'
+                    },
+                    {
+                        title: 'Event yang diikuti',
+                        data: 'registered_events',
+                        name: 'registered_events',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                responsive: true
+            };
 
-    // Handle click on "Select all" control
-    $('#select-all').on('click', function(){
-        var rows = table.rows({ 'search': 'applied' }).nodes();
-        $('input[type="checkbox"]', rows).prop('checked', this.checked);
-        updateSelectedCount();
-    });
-
-    // Handle click on checkbox
-    $('#datatable-competition tbody').on('change', 'input[type="checkbox"]', function(){
-        if(!this.checked){
-            var el = $('#select-all').get(0);
-            if(el && el.checked && ('indeterminate' in el)){
-                el.indeterminate = true;
-            }
-        }
-        updateSelectedCount();
-    });
-
-    // Function to update selected count
-    function updateSelectedCount() {
-        var count = $('.paper_checkbox:checked').length;
-        $('#selected-count').text(count + ' team(s) selected');
-    }
-
-    // Handle assign to event
-  // Handle assign to event
- $('#assign-to-event').click(function(){
-            var selectedIds = [];
-            $('.paper_checkbox:checked').each(function(){
-                selectedIds.push($(this).val());
-            });
-
-            if(selectedIds.length === 0) {
-                Swal.fire({
+            const SWAL_CONFIG = {
+                warning: {
                     icon: 'warning',
                     title: 'Peringatan',
-                    text: 'Silakan pilih minimal satu team',
                     confirmButtonColor: '#3085d6'
-                });
-                return;
+                },
+                confirmation: {
+                    title: 'Konfirmasi',
+                    text: "Apakah Anda yakin ingin menugaskan team yang dipilih ke event ini?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Tugaskan!',
+                    cancelButtonText: 'Batal'
+                }
+            };
+
+            // Initialize DataTable
+            const table = $('#datatable-competition').DataTable(DATATABLE_CONFIG);
+
+            // Helper Functions
+            function updateSelectedCount() {
+                const count = $('.paper_checkbox:checked').length;
+                $('#selected-count').text(`${count} team(s) selected`);
             }
 
-            var eventId = $('#event-select').val();
-            if(!eventId) {
+            function showLoading(show = true) {
+                $('#loading-overlay')[show ? 'fadeIn' : 'fadeOut']();
+                $('#assign-to-event').prop('disabled', show);
+            }
+
+            function resetSelection() {
+                $('.paper_checkbox, #select-all').prop('checked', false);
+                updateSelectedCount();
+            }
+
+            function handleAssignmentResponse(response) {
+                const config = response.success ?
+                    { icon: 'success', title: 'Berhasil!', text: 'Tim berhasil ditugaskan ke event' } :
+                    { icon: 'error', title: 'Oops...', text: `Error: ${response.message}` };
+
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Peringatan',
-                    text: 'Silakan pilih event',
+                    ...config,
                     confirmButtonColor: '#3085d6'
                 });
-                return;
+
+                if (response.success) {
+                    table.ajax.reload();
+                }
             }
 
-            // Konfirmasi sebelum assign
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: "Apakah Anda yakin ingin menugaskan team yang dipilih ke event ini?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Tugaskan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Show loading overlay
-                    $('#loading-overlay').fadeIn();
+            function validateSelection() {
+                const selectedIds = $('.paper_checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
 
-                    // Disable the assign button
-                    $('#assign-to-event').prop('disabled', true);
+                const eventId = $('#event-select').val();
 
-                    $.ajax({
+                if (selectedIds.length === 0) {
+                    Swal.fire({
+                        ...SWAL_CONFIG.warning,
+                        text: 'Silakan pilih minimal satu team'
+                    });
+                    return null;
+                }
+
+                if (!eventId) {
+                    Swal.fire({
+                        ...SWAL_CONFIG.warning,
+                        text: 'Silakan pilih event'
+                    });
+                    return null;
+                }
+
+                return { selectedIds, eventId };
+            }
+
+            async function assignTeams(data) {
+                try {
+                    showLoading(true);
+                    const response = await $.ajax({
                         url: "{{ route('group-event.assignTeams') }}",
                         type: 'POST',
                         data: {
-                            team_ids: selectedIds,
-                            event_id: eventId,
+                            team_ids: data.selectedIds,
+                            event_id: data.eventId,
                             _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
-                            if(response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: 'Tim berhasil ditugaskan ke event',
-                                    confirmButtonColor: '#3085d6'
-                                });
-                                table.ajax.reload();
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Error: ' + response.message,
-                                    confirmButtonColor: '#3085d6'
-                                });
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Terjadi kesalahan saat menugaskan tim',
-                                confirmButtonColor: '#3085d6'
-                            });
-                        },
-                        complete: function() {
-                            // Hide loading overlay
-                            $('#loading-overlay').fadeOut();
-
-                            // Re-enable the assign button
-                            $('#assign-to-event').prop('disabled', false);
-
-                            // Clear checkboxes
-                            $('.paper_checkbox').prop('checked', false);
-                            $('#select-all').prop('checked', false);
-                            updateSelectedCount();
                         }
                     });
+                    handleAssignmentResponse(response);
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Terjadi kesalahan saat menugaskan tim',
+                        confirmButtonColor: '#3085d6'
+                    });
+                } finally {
+                    showLoading(false);
+                    resetSelection();
                 }
+            }
+
+            // Event Handlers
+            $('#select-all').on('click', function() {
+                const rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                updateSelectedCount();
+            });
+
+            $('#datatable-competition tbody').on('change', 'input[type="checkbox"]', function() {
+                if (!this.checked) {
+                    const el = $('#select-all').get(0);
+                    if (el?.checked) {
+                        el.indeterminate = true;
+                    }
+                }
+                updateSelectedCount();
+            });
+
+            $('#assign-to-event').on('click', function() {
+                const validationResult = validateSelection();
+                if (!validationResult) return;
+
+                Swal.fire(SWAL_CONFIG.confirmation).then((result) => {
+                    if (result.isConfirmed) {
+                        assignTeams(validationResult);
+                    }
+                });
             });
         });
-    });
-
-
-</script>
+    </script>
 @endpush

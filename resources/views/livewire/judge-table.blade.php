@@ -7,12 +7,14 @@
                         class="form-control form-control-sm" placeholder="Cari nama juri...">
                 </div>
 
-                <div class="col-md-3">
-                    @livewire('company-select')
+                <!-- Filter berdasarkan company code  -->
+                <div class="col-md-3 mb-1">
+                    @livewire('company-select', ['selectedCompany' => $company])
                 </div>
 
-                <div class="col-md-3">
-                    @livewire('event-select')
+                <!-- Filter berdasarkan Event -->
+                <div class="col-md-3 mb-1">
+                    @livewire('event-select', ['selectedEvent' => $event])
                 </div>
             </div>
         </div>
@@ -64,7 +66,8 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button class="dropdown-item" type="submit">
-                                                    <i class="fas fa-refresh dropdown-item-icon"></i>Update Status</button>
+                                                    <i class="fas fa-refresh dropdown-item-icon"></i>Update
+                                                    Status</button>
                                             </form>
                                         </li>
                                         <li><a class="dropdown-item"
@@ -107,7 +110,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger">Ya,
-                                                         Hapus</button>
+                                                        Hapus</button>
                                                 </form>
                                             </div>
                                         </div>

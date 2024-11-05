@@ -20,53 +20,11 @@ class EvidenceController extends Controller
     {
 
         $category = Category::find($id);
-        // Filter dan Pencarian
-        $search = $request->input('search');
-        $companyCode = $request->input('company');
-        $theme = $request->input('theme');
-        $event = $request->input('event');
 
         // mendapatkan semua data paper dengan kategori dan event yang status finish
-        $papers = \DB::table('teams')
-            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->join('papers', 'teams.id', '=', 'papers.team_id')
-            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->join('themes', 'teams.theme_id', '=', 'themes.id')
-            ->where('teams.category_id', $id)
-            ->where('events.status', 'finish')
-            ->select(
-                'papers.*',
-                'teams.team_name',
-                'teams.company_code',
-                'pvt_event_teams.*',
-                'events.event_name',
-                'events.year',
-                'themes.theme_name'
-            );
 
-        // Filter berdasarkan judul paper (pencarian)
-        if ($search) {
-            $papers = $papers->where('papers.innovation_title', 'ILIKE', '%' . $search . '%');
-        }
 
-        // Filter berdasarkan company code
-        if ($companyCode) {
-            $papers = $papers->where('teams.company_code', '=', $companyCode);
-        }
-
-        // Filter berdasarkan theme
-        if ($theme) {
-            $papers = $papers->where('teams.theme_id', '=', $theme);
-        }
-
-        // filter berdasarkan event
-        if ($event) {
-            $papers = $papers->where('pvt_event_teams.event_id', '=', $event);
-        }
-
-        $papers = $papers->paginate(10);
-
-        return view('auth.admin.dokumentasi.evidence.list-innovations', compact('papers', 'category'));
+        return view('auth.admin.dokumentasi.evidence.list-innovations', compact('category'));
     }
 
     function paper_detail($id)

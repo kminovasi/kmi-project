@@ -7,13 +7,17 @@ use Livewire\Component;
 
 class ThemeSelect extends Component
 {
-    public $themes = [];
 
-    public function mount () {
-        $this->themes = Theme::select('id', 'theme_name')->get();
+    public $selectedTheme = '';
+
+    public function updatedSelectedTheme()
+    {
+        $this->emit('themeSelected', $this->selectedTheme);
     }
+
     public function render()
     {
-        return view('livewire.theme-select');
+        $themes = Theme::select('id', 'theme_name')->get();
+        return view('livewire.theme-select', compact('themes'));
     }
 }

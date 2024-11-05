@@ -1,5 +1,5 @@
 <div>
-    <select name="theme" id="theme-select" class="form-select form-select-sm">
+    <select name="theme" id="theme-select" wire:model="selectedTheme" class="form-select form-select-sm">
         <option value="">-- Pilih Tema --</option>
         @foreach ($themes as $theme)
         <option value="{{ $theme->id }}" {{ request('theme')==$theme->theme_name ? 'selected' : '' }}>

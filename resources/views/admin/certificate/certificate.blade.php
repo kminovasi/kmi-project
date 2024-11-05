@@ -24,20 +24,11 @@
     </header>
 
     <div class="container-xl px-4 mt-4">
-        <div class="mb-3">
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                    {{ session('success') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if (session('errors'))
-                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                    {{ session('errors') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-        </div>
+
+        {{-- Menampilkan pesan sukses --}}
+        <x-toast-alert type="success" message="{{ session('success') }}" />
+        {{-- Menampilkan pesan error --}}
+        <x-toast-alert type="danger" message="{{ $errors->first('error') }}" />
 
         <div class="card">
             <div class="card-header d-flex justify-content-end">
@@ -156,3 +147,17 @@
 
 
 @endsection
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function(toastEl) {
+                return new bootstrap.Toast(toastEl, {
+                    autohide: true,
+                    delay: 3000
+                });
+            });
+            toastList.forEach(toast => toast.show());
+        });
+    </script>
+@endpush

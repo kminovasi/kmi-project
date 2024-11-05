@@ -35,6 +35,7 @@ use App\Models\Timeline;
 use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
+use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
 
 use function PHPUnit\Framework\returnSelf;
@@ -155,7 +156,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/get_data_history/{team_id}', [QueryController::class, 'get_data_history'])->name('get.data.history');
         Route::get('/coba', [QueryController::class, 'coba'])->name('coba');
 
-        Route::get('/get_competition', [QueryController::class, 'get_competition'])->name('get_competition');
         Route::get('/get_evidence', [QueryController::class, 'get_evidence'])->name('get_evidence');
         Route::get('/get_oda_assessment', [QueryController::class, 'get_oda_assessment'])->name('get_oda_assessment');
         Route::get('/get_pa_assessment', [QueryController::class, 'get_pa_assessment'])->name('get_pa_assessment');
@@ -353,6 +353,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/realisasiKaryawanChart', [ChartDashboardController::class, 'realisasiKaryawanChart'])->name('realisasiKaryawanChart');
         Route::get('/benefitTeamChart', [ChartDashboardController::class, 'benefitTeamChart'])->name('benefitTeamChart');
     });
+});
+
+Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(function () {
+    Route::get('getAllPaper', [GroupEventController::class, 'getAllPaper'])->name('getAllPaper')->middleware(['role:Superadmin,Admin']);
+    Route::post('assign-teams', [GroupEventController::class, 'assignTeamsToEvent'])->name('assignTeams')->middleware(['role:Superadmin,Admin']);
 });
 
 Route::get('/ck5', function () {

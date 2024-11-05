@@ -8,10 +8,18 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
+    {
+        Schema::table('teams', function (Blueprint $table) {
+            $table->dropColumn('status_lomba');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
     {
         Schema::table('teams', function (Blueprint $table) {
             $table->enum('status_lomba', [
@@ -22,18 +30,6 @@ return new class extends Migration
                 'group, national',
                 'group, international'
             ])->nullable();
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::table('teams', function (Blueprint $table) {
-            $table->dropColumn('status_lomba'); // Hapus kolom status_lomba jika ada
         });
     }
 };

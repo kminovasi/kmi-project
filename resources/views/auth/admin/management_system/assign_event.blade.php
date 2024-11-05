@@ -1,9 +1,7 @@
 @extends('layouts.app')
-@section('title', 'Assign Judge')
+@section('title', 'Assign Event')
 @push('css')
-    {{-- <link href="{{ asset('template/dist/css/styles.css') }}" rel="stylesheet" /> --}}
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
-    {{-- <link href="{{ asset('../css/register.css') }}" rel="stylesheet" /> --}}
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -98,6 +96,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-4">
+                                    <label class="small mb-1" for="type">Event Type</label>
+                                    <select class="form-select" id="type" name="type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="anak_perusahaan">Anak Perusahaan</option>
+                                        <option value="group">Group</option>
+                                        <option value="national">National</option>
+                                        <option value="international">International</option>
+                                    </select>
+                                </div>
 
                                 <div class="mb-4">
                                     <h6 class="small mb-1" for="data_description">Description</h6>
@@ -121,8 +129,6 @@
     </div>
 @endsection
 @push('js')
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
     </script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -153,7 +159,7 @@
                     inputEventName.value = 'SILOG INNOVATION AWARD';
                 } else {
                     let companyInitial = companyName.split(' ').map(word => word[0]).join(
-                    ''); // Ambil huruf pertama
+                        ''); // Ambil huruf pertama
                     inputEventName.value = `${companyInitial} INNOVATION AWARD`; // Setel nama event
                 }
             }

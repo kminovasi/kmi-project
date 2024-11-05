@@ -4,151 +4,112 @@ namespace App\Http\Controllers;
 
 use App\Mail\EventAssignmentNotification;
 use App\Models\Paper;
-use App\Models\Team;
 use App\Models\Event;
 use App\Models\PvtEventTeam;
-use Auth;
 use Illuminate\Http\Request;
 use DataTables;
-use Illuminate\Support\Facades\Mail as FacadesMail;
-use Log;
+use Illuminate\Support\Facades\{Auth, Mail, Log};
 
 class GroupEventController extends Controller
 {
+    private const VALID_STATUSES = [
+        'Presentation',
+        'tidak lolos Presentation',
+        'Lolos Presentation',
+        'Tidak lolos Caucus',
+        'Presentation BOD',
+        'Juara'
+    ];
+
+    private const STATUS_CLASSES = [
+        'Presentation' => 'bg-primary',
+        'tidak lolos Presentation' => 'bg-danger',
+        'Lolos Presentation' => 'bg-success',
+        'Tidak lolos Caucus' => 'bg-danger',
+        'Caucus' => 'bg-info',
+        'Presentation BOD' => 'bg-warning',
+        'Juara' => 'bg-success'
+    ];
+
     public function getAllPaper(Request $request)
     {
-        $superadmin = Auth::user()->role === "Superadmin";
-        $admin = Auth::user()->role === "Admin";
-        $company_code = Auth::user()->company_code;
+        if (!$request->ajax()) {
+            return;
+        }
 
-        if ($request->ajax()) {
-            $validStatuses = [
-                'Presentation',
-                'tidak lolos Presentation',
-                'Lolos Presentation',
-                'Tidak lolos Caucus',
-                'Presentation BOD',
-                'Juara'
-            ];
+        $query = $this->buildPaperQuery();
+        return $this->generateDataTable($query);
+    }
 
-            $papers = Paper::with(['team' => function ($query) {
-                $query->select('id', 'team_name', 'company_code');
-            }, 'team.events'])
-                ->join('teams', 'papers.team_id', '=', 'teams.id')
-                ->join('companies', 'teams.company_code', '=', 'companies.company_code')
-                ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                ->whereIn('pvt_event_teams.status', $validStatuses);
+    private function buildPaperQuery()
+    {
+        $query = Paper::with(['team' => function ($query) {
+            $query->select('id', 'team_name', 'company_code');
+        }, 'team.events'])
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->whereIn('pvt_event_teams.status', self::VALID_STATUSES);
 
-            // Tambahkan filter berdasarkan company_code jika user adalah Admin
-            if ($admin) {
-                $papers->where('teams.company_code', $company_code);
-            }
+        if (Auth::user()->role === 'Admin') {
+            $query->where('teams.company_code', Auth::user()->company_code);
+        }
 
-            $papers = $papers->select([
+        return $query->select([
+            'papers.id',
+            'teams.id as team_id',
+            'teams.team_name',
+            'papers.innovation_title',
+            'papers.created_at',
+            'companies.company_name'
+        ])
+            ->groupBy(
                 'papers.id',
-                'teams.id as team_id',
+                'teams.id',
                 'teams.team_name',
                 'papers.innovation_title',
                 'papers.created_at',
                 'companies.company_name'
-            ])
-                ->groupBy(
-                    'papers.id',
-                    'teams.id',
-                    'teams.team_name',
-                    'papers.innovation_title',
-                    'papers.created_at',
-                    'companies.company_name'
-                )
-                ->orderBy('papers.created_at', 'desc');
-
-            return DataTables::of($papers)
-                ->addIndexColumn()
-                ->addColumn('checkbox', function ($row) {
-                    return '<input type="checkbox" name="paper_checkbox" class="paper_checkbox" value="' . $row->id . '">';
-                })
-                ->addColumn('registered_events', function ($row) {
-                    $eventsList = $row->team->events->map(function ($event) {
-                        $statusClass = $this->getStatusClass($event->pivot->status);
-                        return sprintf(
-                            '<span class="badge %s">%s (%s)</span>',
-                            $statusClass,
-                            $event->event_name,
-                            $event->pivot->status
-                        );
-                    })->implode(' ');
-
-                    return $eventsList ?: '<span class="badge bg-secondary">No events</span>';
-                })
-                ->rawColumns(['checkbox', 'registered_events'])
-                ->make(true);
-        }
+            )
+            ->orderBy('papers.created_at', 'desc');
     }
-    private function getStatusClass($status)
+
+    private function generateDataTable($query)
     {
-        switch ($status) {
-            case 'Presentation':
-                return 'bg-primary';
-            case 'tidak lolos Presentation':
-                return 'bg-danger';
-            case 'Lolos Presentation':
-                return 'bg-success';
-            case 'Tidak lolos Caucus':
-                return 'bg-danger';
-            case 'Caucus':
-                return 'bg-info';
-            case 'Presentation BOD':
-                return 'bg-warning';
-            case 'Juara':
-                return 'bg-success';
-            default:
-                return 'bg-secondary';
-        }
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn(
+                'checkbox',
+                fn($row) =>
+                '<input type="checkbox" name="paper_checkbox" class="paper_checkbox" value="' . $row->id . '">'
+            )
+            ->addColumn('registered_events', function ($row) {
+                $events = $row->team->events->map(function ($event) {
+                    $statusClass = self::STATUS_CLASSES[$event->pivot->status] ?? 'bg-secondary';
+                    return sprintf(
+                        '<span class="badge %s">%s (%s)</span>',
+                        $statusClass,
+                        $event->event_name,
+                        $event->pivot->status
+                    );
+                })->implode(' ');
+
+                return $events ?: '<span class="badge bg-secondary">No events</span>';
+            })
+            ->rawColumns(['checkbox', 'registered_events'])
+            ->make(true);
     }
+
     public function assignTeamsToEvent(Request $request)
     {
         try {
-            $paperIds = $request->team_ids;
-            $eventId = $request->event_id;
-            $event = Event::findOrFail($eventId);
+            $event = Event::findOrFail($request->event_id);
+            $papers = Paper::with(['team.pvtMembers.user'])
+                ->whereIn('id', $request->team_ids)
+                ->get();
 
-            foreach ($paperIds as $paperId) {
-                $paper = Paper::with(['team.pvtMembers.user'])->find($paperId);
-
-                if (!$paper) {
-                    continue;
-                }
-
-                $teamId = $paper->team_id;
-
-                $existingEntry = PvtEventTeam::where('team_id', $teamId)
-                    ->where('event_id', $eventId)
-                    ->first();
-
-                if (!$existingEntry) {
-                    PvtEventTeam::create([
-                        'team_id' => $teamId,
-                        'event_id' => $eventId,
-                    ]);
-
-                    // Kirim email ke semua anggota tim
-                    foreach ($paper->team->pvtMembers as $member) {
-                        // Pastikan user memiliki email
-                        if ($member->user && $member->user->email) {
-                            try {
-                                FacadesMail::to($member->user->email)->send(
-                                    new EventAssignmentNotification(
-                                        $paper->team->team_name,
-                                        $event->event_name,
-                                        $member->user->name
-                                    )
-                                );
-                            } catch (\Exception $e) {
-                                Log::error('Failed to send email to ' . $member->user->email . ': ' . $e->getMessage());
-                            }
-                        }
-                    }
-                }
+            foreach ($papers as $paper) {
+                $this->processTeamAssignment($paper, $event);
             }
 
             return response()->json([
@@ -161,6 +122,46 @@ class GroupEventController extends Controller
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function processTeamAssignment($paper, $event)
+    {
+        $existingEntry = PvtEventTeam::where([
+            'team_id' => $paper->team_id,
+            'event_id' => $event->id
+        ])->exists();
+
+        if ($existingEntry) {
+            return;
+        }
+
+        PvtEventTeam::create([
+            'team_id' => $paper->team_id,
+            'event_id' => $event->id,
+        ]);
+
+        $this->sendNotifications($paper->team, $event);
+    }
+
+    private function sendNotifications($team, $event)
+    {
+        foreach ($team->pvtMembers as $member) {
+            if (!$member->user?->email) {
+                continue;
+            }
+
+            try {
+                Mail::to($member->user->email)->send(
+                    new EventAssignmentNotification(
+                        $team->team_name,
+                        $event->event_name,
+                        $member->user->name
+                    )
+                );
+            } catch (\Exception $e) {
+                Log::error("Failed to send email to {$member->user->email}: {$e->getMessage()}");
+            }
         }
     }
 }

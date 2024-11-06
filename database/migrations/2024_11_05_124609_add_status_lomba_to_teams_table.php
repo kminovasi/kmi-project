@@ -21,7 +21,7 @@ return new class extends Migration
                 'international',
                 'group, national',
                 'group, international'
-            ])->nullable();
+            ])->default('AP');
         });
     }
 

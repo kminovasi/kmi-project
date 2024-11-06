@@ -138,7 +138,7 @@
                         <div class="mb-3">
                             <label for="upType">Tipe Event</label>
                             <select name="type" id="upType" class="form-select">
-                                <option value="anak_perusahaan">Anak Perusahaan</option>
+                                <option value="AP">Anak Perusahaan</option>
                                 <option value="group">Group</option>
                                 <option value="national">National</option>
                                 <option value="international">International</option>
@@ -231,6 +231,7 @@
                 {"data": "date_start", "title": "Date Start"},
                 {"data": "date_end", "title": "Date End"},
                 {"data": "status", "title": "Status"},
+                {"data": "type", "title": "Type"},
                 {"data": "action", "title": "Action"},
             ],
 

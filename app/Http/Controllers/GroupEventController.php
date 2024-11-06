@@ -6,6 +6,7 @@ use App\Mail\EventAssignmentNotification;
 use App\Models\Paper;
 use App\Models\Event;
 use App\Models\PvtEventTeam;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\{Auth, Mail, Log};
@@ -139,6 +140,10 @@ class GroupEventController extends Controller
         PvtEventTeam::create([
             'team_id' => $paper->team_id,
             'event_id' => $event->id,
+        ]);
+        $updateTeam = Team::findOrFail($paper->team_id);
+        $updateTeam->update([
+            'status_lomba' => 'group'
         ]);
 
         $this->sendNotifications($paper->team, $event);

@@ -141,4 +141,9 @@ class Paper extends Model
     {
         return $this->belongsTo(Team::class);
     }
+
+    public function customBenefits()
+    {
+        return $this->hasMany(PvtCustomBenefit::class);
+    }
 }

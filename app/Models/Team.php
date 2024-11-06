@@ -15,6 +15,7 @@ class Team extends Model
         'company_code',
         'category_id',
         'theme_id',
+        'status_lomba',
         'phone_number'
     ];
 

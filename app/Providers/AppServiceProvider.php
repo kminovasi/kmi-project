@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Paper;
 use App\Observers\PaperObserver;
+use App\Services\PaperFileUploadService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(PaperFileUploadService::class, function ($app) {
+            return new PaperFileUploadService();
+        });
     }
 
     /**

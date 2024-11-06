@@ -362,6 +362,13 @@ Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(fu
 });
 Route::middleware('auth')->prefix('event')->name('event-team.')->group(function () {
     Route::get('/', [EventTeamController::class, 'index'])->name('index');
+    Route::get('getEvents', [EventTeamController::class, 'getEvents'])->name('getEvents');
+    Route::get('/{id}', [EventTeamController::class, 'show'])->name('show');
+    Route::get('/build-paper-query-by-event/{id}', [EventTeamController::class, 'buildPaperQueryByEvent'])->name('buildPaperQueryByEvent');
+    Route::get('/paper/edit/{id}/{eventId}', [EventTeamController::class, 'editPaper'])->name('paper.edit');
+    Route::put('/paper/update/{id}/{eventId}', [EventTeamController::class, 'updatePaper'])->name('paper.update');
+    Route::get('/benefit/edit/{id}/{eventId}', [EventTeamController::class, 'editBenefit'])->name('benefit.edit');
+    Route::put('/benefit/edit/{id}/{eventId}', [EventTeamController::class, 'updateBenefit'])->name('benefit.update');
 });
 
 

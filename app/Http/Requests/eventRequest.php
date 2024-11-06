@@ -29,7 +29,7 @@ class eventRequest extends FormRequest
             'end_date' => 'required',
             'year' => 'required',
             'company_code' => 'required',
-            'type' => 'required|in:anak_perusahaan,group,national,international',
+            'type' => 'required|in:AP,group,national,international',
         ];
     }
 }

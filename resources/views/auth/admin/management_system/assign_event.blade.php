@@ -100,7 +100,7 @@
                                     <label class="small mb-1" for="type">Event Type</label>
                                     <select class="form-select" id="type" name="type" required>
                                         <option value="">Select Type</option>
-                                        <option value="anak_perusahaan">Anak Perusahaan</option>
+                                        <option value="AP">Anak Perusahaan</option>
                                         <option value="group">Group</option>
                                         <option value="national">National</option>
                                         <option value="international">International</option>

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('events', function (Blueprint $table) {
             $table->enum('type', [
-                'anak_perusahaan',
+                'AP',
                 'group',
                 'national',
                 'international'

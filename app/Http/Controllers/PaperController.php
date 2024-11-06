@@ -730,7 +730,6 @@ class PaperController extends Controller
 
             if ($stage == 'full') {
                 $filePath = storage_path('app/public/' . mb_substr(Paper::where('id', '=', $id)->pluck('full_paper')[0], 3));
-
                 if (!file_exists($filePath)) {
                     throw new Exception("Error, file tidak ada");
                 }
@@ -756,7 +755,6 @@ class PaperController extends Controller
 
                 // $tcpdf->AddPage();
                 $fpdi->AddPage();
-
                 if ($column[0] == 'w') {
                     // $tcpdf->WriteHTML(mb_substr($column, 3));
                     // return response($tcpdf->Output(), 200)->header('Content-Type', 'application/pdf');
@@ -1392,7 +1390,7 @@ class PaperController extends Controller
 
     public function event()
     {
-        $data_event = Event::all();
+        $data_event = Event::whereIn('type', ['group', 'national', 'international'])->get();
         $currentYear = Carbon::now()->year;
         $years = [];
         for ($i = $currentYear; $i <= $currentYear + 2; $i++) {

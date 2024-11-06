@@ -2027,7 +2027,6 @@ class QueryController extends Controller
 
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                Log::debug($data_row);
                 $userCompanyName = Auth::user()->company_name;
                 $getCompanyName = Company::where('company_code', $data_row->company_code)->select('company_name')->first();
                 $isAdmin = Auth::user()->role === "Admin";

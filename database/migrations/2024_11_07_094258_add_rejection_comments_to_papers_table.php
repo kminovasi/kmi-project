@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('pvt_assesment_team_judges', function (Blueprint $table) {
-            $table->enum('stage', ['on desk', 'presentation'])->default('on desk');
+        Schema::table('papers', function (Blueprint $table) {
+            $table->text('rejection_comments')->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('pvt_assesment_team_judges', function (Blueprint $table) {
+        Schema::table('papers', function (Blueprint $table) {
             //
         });
     }

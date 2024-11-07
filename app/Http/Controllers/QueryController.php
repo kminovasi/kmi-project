@@ -1107,7 +1107,8 @@ class QueryController extends Controller
                 ->whereIn('categories.id', $categoryid)
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_assessment_events.status_point', 'active')
-                ->where('pvt_assesment_team_judges.stage', 'on desk');
+                ->where('pvt_assesment_team_judges.stage', 'on desk')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
             if (auth()->user()->role == "Juri") {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')

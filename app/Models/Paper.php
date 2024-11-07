@@ -37,8 +37,9 @@ class Paper extends Model
         'proof_idea',
         'status_inovasi',
         'potensi_replikasi',
-        'status'
-
+        'status',
+        'status_event',
+        'rejection_comments'
     ];
 
     public function updateAndHistory(array $datas = [], $activity = null)

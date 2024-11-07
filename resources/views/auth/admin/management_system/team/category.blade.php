@@ -139,23 +139,25 @@
     </div>
 
     {{-- modal untuk update category --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
-        aria-hidden="true">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteCategory" method="POST">
                 @csrf
-                @method ('DELETE')
-                <div class="modal-content">
-                    <div class="modal-header">
+                @method('DELETE')
+                <div class="modal-content rounded-4 shadow-lg">
+                    <div class="modal-header border-0">
                         <h5 class="modal-title" id="deleteModalTitle">Konfirmasi Hapus Data</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Apakah yakin data ini akan dihapus ?
+                        <div class="text-center">
+                            <i class="fa fa-exclamation-triangle text-warning" style="font-size: 40px;"></i>
+                            <p class="mt-3">Apakah Anda yakin ingin menghapus data ini?</p>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Close</button> --}}
-                        <button class="btn btn-danger" type="submit" style="font-weight: 600;">Hapus</button>
+                    <div class="modal-footer border-0 justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger" style="font-weight: 600;">Hapus</button>
                     </div>
                 </div>
             </form>

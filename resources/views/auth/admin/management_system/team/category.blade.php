@@ -6,28 +6,14 @@
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
     <style type="text/css">
-        .active-link {
-            color: #ffc004;
-            background-color: #e81500;
-        }
-
-        #stickyNav .nav-item {
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
         .active-link-nav {
-            background-color: rgb(232, 21, 0, 0.5);
+            background-color: rgba(13, 110, 253, 0.75);
+            /* Warna biru Bootstrap bg-primary dengan opacity 75% */
         }
 
         .active-link-nav a {
             color: white;
-        }
-
-        .display thead th,
-        .display tbody td {
-            border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+            /* Agar teks tetap terlihat jelas */
         }
     </style>
 @endpush
@@ -105,8 +91,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-primary" type="submit">Simpan</button>
+                        {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button> --}}
+                        <button class="btn btn-primary" type="submit"style="font-weight: 600;">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -119,7 +105,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="uploadDocumentTitle">Udate Kategori</h5>
+                    <h5 class="modal-title" id="uploadDocumentTitle">Update Kategori</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateFormCategory" method="POST" enctype="multipart/form-data">
@@ -144,8 +130,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button> --}}
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -168,8 +154,8 @@
                         Apakah yakin data ini akan dihapus ?
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-danger" type="submit">Delete</button>
+                        {{-- <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Close</button> --}}
+                        <button class="btn btn-danger" type="submit" style="font-weight: 600;">Hapus</button>
                     </div>
                 </div>
             </form>

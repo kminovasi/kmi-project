@@ -369,6 +369,8 @@ Route::middleware('auth')->prefix('event')->name('event-team.')->group(function 
     Route::put('/paper/update/{id}/{eventId}', [EventTeamController::class, 'updatePaper'])->name('paper.update');
     Route::get('/benefit/edit/{id}/{eventId}', [EventTeamController::class, 'editBenefit'])->name('benefit.edit');
     Route::put('/benefit/edit/{id}/{eventId}', [EventTeamController::class, 'updateBenefit'])->name('benefit.update');
+    Route::get('/check-paper/{id}/{eventId}', [EventTeamController::class, 'showCheckPaper'])->name('showCheckPaper')->middleware(['role:Superadmin']);
+    Route::put('/check-paper/{id}/{eventId}', [EventTeamController::class, 'updatePaperStatus'])->name('updatePaperStatus')->middleware(['role:Superadmin']);
 });
 
 

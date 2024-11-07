@@ -56,7 +56,7 @@
 
     <div class="container-xl px-4 mt-4">
         <div class="card">
-            <div class="card-header">Events</div>
+            <div class="card-header text-white" style="background-color: #e94838;">Events</div>
             <div class="card-body">
                 <form id="filterForm" class="mb-3">
                     <div class="row">

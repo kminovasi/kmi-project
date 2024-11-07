@@ -128,6 +128,7 @@ class GroupEventController extends Controller
 
     private function processTeamAssignment($paper, $event)
     {
+        $pap = Paper::findOrFail($paper->id);
         $existingEntry = PvtEventTeam::where([
             'team_id' => $paper->team_id,
             'event_id' => $event->id
@@ -136,11 +137,15 @@ class GroupEventController extends Controller
         if ($existingEntry) {
             return;
         }
+        $pap->update([
+            'status_event' => 'reject_group'
+        ]);
 
         PvtEventTeam::create([
             'team_id' => $paper->team_id,
             'event_id' => $event->id,
         ]);
+
         $updateTeam = Team::findOrFail($paper->team_id);
         $updateTeam->update([
             'status_lomba' => 'group'

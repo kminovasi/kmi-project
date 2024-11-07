@@ -100,6 +100,7 @@ class EventTeamController extends Controller
                     'team_name' => $item->team->team_name,
                     'innovation_title' => $item->team->paper->innovation_title ?? '-',
                     'company_name' => $item->team->company->company_name ?? '-',
+                    'status_lolos' => $item->team->paper->status_event === 'accept_group',
                     'has_full_paper' => $hasFullPaper,
                     'view_url' => route('event-team.show', $item->team_id),
                     'edit_url' => route('event-team.paper.edit', ['id' => $item->team->paper->id ?? 0, 'eventId' => $id]),
@@ -160,9 +161,8 @@ class EventTeamController extends Controller
             ));
 
             DB::commit();
-
-            return redirect()->route('event-team.editPaper', ['id' => $paper->id, 'eventId', $eventId])
-                ->with('success', 'Paper updated successfully');
+            Log::info('Redirecting back with success message.');
+            return redirect()->back()->with('success', 'Paper updated successfully');
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error updating paper: ' . $e->getMessage());

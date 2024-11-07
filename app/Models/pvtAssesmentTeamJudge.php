@@ -11,10 +11,10 @@ class pvtAssesmentTeamJudge extends Model
     protected $table = 'pvt_assesment_team_judges';
     protected $primaryKey = 'id';
     protected $fillable = [
-                            'judge_id',
-                            'score',
-                            'event_team_id',
-                            'assessment_event_id',
-                            'stage'
-                        ];
+        'judge_id',
+        'score',
+        'event_team_id',
+        'assessment_event_id',
+        'stage'
+    ];
 }

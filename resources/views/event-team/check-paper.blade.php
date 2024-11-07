@@ -1,8 +1,64 @@
 @extends('layouts.app')
 @section('title', 'Check Paper')
-
+@push('css')
+    <style>
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Background gelap dengan transparansi */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            /* Warna teks putih untuk kontras */
+            font-size: 1.5rem;
+            /* Ukuran font lebih besar untuk visibilitas */
+        }
+    </style>
+@endpush
 @section('content')
+    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+        <div class="container-xl px-4">
+            <div class="page-header-content">
+                <div class="row align-items-center justify-content-between pt-3">
+                    <div class="col-auto mb-3">
+                        <h1 class="page-header-title">
+                            <div class="page-header-icon"><i data-feather="edit"></i></div>
+                            Paper Review
+                        </h1>
+                    </div>
+                    <div class="col-12 col-xl-auto mb-3">
+                        <a class="btn btn-sm btn-light text-primary" href="{{ route('event-team.show', $eventId) }}">
+                            <i class="me-1" data-feather="arrow-left"></i>
+                            Kembali
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
     <div class="container-fluid py-4">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -166,6 +222,10 @@
                                     </div>
                                     <button type="submit" id="updateStatusBtn" class="btn btn-primary">Update
                                         Status</button>
+                                    <div class="spinner-border text-primary" id="loadingSpinner" style="display: none;"
+                                        role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -201,6 +261,14 @@
             </div>
         </div>
     </div>
+    <div id="loadingOverlay" style="display: none;">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-white">Loading...</p>
+        </div>
+    </div>
     @push('js')
         <script>
             $(document).ready(function() {
@@ -232,6 +300,7 @@
                 });
 
                 $('#updateStatusForm').on('submit', function(e) {
+                    $('#loadingOverlay').show();
                     if (checkStatus()) {
                         e.preventDefault();
                         $('#reject_status_event').val($('#statusSelect').val());
@@ -245,11 +314,17 @@
                         url: $(this).attr('action'),
                         method: 'POST',
                         data: $(this).serialize(),
+                        beforeSend: function() {
+                            $('#loadingOverlay').show(); // Tampilkan overlay sebelum mengirim
+                        },
                         success: function(response) {
                             window.location.reload();
                         },
                         error: function(xhr) {
                             alert('Error updating status');
+                        },
+                        complete: function() {
+                            $('#loadingOverlay').hide(); // Sembunyikan overlay setelah selesai
                         }
                     });
                 });

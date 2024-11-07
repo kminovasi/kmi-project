@@ -1267,7 +1267,8 @@ class QueryController extends Controller
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', '!=', 'tidak lolos On Desk')
                 ->where('pvt_assessment_events.status_point', 'active')
-                ->where('pvt_assesment_team_judges.stage', 'presentation');
+                ->where('pvt_assesment_team_judges.stage', 'presentation')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
             if (auth()->user()->role == "Juri") {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
@@ -2204,7 +2205,8 @@ class QueryController extends Controller
                 ->where('pvt_event_teams.status', '!=', 'tidak lolos Presentation')
                 ->where('pvt_event_teams.status', '!=', 'tidak lolos On Desk')
                 ->where('pvt_assessment_events.status_point', 'active')
-                ->where('pvt_assesment_team_judges.stage', 'caucus');
+                ->where('pvt_assesment_team_judges.stage', 'caucus')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
             if (auth()->user()->role == "Juri") {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
@@ -2399,6 +2401,7 @@ class QueryController extends Controller
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->whereIn('pvt_event_teams.status', ['Presentation BOD', 'Juara'])
                 ->where('pvt_assesment_team_judges.stage', 'caucus')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
                 ->whereIn('teams.category_id', $categoryid)
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
@@ -2562,6 +2565,7 @@ class QueryController extends Controller
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 

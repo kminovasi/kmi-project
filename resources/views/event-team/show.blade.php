@@ -33,6 +33,7 @@
                             <th>Innovation Title</th>
                             <th>Company Name</th>
                             @if (Auth::user()->role === 'Superadmin')
+                                <th>Status Lolos</th>
                                 <th>Status Full Paper</th>
                             @endif
                             <th>Action</th>
@@ -150,6 +151,16 @@
                 ];
 
                 // Add status column if user is superadmin
+                @if (Auth::user()->role === 'Superadmin')
+                    columns.push({
+                        data: 'status_lolos',
+                        render: function(data, type, row) {
+                            return data ?
+                                '<span class="badge bg-success">Masuk Grup</span>' :
+                                '<span class="badge bg-danger">Reject</span>';
+                        }
+                    });
+                @endif
                 @if (Auth::user()->role === 'Superadmin')
                     columns.push({
                         data: 'has_full_paper',

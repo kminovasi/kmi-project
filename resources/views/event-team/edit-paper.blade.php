@@ -24,6 +24,12 @@
     </header>
 
     <div class="container-xl px-4 mt-4">
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -31,11 +37,6 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
-        @endif
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
             </div>
         @endif
 
@@ -62,7 +63,7 @@
                             <div class="mb-3">
                                 <label class="small mb-1" for="full_paper">Full Paper</label>
                                 <input class="form-control @error('full_paper') is-invalid @enderror" id="full_paper"
-                                    name="full_paper" type="file">
+                                    name="full_paper" type="file" accept="application/pdf">
                                 @if ($paper->full_paper)
                                     <small class="text-muted">Current file: {{ $paper->full_paper }}</small>
                                 @endif
@@ -110,7 +111,7 @@
                             <div class="mb-3">
                                 <label class="small mb-1" for="innovation_photo">Innovation Photo</label>
                                 <input class="form-control @error('innovation_photo') is-invalid @enderror"
-                                    id="innovation_photo" name="innovation_photo" type="file">
+                                    id="innovation_photo" name="innovation_photo" type="file" accept="image/*">
                                 @if ($paper->innovation_photo)
                                     <small class="text-muted">Current file: {{ $paper->innovation_photo }}</small>
                                 @endif
@@ -122,7 +123,7 @@
                             <div class="mb-3">
                                 <label class="small mb-1" for="proof_idea">Proof of Idea</label>
                                 <input class="form-control @error('proof_idea') is-invalid @enderror" id="proof_idea"
-                                    name="proof_idea" type="file">
+                                    name="proof_idea" type="file" accept="image/*">
                                 @if ($paper->proof_idea)
                                     <small class="text-muted">Current file: {{ $paper->proof_idea }}</small>
                                 @endif

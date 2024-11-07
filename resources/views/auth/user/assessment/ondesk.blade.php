@@ -313,7 +313,6 @@
             },
             async: false,
             success: function (data) {
-                console.log(data.data);
                 if(data.data.length){
                     let row_column = {};
                     row_column['data'] = "DT_RowIndex"
@@ -345,7 +344,6 @@
                 console.error('Gagal mengambil kolom: ' + error);
             }
         });
-        console.log(newColumn);
         return newColumn
     }
 

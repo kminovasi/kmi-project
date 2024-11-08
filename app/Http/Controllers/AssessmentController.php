@@ -387,7 +387,7 @@ class AssessmentController extends Controller
             $totalScore = 0;
             foreach ($request->score as $id => $score) {
                 pvtAssesmentTeamJudge::where('id', $id)
-                ->update(['score' => $score,]);
+                    ->update(['score' => $score,]);
                 $totalScore += $score;
             }
             $previousFullUrl = url()->previous();
@@ -395,15 +395,15 @@ class AssessmentController extends Controller
             $value = $segments[4];
 
             $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
-            if($value === "assessment-ondesk-value"){
+            if ($value === "assessment-ondesk-value") {
                 $pvtEventTeam->update([
                     'total_score_on_desk' => $this->calculateAverageTotalScore($event_team_id, "on desk")
                 ]);
-            }elseif($value === "assessment-presentation-value"){
+            } elseif ($value === "assessment-presentation-value") {
                 $pvtEventTeam->update([
                     'total_score_presentation' => $this->calculateAverageTotalScore($event_team_id, "presentation")
                 ]);
-            }elseif($value === "assessment-caucus-value"){
+            } elseif ($value === "assessment-caucus-value") {
                 $pvtEventTeam->update([
                     'total_score_caucus' => $this->calculateAverageTotalScore($event_team_id, "presentation")
                 ]);
@@ -411,7 +411,7 @@ class AssessmentController extends Controller
 
 
             NewSofi::where('event_team_id', $event_team_id)
-            ->update([
+                ->update([
                     'strength' => $request->sofi_strength,
                     'opportunity_for_improvement' => $request->sofi_opportunity,
                     'recommend_category' => $request->recommendation,
@@ -1272,9 +1272,9 @@ class AssessmentController extends Controller
                 dd($request->pvt_event_team_id);
                 $pvtEventTeamItems = PvtEventTeam::findOrFail('id', $request->pvt_event_team_id);
                 $pvtEventTeamItems->update([
-                        'status' => 'Finish',
-                        'final_score' => $pvtEventTeamItems
-                    ]);
+                    'status' => 'Finish',
+                    'final_score' => $pvtEventTeamItems
+                ]);
                 return redirect()->back()->with('success', 'update successfully');
             } else {
                 return redirect()->back()->withErrors('Error: tidak ada tim yang dipilih');
@@ -1364,7 +1364,7 @@ class AssessmentController extends Controller
     public function addBODvalue(Request $request)
     {
         $summary = SummaryExecutive::where('pvt_event_teams_id', $request->pvt_event_team_id[0])->get();
-        if(count($summary) !== 0){
+        if (count($summary) !== 0) {
             try {
                 DB::beginTransaction();
                 if (isset($request->event_id)) {
@@ -1475,14 +1475,14 @@ class AssessmentController extends Controller
                         ->pluck('id')
                         ->toArray();
 
-                        $event_team_item = PvtEventTeam::findOrFail($request->pvt_event_team_id);
+                    $event_team_item = PvtEventTeam::findOrFail($request->pvt_event_team_id);
 
-                        $finalScore = ($event_team_item->total_score_on_desk + $event_team_item->total_score_caucus) / 2;
-                        Log::debug($finalScore);
+                    $finalScore = ($event_team_item->total_score_on_desk + $event_team_item->total_score_caucus) / 2;
+                    Log::debug($finalScore);
 
-                        $event_team_item->update([
-                            'final_score' => $finalScore
-                        ]);
+                    $event_team_item->update([
+                        'final_score' => $finalScore
+                    ]);
 
                     DB::commit();
                     return redirect()->back()->with('success', 'update successfully');
@@ -1524,10 +1524,9 @@ class AssessmentController extends Controller
                 Log::debug($e);
                 return redirect()->back()->withErrors('Error: ' . $e->getMessage());
             }
-        }else{
+        } else {
             return redirect()->back()->withErrors('Error : ' . "Silahkan mengisi summary terlebih dahulu");
         }
-
     }
     public function presentasiBOD(Request $request)
     {
@@ -1629,8 +1628,5 @@ class AssessmentController extends Controller
         $totalAverageScore = array_sum($averageScores);
 
         return $totalAverageScore;
-
     }
-
-
 }

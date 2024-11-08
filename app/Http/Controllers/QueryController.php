@@ -1452,6 +1452,7 @@ class QueryController extends Controller
                     ->where('pvt_assessment_events.status_point', 'active')
                     ->where('pvt_event_teams.id', $request->filterEventTeamId)
                     ->where('pvt_assesment_team_judges.stage', 'on desk')
+                    ->where('pvt_assessment_events.stage', 'on desk')
                     ->groupBy('pvt_assessment_events.id')
                     ->select($arr_select_case)
                     ->orderByRaw("CASE
@@ -1471,6 +1472,7 @@ class QueryController extends Controller
                     ->where('pvt_assessment_events.status_point', 'active')
                     ->where('pvt_event_teams.id', $request->filterEventTeamId)
                     ->where('pvt_assesment_team_judges.stage', 'on desk')
+                    ->where('pvt_assessment_events.stage', 'on desk')
                     ->groupBy('pvt_assessment_events.id')
                     ->select($arr_select_case)
                     ->orderByRaw("CASE
@@ -1481,6 +1483,8 @@ class QueryController extends Controller
                                             ELSE 5
                                         END, pvt_assessment_events.id ASC");
             }
+
+            Log::debug($data_row->get());
             // dd($data_row->get());
             $dataTable = DataTables::of($data_row->get());
 
@@ -1488,12 +1492,12 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Detail point';
             $dataTable->addColumn('Detail point', function ($data_row) {
-                return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
+                return '<textarea class="form-control mb-3"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly> ' . $data_row['score_max(removed)'] . ' </a>
+                return '<a class="d-flex justify-content-center" id="' . $data_row['assessment_events_id(removed)'] . '" readonly > ' . $data_row['score_max(removed)'] . ' </a>
                         <br>
                         <br>';
             });

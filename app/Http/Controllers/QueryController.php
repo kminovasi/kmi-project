@@ -1156,7 +1156,7 @@ class QueryController extends Controller
                     ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
                     ->get()
                     ->toArray();
-                return '<input class="form-control" style="width: 150px; type="text"  name="total_score_event[]" value="' . $data_total[0]['total'] . '" readonly>';
+                return $data_total[0]['total'];
             });
 
             $rawColumns[] = 'fix';
@@ -1309,7 +1309,7 @@ class QueryController extends Controller
                 // Cek apakah data_total tidak null
                 if ($data_total) {
                     // Kembalikan input dengan nilai dari total_score_presentation
-                    return '<input class="form-control" style="width: 150px;" type="text" name="total_score_event[]" value="' . $data_total->total_score_presentation . '" readonly>';
+                    return $data_total->total_score_presentation;
                 }
 
                 // Jika tidak ada, kembalikan input kosong
@@ -2251,11 +2251,11 @@ class QueryController extends Controller
                 // Cek apakah data_total tidak null
                 if ($data_total) {
                     // Kembalikan input dengan nilai dari total_score_caucus
-                    return '<input class="form-control" style="width: 150px;" type="text" name="total_score_event[]" value="' . $data_total->total_score_caucus . '" readonly>';
+                    return $data_total->total_score_caucus;
                 }
 
                 // Jika tidak ada, kembalikan input kosong
-                return '<input class="form-control" style="width: 150px;" type="text" name="total_score_event[]" value="0" readonly>';
+                return '';
             });
 
 
@@ -2450,7 +2450,7 @@ class QueryController extends Controller
             $dataTable->addColumn('Total', function ($data_row) {
                 $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
                 if ($pvtEventTeam->final_score !== null) {
-                    return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
+                    return '<input style="border: none;" class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
                 } else {
                     return '<input class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->total_score_caucus . '" readonly>';
                 }

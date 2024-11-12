@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Paper;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use setasign\Fpdi\Tcpdf\Fpdi;
+use TCPDF;
 
 class EvidenceController extends Controller
 {
@@ -58,5 +61,40 @@ class EvidenceController extends Controller
 
 
         return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers'));
+    }
+
+    public function download($id)
+    {
+        $paper = Paper::findOrFail($id);
+        $filePath = storage_path('app/public/' . str_replace('f: ', '', $paper->full_paper));
+
+        // Buat objek FPDI
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile($filePath);
+
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $tplIdx = $pdf->importPage($pageNo);
+            $pdf->AddPage();
+            $pdf->useTemplate($tplIdx, 0, 0);
+
+            // Tambahkan watermark
+            $pdf->SetAlpha(0.1); // Transparansi watermark
+            $pdf->SetFont('helvetica', 'B', 50);
+            $pdf->SetTextColor(255, 0, 0);
+
+            // Memulai transformasi untuk rotasi
+            $pdf->StartTransform();
+            $pdf->Rotate(45, 55, 190); // Atur sudut, x, y sesuai kebutuhan
+            $pdf->Text(35, 190, 'WATERMARK TEXT'); // Atur posisi watermark
+            $pdf->StopTransform(); // Akhiri transformasi
+
+            $pdf->SetAlpha(1); // Reset transparansi
+        }
+
+        // Berikan file PDF langsung sebagai respons unduhan
+        return response()->make($pdf->Output($paper->innovation_title . '_watermarked.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $paper->innovation_title . '_watermarked.pdf"'
+        ]);
     }
 }

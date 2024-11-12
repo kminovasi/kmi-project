@@ -77,8 +77,12 @@
                                         </li>
                                         <hr class="dropdown-divider">
                                         <li>
-                                            <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}"
+                                            {{-- <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}"
                                                 class="dropdown-item" download="{{ $paper->innovation_title }}.pdf">
+                                                <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
+                                            </a> --}}
+                                            <a href="{{ route('evidence.download-paper', $paper->id) }}"
+                                                class="dropdown-item">
                                                 <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
                                             </a>
                                         </li>

@@ -28,6 +28,7 @@
         "setasign/fpdi": "^2.6",
         "setasign/fpdi-tcpdf": "^2.3",
         "setasign/tfpdf": "^1.33",
+        "silviolleite/laravelpwa": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "tecnickcom/tcpdf": "^6.7",
         "webklex/laravel-pdfmerger": "^1.3",

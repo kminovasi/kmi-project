@@ -105,6 +105,7 @@ class PvtEventTeamController extends Controller
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
+                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
@@ -163,7 +164,7 @@ class PvtEventTeamController extends Controller
             });
 
 
-              // Mark 'Pilih Tim' column as raw
+            // Mark 'Pilih Tim' column as raw
             $dataTable->rawColumns($rawColumns);
 
             // Menghapus kolom yang mengandung kata "removed"
@@ -208,6 +209,4 @@ class PvtEventTeamController extends Controller
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->withErrors('Error: ' . $e->getMessage());
         }
     }
-
-
 }

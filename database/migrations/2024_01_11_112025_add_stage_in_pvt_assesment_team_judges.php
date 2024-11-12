@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('pvt_assesment_team_judges', function (Blueprint $table) {
-            $table->enum('stage', ['on desk','presentation'])->default('on desk');
+            $table->enum('stage', ['on desk', 'presentation'])->default('on desk');
         });
     }
 

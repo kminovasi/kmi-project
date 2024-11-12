@@ -18,15 +18,15 @@ class CvController extends Controller
         $employee = Auth::user();
 
         $innovations = \DB::table('pvt_members')
-            ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
-            ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
+            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->leftJoin('companies', 'events.company_code', '=', 'companies.company_code')
+            ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
+            ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
+            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
             ->where('pvt_members.employee_id', $employee->employee_id)
-            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->join('companies', 'events.company_code', '=', 'companies.company_code')
-            ->join('certificates', 'events.id', '=', 'certificates.event_id')
-            ->join('themes', 'teams.theme_id', '=', 'themes.id')
-            ->join('categories', 'teams.category_id', '=', 'categories.id')
             ->select(
                 'papers.*',
                 'teams.team_name',
@@ -70,7 +70,7 @@ class CvController extends Controller
             ->setPaper('A4', 'landscape');  // Atur ukuran kertas A4, mode portrait
 
         // Return PDF ke browser untuk di-download
-        return $pdf->download( 'Sertifikat - ' . $userName . '.pdf');
+        return $pdf->download('Sertifikat - ' . $userName . '.pdf');
     }
 
     function detail($id)
@@ -106,7 +106,4 @@ class CvController extends Controller
 
         return view('auth.admin.dokumentasi.cv.detail', compact('teamMember', 'papers'));
     }
-
-
-
 }

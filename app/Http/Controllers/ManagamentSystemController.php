@@ -179,7 +179,26 @@ class ManagamentSystemController extends Controller
     {
         // dd($request->all());
         try {
-            // dd($request->all());
+
+            // Cek apakah user yang sedang melakukan pergantian adalah Superadmin
+            $currentUser = auth()->user();
+
+            // Jika user yang melakukan pergantian adalah Superadmin
+            if ($currentUser->role === 'Superadmin') {
+                // Hitung jumlah Superadmin yang tersisa
+                $superadminCount = User::where('role', 'Superadmin')->count();
+
+                // Jika user yang akan diganti adalah Superadmin
+                if ($request->role !== 'Superadmin') {
+                    // Pastikan masih ada setidaknya 1 Superadmin di database
+                    if ($superadminCount <= 1) {
+                        return redirect()
+                            ->route('management-system.role.assign.add')
+                            ->withErrors('Tidak dapat mengganti role. Minimal harus ada 1 Superadmin.');
+                    }
+                }
+            }
+
             DB::beginTransaction();
             User::where('employee_id', $request->employee_id)
                 ->update([
@@ -188,7 +207,6 @@ class ManagamentSystemController extends Controller
             Db::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            dd($e->getMessage());
             return redirect()->route('management-system.role.assign.add')->withErrors('Error: ' . $e->getMessage());
         }
         return redirect()->route('management-system.role.assign.add')->with('success', 'Change  successful');

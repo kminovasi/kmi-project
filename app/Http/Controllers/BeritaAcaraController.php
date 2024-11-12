@@ -17,6 +17,7 @@ use Mpdf\Mpdf;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
+use Log;
 
 class BeritaAcaraController extends Controller
 {
@@ -50,17 +51,6 @@ class BeritaAcaraController extends Controller
                     ->withErrors(['Error: Berita acara untuk event ini sudah ada.']);
             }
 
-            // Cek apakah sudah ada Best Of The Best Team untuk event ini
-            $bestOfTheBestExists = PvtEventTeam::where('event_id', $request->input('event_id'))
-                ->where('is_best_of_the_best', 1) // cek kolom is_best_of_the_best
-                ->exists();
-
-            // Jika Best Of The Best belum ada, batalkan proses dan kembalikan pesan error
-            if (!$bestOfTheBestExists) {
-                return redirect()->route('assessment.penetapanJuara')
-                    ->withErrors(['Error: Best Of The Best belum ditetapkan untuk event ini.']);
-            }
-
             DB::beginTransaction();
 
             // Proses penyimpanan berita acara
@@ -87,23 +77,23 @@ class BeritaAcaraController extends Controller
     }
 
     public function destroy($id)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try {
+            DB::beginTransaction();
 
-        // Temukan berita acara berdasarkan ID
-        $beritaAcara = BeritaAcara::findOrFail($id);
+            // Temukan berita acara berdasarkan ID
+            $beritaAcara = BeritaAcara::findOrFail($id);
 
-        // Hapus berita acara
-        $beritaAcara->delete();
+            // Hapus berita acara
+            $beritaAcara->delete();
 
-        DB::commit();
-        return redirect()->route('assessment.penetapanJuara')->with('success', 'Berita Acara berhasil dihapus.');
-    } catch (\Exception $e) {
-        DB::rollback();
-        return redirect()->route('assessment.penetapanJuara')->withErrors('Error: ' . $e->getMessage());
+            DB::commit();
+            return redirect()->route('assessment.penetapanJuara')->with('success', 'Berita Acara berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('assessment.penetapanJuara')->withErrors('Error: ' . $e->getMessage());
+        }
     }
-}
 
 
 
@@ -160,7 +150,6 @@ class BeritaAcaraController extends Controller
                     ->where('pvt_assesment_team_judges.stage', 'presentation')
                     ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                     ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
-                    ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_bi])
                     ->take(3)
                     ->get()
                     ->toArray();
@@ -180,7 +169,6 @@ class BeritaAcaraController extends Controller
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
-                ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_idea])
                 ->take(3)
                 ->get()
                 ->toArray();
@@ -193,10 +181,10 @@ class BeritaAcaraController extends Controller
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('companies', 'companies.company_code', 'teams.company_code')
+                ->where('pvt_event_teams.event_id', $idEvent)
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
-                ->orderByRaw('ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = ? THEN pvt_assesment_team_judges.assessment_event_id END), 2) DESC', [$assessment_event_poin_bi])
                 ->take(1)
                 ->get()
                 ->toArray();
@@ -320,6 +308,7 @@ class BeritaAcaraController extends Controller
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('companies', 'companies.company_code', 'teams.company_code')
+                ->where('pvt_event_teams.event_id', '=', $idEvent)
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')

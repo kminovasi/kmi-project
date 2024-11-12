@@ -109,7 +109,6 @@ class PvtEventTeamController extends Controller
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
-            Log::debug($data_row->get());
 
             // Jika filterCategory tidak null, tambahkan filter untuk kategori
             if ($request->filterCategory) {

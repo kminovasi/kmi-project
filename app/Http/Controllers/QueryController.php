@@ -30,6 +30,7 @@ use App\Models\PvtAssessmentTeam;
 use DataTables;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class QueryController extends Controller
 {
@@ -1060,151 +1061,157 @@ class QueryController extends Controller
     }
 
 
+
+
+
     public function get_oda_assessment(Request $request)
     {
         try {
-            $data_category = Category::select('id', 'category_name', 'category_parent');
-            if (!is_null($request->filterCategory) || $request->filterCategory != "") {
-                $data_category->where('id', $request->filterCategory);
-            } else {
-                $data_category->where('category_parent', '<>', 'IDEA BOX');
-            }
-            $data_category = $data_category->get()->toArray();
-            $categoryid = array_column($data_category, 'id');
-            $searchidea = array_column($data_category, 'category_parent');
-            $category_parent = in_array("IDEA BOX", $searchidea) ? 'IDEA' : 'BI/II';
+            // Membuat kunci cache berdasarkan filter yang digunakan
+            $cacheKey = 'oda_assessment_' . md5(json_encode($request->all()));
 
-            $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                ->where('category', $category_parent)
-                ->where('status_point', 'active')
-                ->where('stage', 'on desk')
-                ->select('id', 'pdca', 'point')
-                ->get()
-                ->toArray();
-
-            $arr_select_case = [
-                DB::raw('MIN(team_name) as Tim'),
-                DB::raw('MIN(innovation_title) as Judul'),
-                DB::raw('MIN(category_name) as Kategori'),
-                DB::raw('MIN(theme_name) as Tema'),
-                DB::raw('MIN(inovasi_lokasi) as Lokasi'),
-                'pvt_event_teams.id AS event_team_id(removed)',
-                'pvt_event_teams.status as status(removed)'
-            ];
-
-            if (count($arr_event_id)) {
-                $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
-            }
-
-            $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->join('themes', 'themes.id', '=', 'teams.theme_id')
-                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                ->join('pvt_assessment_events', function ($join) {
-                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                })
-                ->whereIn('categories.id', $categoryid)
-                ->where('pvt_event_teams.event_id', $request->filterEvent)
-                ->where('pvt_assessment_events.status_point', 'active')
-                ->where('pvt_assesment_team_judges.stage', 'on desk')
-                ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
-
-            if (auth()->user()->role == "Juri") {
-                $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
-                    ->where('judges.employee_id', auth()->user()->employee_id);
-            }
-
-            $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
-
-            $dataTable = DataTables::of($data_row->get());
-
-            // Function to insert <br> after every specified number of characters
-            function insertLineBreaks($string, $length = 15)
-            {
-                return implode('<br>', str_split($string, $length));
-            }
-
-            if (count($arr_event_id)) {
-                for ($i = 0; $i < count($arr_event_id); $i++) {
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
-                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
-                    $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
-                        $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                            ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-                            ->where('pvt_assessment_events.status_point', 'active')
-                            ->where('pvt_assesment_team_judges.stage', 'on desk')
-                            ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
-                            ->groupBy('pvt_event_teams.id')
-                            ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
-                            ->get()
-                            ->toArray();
-
-                        return $data_avg[0]['Nilai'];
-                    });
+            // Cek apakah data sudah ada di cache
+            $dataTable = Cache::remember($cacheKey, 60, function () use ($request) {
+                $data_category = Category::select('id', 'category_name', 'category_parent');
+                if (!is_null($request->filterCategory) || $request->filterCategory != "") {
+                    $data_category->where('id', $request->filterCategory);
+                } else {
+                    $data_category->where('category_parent', '<>', 'IDEA BOX');
                 }
-            }
+                $data_category = $data_category->get()->toArray();
+                $categoryid = array_column($data_category, 'id');
+                $searchidea = array_column($data_category, 'category_parent');
+                $category_parent = in_array("IDEA BOX", $searchidea) ? 'IDEA' : 'BI/II';
 
-            $rawColumns[] = 'Total';
-            $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
-                $data_total = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                    ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-                    ->where('pvt_assessment_events.status_point', 'active')
-                    ->where('pvt_assesment_team_judges.stage', 'on desk')
-                    ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
-                    ->groupBy('pvt_event_teams.id')
-                    ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
+                $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
+                    ->where('category', $category_parent)
+                    ->where('status_point', 'active')
+                    ->where('stage', 'on desk')
+                    ->select('id', 'pdca', 'point')
                     ->get()
                     ->toArray();
-                return $data_total[0]['total'];
-            });
 
-            $rawColumns[] = 'fix';
-            $dataTable->addColumn('fix', function ($data_row) {
-                if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk') {
-                    return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
-                } else {
-                    return '-';
+                $arr_select_case = [
+                    DB::raw('MIN(team_name) as Tim'),
+                    DB::raw('MIN(innovation_title) as Judul'),
+                    DB::raw('MIN(category_name) as Kategori'),
+                    DB::raw('MIN(theme_name) as Tema'),
+                    DB::raw('MIN(inovasi_lokasi) as Lokasi'),
+                    'pvt_event_teams.id AS event_team_id(removed)',
+                    'pvt_event_teams.status as status(removed)'
+                ];
+
+                if (count($arr_event_id)) {
+                    $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
                 }
-            });
 
+                $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
+                    ->join('categories', 'categories.id', '=', 'teams.category_id')
+                    ->join('themes', 'themes.id', '=', 'teams.theme_id')
+                    ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                    ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                    ->join('pvt_assessment_events', function ($join) {
+                        $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+                    })
+                    ->whereIn('categories.id', $categoryid)
+                    ->where('pvt_event_teams.event_id', $request->filterEvent)
+                    ->where('pvt_assessment_events.status_point', 'active')
+                    ->where('pvt_assesment_team_judges.stage', 'on desk')
+                    ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
-
-
-            $rawColumns[] = 'action';
-            $dataTable->addColumn('action', function ($data_row) {
-                $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
-                $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
-
-                // Mengecek peran pengguna dan status peserta
-                if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
-                    $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
-
-                    return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                } elseif (auth()->user()->role == 'Juri') {
-                    $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
-                    return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                } else {
-                    // Jika bukan admin, superadmin, atau juri, hanya menampilkan tombol Lihat SOFI
-                    return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                if (auth()->user()->role == "Juri") {
+                    $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
+                        ->where('judges.employee_id', auth()->user()->employee_id);
                 }
-            });
 
-            $dataTable->rawColumns($rawColumns);
+                $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
 
-            $remove_column = [];
-            foreach ($dataTable->original as $data_column) {
-                foreach ($data_column->getAttributes() as $column => $value) {
-                    if (strstr($column, "removed") !== false) {
-                        $remove_column[] = $column;
+                $dataTable = DataTables::of($data_row->get());
+
+                // Function to insert <br> after every specified number of characters
+                function insertLineBreaks($string, $length = 15)
+                {
+                    return implode('<br>', str_split($string, $length));
+                }
+
+                if (count($arr_event_id)) {
+                    for ($i = 0; $i < count($arr_event_id); $i++) {
+                        $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
+                        $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
+                        $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
+                            $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                                ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
+                                ->where('pvt_assessment_events.status_point', 'active')
+                                ->where('pvt_assesment_team_judges.stage', 'on desk')
+                                ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                                ->groupBy('pvt_event_teams.id')
+                                ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
+                                ->get()
+                                ->toArray();
+
+                            return $data_avg[0]['Nilai'];
+                        });
                     }
                 }
-            }
-            $dataTable->removeColumn($remove_column);
 
-            return $dataTable->addIndexColumn()->toJson();
+                $rawColumns[] = 'Total';
+                $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
+                    $data_total = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                        ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
+                        ->where('pvt_assessment_events.status_point', 'active')
+                        ->where('pvt_assesment_team_judges.stage', 'on desk')
+                        ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                        ->groupBy('pvt_event_teams.id')
+                        ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
+                        ->get()
+                        ->toArray();
+                    return $data_total[0]['total'];
+                });
+
+                $rawColumns[] = 'fix';
+                $dataTable->addColumn('fix', function ($data_row) {
+                    if (auth()->user()->role === 'Admin' || (auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                    } else {
+                        return '-';
+                    }
+                });
+
+                $rawColumns[] = 'action';
+                $dataTable->addColumn('action', function ($data_row) {
+                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+
+                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
+                        $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
+                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
+                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
+
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    } elseif (auth()->user()->role == 'Juri') {
+                        $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
+                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    } else {
+                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    }
+                });
+
+                $dataTable->rawColumns($rawColumns);
+
+                $remove_column = [];
+                foreach ($dataTable->original as $data_column) {
+                    foreach ($data_column->getAttributes() as $column => $value) {
+                        if (strstr($column, "removed") !== false) {
+                            $remove_column[] = $column;
+                        }
+                    }
+                }
+                $dataTable->removeColumn($remove_column);
+
+                return $dataTable->addIndexColumn()->toJson();
+            });
+
+            return $dataTable;
         } catch (Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()

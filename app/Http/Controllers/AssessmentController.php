@@ -772,7 +772,6 @@ class AssessmentController extends Controller
                 $teams_id = PvtEventTeam::where('event_id', $request->event_id)
                     ->pluck('id')
                     ->toArray();
-                // dd($teams_id);
                 $nilai_oda_bi = MinimumscoreEvent::where('category', 'BI/II')
                     ->where('event_id', $request->event_id)
                     ->pluck('score_minimum_oda')
@@ -866,9 +865,14 @@ class AssessmentController extends Controller
                         ->pluck('status')
                         ->toArray();
 
+
                     if ($team_status[0] == 'Presentation') {
-                        $data_assessment_team_judge = pvtAssesmentTeamJudge::where('event_team_id', $team_id)
-                            ->where('stage', 'on desk')
+                        $data_assessment_team_judge =
+                            DB::table('pvt_assesment_team_judges as judge')
+                            ->join('pvt_assessment_events as event', 'judge.assessment_event_id', '=', 'event.id')
+                            ->where('judge.event_team_id', $team_id)
+                            ->where('judge.stage', 'on desk')
+                            ->where('event.stage', 'on desk')
                             ->select('assessment_event_id', 'judge_id')
                             ->get();
                         $set_judge = [];
@@ -952,8 +956,12 @@ class AssessmentController extends Controller
                         ->toArray();
 
                     if ($team_status[0] == 'Presentation') {
-                        $data_assessment_team_judge = pvtAssesmentTeamJudge::where('event_team_id', $event_team_id)
-                            ->where('stage', 'on desk')
+                        $data_assessment_team_judge =
+                            DB::table('pvt_assesment_team_judges as judge')
+                            ->join('pvt_assessment_events as event', 'judge.assessment_event_id', '=', 'event.id')
+                            ->where('judge.event_team_id', $event_team_id)
+                            ->where('judge.stage', 'on desk')
+                            ->where('event.stage', 'on desk')
                             ->select('assessment_event_id', 'judge_id')
                             ->get();
                         $event_id = pvtEventTeam::where('id', $event_team_id)

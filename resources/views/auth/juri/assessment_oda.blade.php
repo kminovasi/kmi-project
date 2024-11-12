@@ -267,6 +267,7 @@
     $.ajax({
         url: "{{ route('query.get_input_oda_assessment_team') }}",
         method: 'GET',
+        cache:true,
         data: {
             filterEventTeamId: {{ Request::segments()[2] }}
         },

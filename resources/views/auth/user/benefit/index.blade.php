@@ -1,6 +1,9 @@
 <!-- resources/views/home.blade.php -->
 @extends('layouts.app')
 @section('title', 'Form Benefit')
+@push('css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white ">
         <div class="container-xl px-4">
@@ -136,7 +139,8 @@
                                         <label class="mb-1" for="dataFileReview{{ $row->paper_id }}">Berita Acara
                                             Benefit (Pdf)</label>
                                         <input class="form-control" id="file_review_{{ $row->paper_id }}" type="file"
-                                            name="file_review" accept=".pdf" oninput="check_file('{{ $row->paper_id }}')"
+                                            name="file_review" accept=".pdf"
+                                            oninput="check_file('{{ $row->paper_id }}')"
                                             {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}>
                                         <!-- <input type="text" id="file_path_{{ $row->paper_id }}" value="{{ $row->file_review }}" hidden> -->
                                         <div class="is-invalid" id="invalid_file_{{ $row->paper_id }}"></div>
@@ -173,6 +177,7 @@
     </div>
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script type="">
         document.addEventListener("DOMContentLoaded", function() {
             var selectElements = document.querySelectorAll('select');

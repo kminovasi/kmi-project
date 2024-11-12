@@ -103,18 +103,21 @@ class BenefitController extends Controller
             $gmName = null;
         }
 
-        $statusEventTeam = PvtEventTeam::where('team_id', $row->team_id)->first();
-        $isWinnerStatusTeam = $statusEventTeam->status === 'Juara' ? true : false;
-        if (Auth::user()->role === 'Superadmin') {
-            // Superadmin bisa edit jika tim berstatus Juara
-            $is_owner = $isWinnerStatusTeam;
-        } else {
-            // Untuk user biasa (pemilik paper/benefit)
-            $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
-                ->where('team_id', $row->team_id)
-                ->whereIn('status', ['member', 'leader'])
-                ->exists() && !$isWinnerStatusTeam; // Tambahkan pengecekan NOT isWinnerStatusTeam
+        if (PvtEventTeam::where('team_id', $row->team_id)->exists()) {
+            $statusEventTeam = PvtEventTeam::where('team_id', $row->team_id)->first();
+            $isWinnerStatusTeam = $statusEventTeam->status === 'Juara' ? true : false;
+            if (Auth::user()->role === 'Superadmin') {
+                // Superadmin bisa edit jika tim berstatus Juara
+                $is_owner = $isWinnerStatusTeam;
+            } else {
+                // Untuk user biasa (pemilik paper/benefit)
+                $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
+                    ->where('team_id', $row->team_id)
+                    ->whereIn('status', ['member', 'leader'])
+                    ->exists() && !$isWinnerStatusTeam; // Tambahkan pengecekan NOT isWinnerStatusTeam
+            }
         }
+
         return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName'));
     }
 

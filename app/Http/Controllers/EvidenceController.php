@@ -8,6 +8,7 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use TCPDF;
+use Carbon\Carbon;
 
 class EvidenceController extends Controller
 {
@@ -66,6 +67,16 @@ class EvidenceController extends Controller
     public function download($id)
     {
         $paper = Paper::findOrFail($id);
+
+
+        // Ambil informasi untuk watermark
+        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s'); // Tanggal dan jam
+        $userEmail = auth()->user()->email; // Email pengguna
+        $userIp = request()->ip(); // IP pengguna
+
+        // Gabungkan semua informasi ke dalam satu string watermark
+        $watermarkText = "{$currentDateTime}\nDidownload oleh {$userEmail}\nIP: {$userIp}";
+
         $filePath = storage_path('app/public/' . str_replace('f: ', '', $paper->full_paper));
 
         // Buat objek FPDI
@@ -79,13 +90,13 @@ class EvidenceController extends Controller
 
             // Tambahkan watermark
             $pdf->SetAlpha(0.1); // Transparansi watermark
-            $pdf->SetFont('helvetica', 'B', 50);
+            $pdf->SetFont('helvetica', 'B', 40);
             $pdf->SetTextColor(255, 0, 0);
 
             // Memulai transformasi untuk rotasi
             $pdf->StartTransform();
-            $pdf->Rotate(45, 55, 190); // Atur sudut, x, y sesuai kebutuhan
-            $pdf->Text(35, 190, 'WATERMARK TEXT'); // Atur posisi watermark
+            $pdf->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+            $pdf->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
             $pdf->StopTransform(); // Akhiri transformasi
 
             $pdf->SetAlpha(1); // Reset transparansi

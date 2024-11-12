@@ -109,6 +109,8 @@ class PvtEventTeamController extends Controller
                 ->groupBy('pvt_event_teams.id')
                 ->select($arr_select_case);
 
+            Log::debug($data_row->get());
+
             // Jika filterCategory tidak null, tambahkan filter untuk kategori
             if ($request->filterCategory) {
                 $data_row->where('categories.id', $request->filterCategory);
@@ -146,23 +148,50 @@ class PvtEventTeamController extends Controller
             });
 
             $rawColumns[] = 'Pilih Tim';
-            $dataTable->addColumn('Pilih Tim', function ($data_row) {
-                $checked = $data_row['is_best_of_the_best'] ? 'checked' : ''; // Check if true and set checked
+            $dataTable->addColumn('Pilih Tim', function ($data_row) use ($request, $categoryid) {
+                // Ambil ranking tim berdasarkan event_team_id saat ini
+                $eventTeamId = $data_row['event_team_id(removed)'];
 
-                if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
-                    return '
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="radio-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '" ' . $checked . '>
-                        <label class="form-check-label" for="radio-' . $data_row['event_team_id(removed)'] . '">
-                            Pilih
-                        </label>
-                    </div>
-                    ';
+                // Dapatkan data ranking tim
+                $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                    ->join('categories', 'categories.id', '=', 'teams.category_id')
+                    ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
+                    ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
+                    ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
+                    ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
+                    ->select(
+                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""), // Menghitung ranking per kategori
+                        'pvt_event_teams.id as id',
+                        'pvt_event_teams.final_score',
+                        'categories.id as category_id'
+                    )  // Menambahkan kategori ke dalam hasil
+                    ->get()
+                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
+                    ->toArray();
+
+                // Cek ranking untuk event_team_id saat ini
+                $ranking = isset($data_total[$eventTeamId]) ? $data_total[$eventTeamId]['Ranking'] : null;
+
+                // Hanya tampilkan checkbox jika ranking adalah 1
+                if ($ranking === 1) {
+                    $checked = $data_row['is_best_of_the_best'] ? 'checked' : ''; // Check if true and set checked
+
+                    if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
+                        return '
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="radio-' . $eventTeamId . '" name="pvt_event_team_id[]" value="' . $eventTeamId . '" ' . $checked . '>
+                <label class="form-check-label" for="radio-' . $eventTeamId . '">
+                    Pilih
+                </label>
+            </div>
+            ';
+                    } else {
+                        return '-';
+                    }
                 } else {
-                    return '-';
+                    return '-'; // Jika ranking bukan 1, kembalikan tanda '-'
                 }
             });
-
 
             // Mark 'Pilih Tim' column as raw
             $dataTable->rawColumns($rawColumns);

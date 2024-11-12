@@ -68,11 +68,17 @@
 
                             <div class="mb-4">
                                 <h6 class="small mb-1" for="data_description">Pilih Role</h6>
-                                <select name="role" id="" class="form-control">
-                                    <option value="BOD">BOD</option>
-                                    <option value="Superadmin">Superadmin</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="User">Innovator</option>
+                                <select name="role" class="form-control">
+                                    @if(auth()->user()->role == 'Superadmin')
+                                        <option value="BOD">BOD</option>
+                                        <option value="Superadmin">Superadmin</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="User">Innovator</option>
+                                    @elseif(auth()->user()->role == 'Admin')
+                                        <option value="BOD">BOD</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="User">Innovator</option>
+                                    @endif
                                 </select>
                             </div>
                             <!-- Save changes button-->

@@ -272,8 +272,6 @@
                 "type": "GET",
                 "async": false,
                 "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
                     return data.data;
                 },
                 "data": function (d) {
@@ -306,7 +304,6 @@
             async: false,
             success: function (data) {
                 // newColumn = []
-                console.log(data.data)
                 // console.log(count(data.data));
                 if(data.data.length){
                     let row_column = {};
@@ -370,65 +367,26 @@
     });
 
 
-    function setSummaryPPT(team_id){
+    function setSummaryPPT(eventTeamId){
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'GET',
-            url: '{{ route('query.custom') }}',
+            url: `/query/summary-executive/get-summary-executive-by-event-team-id/${eventTeamId}`,
             dataType: 'json',
-            data: {
-                table: "teams",
-                where: {
-                    "teams.id": team_id
-                },
-                limit: 1,
-                join: {
-                        'papers':{
-                            'papers.team_id': 'teams.id'
-                        },
-                        'categories':{
-                            'categories.id': 'teams.category_id'
-                        },
-                        'themes':{
-                            'themes.id': 'teams.theme_id'
-                        },
-                        'companies':{
-                            'companies.company_code' : 'teams.company_code'
-                        },
-                        'pvt_event_teams':{
-                            'pvt_event_teams.team_id' : 'teams.id'
-                        },
-                        'summary_executives':{
-                            'summary_executives.pvt_event_teams_id' : 'pvt_event_teams.id'
-                        }
-                    },
-                select:[
-                        'teams.id as team_id',
-                        'innovation_title',
-                        'team_name',
-                        'company_name',
-                        'pvt_event_teams.id as pvt_event_teams_id',
-                        'summary_executives.id as summary_executives_id',
-                        'problem_background',
-                        'innovation_idea',
-                        'benefit',
-                    ]
-            },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
-                document.getElementById("TeamName").textContent = response[0].team_name;
-                document.getElementById("InnovationTitle").textContent = response[0].innovation_title;
-                document.getElementById("Company").textContent = response[0].company_name;
-                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
-                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
-                document.getElementById("inputId").value = response[0].summary_executives_id;
-                document.getElementById("ProblemBackground").textContent = response[0].problem_background;
-                document.getElementById("InnovationIdea").textContent = response[0].innovation_idea;
-                document.getElementById("Benefit").textContent = response[0].benefit;
-                document.getElementById("Benefit").textContent = response[0].benefit;
+                document.getElementById("TeamName").textContent = response.team_name;
+                document.getElementById("InnovationTitle").textContent = response.innovation_title;
+                document.getElementById("Company").textContent = response.company_name;
+                document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
+                document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
+                document.getElementById("inputId").value = response.summary_executives_id;
+                document.getElementById("ProblemBackground").textContent = response.problem_background;
+                document.getElementById("InnovationIdea").textContent = response.innovation_idea;
+                document.getElementById("Benefit").textContent = response.benefit;
+                document.getElementById("Benefit").textContent = response.benefit;
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -450,7 +408,6 @@
   });
 }
 function seePPT(team_id) {
-    console.log(team_id);
         var pptUrl;
         $.ajax({
             headers: {
@@ -482,7 +439,6 @@ function seePPT(team_id) {
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
                 // document.getElementById("idBenefit").value = response[0].benefit;
                 // document.getElementById("idBenefit").value = response[0].benefit;
                 pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;

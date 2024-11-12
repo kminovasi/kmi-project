@@ -308,6 +308,7 @@ class BeritaAcaraController extends Controller
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('companies', 'companies.company_code', 'teams.company_code')
+                ->where('pvt_event_teams.event_id', '=', $idEvent)
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
                 ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
                 ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')

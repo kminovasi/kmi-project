@@ -223,40 +223,40 @@
             </div>
         </div>
         {{-- modal untuk fix all ODA --}}
-        <div class="modal fade" id="fixModalODA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="title">Fix all On Desk Participant</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form id="form-fixall-oda" action="{{ route('assessment.fix.oda') }}" method="POSt">
-                        @csrf
-                        @method('PUT')
 
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <input id="fix-all-oda" name="event_id" type="text" hidden>
-                                <p>Apakah anda yakin ingin memfiksasi semua penilaian peserta On Desk?</p>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
     @endsection
+    <div class="modal fade" id="fixModalODA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title">Fix all On Desk Participant</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form-fixall-oda" action="{{ route('assessment.fix.oda') }}" method="POSt">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input id="fix-all-oda" name="event_id" type="text" hidden>
+                            <p>Apakah anda yakin ingin memfiksasi semua penilaian peserta On Desk?</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     @push('js')
         <script
             src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
         </script>
-        {{-- <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
@@ -268,6 +268,7 @@
             "processing": true,
             "serverSide": true,
             "responsive": true,
+            "cache": true,
              "dom": 'lBfrtip',
             "buttons": [
                 'excel', 'csv'

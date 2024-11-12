@@ -16,4 +16,9 @@ class SummaryExecutive extends Model
         'benefit',
         'file_ppt',
     ];
+
+    public function pvtEventTeam()
+    {
+        return $this->belongsTo(PvtEventTeam::class, 'pvt_event_teams_id');
+    }
 }

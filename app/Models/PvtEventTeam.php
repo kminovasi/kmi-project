@@ -28,4 +28,9 @@ class PvtEventTeam extends Model
     {
         return $this->belongsTo(Team::class, 'team_id');
     }
+
+    public function summaryExecutives()
+    {
+        return $this->hasMany(SummaryExecutive::class, 'pvt_event_teams_id');
+    }
 }

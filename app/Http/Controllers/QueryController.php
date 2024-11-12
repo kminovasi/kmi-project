@@ -1133,6 +1133,48 @@ class QueryController extends Controller
                 {
                     return implode('<br>', str_split($string, $length));
                 }
+                $rawColumns[] = 'fix';
+                $dataTable->addColumn('fix', function ($data_row) {
+                    if (auth()->user()->role === 'Admin' || (auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                    } else {
+                        return '-';
+                    }
+                });
+
+                $rawColumns[] = 'Total';
+                $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
+                    $data_total = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                        ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
+                        ->where('pvt_assessment_events.status_point', 'active')
+                        ->where('pvt_assesment_team_judges.stage', 'on desk')
+                        ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                        ->groupBy('pvt_event_teams.id')
+                        ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
+                        ->get()
+                        ->toArray();
+                    return $data_total[0]['total'];
+                });
+
+                $rawColumns[] = 'action';
+                $dataTable->addColumn('action', function ($data_row) {
+                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+
+                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
+                        $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
+                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
+                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
+
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    } elseif (auth()->user()->role == 'Juri') {
+                        $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
+                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    } else {
+                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                    }
+                });
+
 
                 if (count($arr_event_id)) {
                     for ($i = 0; $i < count($arr_event_id); $i++) {
@@ -1154,47 +1196,8 @@ class QueryController extends Controller
                     }
                 }
 
-                $rawColumns[] = 'Total';
-                $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
-                    $data_total = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                        ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-                        ->where('pvt_assessment_events.status_point', 'active')
-                        ->where('pvt_assesment_team_judges.stage', 'on desk')
-                        ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
-                        ->groupBy('pvt_event_teams.id')
-                        ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
-                        ->get()
-                        ->toArray();
-                    return $data_total[0]['total'];
-                });
 
-                $rawColumns[] = 'fix';
-                $dataTable->addColumn('fix', function ($data_row) {
-                    if (auth()->user()->role === 'Admin' || (auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
-                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
-                    } else {
-                        return '-';
-                    }
-                });
 
-                $rawColumns[] = 'action';
-                $dataTable->addColumn('action', function ($data_row) {
-                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
-                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
-
-                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
-                        $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
-                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
-                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
-
-                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                    } elseif (auth()->user()->role == 'Juri') {
-                        $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
-                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                    } else {
-                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                    }
-                });
 
                 $dataTable->rawColumns($rawColumns);
 

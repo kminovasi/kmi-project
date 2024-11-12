@@ -2601,7 +2601,6 @@ class QueryController extends Controller
             $dataTable->addColumn('Tim', function ($data_row) {
                 // Display the team name with a badge if "Best of the Best"
                 $badge = $data_row->is_best_of_the_best ? "<span class='badge bg-success'><i class='fas fa-trophy'></i> Best of the Best</span>" : "";
-                Log::debug($badge);
                 return $data_row->tim . " " . $badge; // Concatenate the badge with the team name
             });
             $dataTable->rawColumns($rawColumns);

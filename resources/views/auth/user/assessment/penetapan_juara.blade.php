@@ -174,7 +174,7 @@
                                     <label for="chooseJenisEvent">Jenis Event</label>
                                     <select name="jenis_event" id="chooseJenisEvent" class="form-control">
                                         <option value="Internal">Internal</option>
-                                        <option value="Group">Group</option>
+                                        <option value="Grup">Group</option>
                                         <option value="Eksternal">Eksternal</option>
                                     </select>
                                 </div>
@@ -210,7 +210,7 @@
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $d->event_name }}</td>
                                         <td>{{ $d->year }}</td>
-                                        <td>{{ $d->no_surat }}</td>
+                                        <td>{{ $d->no_surat }} </td>
                                         <td><a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}"
                                                 class="btn btn-info btn-sm" target="_blank">Show</a>
                                             <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}"

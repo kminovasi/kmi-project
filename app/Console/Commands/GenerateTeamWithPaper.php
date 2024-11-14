@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Theme;
 use App\Models\Company;
 use App\Models\Event;
+use App\Models\Judge;
 use App\Models\pvtAssesmentTeamJudge;
 use App\Models\PvtAssessmentEvent;
 use App\Models\PvtEventTeam;
@@ -209,10 +210,10 @@ class GenerateTeamWithPaper extends Command
         // $stage = $assessmentEvent ? $assessmentEvent->stage : null;
 
         foreach ($assessmentEvents as $assessmentEvent) {
-            $judgeIds = [27, 26]; // Daftar ID juri yang akan ditambahkan
-            foreach ($judgeIds as $judgeId) {
-                pvtAssesmentTeamJudge::create([
-                    'judge_id' => $judgeId,
+            $randomJudges = Judge::inRandomOrder()->limit(2)->get();
+            foreach ($randomJudges as $judge) {
+                PvtAssesmentTeamJudge::create([
+                    'judge_id' => $judge->id,
                     'score' => null, // Nilai default `null`
                     'event_team_id' => $eventTeam->id,
                     'assessment_event_id' => $assessmentEvent->id, // Menyimpan ID event penilaian

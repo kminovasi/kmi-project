@@ -1124,7 +1124,6 @@ class QueryController extends Controller
                     $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                         ->where('judges.employee_id', auth()->user()->employee_id);
                 }
-
                 $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
 
                 $dataTable = DataTables::of($data_row->get());

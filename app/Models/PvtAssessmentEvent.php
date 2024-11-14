@@ -11,14 +11,13 @@ class PvtAssessmentEvent extends Model
     protected $table = 'pvt_assessment_events';
     protected $primaryKey = 'id';
     protected $fillable = [
-                            'assessment_points_id',
-                            'event_id',
-                            'point',
-                            'detail_point',
-                            'pdca',
-                            'score_max',
-                            'year',
-                            'stage',
-                            'category'
-                        ];
+        'event_id',
+        'point',
+        'detail_point',
+        'pdca',
+        'score_max',
+        'stage',
+        'category',
+        'status_point'
+    ];
 }

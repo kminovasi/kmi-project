@@ -38,6 +38,7 @@ use App\Http\Requests\registerRequests;
 use Illuminate\Validation\Rules\File;
 use App\Http\Requests\updateTeamPaperRequests;
 use App\Models\History;
+use App\Models\Judge;
 use App\Notifications\PaperNotification;
 use App\Notifications\EmailNotification;
 use Mpdf\Mpdf;
@@ -70,12 +71,15 @@ class PaperController extends Controller
         $data_category = Category::all();
         $data_theme = Theme::all();
         $status_inovasi = Paper::distinct('status_inovasi')->pluck('status_inovasi');
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
 
         return view('auth.user.paper.index', [
             'data_company' => $data_company,
             'data_category' => $data_category,
             'data_theme' => $data_theme,
-            'status_inovasi' => $status_inovasi
+            'status_inovasi' => $status_inovasi,
+            'is_judge' => $is_judge,
         ]);
     }
 

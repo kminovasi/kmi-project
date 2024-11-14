@@ -496,13 +496,18 @@ class AssessmentController extends Controller
 
     public function on_desk()
     {
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         if (auth()->user()->role == "Superadmin") {
             $data_event = Event::where('status', '=', 'active')->get();
         } elseif (auth()->user()->role == "Admin") {
             $data_event = Event::where('status', '=', 'active')
                 ->where('company_code', auth()->user()->company_code)
                 ->get();
-        } elseif (auth()->user()->role == "Juri") {
+        } elseif (
+            auth()->user()->role == "Juri" ||
+            $is_judge
+        ) {
             $judge_event_id = Judge::where('employee_id', auth()->user()->employee_id)
                 ->where('status', 'active')
                 ->pluck('event_id')
@@ -517,21 +522,27 @@ class AssessmentController extends Controller
         }
         $data_category = Category::all();
 
+
+
+
         return view('auth.user.assessment.ondesk', [
             "data_event" => $data_event,
-            'data_category' => $data_category
+            'data_category' => $data_category,
+            'is_judge' => $is_judge
         ]);
     }
 
     public function presentation()
     {
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         if (auth()->user()->role == "Superadmin") {
             $data_event = Event::where('status', '=', 'active')->get();
         } elseif (auth()->user()->role == "Admin") {
             $data_event = Event::where('status', '=', 'active')
                 ->where('company_code', auth()->user()->company_code)
                 ->get();
-        } elseif (auth()->user()->role == "Juri") {
+        } elseif (auth()->user()->role == "Juri" || $is_judge) {
             $judge_event_id = Judge::where('employee_id', auth()->user()->employee_id)
                 ->where('status', 'active')
                 ->pluck('event_id')
@@ -548,7 +559,8 @@ class AssessmentController extends Controller
 
         return view('auth.user.assessment.presentation', [
             "data_event" => $data_event,
-            'data_category' => $data_category
+            'data_category' => $data_category,
+            'is_judge' => $is_judge
         ]);
     }
     public function showSofi_oda($id)
@@ -1294,12 +1306,15 @@ class AssessmentController extends Controller
     }
     public function caucus()
     {
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         $currentYear = Carbon::now()->year;
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();
         return view('auth.user.assessment.caucus', [
             "data_event" => $data_event,
             'data_category' => $data_category,
+            'is_judge' => $is_judge
         ]);
     }
     public function summaryExecutive(Request $request)
@@ -1539,17 +1554,21 @@ class AssessmentController extends Controller
     }
     public function presentasiBOD(Request $request)
     {
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         $currentYear = Carbon::now()->year;
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();
         return view('auth.user.assessment.presentasi_bod', [
             "data_event" => $data_event,
             'data_category' => $data_category,
+            'is_judge' => $is_judge
         ]);
     }
     public function penetapanJuara(Request $request)
     {
-
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         $currentYear = Carbon::now()->year;
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();
@@ -1559,7 +1578,8 @@ class AssessmentController extends Controller
         return view('auth.user.assessment.penetapan_juara', [
             "data_event" => $data_event,
             'data_category' => $data_category,
-            'data' => $data
+            'data' => $data,
+            'is_judge' => $is_judge
         ]);
     }
 

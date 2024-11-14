@@ -569,6 +569,7 @@ class AssessmentController extends Controller
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'on desk')
+            ->where('pvt_assessment_events.stage', 'on desk')
             ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
                         WHEN 'pdca' = 'Do' THEN 2

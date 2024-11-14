@@ -331,6 +331,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export/{categoryId}', function ($categoryId) {
             return Excel::download(new PaperExport($categoryId), 'papers_category_' . $categoryId . '.xlsx');
         })->name('excel');
+        Route::get('/download/{id}',[EvidenceController::class, 'download'])->name('download-paper');
     });
 
     // Cv

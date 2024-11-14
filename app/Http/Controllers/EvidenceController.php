@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Paper;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use setasign\Fpdi\Tcpdf\Fpdi;
+use TCPDF;
+use Carbon\Carbon;
 
 class EvidenceController extends Controller
 {
@@ -58,5 +62,50 @@ class EvidenceController extends Controller
 
 
         return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers'));
+    }
+
+    public function download($id)
+    {
+        $paper = Paper::findOrFail($id);
+
+
+        // Ambil informasi untuk watermark
+        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s'); // Tanggal dan jam
+        $userEmail = auth()->user()->email; // Email pengguna
+        $userIp = request()->ip(); // IP pengguna
+
+        // Gabungkan semua informasi ke dalam satu string watermark
+        $watermarkText = "{$currentDateTime}\nDidownload oleh {$userEmail}\nIP: {$userIp}";
+
+        $filePath = storage_path('app/public/' . str_replace('f: ', '', $paper->full_paper));
+
+        // Buat objek FPDI
+        $pdf = new Fpdi();
+        $pageCount = $pdf->setSourceFile($filePath);
+
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $tplIdx = $pdf->importPage($pageNo);
+            $pdf->AddPage();
+            $pdf->useTemplate($tplIdx, 0, 0);
+
+            // Tambahkan watermark
+            $pdf->SetAlpha(0.1); // Transparansi watermark
+            $pdf->SetFont('helvetica', 'B', 40);
+            $pdf->SetTextColor(255, 0, 0);
+
+            // Memulai transformasi untuk rotasi
+            $pdf->StartTransform();
+            $pdf->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+            $pdf->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
+            $pdf->StopTransform(); // Akhiri transformasi
+
+            $pdf->SetAlpha(1); // Reset transparansi
+        }
+
+        // Berikan file PDF langsung sebagai respons unduhan
+        return response()->make($pdf->Output($paper->innovation_title . '_watermarked.pdf', 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $paper->innovation_title . '_watermarked.pdf"'
+        ]);
     }
 }

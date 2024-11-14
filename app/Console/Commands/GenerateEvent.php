@@ -40,7 +40,7 @@ class GenerateEvent extends Command
         // Step 2: Pilihan tipe event
         $eventType = $this->choice(
             'Apa tipe dari event tersebut?',
-            ['AP', 'Group', 'National', 'International'],
+            ['AP', 'group', 'national', 'international'],
             0
         );
 

@@ -22,7 +22,7 @@ class NotificationController extends Controller
             $notification->delete();
         }
 
-        return back()->with('success', 'Notifikasi berhasil dihapus.');
+        return back();
     }
 
 

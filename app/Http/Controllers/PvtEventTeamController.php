@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\Judge;
 use App\Models\PvtAssessmentEvent;
 use App\Models\PvtEventTeam;
 use App\Models\SummaryExecutive;
 use App\Models\Team;
+use Auth;
 use DataTables;
 use DB;
 use Exception;
@@ -42,11 +44,14 @@ class PvtEventTeamController extends Controller
 
     public function showDeterminingTheBestOfTheBestTeam(Request $request)
     {
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
         $data_event = Event::where('status', 'active')->get();
         $data_category = Category::all();
         return view('auth.user.assessment.best_of_the_best', [
             "data_event" => $data_event,
             'data_category' => $data_category,
+            'is_judge' => $is_judge
         ]);
     }
     public function getBestOfTheBest(Request $request)

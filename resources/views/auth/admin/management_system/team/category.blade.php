@@ -145,7 +145,7 @@
         </div>
     </div>
 
-    {{-- modal untuk delete category --}}
+    {{-- modal untuk deletew category --}}
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">

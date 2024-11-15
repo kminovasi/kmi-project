@@ -64,90 +64,101 @@
     <div class="modal fade" id="createCompany" tabindex="-1" role="dialog" aria-labelledby="createCompanyLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createCompanyLabel">Form Perusahaan</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Form Perusahaan</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('management-system.team.company.store') }}" method="POST">
-                    @csrf
-                    @method('POST')
+                    @csrf @method('POST')
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <h6 for="inputKodePerusahaan" class="small mb-1">Kode Perusahaan</h6>
-                            <input type="text" name="company_code" value="" id="inputKodePerusahaan"
-                                class="form-control" placeholder="Isi kode perusahaan" required>
+                        <div class="mb-4">
+                            <label for="inputKodePerusahaan" class="form-label text-muted">Kode Perusahaan</label>
+                            <input type="text" name="company_code" id="inputKodePerusahaan"
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi kode perusahaan" required>
                         </div>
-                        <div class="mb-3">
-                            <h6 for="inputNamaPerusahaan" class="small mb-1">Nama Perusahaan</h6>
-                            <input type="text" name="company_name" value="" id="inputNamaPerusahaan"
-                                class="form-control" placeholder="Isi nama perusahaan" required>
+                        <div class="mb-4">
+                            <label for="inputNamaPerusahaan" class="form-label text-muted">Nama Perusahaan</label>
+                            <input type="text" name="company_name" id="inputNamaPerusahaan"
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi nama perusahaan" required>
                         </div>
-                        <div class="mb-3">
-                            <h6 for="inputGroupPerusahaan" class="small mb-1">Group Perusahaan</h6>
-                            <select class="form-select" aria-label="Default select example" name="group"
-                                id="inGroupPerusahaan" required>
-                                <option id="opsi_Semen" value="Semen">Semen</option>
-                                <option id="opsi_Non_Semen" value="Non Semen">Non Semen</option>
+                        <div class="mb-4">
+                            <label for="inGroupPerusahaan" class="form-label text-muted">Group Perusahaan</label>
+                            <select name="group" id="inGroupPerusahaan" class="form-select rounded-3 shadow-sm" required>
+                                <option value="Semen">Semen</option>
+                                <option value="Non Semen">Non Semen</option>
                             </select>
                         </div>
 
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button> --}}
-                        <button class="btn btn-primary" type="submit">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit"
+                            style="font-weight: 600;">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
 
         </div>
     </div>
+
+    <script>
+        feather.replace();
+    </script>
+
 
     <!-- Bootstrap Modal for Update -->
     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadDocumentTitle">Update Perusahaan</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Update Perusahaan</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateFormCompany" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+                    @csrf @method('PUT')
                     <div class="modal-body">
-                        <!-- Update form fields go here -->
-                        <input type="hidden" name="id" value="" id="id" class="form-control">
-                        <div class="mb-3">
-                            <h6 for="inKodePerusahaan" class="small mb-1">Kode Perusahaan</h6>
-                            <input type="text" name="company_code" value="" id="inKodePerusahaan"
-                                class="form-control" placeholder="Isi kode perusahaan" required>
+                        <input type="hidden" name="id" id="id" class="form-control">
+                        <div class="mb-4">
+                            <label for="inKodePerusahaan" class="form-label text-muted">Kode Perusahaan</label>
+                            <input type="text" name="company_code" id="inKodePerusahaan"
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi kode perusahaan" required>
                         </div>
-                        <div class="mb-3">
-                            <h6 for="inNamaPerusahaan" class="small mb-1">Nama Perusahaan</h6>
-                            <input type="text" name="company_name" value="" id="inNamaPerusahaan"
-                                class="form-control" placeholder="Isi nama perusahaan" required>
+                        <div class="mb-4">
+                            <label for="inNamaPerusahaan" class="form-label text-muted">Nama Perusahaan</label>
+                            <input type="text" name="company_name" id="inNamaPerusahaan"
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi nama perusahaan" required>
                         </div>
-                        <div class="mb-3">
-                            <h6 for="inGroupPerusahaan" class="small mb-1">Nama Perusahaan</h6>
-                            <select class="form-select" aria-label="Default select example" name="group"
-                                id="inGroupPerusahaan" required>
-                                <option id="opsi_Semen" value="Semen">Semen</option>
-                                <option id="opsi_Non_Semen" value="Non Semen">Non Semen</option>
+                        <div class="mb-4">
+                            <label for="inGroupPerusahaan" class="form-label text-muted">Group Perusahaan</label>
+                            <select name="group" id="inGroupPerusahaan" class="form-select rounded-3 shadow-sm"
+                                required>
+                                <option value="Semen">Semen</option>
+                                <option value="Non Semen">Non Semen</option>
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
-                        {{-- <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button> --}}
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit"
+                            style="font-weight: 600;">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <script>
+        feather.replace();
+    </script>
+
+
     {{-- modal untuk delete company --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteCompany" method="POST">
                 @csrf

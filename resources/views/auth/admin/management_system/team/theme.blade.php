@@ -65,63 +65,76 @@
     <div class="modal fade" id="createTheme" tabindex="-1" role="dialog" aria-labelledby="createThemeLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createThemeLabel">Form Tema</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Form Tema</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('management-system.team.theme.store') }}" method="POST">
-                    @csrf
-                    @method('POST')
+                    @csrf @method('POST')
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <h6 for="inputNamaTema" class="small mb-1">Nama Tema</h6>
-                            <input type="text" name="theme_name" value="" id="inputNamaTema" class="form-control"
-                                placeholder="Silakan Tambahkan Nama Tema" required>
+                        <div class="mb-4">
+                            <label for="inputNamaTema" class="form-label text-muted">Nama Tema</label>
+                            <input type="text" name="theme_name" id="inputNamaTema"
+                                class="form-control rounded-3 shadow-sm" placeholder="Silakan Tambahkan Nama Tema" required>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button> --}}
-                        <button class="btn btn-primary" type="submit"style="font-weight: 600;">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit"
+                            style="font-weight: 600;">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
 
         </div>
     </div>
+
+    <script>
+        feather.replace();
+    </script>
+
     <!-- Bootstrap Modal for Update -->
     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadDocumentTitle">Update Tema</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Update Tema</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateFormTheme" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+                    @csrf @method('PUT')
                     <div class="modal-body">
-                        <!-- Update form fields go here -->
+
                         <input type="hidden" name="id" value="" id="id" class="form-control">
-                        <div class="mb-3">
-                            <h6 for="inNamaTema" class="small mb-1">Nama Tema</h6>
-                            <input type="text" name="theme_name" value="" id="inNamaTema" class="form-control"
+                        <div class="mb-4">
+                            <label for="inNamaTema" class="form-label text-muted">Nama Tema</label>
+                            <input type="text" name="theme_name" id="inNamaTema" class="form-control rounded-3 shadow-sm"
                                 required>
                         </div>
 
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button> --}}
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit"
+                            style="font-weight: 600;">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <script>
+        feather.replace();
+    </script>
+
+
     {{-- modal untuk update category --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteTheme" method="POST">
                 @csrf

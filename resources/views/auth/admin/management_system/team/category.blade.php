@@ -146,7 +146,7 @@
     </div>
 
     {{-- modal untuk delete category --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+    {{-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteCategory" method="POST">
@@ -170,7 +170,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 
 @endsection
 
@@ -180,11 +180,12 @@
     </script>
 
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             var dataTable = $('#datatable-category').DataTable({
                 "processing": true,
-                "serverSide": false, // Since data is fetched by Ajax, set to false
+                "serverSide": false,
                 "ajax": {
                     "url": '{{ route('query.custom') }}',
                     "type": "GET",
@@ -192,9 +193,8 @@
                     "data": {
                         table: 'categories',
                         limit: 100,
-                        // Include other parameters as needed
                     },
-                    "dataSrc": "" // Empty string or null to indicate that the data is at the root level
+                    "dataSrc": ""
                 },
                 "columns": [{
                         "data": null,
@@ -215,13 +215,16 @@
                         "data": null,
                         "title": "Action",
                         "render": function(data, type, row) {
-                            return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCategory(' +
-                                row.id +
-                                ')"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteCategory(' +
-                                row.id +
-                                ')"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                            return `
+                                <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCategory(${row.id})">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-danger btn-xs" type="button" onclick="deleteCategory(${row.id})">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            `;
                         }
-                    },
+                    }
                 ],
                 "scrollY": true,
                 "scrollX": false,
@@ -235,7 +238,6 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: 'GET',
-
                 url: '{{ route('query.custom') }}',
                 data: {
                     table: "categories",
@@ -244,42 +246,63 @@
                     },
                     limit: 1
                 },
-                // dataType: 'json',
                 success: function(response) {
-                    console.log(response)
                     document.getElementById("id").value = response[0].id;
                     document.getElementById("inNamaKategori").value = response[0].category_name;
                     var selectElement = document.getElementById("inJenis");
                     selectElement.value = response[0].category_parent;
-
-                    for (var i = 0; i < selectElement.options.length; i++) {
-                        var option = selectElement.options[i];
-                        if (option.value === response[0].category_parent) {
-                            option.selected = true;
-                        } else {
-                            option.selected = false;
-                        }
-                    }
                 },
                 error: function(xhr, status, error) {
                     console.error(xhr.responseText);
                 }
             });
 
-            //link untuk update
             var form = document.getElementById('updateFormCategory');
             var url = `{{ route('management-system.team.category.update', ['id' => ':categoryId']) }}`;
             url = url.replace(':categoryId', categoryId);
             form.action = url;
-
         }
 
         function deleteCategory(categoryId) {
-            // Mengatur ID data yang akan dihapus dalam variabel JavaScript
-            var form = document.getElementById('formDeleteCategory');
             var url = `{{ route('management-system.team.category.delete', ['id' => ':categoryId']) }}`;
             url = url.replace(':categoryId', categoryId);
-            form.action = url;
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE'
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                'Berhasil!',
+                                'Kategori berhasil dihapus.',
+                                'success'
+                            );
+                            $('#datatable-category').DataTable().ajax.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Gagal!',
+                                'Terjadi kesalahan saat menghapus kategori.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
         }
     </script>
 @endpush

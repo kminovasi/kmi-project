@@ -136,7 +136,7 @@
 
 
     {{-- modal untuk update category --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+    {{-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteTheme" method="POST">
@@ -160,22 +160,25 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 
 
 @endsection
 
 @push('js')
-<script
-src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
-</script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+    </script>
 
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             var dataTable = $('#datatable-category').DataTable({
                 "processing": true,
-                "serverSide": false, // Since data is fetched by Ajax, set to false
+                "serverSide": false,
                 "ajax": {
                     "url": '{{ route('query.custom') }}',
                     "type": "GET",
@@ -183,9 +186,8 @@ src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1
                     "data": {
                         table: 'themes',
                         limit: 100,
-                        // Include other parameters as needed
                     },
-                    "dataSrc": "" // Empty string or null to indicate that the data is at the root level
+                    "dataSrc": ""
                 },
                 "columns": [{
                         "data": null,
@@ -202,11 +204,14 @@ src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1
                         "data": null,
                         "title": "Action",
                         "render": function(data, type, row) {
-                            return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCategory(' +
-                                row.id +
-                                ')"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteCategory(' +
-                                row.id +
-                                ')"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                            return `
+                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCategory(${row.id})">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-danger btn-xs" type="button" onclick="deleteCategory(${row.id})">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                        `;
                         }
                     },
                 ],
@@ -222,7 +227,6 @@ src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: 'GET',
-
                 url: '{{ route('query.custom') }}',
                 data: {
                     table: "themes",
@@ -231,9 +235,7 @@ src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1
                     },
                     limit: 1
                 },
-                // dataType: 'json',
                 success: function(response) {
-                    console.log(response)
                     document.getElementById("id").value = response[0].id;
                     document.getElementById("inNamaTema").value = response[0].theme_name;
                 },
@@ -242,20 +244,52 @@ src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1
                 }
             });
 
-            //link untuk update
             var form = document.getElementById('updateFormTheme');
             var url = `{{ route('management-system.team.theme.update', ['id' => ':themeId']) }}`;
             url = url.replace(':themeId', themeId);
             form.action = url;
-
         }
 
         function deleteCategory(themeId) {
-            // Mengatur ID data yang akan dihapus dalam variabel JavaScript
-            var form = document.getElementById('formDeleteTheme');
             var url = `{{ route('management-system.team.theme.delete', ['id' => ':themeId']) }}`;
             url = url.replace(':themeId', themeId);
-            form.action = url;
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE'
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                'Berhasil!',
+                                'Tema berhasil dihapus.',
+                                'success'
+                            );
+                            $('#datatable-category').DataTable().ajax.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Gagal!',
+                                'Terjadi kesalahan saat menghapus tema.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
         }
     </script>
 @endpush

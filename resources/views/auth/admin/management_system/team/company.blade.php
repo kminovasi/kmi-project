@@ -160,7 +160,7 @@
 
 
     {{-- modal untuk delete company --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+    {{-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteCompany" method="POST">
@@ -184,7 +184,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
 
 @endsection
 
@@ -194,11 +194,13 @@
     </script>
 
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             var dataTable = $('#datatable-company').DataTable({
                 "processing": true,
-                "serverSide": false, // Since data is fetched by Ajax, set to false
+                "serverSide": false,
                 "ajax": {
                     "url": '{{ route('query.custom') }}',
                     "type": "GET",
@@ -206,9 +208,8 @@
                     "data": {
                         table: 'companies',
                         limit: 100,
-                        // Include other parameters as needed
                     },
-                    "dataSrc": "" // Empty string or null to indicate that the data is at the root level
+                    "dataSrc": ""
                 },
                 "columns": [{
                         "data": null,
@@ -229,11 +230,14 @@
                         "data": null,
                         "title": "Action",
                         "render": function(data, type, row) {
-                            return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCompany(' +
-                                row.id +
-                                ')"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteCompany(' +
-                                row.id +
-                                ')"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+                            return `
+                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="updateCompany(${row.id})">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-danger btn-xs" type="button" onclick="deleteCompany(${row.id})">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                        `;
                         }
                     },
                 ],
@@ -258,9 +262,9 @@
                     },
                     limit: 1
                 },
-                // dataType: 'json',
-                success: function(response) {
-                    console.log(response)
+
+                success: function(response)
+                {
                     document.getElementById("id").value = response[0].id;
                     document.getElementById("inKodePerusahaan").value = response[0].company_code;
                     document.getElementById("inNamaPerusahaan").value = response[0].company_name;
@@ -274,7 +278,7 @@
                 }
             });
 
-            //link untuk update
+
             var form = document.getElementById('updateFormCompany');
             var url = `{{ route('management-system.team.company.update', ['id' => ':companyId']) }}`;
             url = url.replace(':companyId', companyId);
@@ -283,11 +287,46 @@
         }
 
         function deleteCompany(companyId) {
-            // Mengatur ID data yang akan dihapus dalam variabel JavaScript
-            var form = document.getElementById('formDeleteCompany');
+
             var url = `{{ route('management-system.team.company.delete', ['id' => ':companyId']) }}`;
             url = url.replace(':companyId', companyId);
-            form.action = url;
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE'
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                'Berhasil!',
+                                'Perusahaan berhasil dihapus.',
+                                'success'
+                            );
+                            $('#datatable-company').DataTable().ajax.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire(
+                                'Gagal!',
+                                'Terjadi kesalahan saat menghapus perusahaan.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
         }
     </script>
 @endpush

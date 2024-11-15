@@ -78,7 +78,7 @@
                         <div class="mb-4">
                             <label for="inputNamaKategori" class="form-label text-muted">Nama Kategori</label>
                             <input type="text" name="category_name" id="inputNamaKategori"
-                                class="form-control rounded-3 shadow-sm" placeholder="Isi nama kategori" required>
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi Nama Kategori" required>
                         </div>
                         <div class="mb-4">
                             <label for="inputJenis" class="form-label text-muted">Jenis Kategori</label>
@@ -145,7 +145,7 @@
         </div>
     </div>
 
-    {{-- modal untuk deletew category --}}
+    {{-- modal untuk delete category --}}
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
         aria-hidden="true">
         <div class="modal-dialog" role="document">

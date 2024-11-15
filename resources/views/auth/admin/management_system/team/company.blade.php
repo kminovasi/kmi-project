@@ -75,12 +75,12 @@
                         <div class="mb-4">
                             <label for="inputKodePerusahaan" class="form-label text-muted">Kode Perusahaan</label>
                             <input type="text" name="company_code" id="inputKodePerusahaan"
-                                class="form-control rounded-3 shadow-sm" placeholder="Isi kode perusahaan" required>
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi Kode Perusahaan" required>
                         </div>
                         <div class="mb-4">
                             <label for="inputNamaPerusahaan" class="form-label text-muted">Nama Perusahaan</label>
                             <input type="text" name="company_name" id="inputNamaPerusahaan"
-                                class="form-control rounded-3 shadow-sm" placeholder="Isi nama perusahaan" required>
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi Nama Perusahaan" required>
                         </div>
                         <div class="mb-4">
                             <label for="inGroupPerusahaan" class="form-label text-muted">Group Perusahaan</label>

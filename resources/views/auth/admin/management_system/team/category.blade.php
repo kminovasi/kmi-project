@@ -67,79 +67,87 @@
     <div class="modal fade" id="createCategory" tabindex="-1" role="dialog" aria-labelledby="createCategoryLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createCategoryLabel">Form Kategori</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Form Kategori</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('management-system.team.category.store') }}" method="POST">
-                    @csrf
-                    @method('POST')
+                    @csrf @method('POST')
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <h6 for="inputNamaKategori" class="small mb-1">Nama Kategori</h6>
-                            <input type="text" name="category_name" value="" id="inputNamaKategori"
-                                class="form-control" placeholder="Isi nama kategori" required>
+                        <div class="mb-4">
+                            <label for="inputNamaKategori" class="form-label text-muted">Nama Kategori</label>
+                            <input type="text" name="category_name" id="inputNamaKategori"
+                                class="form-control rounded-3 shadow-sm" placeholder="Isi nama kategori" required>
                         </div>
-                        <div class="mb-3">
-                            <h6 for="inputJenis" class="small mb-1">Jenis</h6>
-                            <select name="category_parent" id="inputJenis" class="form-select">
+                        <div class="mb-4">
+                            <label for="inputJenis" class="form-label text-muted">Jenis Kategori</label>
+                            <select name="category_parent" id="inputJenis" class="form-select rounded-3 shadow-sm">
                                 <option value="BREAKTHROUGH INNOVATION">BREAKTHROUGH INNOVATION</option>
                                 <option value="INCREMENTAL INNOVATION">INCREMENTAL INNOVATION</option>
                                 <option value="IDEA BOX">IDEA BOX</option>
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button> --}}
-                        <button class="btn btn-primary" type="submit"style="font-weight: 600;">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit"
+                            style="font-weight: 600;">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
 
         </div>
+        <script>
+            feather.replace();
+        </script>
     </div>
     <!-- Bootstrap Modal for Update -->
     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadDocumentTitle">Update Kategori</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold">Update Kategori</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateFormCategory" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+                    @csrf @method('PUT')
                     <div class="modal-body">
-                        <!-- Update form fields go here -->
-                        <input type="hidden" name="id" value="" id="id" class="form-control">
-                        <div class="mb-3">
-                            <h6 for="inNamaKategori" class="small mb-1">Nama Kategori</h6>
-                            <input type="text" name="category_name" value="" id="inNamaKategori"
-                                class="form-control" required>
+                        <input type="hidden" name="id" id="id" class="form-control">
+                        <div class="mb-4">
+                            <label for="inNamaKategori" class="form-label text-muted">Nama Kategori</label>
+                            <input type="text" name="category_name" id="inNamaKategori"
+                                class="form-control rounded-3 shadow-sm" required>
                         </div>
-                        {{-- <input type="text" id="inJenis"> --}}
-                        <div class="mb-3">
-                            <h6 class="small mb-1" for="inJenis">Jenis</h6>
-                            <select name="category_parent" id="inJenis" class="form-select">
+                        <div class="mb-4">
+                            <label for="inJenis" class="form-label text-muted">Jenis Kategori</label>
+                            <select name="category_parent" id="inJenis" class="form-select rounded-3 shadow-sm">
                                 <option value="BREAKTHROUGH INNOVATION">BREAKTHROUGH INNOVATION</option>
                                 <option value="INCREMENTAL INNOVATION">INCREMENTAL INNOVATION</option>
                                 <option value="IDEA BOX">IDEA BOX</option>
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        {{-- <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button> --}}
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button class="btn btn-primary px-4 py-2 d-flex align-items-center gap-1" type="submit">
+                            <i data-feather="save"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
+
+            <script>
+                feather.replace();
+            </script>
+
         </div>
     </div>
 
-    {{-- modal untuk update category --}}
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle" aria-hidden="true">
+    {{-- modal untuk delete category --}}
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitle"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form id="formDeleteCategory" method="POST">
                 @csrf
@@ -152,12 +160,12 @@
                     <div class="modal-body">
                         <div class="text-center">
                             <i class="fa fa-exclamation-triangle text-warning" style="font-size: 40px;"></i>
-                            <p class="mt-3">Apakah Anda yakin ingin menghapus data ini?</p>
+                            <p class="mt-3">Apakah Anda yakin ingin menghapus kategori ini?</p>
                         </div>
                     </div>
                     <div class="modal-footer border-0 justify-content-center">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger" style="font-weight: 600;">Hapus</button>
+                        <button type="submit" class="btn btn-danger" style="font-weight: 600;">Hapus Kategori</button>
                     </div>
                 </div>
             </form>

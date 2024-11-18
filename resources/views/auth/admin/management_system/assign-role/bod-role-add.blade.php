@@ -12,13 +12,14 @@
                 <div class="row align-items-center justify-content-between pt-3">
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
-                            <div class="page-header-icon"><i data-feather="book"></i></div>
+                            <div class="page-header-icon"><i data-feather="book-open"></i></div>
                             Assign BOD Event
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
-                        <a class="btn btn-sm btn-light text-primary" href="{{ route('management-system.role.bod.index') }}">
-                            <i class="me-1" data-feather="arrow-left"></i>
+                        <a class="btn btn-sm btn-light text-primary d-flex align-items-center gap-2"
+                            href="{{ route('management-system.role.bod.index') }}">
+                            <i data-feather="arrow-left"></i>
                             Kembali
                         </a>
                     </div>
@@ -28,55 +29,54 @@
     </header>
     <div class="container-xl px-4 mt-4">
         <div class="row justify-content-center">
-            <div class="div mb-3">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            <!-- Alert messages -->
+            <div class="col-12 col-lg-8">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                         {{ session('success') }}
-
-                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                @if(session('errors'))
-                    <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                @if (session('errors'))
+                    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
                         {{ session('errors') }}
-
-                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
             </div>
-            <!-- Join Organization-->
-            <div class="col-xl-7 col-lg-8 col-md-9 col-sm-11">
-                <div class="card border-0 shadow-lg mb-5">
-                    <div class="card-body p-3 text-center">
-                        <div class="h3 text-primary mb-0">Form Assign BOD Event</div>
+
+            <!-- Form Assign -->
+            <div class="col-12 col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="text-secondary fw-bold mb-0">Form Assign BOD Event</h5>
                     </div>
-                    <hr class="m-0" />
-                    <div class="card-body p-5">
+                    <div class="card-body">
                         <form action="{{ route('management-system.role.bod.event.store') }}" method="POST"
                             id="assign-bod-form">
                             @csrf
                             <div class="mb-4">
-                                <h6 class="small mb-1">Board of Director</h6>
-                                <select class="form-select" aria-label="Default select example"
-                                    name="employee_id" id="id_bod" value="{{ old('bod') }}"
-                                    placeholder="Pilih User" required>
-                                    
+                                <label for="id_bod" class="form-label text-muted">Board of Director</label>
+                                <select class="form-select" name="employee_id" id="id_bod" value="{{ old('bod') }}"
+                                    required>
+                                    <option value="" disabled selected>Pilih User</option>
+                                    <!-- Options will be dynamically populated -->
                                 </select>
                             </div>
                             <div class="mb-4">
-                                <h6 class="small mb-1">Event</h6>
-                                <select class="form-select" aria-label="Default select example" name="event_id" value="{{ old('event_id') }}" required>
+                                <label for="event_id" class="form-label text-muted">Event</label>
+                                <select class="form-select" name="event_id" value="{{ old('event_id') }}" required>
+                                    <option value="" disabled selected>Pilih Event</option>
                                     @foreach ($datas_event as $ev)
                                         <option value="{{ $ev->id }}">{{ $ev->event_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            
-                            <!-- Save changes button-->
                             <div class="d-grid">
-                                <button class="btn btn-secondary" type="submit" id="button_submit">
-                                    Submit</button>
-                                <!-- <a class="btn btn-secondary">Save</a> -->
+                                <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2"
+                                    type="submit" id="button_submit">
+                                    <i data-feather="send"></i> Submit
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -85,80 +85,82 @@
         </div>
     </div>
 @endsection
+
 @push('js')
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-        </script>
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        {{-- <!-- <script src="{{asset('template/dist/js/scripts.js')}}"></script> --> --}}
-        <script>
-            // fungsi yang dijalankan ketika dom sudah terload
-            // akan menginisasi semua select field agar menggunakkan library select2
-            document.addEventListener("DOMContentLoaded", function() {
-                var selectElements = document.querySelectorAll('select');
-                selectElements.forEach(function(select) {
-                    
-                });
-                search_select2('id_bod')
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{-- <!-- <script src="{{asset('template/dist/js/scripts.js')}}"></script> --> --}}
+    <script>
+        // fungsi yang dijalankan ketika dom sudah terload
+        // akan menginisasi semua select field agar menggunakkan library select2
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectElements = document.querySelectorAll('select');
+            selectElements.forEach(function(select) {
+
             });
+            search_select2('id_bod')
+        });
 
 
-            // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
-            function search_select2(select_element_id) {
+        // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
+        function search_select2(select_element_id) {
 
-                $('#' + select_element_id).select2({
-                    // allowClear: true,
-                    // theme: "classic",
-                    allowClear: true,
-                    width: "100%",
-                    placeholder: "Pilih " + select_element_id.split("_")[1] + (select_element_id.split("_")[2] ? " " +
-                        select_element_id.split("_")[2] + " : " : " : "),
-                    ajax: {
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        type: 'POST', // Metode HTTP POST
-                        url: '{{ route('query.get_BOD') }}',
-                        dataType: 'json',
-                        delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
-                        data: function(params) {
-                            // Data yang akan dikirim dalam permintaan POST
-                            return {
-                                query: params.term // Menggunakan nilai input "query" sebagai parameter
-                            };
-                        },
-                        processResults: function(data) {
-                            // Memformat data yang diterima untuk format yang sesuai dengan Select2
-                            return {
-                                results: $.map(data, function(item) {
-                                    return {
-                                        text: item.employee_id + ' - ' + item.name, // Nama yang akan ditampilkan di kotak seleksi
-                                        id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
-                                    };
-                                })
-                            };
-                        },
-                        cache: true
-                    }
-                });
-            }
-
-            function loading(element) {
-                var id = element.id
-                element.setAttribute('disabled', 'true');
-                element.innerText = "Process...";
-            }
-
-            document.getElementById("assign-bod-form").addEventListener("submit", function(event) {
-                event.preventDefault(); // Mencegah pengiriman langsung
-                var id_button = document.getElementById("button_submit")
-                id_button.setAttribute('disabled', 'true');;
-                id_button.innerText = "Process...";
-
-                setTimeout(function() {
-                    document.getElementById("assign-bod-form").submit();
-                }, 1000);
+            $('#' + select_element_id).select2({
+                // allowClear: true,
+                // theme: "classic",
+                allowClear: true,
+                width: "100%",
+                placeholder: "Pilih " + select_element_id.split("_")[1] + (select_element_id.split("_")[2] ? " " +
+                    select_element_id.split("_")[2] + " : " : " : "),
+                ajax: {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST', // Metode HTTP POST
+                    url: '{{ route('query.get_BOD') }}',
+                    dataType: 'json',
+                    delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
+                    data: function(params) {
+                        // Data yang akan dikirim dalam permintaan POST
+                        return {
+                            query: params.term // Menggunakan nilai input "query" sebagai parameter
+                        };
+                    },
+                    processResults: function(data) {
+                        // Memformat data yang diterima untuk format yang sesuai dengan Select2
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    text: item.employee_id + ' - ' + item
+                                        .name, // Nama yang akan ditampilkan di kotak seleksi
+                                    id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
             });
-        </script>
+        }
+
+        function loading(element) {
+            var id = element.id
+            element.setAttribute('disabled', 'true');
+            element.innerText = "Process...";
+        }
+
+        document.getElementById("assign-bod-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Mencegah pengiriman langsung
+            var id_button = document.getElementById("button_submit")
+            id_button.setAttribute('disabled', 'true');;
+            id_button.innerText = "Process...";
+
+            setTimeout(function() {
+                document.getElementById("assign-bod-form").submit();
+            }, 1000);
+        });
+    </script>
 @endpush

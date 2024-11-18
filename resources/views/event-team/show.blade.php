@@ -29,9 +29,9 @@
                 <table id="datatablesSimple" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Team Name</th>
-                            <th>Innovation Title</th>
-                            <th>Company Name</th>
+                            <th>Team</th>
+                            <th>Judul Inovasi</th>
+                            <th>Perusahaan</th>
                             @if (Auth::user()->role === 'Superadmin')
                                 <th>Status Lolos</th>
                                 <th>Status Full Paper</th>
@@ -155,9 +155,13 @@
                     columns.push({
                         data: 'status_lolos',
                         render: function(data, type, row) {
-                            return data ?
-                                '<span class="badge bg-success">Masuk Grup</span>' :
-                                '<span class="badge bg-danger">Reject</span>';
+                            if (!data && !row.has_full_paper) {
+                                return '<span class="badge bg-danger">Belum di verifikasi</span>';
+                            } else {
+                                return data ?
+                                    '<span class="badge bg-success">Masuk Grup</span>' :
+                                    '<span class="badge bg-danger">Reject</span>';
+                            }
                         }
                     });
                 @endif
@@ -178,18 +182,22 @@
                     orderable: false,
                     searchable: false,
                     render: function(data, type, row) {
-                        let buttons = `<a href="${row.view_url}" class="btn btn-primary btn-sm">View</a>`;
+                        let buttons =
+                            `<a href="${row.view_url}" class="btn btn-primary btn-sm" style="display: none">View</a>`;
 
-                        if (row.user_role === 'leader' || row.user_role === 'member' && row.has_paper) {
-                            buttons += ` <a href="${row.edit_url}"
-                        class="btn btn-warning btn-sm ms-1">
-                        <i class="fas fa-edit"></i> Edit Paper
-                    </a>`;
+                        if ((row.user_role === 'leader') || (row.user_role === 'member' && row.has_paper &&
+                                row.event_type !== 'AP')) {
+                            // Tidak perlu menampilkan tombol jika event_type adalah 'AP'
+                            if (row.event_type !== 'AP') {
+                                buttons += ` <a href="${row.edit_url}" class="btn btn-warning btn-sm ms-1">
+                                <i class="fas fa-edit"></i> Edit Paper ${row.event_type}
+                            </a>`;
+                            }
                             buttons += `<a href="${row.edit_benefit_url}"
-                        class="btn btn-info btn-sm ms-1"
-                        data-bs-toggle="tooltip" title="Edit Team Benefits">
-                        <i class="fas fa-chart-line"></i> Edit Benefit
-                    </a>`;
+                                class="btn btn-info btn-sm ms-1"
+                                data-bs-toggle="tooltip" title="Edit Team Benefits">
+                                <i class="fas fa-chart-line"></i> Edit Benefit
+                            </a>`;
                         }
                         if (row.role === 'Superadmin') {
                             buttons += `<a href="${row.check_paper}"

@@ -190,15 +190,6 @@
                                         <div class="small mb-0" id="solution"></div>
                                     </div>
                                     <hr>
-                                    {{-- <div class="mb-3">
-                                    <div class="fw-bold">Dampak Solusi</div>
-                                    <div class="small mb-0" id="outcome"></div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <div class="fw-bold">Dampak Positif</div>
-                                    <div class="small mb-0" id="performance"></div>
-                                </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -520,6 +511,14 @@
                                 @foreach ($data_theme as $theme)
                                     <option value="{{ $theme->id }}">{{ $theme->theme_name }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputStatusInovasi">Status Inovasi</label>
+                            <select name="status_inovasi" id="inputStatusInovasi" class="form-select">
+                                <option value="Not Implemented">Not Implemented</option>
+                                <option value="Progress">Progress</option>
+                                <option value="Implemented">Implemented</option>
                             </select>
                         </div>
                     </div>
@@ -1303,7 +1302,8 @@
                         'category_name',
                         'theme_name',
                         'themes.id as theme_id',
-                        'categories.id as category_id'
+                        'categories.id as category_id',
+                        'status_inovasi'
                     ]
             },
             // dataType: 'json',
@@ -1311,6 +1311,14 @@
                 console.log(response)
                 document.getElementById("inputInnovationTitle").value = response[0].innovation_title;
                 document.getElementById("inputTeamName").value = response[0].team_name;
+
+                var statusInovasiSelected = document.getElementById("inputStatusInovasi"); // Menggunakan ID yang benar
+                for (var i = 0; i < statusInovasiSelected.options.length; i++) {
+                    if (statusInovasiSelected.options[i].value == response[0].status_inovasi) {
+                        statusInovasiSelected.options[i].selected = true; // Menandai opsi sebagai terpilih
+                        break;
+                    }
+                }
 
                 //selected category
                 var categorySelected = document.getElementById("inputCategory");

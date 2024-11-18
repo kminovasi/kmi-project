@@ -97,7 +97,7 @@ class EventTeamController extends Controller
         $currentUser = auth()->user();
         $role = Auth::user()->role;
 
-        $data = PvtEventTeam::with(['team.paper', 'team.company', 'team.pvtMembers.user'])
+        $data = PvtEventTeam::with(['team.paper', 'team.company', 'team.pvtMembers.user', 'event'])
             ->where('event_id', $id)
             ->get()
             ->map(function ($item) use ($currentUser, $id, $role) {
@@ -125,6 +125,7 @@ class EventTeamController extends Controller
                     'innovation_title' => $item->team->paper->innovation_title ?? '-',
                     'company_name' => $item->team->company->company_name ?? '-',
                     'status_lolos' => $item->team->paper->status_event === 'accept_group',
+                    'event_type' => $item->event->type,
                     'has_full_paper' => $hasFullPaper,
                     'view_url' => route('event-team.show', $item->team_id),
                     'edit_url' => route('event-team.paper.edit', ['id' => $item->team->paper->id ?? 0, 'eventId' => $id]),

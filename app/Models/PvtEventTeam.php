@@ -28,6 +28,10 @@ class PvtEventTeam extends Model
     {
         return $this->belongsTo(Team::class, 'team_id');
     }
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
 
     public function summaryExecutives()
     {

@@ -69,14 +69,16 @@
                                 <option value="international">International</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <select name="company_code" class="form-select">
-                                <option value="">Select Company</option>
-                                @foreach ($companies as $company)
-                                    <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        @if (auth()->user()->role === 'Supeadmin')
+                            <div class="col-md-4">
+                                <select name="company_code" class="form-select">
+                                    <option value="">Select Company</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         <div class="col-md-4">
                             <select name="status" class="form-select">
                                 <option value="">Select Status</option>
@@ -96,7 +98,6 @@
                             <th>Mulai</th>
                             <th>Berakhir</th>
                             <th>Status</th>
-                            <th>Year</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,10 +164,7 @@
                             }
                         }
                     },
-                    {
-                        data: 'year',
-                        name: 'year'
-                    },
+
                     {
                         data: 'id',
                         name: 'id',

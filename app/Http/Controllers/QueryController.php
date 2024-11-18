@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\PvtAssessmentTeam;
 use App\Models\SummaryExecutive;
+use App\Services\JudgeService;
 use DataTables;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -1157,11 +1158,12 @@ class QueryController extends Controller
                 });
 
                 $rawColumns[] = 'action';
-                $dataTable->addColumn('action', function ($data_row) {
+                $dataTable->addColumn('action', function ($data_row) use ($request) {
                     $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
                     $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $judgeService = app(JudgeService::class);
 
-                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
+                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || $judgeService->isJudgeInEvent(Auth::user(), $request->filterEvent)) {
                         $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
                             "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
@@ -1555,6 +1557,7 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
 
     public function get_input_pa_assessment_team(Request $request)
     {

@@ -157,7 +157,7 @@
                             </div>
                         </div>
                     @endif
-                    @if (Auth::user()->role == 'Juri')
+                    @if (Auth::user()->role == 'Juri' || $is_judge)
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary" id="btnsubmit">Submit</button>
                         </div>
@@ -236,6 +236,7 @@
         var dataTable = $('#datatable-penilaian').DataTable({
             "processing": true,
             "serverSide": true,
+             "searching": false,
             "ajax": {
                 "url": "{{ route('query.get_input_oda_assessment_team') }}",
                 "type": "GET",

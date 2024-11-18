@@ -135,7 +135,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
-                    @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
+                    @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri' || $is_judge)
                         <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
                             data-bs-target="#filterModal">Filter</button>
                         {{-- <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterCategoryModal">Filter Category</button> --}}

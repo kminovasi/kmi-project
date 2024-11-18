@@ -11,6 +11,7 @@ use App\Models\History;
 use App\Models\Paper;
 use App\Models\PvtCustomBenefit;
 use App\Models\PvtEventTeam;
+use App\Models\PvtMember;
 use App\Models\Team;
 use App\Notifications\PaperNotification;
 use App\Services\PaperFileUploadService;
@@ -32,7 +33,31 @@ class EventTeamController extends Controller
 
     public function getEvents(Request $request)
     {
-        $query = Event::with('company');
+        // Ambil user yang sedang login
+        $user = Auth::user();
+
+        // Buat query untuk mengambil event
+        $query = Event::with('company'); // Ambil semua event dengan relasi company
+
+        // Jika user bukan Superadmin, ambil tim yang diikuti oleh user
+        if ($user->role !== 'Superadmin') {
+            // Ambil tim yang diikuti oleh user
+            $teams = PvtMember::where('employee_id', $user->employee_id)
+                ->pluck('team_id');
+
+            // Ambil event yang diikuti oleh tim
+            $eventIds = PvtEventTeam::whereIn('team_id', $teams)
+                ->pluck('event_id')
+                ->unique();
+
+            // Filter berdasarkan event yang diikuti oleh tim
+            if ($eventIds->isNotEmpty()) {
+                $query->whereIn('id', $eventIds);
+            } else {
+                // Jika user tidak mengikuti event, kembalikan data kosong
+                return DataTables::of([])->toJson();
+            }
+        }
 
         // Filter berdasarkan type
         if ($request->has('type') && $request->type != '') {
@@ -59,7 +84,6 @@ class EventTeamController extends Controller
             })
             ->toJson();
     }
-
     public function show($id)
     {
         $event = Event::findOrFail($id);

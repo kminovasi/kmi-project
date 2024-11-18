@@ -1,59 +1,51 @@
 @extends('layouts.app')
 @section('title', 'Benefit')
 @section('content')
-                    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-                        <div class="container-xl px-4">
-                            <div class="page-header-content">
-                                <div class="row align-items-center justify-content-between pt-3">
-                                    <div class="col-auto mb-3">
-                                        <h1 class="page-header-title">
-                                            <div class="page-header-icon"><i data-feather="book"></i></div>
-                                                Setting Benefit
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
-                    <!-- Main page content-->
-                    <div class="container-xl px-4 mt-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row gx-1 mb-3" id="benefitFinancial">
-                                    <div class="row">
-                                        <label class="mb-1" for="dataFinancial">Benefit Finansial Riil</label>
-                                        <input class="form-control" id="dataFinancial" style="max-height: 2.5em" type="text" name="financial" value="" placeholder="Nominal Benefit Finansial Riil" disabled>
-                                    </div>
-                                </div>
-                                <div class="row gx-1 mb-3" id="benefitFinancial">
-                                    <div class="row">
-                                        <label class="mb-1" for="dataBenefitPtential">Potensi Benefit Finansial</label>
-                                        {{-- enable kalo mau pake subtitle buat Potensi Benefit Finansial --}}
-                                        {{-- <label class="mb-1" style="font-size:.8em" for="dataBenefitPtential">Hasil Total dari Benefit Potensial Riil dan Potensi Benefit</label> --}}
-                                        <input class="form-control" style="max-height: 2.5em" id="dataBenefitPotential" type="text" name="potential_benefit" placeholder="Nominal Potensi Benefit Finansial" value="" disabled>
-                                    </div>
-                                </div>
-                                <div id="listBenefitNonFin">
-
-                                </div>
-                                <button type="button" class="btn btn-outline-primary" id="addBenefitNonFin" onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Add Non Financial</button>
-
-                                {{-- <div class="mb-3">
-                                    <label class="mb-1" for="dataBenefitNonFin">Benefit Non Financial</label>
-                                    <textarea class="form-control"  id="dataBenefitNonFin" name="benefit_nonfin" cols="30" rows="20" type="text"></textarea>
-                                </div> --}}
-                            </div>
-                        </div>
+    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+        <div class="container-xl px-4">
+            <div class="page-header-content">
+                <div class="row align-items-center justify-content-between pt-3">
+                    <div class="col-auto mb-3">
+                        <h1 class="page-header-title">
+                            <div class="page-header-icon"><i data-feather="book"></i></div>
+                            Setting Benefit
+                        </h1>
                     </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main page content-->
+    <div class="container-xl px-4 mt-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row gx-1 mb-3" id="benefitFinancial">
+                    <div class="row">
+                        <label class="mb-1" for="dataFinancial">Benefit Finansial Riil</label>
+                        <input class="form-control" id="dataFinancial" style="max-height: 2.5em" type="text"
+                            name="financial" value="" placeholder="Nominal Benefit Finansial Riil" disabled>
+                    </div>
+                </div>
+                <div class="row gx-1 mb-3" id="benefitFinancial">
+                    <div class="row">
+                        <label class="mb-1" for="dataBenefitPtential">Potensi Benefit Finansial</label>
+                        <input class="form-control" style="max-height: 2.5em" id="dataBenefitPotential" type="text"
+                            name="potential_benefit" placeholder="Nominal Potensi Benefit Finansial" value=""
+                            disabled>
+                    </div>
+                </div>
+                <div id="listBenefitNonFin">
+
+                </div>
+                <button type="button" class="btn btn-outline-primary" id="addBenefitNonFin"
+                    onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Add Non Financial</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('js')
-
-    {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
-
         let count = 0
         let idEvent;
 
@@ -85,7 +77,7 @@
         }
 
 
-        function get_data_benefit(idEvent){
+        function get_data_benefit(idEvent) {
 
             $.ajax({
                 headers: {
@@ -108,7 +100,7 @@
                     // document.getElementById('dataFinancial').value = data.data_benefit_financial.financial;
                     // document.getElementById('dataBenefitPotential').value = data.data_benefit_financial.potential_benefit;
 
-                    Object.keys(data).forEach(function(index){
+                    Object.keys(data).forEach(function(index) {
                         count++;
                         id_benefit = data[index].id
                         name_benefit = data[index].name_benefit
@@ -141,7 +133,7 @@
 
         }
 
-        function add_custom_benefit(){
+        function add_custom_benefit() {
             count++;
             const newInputNonFin = `
                 <div class="row gx-3 mb-3" id="nonfin-${count}">
@@ -157,18 +149,17 @@
                     </div>
                 </div>
                 `;
-                document.getElementById('listBenefitNonFin').insertAdjacentHTML('beforeend', newInputNonFin);
-            // document.getElementById('listBenefitNonFin').innerHTML += newInputNonFin;
+            document.getElementById('listBenefitNonFin').insertAdjacentHTML('beforeend', newInputNonFin);
         }
 
         // menjalnkan fungsi ketika modal ditutup
-        $('#addBenefit').on('hidden.bs.modal', function () {
+        $('#addBenefit').on('hidden.bs.modal', function() {
             document.getElementById('listBenefitNonFin').innerHTML = "";
             count = 0;
             document.getElementById("addBenefitNonFin").removeAttribute("onclick");
         });
 
-        function save_data(order, idEvent){
+        function save_data(order, idEvent) {
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -180,8 +171,6 @@
                     company_code: idEvent
                 },
                 success: function(data) {
-                    // Menampilkan data yang diterima dari server
-                    // console.log(data);
 
                     button_nonfin = document.getElementById("button_place-" + order)
                     button_nonfin.innerHTML = ""
@@ -203,14 +192,12 @@
                     }, 100);
                 },
                 error: function(error) {
-                    // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
-                    // alert(error.responseJSON.error);
                     console.error(error.responseJSON)
                 }
             });
         }
 
-        function edit_inputfield(order, idEvent){
+        function edit_inputfield(order, idEvent) {
             input_value_benefit_nonfin = document.getElementById("inputCustomBenefit-" + order)
             old_value_benefit_nonfin = input_value_benefit_nonfin.value
 
@@ -229,7 +216,7 @@
             input_value_benefit_nonfin.removeAttribute('readonly');
         }
 
-        function cancel_edit_inputfield(order, idEvent, oldValue){
+        function cancel_edit_inputfield(order, idEvent, oldValue) {
             button_nonfin = document.getElementById("button_place-" + order)
             button_nonfin.innerHTML = ""
 
@@ -246,7 +233,7 @@
             input_value_benefit_nonfin.setAttribute('readonly', true);
         }
 
-        function update_data(order, idEvent){
+        function update_data(order, idEvent) {
             // alert(document.getElementById('inputCustomBenefit-' + order).value + " " + order)
             $.ajax({
                 headers: {
@@ -259,9 +246,6 @@
                     name_benefit: document.getElementById('inputCustomBenefit-' + order).value,
                 },
                 success: function(data) {
-                    // Menampilkan data yang diterima dari server
-                    // console.log(data);
-
                     button_nonfin = document.getElementById("button_place-" + order)
                     button_nonfin.innerHTML = ""
 
@@ -281,21 +265,19 @@
 
                 },
                 error: function(error) {
-                    // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
                     alert(error.responseJSON.error);
-                    // console.error(error.responseJSON.message)
                 }
             });
         }
 
-        function delete_inputfield(order){
+        function delete_inputfield(order) {
             nonfin = document.getElementById("nonfin-" + order)
             // nonfin.innerHTML = "";
             nonfin.remove();
             count--;
         }
 
-        function delete_data(order, idEvent){
+        function delete_data(order, idEvent) {
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -306,8 +288,6 @@
                     id: document.getElementById('nonfin-' + order).getAttribute('data-id'),
                 },
                 success: function(data) {
-                    // Menampilkan data yang diterima dari server
-                    // console.log(data);
 
                     delete_inputfield(order)
 
@@ -324,64 +304,9 @@
         }
 
         $(document).ready(function() {
-            // idEvent = get_single_data_from_ajax('events', {
-            //     'company_code': "{{Auth::user()->company_code}}"
-            // }).id
+            idEvent = "{{ Auth::user()->company_code }}"
 
-            // idEvent = (idEvent == undefined) ? 0 : idEvent
-
-            idEvent = "{{Auth::user()->company_code}}"
-            // console.log(typeof idEvent);
-            
             get_data_benefit(idEvent)
         });
-
-
-
-
-
-
-
-        // $(document).ready(function() {
-        //     let benefitNonFinCounter = 2;
-
-        //     $("#addBenefitNonFin").click(function() {
-        //         const benefitNonFinContainer = $("#benefitNonFinContainer");
-        //         const newInput = `
-        //         <form action="" method="post">
-        //             <div class="row gx-3 mb-3">
-        //                 <div class="col-md-5">
-        //                     <input class="form-control" id="inputCustomBenefit" type="text" placeholder="Enter Benefit Non Financial"  />
-        //                 </div>
-        //                 <div class="col-md-5">
-        //                     <input class="form-control" id="inputValue" type="text" disabled/>
-        //                 </div>
-        //                 <div class="col-md-2">
-        //                     <button type="button" class="btn btn-success">Add</button>
-        //                     <button type="button" class="btn btn-pink">Cancel</button>
-        //                 </div>
-        //             </div>
-        //         <form
-        //         `;
-        //         benefitNonFinContainer.append(newInput);
-        //         benefitNonFinCounter++;
-        //     });
-        // });
-
-        // $(document).ready(function() {
-        // let benefitNonFinCounter = 1;
-
-        // // ... (existing code for adding new address inputs) ...
-
-        // $("#refreshForm").click(function() {
-        //     // Reset input fields
-        //     $("#inputCustomBenefit").val("");
-        //     $("#inputValue").val("");
-
-        //     // Remove additional address inputs
-        //     $("#benefitNonFinContainer").empty();
-        //     benefitNonFinCounter = 1;
-        // });
-        // });
     </script>
 @endpush

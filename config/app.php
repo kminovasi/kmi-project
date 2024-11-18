@@ -182,7 +182,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-        
+
 
         /*
          * Package Service Providers...
@@ -199,7 +199,8 @@ return [
 
         Yajra\DataTables\DataTablesServiceProvider::class,
         Webklex\PDFMerger\Providers\PDFMergerServiceProvider::class,
-	Barryvdh\DomPDF\ServiceProvider::class
+        Barryvdh\DomPDF\ServiceProvider::class,
+        App\Providers\JudgeServiceProvider::class,
 
     ],
 

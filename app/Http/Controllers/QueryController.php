@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\PvtAssessmentTeam;
 use App\Models\SummaryExecutive;
+use App\Services\JudgeService;
 use DataTables;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -323,7 +324,6 @@ class QueryController extends Controller
                 ->join('themes', 'teams.theme_id', '=',  'themes.id')
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->orderBy('papers.created_at', 'desc');
-            // ->where('papers.status', '=', 'not finish') //baru
 
             $select = [
                 'papers.id as paper_id',
@@ -333,7 +333,6 @@ class QueryController extends Controller
                 'team_name',
                 'company_name',
                 'theme_name',
-                // 'event_name',
                 'category_name',
                 'financial',
                 'file_review',
@@ -430,26 +429,13 @@ class QueryController extends Controller
             $rawColumns[] = 'full_paper';
             $dataTable->addColumn('full_paper', function ($data_row) {
                 $html = '';
-                // if($data_row->step_1 == 0 && $data_row->step_2 == 0 && $data_row->step_3 == 0 &&
-                //     $data_row->step_4 == 0 && $data_row->step_5 == 0 && $data_row->step_6 == 0 &&
-                //     $data_row->step_7 == 0 &&
-                //     (($data_row->step_8 == 1 && (strpos($data_row->category_name, "GKM") === false)) || ($data_row->step_8 == 0 && (strpos($data_row->category_name, "GKM") !== false)))){
-                //     $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('. $data_row->paper_id .', \'uploadStepForm\' ' .', \'full_paper\' )" >Upload Full Paper</button>';
-                // }else{
-                //     $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('. $data_row->paper_id .', \'uploadStepForm\' ' .', \'full_paper\' )" disabled >Upload Full Paper</button>';
-                // }
-
 
                 if ($data_row->full_paper != null) {
                     $html .= "<a class=\"btn btn-info btn-sm\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'full']) . " \" target=\"_blank\">Detail</a>";
                     if ($data_row->status_rollback == 'rollback paper') {
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                     }
-                }
-                // elseif($data_row->status_rollback == 'rollback paper'){
-                //     $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('. $data_row->paper_id .', \'uploadStepForm\' ' .', \'full_paper\' )" >Upload Full Paper</button>';
-                // }
-                else {
+                } else {
                     $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                 }
                 return $html;
@@ -1157,11 +1143,12 @@ class QueryController extends Controller
                 });
 
                 $rawColumns[] = 'action';
-                $dataTable->addColumn('action', function ($data_row) {
+                $dataTable->addColumn('action', function ($data_row) use ($request) {
                     $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
                     $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $judgeService = app(JudgeService::class);
 
-                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
+                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || $judgeService->isJudgeInEvent(Auth::user(), $request->filterEvent)) {
                         $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
                             "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
@@ -1555,6 +1542,7 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
 
     public function get_input_pa_assessment_team(Request $request)
     {

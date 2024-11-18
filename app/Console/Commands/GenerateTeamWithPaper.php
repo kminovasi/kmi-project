@@ -208,9 +208,14 @@ class GenerateTeamWithPaper extends Command
         // Mendapatkan nilai stage dari PvtAssessmentEvent
         $assessmentEvents = PvtAssessmentEvent::where('event_id', $eventId)->get();
         // $stage = $assessmentEvent ? $assessmentEvent->stage : null;
+        $randomJudges = Judge::where('event_id', $eventId)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
 
         foreach ($assessmentEvents as $assessmentEvent) {
-            $randomJudges = Judge::inRandomOrder()->limit(2)->get();
+            // Ambil juri yang terdaftar untuk event ini
+
             foreach ($randomJudges as $judge) {
                 PvtAssesmentTeamJudge::create([
                     'judge_id' => $judge->id,

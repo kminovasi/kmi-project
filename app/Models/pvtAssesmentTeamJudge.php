@@ -17,4 +17,9 @@ class pvtAssesmentTeamJudge extends Model
         'assessment_event_id',
         'stage'
     ];
+
+    public function judge()
+    {
+        return $this->belongsTo(Judge::class, 'judge_id');
+    }
 }

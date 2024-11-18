@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use Mpdf\Mpdf;
 use App\Http\Requests\assessmentTemplateRequests;
 use App\Http\Requests\assessmentPointRequests;
+use App\Services\JudgeService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -302,8 +303,11 @@ class AssessmentController extends Controller
             $sofiData->opportunity_for_improvement = null;
             $sofiData->save();
         }
+        $judgeService = app(JudgeService::class);
+        $is_judge = $judgeService->isJudge(Auth::user());
+
         // dd($sofiData);
-        return view('auth.juri.assessment_oda', compact('datas', 'sofiData', 'datas_juri'));
+        return view('auth.juri.assessment_oda', compact('datas', 'sofiData', 'datas_juri', 'is_judge'));
     }
 
     public function assessmentValue_pa($id)
@@ -391,7 +395,10 @@ class AssessmentController extends Controller
                 $totalScore += $score;
             }
             $previousFullUrl = url()->previous();
-            $segments = explode('/', $previousFullUrl);
+            $segments = explode(
+                '/',
+                $previousFullUrl
+            );
             $value = $segments[4];
 
             $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
@@ -1319,7 +1326,6 @@ class AssessmentController extends Controller
     }
     public function summaryExecutive(Request $request)
     {
-        // dd($request->all());
         try {
             //code...
             DB::beginTransaction();
@@ -1334,12 +1340,6 @@ class AssessmentController extends Controller
                     'benefit' => $request->input('benefit')
                 ]
             );
-
-            // $pvt_event_id = $request->input('pvt_event_teams_id');
-
-            // $updateStatus = PvtEventTeam::findOrFail($pvt_event_id);
-            // $updateStatus->status = 'Presentation BOD';
-            // $updateStatus->save();
 
             DB::commit();
         } catch (\Exception $e) {

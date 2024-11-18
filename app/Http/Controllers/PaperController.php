@@ -1569,11 +1569,13 @@ class PaperController extends Controller
             $data->update([
                 'team_name' => $request->input('team_name'),
                 'category_id' => $request->input('category'),
-                'theme_id' => $request->input('theme')
+                'theme_id' => $request->input('theme'),
             ]);
 
             $data_paper->update([
                 'innovation_title' => $request->input('innovation_title'),
+                'status_inovasi' =>
+                $request->input('status_inovasi'),
             ]);
 
             // Mengirim notifikasi

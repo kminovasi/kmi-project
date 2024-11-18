@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - KMI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    @laravelPWA
     <style>
         body {
             background-image: url('{{ asset("assets/dashboard-background/bg-200.png") }}'); /* Ganti dengan path gambar Anda */
@@ -30,11 +31,11 @@
             </div>
         @enderror
 
-        <div class="row shadow rounded mx-auto w-100" style="max-height: 80vh; min-height: 600px; overflow: auto;">
+        <div class="row shadow-lg rounded mx-auto w-100" style="max-height: 80vh; min-height: 600px; overflow: auto;">
             <div class="col-lg-6 bg-custom">
                 <!-- background full -->
             </div>
-            <div class="col-lg-6 p-5 bg-white d-flex flex-column" >
+            <div class="col-lg-6 py-5 px-4 bg-white d-flex flex-column" >
                 <header class="text-center mb-4">
                     <h3 class="text-danger fw-bold" style="font-size: 1.8rem;">Welcome to KMI</h3>
                     <small class="text-muted" style="font-size: 1.1rem;">Silahkan login dulu</small>

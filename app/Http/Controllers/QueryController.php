@@ -2134,7 +2134,6 @@ class QueryController extends Controller
     public function get_caucus(Request $request)
     {
         try {
-
             $data_category = Category::select('id', 'category_name', 'category_parent');
             if (!is_null($request->filterCategory) || $request->filterCategory != "") {
                 $data_category->where('id', $request->filterCategory);
@@ -2218,7 +2217,7 @@ class QueryController extends Controller
 
 
             $rawColumns[] = 'Ranking';
-            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+            $dataTable->addColumn('Urutan', function ($data_row) use ($request, $categoryid) {
 
                 // Mengambil data tim berdasarkan total_score_caucus per kategori
                 $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')

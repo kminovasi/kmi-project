@@ -135,16 +135,26 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
-                    @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri' || $is_judge)
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
-                            data-bs-target="#filterModal">Filter</button>
-                        {{-- <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterCategoryModal">Filter Category</button> --}}
-                    @endif
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri' || $is_judge)
+                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#filterModal">Filter</button>
+                                {{-- <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterCategoryModal">Filter Category</button> --}}
+                            @endif
+                        </div>
+                        <div class="col-md-8 col-sm-8 col-xs-12">
+                            <div id="event-title" class="h5 text-primary"></div>
+                        </div>
+                    </div>
+
                 </div>
                 <form id="datatable-card" action="{{ route('assessment.fix.oda') }}" method="POST">
                     @csrf
                     @method('PUT')
-                    <table id="datatable-competition" class="display"></table>
+                    <table id="datatable-competition" class="display">
+
+                    </table>
                     <hr>
 
                     <input type="text" class="form-control" name="category" id="category-oda" hidden>
@@ -302,6 +312,10 @@
     }
 
     function updateColumnDataTable() {
+        const selectElement = document.getElementById('filter-event');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const eventName = selectedOption.text;
+        document.getElementById('event-title').innerHTML = eventName;
         newColumn = []
         $.ajax({
             url: "{{ route('query.get_oda_assessment') }}", // Misalnya, URL untuk mengambil kolom yang dinamis

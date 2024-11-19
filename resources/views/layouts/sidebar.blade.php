@@ -86,8 +86,8 @@
                             <a class="nav-link {{ request()->routeIs('management-system.team.category.index') ? 'active' : '' }}"
                                 href="{{ route('management-system.team.category.index') }}">Category Role</a>
 
-
-
+                            <a class="nav-link {{ request()->routeIs('management-system.assessment-matrix.index') ? 'active' : '' }}"
+                                href="{{ route('management-system.assessment-matrix.index') }}">Matriks Penilaian</a>
                             <!-- Nested Sidenav Accordion (Pages -> Account)-->
                         </nav>
                     </div>

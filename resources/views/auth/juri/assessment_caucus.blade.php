@@ -95,6 +95,9 @@
                         </table>
                     </div>
                 </div>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <x-assessment-matrix.show-image-button />
+                </div>
             </div>
         </div>
         <div class="card mb-4">

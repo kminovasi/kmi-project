@@ -1,200 +1,215 @@
 @extends('layouts.app')
 @section('title', 'Data Assessment Template')
 @push('css')
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-<link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    #textarea {
-        width: 100%;
-        height: auto;
-    }
-    .active-link {
-        color: #ffc004;
-        background-color: #e81500;
-    }
-    input[type="number"] {
-        width: 150px; /* Atur lebar sesuai kebutuhan */
-        height: 20px; /* Atur tinggi sesuai kebutuhan */
-        font-size: 12px;
-    }
-    .btn-right {
-        margin-left: auto;
-        width: 10rem;
-    }
-</style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        #textarea {
+            width: 100%;
+            height: auto;
+        }
+
+        .active-link {
+            color: #ffc004;
+            background-color: #e81500;
+        }
+
+        input[type="number"] {
+            width: 150px;
+            /* Atur lebar sesuai kebutuhan */
+            height: 20px;
+            /* Atur tinggi sesuai kebutuhan */
+            font-size: 12px;
+        }
+
+        .btn-right {
+            margin-left: auto;
+            width: 10rem;
+        }
+    </style>
 @endpush
 @section('content')
-        <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-            <div class="container-xl px-4">
-                <div class="page-header-content">
-                    <div class="row align-items-center justify-content-between pt-3">
-                        <div class="col-auto mb-3">
-                            <h1 class="page-header-title">
-                                <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                                Input Assessment
-                            </h1>
-                        </div>
-                        <div class="col-12 col-xl-auto mb-3">
-                        <a class="btn btn-sm btn-light text-primary" href="{{route('assessment.presentation')}}">
+    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+        <div class="container-xl px-4">
+            <div class="page-header-content">
+                <div class="row align-items-center justify-content-between pt-3">
+                    <div class="col-auto mb-3">
+                        <h1 class="page-header-title">
+                            <div class="page-header-icon"><i data-feather="file-text"></i></div>
+                            Input Assessment
+                        </h1>
+                    </div>
+                    <div class="col-12 col-xl-auto mb-3">
+                        <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.presentation') }}">
                             <i class="me-1" data-feather="arrow-left"></i>
                             Kembali
                         </a>
-                        </div>
                     </div>
                 </div>
             </div>
-        </header>
-        <!-- Main page content-->
-        <div class="container-xl px-4 mt-4">
-            <div class="mb-3">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                        {{ session('success') }}
+        </div>
+    </header>
+    <!-- Main page content-->
+    <div class="container-xl px-4 mt-4">
+        <div class="mb-3">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                    {{ session('success') }}
 
-                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-            </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        </div>
 
-            <!-- Account details card-->
-            <div class="card mb-4">
-                <div class="card-header">Detail Team</div>
-                <div class="card-body">
-                    <!-- Form Group (first name)-->
-                    <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputFirstName">Team Name</label>
-                        <input class="form-control" id="inputFirstName" type="text" value="{{$datas->team_name}}" readonly>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputFirstName">Innovation Title</label>
-                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" value="{{$datas->innovation_title}}" readonly>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputFirstName">Category</label>
-                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name" value="{{$datas->category_name}}" readonly>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputFirstName">Judges</label>
-                        <div class="table-responsive table-billing-history">
-                            <table class="table mb-0">
-                                <tbody>
-                                    @foreach($datas_juri as $data_juri)
+        <!-- Account details card-->
+        <div class="card mb-4">
+            <div class="card-header">Detail Team</div>
+            <div class="card-body">
+                <!-- Form Group (first name)-->
+                <div class="col-md-12 mb-3">
+                    <label class="small mb-1" for="inputFirstName">Team Name</label>
+                    <input class="form-control" id="inputFirstName" type="text" value="{{ $datas->team_name }}" readonly>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="small mb-1" for="inputFirstName">Innovation Title</label>
+                    <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name"
+                        value="{{ $datas->innovation_title }}" readonly>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="small mb-1" for="inputFirstName">Category</label>
+                    <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name"
+                        value="{{ $datas->category_name }}" readonly>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="small mb-1" for="inputFirstName">Judges</label>
+                    <div class="table-responsive table-billing-history">
+                        <table class="table mb-0">
+                            <tbody>
+                                @foreach ($datas_juri as $data_juri)
                                     <tr>
-                                        <td>{{$data_juri->name}}</td>
+                                        <td>{{ $data_juri->name }}</td>
                                     </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                    <x-assessment-matrix.show-image-button />
+                </div>
             </div>
-            <div class="card mb-4">
-                <div class="card-header">Form Assessment Judges</div>
-                <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
-                    @csrf
-                    @method('put')
-                    <div class="card-body">
-                        <table id="datatable-penilaian"></table>
-                        <hr>
-                        <div class="col-md-12 mb-3">
-                            <label class="small mb-1" for="inputRecomCategory">Rekomendasi Kategori</label>
-                            <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control">{{ $sofiData->recommend_category }}</textarea>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="small mb-1" for="inputStrength">Strength</label>
-                            <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control">{{$sofiData->strength}}</textarea>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="small mb-1" for="inputOpportunity">Opportunity</label>
-                            <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3">{{$sofiData->opportunity_for_improvement}}</textarea>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
-                            <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{$sofiData->suggestion_for_benefit}}</textarea>
-                        </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-header">Form Assessment Judges</div>
+            <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
+                @csrf
+                @method('put')
+                <div class="card-body">
+                    <table id="datatable-penilaian"></table>
+                    <hr>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1" for="inputRecomCategory">Rekomendasi Kategori</label>
+                        <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control">{{ $sofiData->recommend_category }}</textarea>
                     </div>
-                    <div class="card-footer">
-                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1" for="inputStrength">Strength</label>
+                        <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control">{{ $sofiData->strength }}</textarea>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1" for="inputOpportunity">Opportunity</label>
+                        <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3">{{ $sofiData->opportunity_for_improvement }}</textarea>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
+                        <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{ $sofiData->suggestion_for_benefit }}</textarea>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                         <div class="row">
                             <div class="col-md-6 mb-2 d-grid">
-                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addJuri">Add Judge</button>
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#addJuri">Add Judge</button>
                             </div>
                             <div class="col-md-6 mb-2 d-grid">
-                                <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteJuri">Delete Judge</button>
+                                <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#deleteJuri">Delete Judge</button>
                             </div>
                         </div>
-                        @endif
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="btnsubmit">Submit</button>
+                    @endif
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="btnsubmit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{-- modal add juri --}}
+    <div class="modal fade" id="addJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Add Judge</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('assessment.addJuri') }}" method="post">
+                    @csrf
+                    <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
+                    <input type="text" name="stage" value="presentation" hidden>
+                    <div class="modal-body">
+                        <div class="col-md-12">
+                            <label for="dataJudge">Choose Judge</label>
+                            <select class="js-example-basic-single" name="judge_id" z-index="10" id="select2-juri">
+                            </select>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit">Submit</button>
                     </div>
                 </form>
             </div>
         </div>
-{{-- modal add juri --}}
-<div class="modal fade" id="addJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Add Judge</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('assessment.addJuri')}}" method="post">
-                @csrf
-                <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
-                <input type="text" name="stage" value="presentation" hidden>
-                <div class="modal-body">
-                    <div class="col-md-12">
-                        <label for="dataJudge">Choose Judge</label>
-                        <select class="js-example-basic-single" name="judge_id" z-index="10" id="select2-juri">
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
-        </div>
     </div>
-</div>
 
-{{-- modal dekete juri --}}
-<div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Delete Judge</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('assessment.deleteJuri')}}" method="post">
-                @csrf
-                <div class="modal-body">
-                    <div class="col-md-12">
-                        <label for="dataJudge">Choose Judge</label>
-                        <select name="judge_id" class="form-select" id="">
-                            @foreach($datas_juri as $data_juri)
-                            <option value="{{$data_juri->judge_id}}"> {{$data_juri->employee_id}} - {{$data_juri->name}}</option>
-                            @endforeach
-                        </select>
+    {{-- modal dekete juri --}}
+    <div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Delete Judge</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('assessment.deleteJuri') }}" method="post">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="col-md-12">
+                            <label for="dataJudge">Choose Judge</label>
+                            <select name="judge_id" class="form-select" id="">
+                                @foreach ($datas_juri as $data_juri)
+                                    <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} -
+                                        {{ $data_juri->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 @endsection
 @push('js')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script type="">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="">
     function initializeDataTable(columns) {
         var dataTable = $('#datatable-penilaian').DataTable({
             "processing": true,

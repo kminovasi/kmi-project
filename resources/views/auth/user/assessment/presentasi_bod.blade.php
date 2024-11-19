@@ -173,7 +173,7 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="executiveSummaryPPTTitle">Uppload PPT Summary Executive</h5>
+                        <h5 class="modal-title" id="executiveSummaryPPTTitle">Upload PPT Summary Executive</h5>
                         <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form method="POST" action="{{ route('assessment.summaryPPT') }}" enctype="multipart/form-data">
@@ -221,8 +221,8 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-danger" type="submit" data-bs-dismiss="modal">Simpan</button>
+                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-secondary" type="submit" data-bs-dismiss="modal">Simpan</button>
                         </div>
                     </form>
                 </div>

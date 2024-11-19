@@ -69,7 +69,7 @@
                                 <option value="international">International</option>
                             </select>
                         </div>
-                        @if (auth()->user()->role === 'Supeadmin')
+                        @if (auth()->user()->role === 'Superadmin')
                             <div class="col-md-4">
                                 <select name="company_code" class="form-select">
                                     <option value="">Select Company</option>

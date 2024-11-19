@@ -35,6 +35,7 @@ use App\Models\Timeline;
 use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
+use App\Http\Controllers\AssessmentMatrixController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
@@ -297,6 +298,12 @@ Route::middleware('auth')->group(function () {
             Route::put('/company-update/{id}', [ManagamentSystemController::class, 'companyUpdate'])->name('company.update');
             Route::delete('/company-delete/{id}', [ManagamentSystemController::class, 'companyDelete'])->name('company.delete');
         });
+
+        Route::middleware(['role:Superadmin'])->prefix('assessment-matrix')->name('assessment-matrix.')->group(function () {
+            Route::get('/', [AssessmentMatrixController::class, 'index'])->name('index');
+            Route::post('/', [AssessmentMatrixController::class, 'store'])->name('store');
+            Route::delete('/', [AssessmentMatrixController::class, 'destroy'])->name('destroy');
+        });
     });
 
 
@@ -376,6 +383,8 @@ Route::middleware('auth')->prefix('event')->name('event-team.')->group(function 
     Route::get('/check-paper/{id}/{eventId}', [EventTeamController::class, 'showCheckPaper'])->name('showCheckPaper')->middleware(['role:Superadmin']);
     Route::put('/check-paper/{id}/{eventId}', [EventTeamController::class, 'updatePaperStatus'])->name('updatePaperStatus')->middleware(['role:Superadmin']);
 });
+
+
 
 
 Route::get('/ck5', function () {

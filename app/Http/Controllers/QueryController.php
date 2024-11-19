@@ -1085,7 +1085,7 @@ class QueryController extends Controller
                     DB::raw('MIN(theme_name) as Tema'),
                     DB::raw('MIN(inovasi_lokasi) as Lokasi'),
                     'pvt_event_teams.id AS event_team_id(removed)',
-                    'pvt_event_teams.status as status(removed)'
+                    'pvt_event_teams.status as status(removed)',
                 ];
 
                 if (count($arr_event_id)) {
@@ -1230,7 +1230,6 @@ class QueryController extends Controller
                 $category_parent = 'BI/II';
             }
             $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
-                // ->where('category', ($data_category['category_parent'] == 'IDEA BOX') ? 'IDEA' : 'BI/II')
                 ->where('category', $category_parent)
                 ->where('status_point', 'active')
                 ->where('stage', 'presentation')
@@ -1244,7 +1243,8 @@ class QueryController extends Controller
                 DB::raw('MIN(theme_name) as Tema'),
                 DB::raw('MIN(inovasi_lokasi) as Lokasi'),
                 'pvt_event_teams.id AS event_team_id(removed)',
-                'pvt_event_teams.status as status(removed)'
+                'pvt_event_teams.status as status(removed)',
+                'pvt_event_teams.total_score_on_desk as Rata-rata Score OnDesk'
             ];
 
 
@@ -1275,26 +1275,6 @@ class QueryController extends Controller
                 ->select($arr_select_case);
 
             $dataTable = DataTables::of($data_row->get());
-
-            if (count($arr_event_id)) {
-                for ($i = 0; $i < count($arr_event_id); $i++) {
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
-                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
-                    $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
-                        $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                            ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-                            ->where('pvt_assessment_events.status_point', 'active')
-                            ->where('pvt_assesment_team_judges.stage', 'presentation')
-                            ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
-                            ->groupBy('pvt_event_teams.id')
-                            ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
-                            ->get()
-                            ->toArray();
-
-                        return $data_avg[0]['Nilai'];
-                    });
-                }
-            }
 
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
@@ -2185,8 +2165,9 @@ class QueryController extends Controller
                 DB::raw('MIN(theme_name) as Tema'),
                 DB::raw('MIN(inovasi_lokasi) as Lokasi'),
                 'pvt_event_teams.id AS event_team_id(removed)',
+                'pvt_event_teams.total_score_presentation as Rata-rata Score Presentasi',
                 'pvt_event_teams.status as status(removed)',
-                'pvt_event_teams.team_id as team_id'
+                'pvt_event_teams.team_id as team_id',
             ];
 
 
@@ -2218,27 +2199,6 @@ class QueryController extends Controller
                 ->select($arr_select_case);
 
             $dataTable = DataTables::of($data_row->get());
-
-            if (count($arr_event_id)) {
-                for ($i = 0; $i < count($arr_event_id); $i++) {
-                    $arr_select_case[] = DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'] . "\"");
-                    $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
-                    $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
-                        $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                            ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-                            ->where('pvt_assessment_events.status_point', 'active')
-                            ->where('pvt_assesment_team_judges.stage', 'presentation')
-                            ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
-                            ->groupBy('pvt_event_teams.id')
-                            ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
-                            ->get()
-                            ->toArray();
-
-                        return $data_avg[0]['Nilai'];
-                    });
-                }
-            }
-
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) use ($arr_event_id) {
                 // Mengambil nilai total_score_caucus berdasarkan event_team_id

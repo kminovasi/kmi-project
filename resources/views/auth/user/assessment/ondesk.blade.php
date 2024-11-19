@@ -268,7 +268,6 @@
         var dataTable = $('#datatable-competition').DataTable({
             "processing": true,
             "serverSide": true,
-            "responsive": true,
             "cache": true,
              "dom": 'lBfrtip',
             "buttons": [

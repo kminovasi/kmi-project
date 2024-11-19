@@ -76,8 +76,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                                                                <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                                                                @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                                                                                                                                                <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                                                                                                                                                @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -130,7 +130,15 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        Tabel Caucus
+                        <div class="row">
+                            <div class="col-md-4 col-sm-8 col-xs-12">
+                                Tabel Caucus
+                            </div>
+                            <div class="col-md-8 col-sm-8 col-xs-12">
+                                <div id="event-title">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -299,6 +307,10 @@
     }
 
     function updateColumnDataTable() {
+        const selectElement = document.getElementById('filter-event');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const eventName = selectedOption.text;
+        document.getElementById('event-title').innerHTML = eventName;
         newColumn = []
         $.ajax({
             url: "{{ route('query.get_caucus') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
@@ -311,9 +323,6 @@
             },
             async: false,
             success: function (data) {
-                // newColumn = []
-                console.log(data.data)
-                // console.log(count(data.data));
                 if(data.data.length){
                     let row_column = {};
                     row_column['data'] = "DT_RowIndex"

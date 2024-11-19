@@ -46,8 +46,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p-2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -96,10 +96,17 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="mb-3">
-                    @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
-                            data-bs-target="#filterModal">Filter</button>
-                    @endif
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
+                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#filterModal">Filter</button>
+                            @endif
+                        </div>
+                        <div class="col-md-8 col-sm-8 col-xs-12">
+                            <div id="event-title" class="h5 text-primary"></div>
+                        </div>
+                    </div>
                 </div>
                 <form id="datatable-card" action="{{ route('assessment.fix.pa') }}" method="POST">
                     @csrf
@@ -229,6 +236,10 @@
         }
 
         function updateColumnDataTable() {
+        const selectElement = document.getElementById('filter-event');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const eventName = selectedOption.text;
+        document.getElementById('event-title').innerHTML = eventName;
             newColumn = []
             $.ajax({
                 url: "{{ route('query.get_pa_assessment') }}", // Misalnya, URL untuk mengambil kolom yang dinamis

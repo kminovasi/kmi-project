@@ -50,11 +50,23 @@ class GroupEventController extends Controller
 
     public function getAllPaper(Request $request)
     {
+        $superadmin = Auth::user()->role === 'Superadmin';
         if (!$request->ajax()) {
             return;
         }
 
         $query = $this->buildPaperQuery();
+
+        // Filter tahun jika ada
+        if ($request->has('year') && $request->year) {
+            $query->whereYear('papers.created_at', $request->year);
+        }
+
+        // Filter perusahaan untuk superadmin
+        if ($superadmin && $request->has('company') && $request->company) {
+            $query->where('companies.company_code', $request->company);
+        }
+
         return $this->generateDataTable($query);
     }
 

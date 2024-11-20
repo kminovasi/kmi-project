@@ -83,7 +83,8 @@
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                 <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event
+                    Group</a>
             @endif
 
         </div>
@@ -108,7 +109,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        Tabel Penetapan Best Of The Best
+                        <div class="row">
+                            <div class="col-md-4 col-sm-8 col-xs-12">
+                                Tabel Penetapan Best Of The Best
+                            </div>
+                            <div class="col-md-8 col-sm-8 col-xs-12">
+                                <div id="event-title"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -219,6 +227,10 @@
     }
 
     function updateColumnDataTable() {
+        const selectElement = document.getElementById('filter-event');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const eventName = selectedOption.text;
+        document.getElementById('event-title').innerHTML = eventName;
         newColumn = []
         $.ajax({
             url: "{{ route('query.getBestOfTheBest') }}", // Misalnya, URL untuk mengambil kolom yang dinamis

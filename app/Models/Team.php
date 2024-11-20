@@ -61,4 +61,11 @@ class Team extends Model
             ->withPivot('status')
             ->withTimestamps();
     }
+
+    // Di model Team
+    public function internalEvents()
+    {
+        return $this->belongsToMany(Event::class, 'pvt_event_teams', 'team_id', 'event_id')
+            ->where('type', 'AP');
+    }
 }

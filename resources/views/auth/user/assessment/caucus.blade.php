@@ -251,7 +251,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                             <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
                         </div>
                     </form>

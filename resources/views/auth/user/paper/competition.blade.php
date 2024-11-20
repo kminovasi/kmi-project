@@ -94,6 +94,14 @@
                     <button id="assign-to-event" class="btn btn-primary">Assign to Event</button>
                     <span id="selected-count" class="ms-3">0 team(s) selected</span>
                 </div>
+                <div class="mb-3 d-flex align-items-center">
+                    <button id="openFilterModal" class="btn btn-outline-secondary me-2" data-bs-toggle="modal"
+                        data-bs-target="#filterModal">
+                        <i class="fas fa-filter"></i> Filter Data
+                    </button>
+
+                    <span id="selectedFilterDisplay" class="text-muted"></span>
+                </div>
                 <table id="datatable-competition">
                 </table>
             </div>
@@ -111,7 +119,48 @@
         </div>
     </div>
 
+    <!-- Modal Filter Tahun dan Perusahaan -->
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">Filter Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="yearSelect" class="form-label">Pilih Tahun</label>
+                        <select id="yearSelect" class="form-select">
+                            <option value="">Semua Tahun</option>
+                            @php
+                                $currentYear = date('Y');
+                                $startYear = 2020; // Sesuaikan dengan tahun awal data Anda
+                            @endphp
+                            @for ($year = $currentYear; $year >= $startYear; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
 
+                    @if (Auth::user()->role === 'Superadmin')
+                        <div class="mb-3">
+                            <label for="companySelect" class="form-label">Pilih Perusahaan</label>
+                            <select id="companySelect" class="form-select">
+                                <option value="">Semua Perusahaan</option>
+                                @foreach (\App\Models\Company::all() as $company)
+                                    <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="applyFilter">Terapkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('js')
@@ -120,68 +169,78 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="">
-        $(document).ready(function() {
+    $(document).ready(function() {
             // Constants
             const DATATABLE_CONFIG = {
-    processing: true,
-    serverSide: true,
-    ajax: "{{ route('group-event.getAllPaper') }}",
-    columns: [
-        {
-            title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
-            data: 'checkbox',
-            name: 'checkbox',
-            orderable: false,
-            searchable: false,
-            width: '5%'
-        },
-        {
-            title: 'No',
-            data: 'DT_RowIndex',
-            name: 'DT_RowIndex',
-            orderable: false,
-            searchable: false,
-            width: '5%'
-        },
-        {
-            title: 'Team',
-            data: 'team_name',
-            name: 'teams.team_name'
-        },
-        {
-            title: 'Perusahaan',
-            data: 'company_name',
-            name: 'companies.company_name'
-        },
-        {
-            title: 'Judul Inovasi',
-            data: 'innovation_title',
-            name: 'papers.innovation_title'
-        },
-        {
-            title: 'Event Internal',  // Ubah judul kolom
-            data: 'internal_events',  // Gunakan nama data baru
-            name: 'internal_events',
-            orderable: false,
-            searchable: false
-        },
-        {
-            title: 'Event Group',
-            data: 'group_events',
-            name: 'group_events',
-            orderable: false,
-            searchable: false
-        }
-    ],
-    responsive: true,
-    columnDefs: [
-        {
-            // Atur lebar kolom baru (opsional)
-            targets: 5,  // indeks kolom Event Group
-            width: '15%'
-        }
-    ]
-};
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('group-event.getAllPaper') }}",
+                    type: 'GET',
+                    data: function(d) {
+                        d.year = $('#yearSelect').val(); // Tambahkan parameter tahun
+                        @if(Auth::user()->role === 'Superadmin')
+                            d.company = $('#companySelect').val();
+                        @endif
+                        return d;
+                    }
+                },
+                columns: [
+                    {
+                        title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
+                        data: 'checkbox',
+                        name: 'checkbox',
+                        orderable: false,
+                        searchable: false,
+                        width: '5%'
+                    },
+                    {
+                        title: 'No',
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false,
+                        width: '5%'
+                    },
+                    {
+                        title: 'Team',
+                        data: 'team_name',
+                        name: 'teams.team_name'
+                    },
+                    {
+                        title: 'Perusahaan',
+                        data: 'company_name',
+                        name: 'companies.company_name'
+                    },
+                    {
+                        title: 'Judul Inovasi',
+                        data: 'innovation_title',
+                        name: 'papers.innovation_title'
+                    },
+                    {
+                        title: 'Event Internal',  // Ubah judul kolom
+                        data: 'internal_events',  // Gunakan nama data baru
+                        name: 'internal_events',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        title: 'Event Group',
+                        data: 'group_events',
+                        name: 'group_events',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                responsive: true,
+                columnDefs: [
+                    {
+                        // Atur lebar kolom baru (opsional)
+                        targets: 5,  // indeks kolom Event Group
+                        width: '15%'
+                    }
+                ]
+            };
             const SWAL_CONFIG = {
                 warning: {
                     icon: 'warning',
@@ -312,6 +371,35 @@
                         assignTeams(validationResult);
                     }
                 });
+            });
+
+            $('#applyFilter').on('click', function() {
+                const selectedYear = $('#yearSelect').val();
+
+                @if(Auth::user()->role === 'Superadmin')
+                const selectedCompany = $('#companySelect').val();
+                @endif
+
+                // Update tampilan filter yang dipilih
+                let filterDisplay = [];
+                if (selectedYear) {
+                    filterDisplay.push(`Tahun: ${selectedYear}`);
+                }
+
+                @if(Auth::user()->role === 'Superadmin')
+                if (selectedCompany) {
+                    const companyName = $(`#companySelect option[value="${selectedCompany}"]`).text();
+                    filterDisplay.push(`Perusahaan: ${companyName}`);
+                }
+                @endif
+
+                $('#selectedFilterDisplay').text(filterDisplay.join(' | '));
+
+                // Reload tabel dengan filter
+                table.ajax.reload();
+
+                // Tutup modal
+                $('#filterModal').modal('hide');
             });
         });
     </script>

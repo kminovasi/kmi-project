@@ -1294,7 +1294,7 @@ class QueryController extends Controller
             });
 
             $rawColumns[] = 'Ranking';
-            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+            $dataTable->addColumn('Urutan', function ($data_row) use ($request, $categoryid) {
                 Log::debug($data_row);
 
                 // Mengambil data tim berdasarkan total_score_presentation per kategori

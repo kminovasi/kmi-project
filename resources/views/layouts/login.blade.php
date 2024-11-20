@@ -37,7 +37,7 @@
             </div>
             <div class="col-lg-6 py-5 px-4 bg-white d-flex flex-column" >
                 <header class="text-center mb-4">
-                    <h3 class="text-danger fw-bold" style="font-size: 1.8rem;">Welcome to KMI</h3>
+                    <h3 class="text-danger fw-bold" style="font-size: 1.8rem;">Welcome to Portal Innovasi</h3>
                     <small class="text-muted" style="font-size: 1.1rem;">Silahkan login dulu</small>
                 </header>
                 <div class="flex-grow-1 d-flex align-items-center">

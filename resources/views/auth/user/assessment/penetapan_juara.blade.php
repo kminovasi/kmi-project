@@ -70,7 +70,8 @@
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                 <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event
+                    Group</a>
             @endif
         </div>
 
@@ -112,13 +113,21 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-header-actions">
-                    <div class="card-header">
-                        Tabel Penetapan Juara
-                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
-                                data-bs-target="#addBeritaAcara"><i class="fa fa-plus" aria-hidden="true"></i> &nbsp;Buat
-                                Berita Acara</button>
-                        @endif
+                    <div class="card-header row justify-between">
+                        <div class="col-md-3 col-sm-4 col-xs-4">
+                            Tabel Penetapan Juara
+                        </div>
+                        <div class="col-md-5 col-sm-6 col-xs-6">
+                            <div id="event-title"></div>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-2">
+                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#addBeritaAcara"><i class="fa fa-plus" aria-hidden="true"></i>
+                                    &nbsp;Buat
+                                    Berita Acara</button>
+                            @endif
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -303,9 +312,6 @@
 @endsection
 
 @push('js')
-    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/classic/ckeditor.js"></script> --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
     <script
         src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
     </script>
@@ -348,6 +354,7 @@ function initializeDataTable() {
 
 
     function updateColumnDataTable() {
+
         newColumn = []
         $.ajax({
             url: "{{ route('query.get_penetapan_juara') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
@@ -393,6 +400,10 @@ function initializeDataTable() {
    $(document).ready(function() {
     // Definisikan dataTable sebagai variabel global
     let dataTable;
+     const selectElement = document.getElementById('filter-event');
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const eventName = selectedOption.text;
+        document.getElementById('event-title').innerHTML = eventName;
 
     // Inisialisasi pertama kali
     function initTable() {

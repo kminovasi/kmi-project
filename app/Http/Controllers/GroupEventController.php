@@ -23,13 +23,15 @@ class GroupEventController extends Controller
     ];
 
     private const STATUS_CLASSES = [
-        'Presentation' => 'bg-primary',
-        'tidak lolos Presentation' => 'bg-danger',
-        'Lolos Presentation' => 'bg-success',
-        'Tidak lolos Caucus' => 'bg-danger',
-        'Caucus' => 'bg-info',
-        'Presentation BOD' => 'bg-warning',
-        'Juara' => 'bg-success'
+        'Presentation' => 'bg-secondary bg-opacity-25 text-secondary',      // Soft blue
+        'tidak lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft red
+        'Lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft green
+        'Tidak lolos Caucus' => 'bg-secondary bg-opacity-25 text-secondary',   // Soft orange
+        'Caucus' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft primary
+        'Presentation BOD' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft amber
+        'Juara' => 'bg-secondary bg-opacity-25 text-secondary', // Brighter green for champions
+        'tidak lolos On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
+        'On Desk' => 'bg-secondary bg-opacity-25 text-secondary'
     ];
 
     public function getAllPaper(Request $request)
@@ -44,9 +46,16 @@ class GroupEventController extends Controller
 
     private function buildPaperQuery()
     {
-        $query = Paper::with(['team' => function ($query) {
-            $query->select('id', 'team_name', 'company_code');
-        }, 'team.events'])
+        $query = Paper::with([
+            'team' => function ($query) {
+                $query->select('id', 'team_name', 'company_code');
+            },
+            'team.events',
+            // Tambahkan relasi untuk event internal
+            'team.internalEvents' => function ($query) {
+                $query->where('type', 'AP');
+            }
+        ])
             ->join('teams', 'papers.team_id', '=', 'teams.id')
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -84,8 +93,9 @@ class GroupEventController extends Controller
                 fn($row) =>
                 '<input type="checkbox" name="paper_checkbox" class="paper_checkbox" value="' . $row->id . '">'
             )
-            ->addColumn('registered_events', function ($row) {
-                $events = $row->team->events->map(function ($event) {
+            ->addColumn('internal_events', function ($row) {
+                // Ambil event internal (group)
+                $internalEvents = $row->team->events()->where('type', 'AP')->get()->map(function ($event) {
                     $statusClass = self::STATUS_CLASSES[$event->pivot->status] ?? 'bg-secondary';
                     return sprintf(
                         '<span class="badge %s">%s (%s)</span>',
@@ -95,12 +105,27 @@ class GroupEventController extends Controller
                     );
                 })->implode(' ');
 
-                return $events ?: '<span class="badge bg-secondary">No events</span>';
+                return $internalEvents ?: '<span class="badge bg-secondary">Tidak mengikuti Event Internal</span>';
             })
-            ->rawColumns(['checkbox', 'registered_events'])
+            ->addColumn('group_events', function ($row) {
+                $groupEvents = $row->team->events()
+                    ->where('type', 'group') // Asumsi ada kolom type di tabel events
+                    ->get()
+                    ->map(function ($event) {
+                        $statusClass = self::STATUS_CLASSES[$event->pivot->status] ?? 'bg-secondary';
+                        return sprintf(
+                            '<span class="badge %s">%s (%s)</span>',
+                            $statusClass,
+                            $event->event_name,
+                            $event->pivot->status
+                        );
+                    })->implode(' ');
+
+                return $groupEvents ?: '<span class="badge bg-secondary">Tidak ada Event Group</span>';
+            })
+            ->rawColumns(['checkbox', 'internal_events', 'group_events'])
             ->make(true);
     }
-
     public function assignTeamsToEvent(Request $request)
     {
         try {

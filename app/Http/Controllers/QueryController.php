@@ -1244,7 +1244,7 @@ class QueryController extends Controller
                 DB::raw('MIN(inovasi_lokasi) as Lokasi'),
                 'pvt_event_teams.id AS event_team_id(removed)',
                 'pvt_event_teams.status as status(removed)',
-                'pvt_event_teams.total_score_on_desk as Rata-rata Score OnDesk'
+                'pvt_event_teams.total_score_on_desk as Hasil Penilaian On Desk'
             ];
 
 
@@ -2164,7 +2164,7 @@ class QueryController extends Controller
                 DB::raw('MIN(theme_name) as Tema'),
                 DB::raw('MIN(inovasi_lokasi) as Lokasi'),
                 'pvt_event_teams.id AS event_team_id(removed)',
-                'pvt_event_teams.total_score_presentation as Rata-rata Score Presentasi',
+                'pvt_event_teams.total_score_presentation as Hasil Penilaian Presentasi',
                 'pvt_event_teams.status as status(removed)',
                 'pvt_event_teams.team_id as team_id',
             ];

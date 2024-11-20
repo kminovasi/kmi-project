@@ -123,52 +123,65 @@
         $(document).ready(function() {
             // Constants
             const DATATABLE_CONFIG = {
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('group-event.getAllPaper') }}",
-                columns: [
-                    {
-                        title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
-                        data: 'checkbox',
-                        name: 'checkbox',
-                        orderable: false,
-                        searchable: false,
-                        width: '5%'
-                    },
-                    {
-                        title: 'No',
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false,
-                        width: '5%'
-                    },
-                    {
-                        title: 'Team',
-                        data: 'team_name',
-                        name: 'teams.team_name'
-                    },
-                    {
-                        title: 'Perusahaan',
-                        data: 'company_name',
-                        name: 'companies.company_name'
-                    },
-                    {
-                        title: 'Judul Inovasi',
-                        data: 'innovation_title',
-                        name: 'papers.innovation_title'
-                    },
-                    {
-                        title: 'Event yang diikuti',
-                        data: 'registered_events',
-                        name: 'registered_events',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                responsive: true
-            };
-
+    processing: true,
+    serverSide: true,
+    ajax: "{{ route('group-event.getAllPaper') }}",
+    columns: [
+        {
+            title: '<input type="checkbox" name="select_all" value="1" id="select-all">',
+            data: 'checkbox',
+            name: 'checkbox',
+            orderable: false,
+            searchable: false,
+            width: '5%'
+        },
+        {
+            title: 'No',
+            data: 'DT_RowIndex',
+            name: 'DT_RowIndex',
+            orderable: false,
+            searchable: false,
+            width: '5%'
+        },
+        {
+            title: 'Team',
+            data: 'team_name',
+            name: 'teams.team_name'
+        },
+        {
+            title: 'Perusahaan',
+            data: 'company_name',
+            name: 'companies.company_name'
+        },
+        {
+            title: 'Judul Inovasi',
+            data: 'innovation_title',
+            name: 'papers.innovation_title'
+        },
+        {
+            title: 'Event Internal',  // Ubah judul kolom
+            data: 'internal_events',  // Gunakan nama data baru
+            name: 'internal_events',
+            orderable: false,
+            searchable: false
+        },
+        {
+            title: 'Event Group',
+            data: 'group_events',
+            name: 'group_events',
+            orderable: false,
+            searchable: false
+        }
+    ],
+    responsive: true,
+    columnDefs: [
+        {
+            // Atur lebar kolom baru (opsional)
+            targets: 5,  // indeks kolom Event Group
+            width: '15%'
+        }
+    ]
+};
             const SWAL_CONFIG = {
                 warning: {
                     icon: 'warning',

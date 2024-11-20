@@ -1635,8 +1635,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1650,8 +1649,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1823,8 +1821,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1838,8 +1835,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });

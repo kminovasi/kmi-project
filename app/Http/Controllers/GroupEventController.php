@@ -23,16 +23,30 @@ class GroupEventController extends Controller
     ];
 
     private const STATUS_CLASSES = [
-        'Presentation' => 'bg-secondary bg-opacity-25 text-secondary',      // Soft blue
-        'tidak lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft red
-        'Lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft green
-        'Tidak lolos Caucus' => 'bg-secondary bg-opacity-25 text-secondary',   // Soft orange
-        'Caucus' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft primary
-        'Presentation BOD' => 'bg-secondary bg-opacity-25 text-secondary',  // Soft amber
-        'Juara' => 'bg-secondary bg-opacity-25 text-secondary', // Brighter green for champions
-        'tidak lolos On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
-        'On Desk' => 'bg-secondary bg-opacity-25 text-secondary'
+        'internal' => [
+            'Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'tidak lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Tidak lolos Caucus' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Caucus' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Presentation BOD' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Juara' => 'bg-secondary bg-opacity-25 text-secondary',
+            'tidak lolos On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
+            'On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
+        ],
+        'group' => [
+            'Presentation' => 'bg-success bg-opacity-25 text-success',
+            'tidak lolos Presentation' => 'bg-success bg-opacity-25 text-success',
+            'Lolos Presentation' => 'bg-success bg-opacity-25 text-success',
+            'Tidak lolos Caucus' => 'bg-success bg-opacity-25 text-success',
+            'Caucus' => 'bg-success bg-opacity-25 text-success',
+            'Presentation BOD' => 'bg-success bg-opacity-25 text-success',
+            'Juara' => 'bg-success bg-opacity-25 text-success',
+            'tidak lolos On Desk' => 'bg-success bg-opacity-25 text-success',
+            'On Desk' => 'bg-success bg-opacity-25 text-success',
+        ],
     ];
+
 
     public function getAllPaper(Request $request)
     {
@@ -96,7 +110,7 @@ class GroupEventController extends Controller
             ->addColumn('internal_events', function ($row) {
                 // Ambil event internal (group)
                 $internalEvents = $row->team->events()->where('type', 'AP')->get()->map(function ($event) {
-                    $statusClass = self::STATUS_CLASSES[$event->pivot->status] ?? 'bg-secondary';
+                    $statusClass = self::STATUS_CLASSES['internal'][$event->pivot->status] ?? 'bg-secondary';
                     return sprintf(
                         '<span class="badge %s">%s (%s)</span>',
                         $statusClass,
@@ -112,7 +126,7 @@ class GroupEventController extends Controller
                     ->where('type', 'group') // Asumsi ada kolom type di tabel events
                     ->get()
                     ->map(function ($event) {
-                        $statusClass = self::STATUS_CLASSES[$event->pivot->status] ?? 'bg-secondary';
+                        $statusClass = self::STATUS_CLASSES['group'][$event->pivot->status] ?? 'bg-info';
                         return sprintf(
                             '<span class="badge %s">%s (%s)</span>',
                             $statusClass,
@@ -121,7 +135,7 @@ class GroupEventController extends Controller
                         );
                     })->implode(' ');
 
-                return $groupEvents ?: '<span class="badge bg-secondary">Tidak ada Event Group</span>';
+                return $groupEvents ?: '<span class="badge bg-info">Tidak ada Event Group</span>';
             })
             ->rawColumns(['checkbox', 'internal_events', 'group_events'])
             ->make(true);

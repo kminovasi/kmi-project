@@ -131,7 +131,7 @@ class GroupEventController extends Controller
                     );
                 })->implode(' ');
 
-                return $internalEvents ?: '<span class="badge bg-secondary">Tidak mengikuti Event Internal</span>';
+                return $internalEvents ?: '<span class="badge bg-primary">Team Tidak Mengikuti Event Internal</span>';
             })
             ->addColumn('group_events', function ($row) {
                 $groupEvents = $row->team->events()
@@ -147,7 +147,7 @@ class GroupEventController extends Controller
                         );
                     })->implode(' ');
 
-                return $groupEvents ?: '<span class="badge bg-info">Tidak ada Event Group</span>';
+                return $groupEvents ?: '<span class="badge bg-danger">Team Tidak Mengikuti Event Group</span>';
             })
             ->rawColumns(['checkbox', 'internal_events', 'group_events'])
             ->make(true);

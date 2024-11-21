@@ -179,68 +179,71 @@
         </div>
 
         {{-- modal untuk executive summary --}}
-        <div class="modal fade" id="executiveSummaryPPT" tabindex="-1" role="dialog"
-            aria-labelledby="executiveSummaryPPTTitle" aria-hidden="true">
+        <div class="modal fade" id="executiveSummaryPPT" tabindex="-1" role="dialog" aria-labelledby="executiveSummaryPPTTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="executiveSummaryPPTTitle">Upload PPT Summary Executive</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="executiveSummaryPPTTitle">Upload PPT Ringkasan Eksekutif</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <form method="POST" action="{{ route('assessment.summaryPPT') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="id" id="inputId" value="">
                         <input type="hidden" name="pvt_event_teams_id" id="inputEventTeamID">
-                        <div class="modal-body">
-                            <div class="mb-2">
-                                <label for="inputTeamName" class="text-gray-900">Team</label>
-                                <div class="small mb-0" id="TeamName"></div>
+                        <div class="modal-body p-4">
+                            <!-- Frame for Team Information -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="inputTeamName" class="form-label font-weight-normal">Tim</label>
+                                <div id="TeamName" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="InnovationTitle" class="text-gray-900">Innovation Title</label>
-                                <div class="small mb-0" id="InnovationTitle"></div>
+                            <!-- Frame for Innovation Title -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="InnovationTitle" class="form-label font-weight-normal">Judul Inovasi</label>
+                                <div id="InnovationTitle" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="Company" class="text-gray-900">Company</label>
-                                <div class="small mb-0" id="Company"></div>
+                            <!-- Frame for Company Information -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="Company" class="form-label font-weight-normal">Perusahaan</label>
+                                <div id="Company" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="ProblemBackground" class="text-gray-900">Background Masalah</label>
-                                <div class="small mb-0" id="ProblemBackground"></div>
+                            <!-- Frame for Problem Background -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="ProblemBackground" class="form-label font-weight-normal">Latar Belakang Masalah</label>
+                                <div id="ProblemBackground" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="InnovationIdea" class="text-gray-900">Innovation Idea </label>
-                                <div class="small mb-0" id="InnovationIdea"></div>
-
+                            <!-- Frame for Innovation Idea -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="InnovationIdea" class="form-label font-weight-normal">Ide Inovasi</label>
+                                <div id="InnovationIdea" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="Benefit" class="text-gray-900">Benefit</label>
-                                <div class="small mb-0" id="Benefit"></div>
+                            <!-- Frame for Benefits -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="Benefit" class="form-label font-weight-normal">Manfaat</label>
+                                <div id="Benefit" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
-                            <div class="mb-2">
-                                <label for="uploadPPT" class="text-gray-900">Upload PDF</label>
+                            <!-- Frame for Upload PPT -->
+                            <div class="mb-3 p-3 border rounded shadow-sm">
+                                <label for="uploadPPT" class="form-label font-weight-normal">Unggah PPT</label>
                                 <input type="file" name="file_ppt" id="uploadPPT" class="form-control">
                             </div>
-                            <hr>
-
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                            <button class="btn btn-primary" type="submit">Simpan</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Modal View PDF-->
         <div class="modal fade" id="ppt" tabindex="-1" aria-labelledby="pptLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">

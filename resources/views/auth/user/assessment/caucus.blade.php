@@ -214,53 +214,57 @@
         </div>
 
         {{-- modal untuk executive summary --}}
-        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog"
-            aria-labelledby="executiveSummaryTitle" aria-hidden="true">
+        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog" aria-labelledby="executiveSummaryTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="executiveSummaryTitle">Form Executive Summary</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold" id="executiveSummaryTitle">Form Ringkasan Eksekutif</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <form id="formExecutiveSummary" method="POST" action="{{ route('assessment.summaryExecutive') }}">
                         @csrf
                         <input type="hidden" name="pvt_event_teams_id" id="inputEventTeamID" value="">
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="inputTeamName" class="">Team</label>
-                                <input type="text" name="" id="TeamName" class="form-control" value=""
-                                    readonly>
+                            <!-- Nama Tim -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="TeamName" class="form-control" value="" readonly>
+                                <label for="TeamName">Tim</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="InnovationTitle" class="">Innovation Title</label>
-                                <input type="text" name="" id="InnovationTitle" class="form-control"
-                                    value="" readonly>
+                            <!-- Judul Inovasi -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="InnovationTitle" class="form-control" value="" readonly>
+                                <label for="InnovationTitle">Judul Inovasi</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="Company" class="">Company</label>
-                                <input name="" id="Company" name="" class="form-control" readonly>
+                            <!-- Perusahaan -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="Company" class="form-control" readonly>
+                                <label for="Company">Perusahaan</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputProblemBackground" class="">Background Masalah</label>
-                                <textarea name="problem_background" id="inputProblemBackground" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Latar Belakang Masalah -->
+                            <div class="form-floating mb-4">
+                                <textarea name="problem_background" id="inputProblemBackground" class="form-control" rows="4"></textarea>
+                                <label for="inputProblemBackground">Latar Belakang Masalah</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputInnovationIdea" class="">Innovation Idea </label>
-                                <textarea name="innovation_idea" id="inputInnovationIdea" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Ide Inovasi -->
+                            <div class="form-floating mb-4">
+                                <textarea name="innovation_idea" id="inputInnovationIdea" class="form-control" rows="4"></textarea>
+                                <label for="inputInnovationIdea">Ide Inovasi</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputBenefit" class="">Benefit</label>
-                                <textarea name="benefit" id="inputBenefit" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Manfaat -->
+                            <div class="form-floating mb-4">
+                                <textarea name="benefit" id="inputBenefit" class="form-control" rows="4"></textarea>
+                                <label for="inputBenefit">Manfaat</label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                            <button class="btn btn-primary" type="submit">Simpan</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
 
     @endsection
 

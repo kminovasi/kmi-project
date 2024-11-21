@@ -94,8 +94,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p-2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                        <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -176,41 +176,49 @@
     </div>
 
     {{-- modal untuk filter khusus admin dan juri --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Modal Header -->
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!-- Modal Body -->
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-category">Category</label>
+                    <!-- Filter Category -->
+                    <div class="form-floating mb-4">
                         <select id="filter-category" name="filter-category" class="form-select">
-                            <option value=""> All </option>
+                            <option value="" selected>All Categories</option>
                             @foreach ($data_category as $category)
-                                <option value="{{ $category->id }}"> {{ $category->category_name }} </option>
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
+                        <label for="filter-category">Category</label>
                     </div>
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-event">Event</label>
+
+                    <!-- Filter Event -->
+                    <div class="form-floating mb-4">
                         <select id="filter-event" name="filter-event" class="form-select">
                             @foreach ($data_event as $event)
                                 <option value="{{ $event->id }}"
                                     {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                    {{ $event->event_name }} - {{ $event->year }} </option>
+                                    {{ $event->event_name }} - {{ $event->year }}
+                                </option>
                             @endforeach
-                            <!-- <option value="" selected> - </option> -->
                         </select>
+                        <label for="filter-event">Event</label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Apply Filter</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     {{-- modal untuk fix all PA --}}
     <div class="modal fade" id="fixModalPA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"

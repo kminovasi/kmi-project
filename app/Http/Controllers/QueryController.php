@@ -1474,10 +1474,11 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a class="d-flex justify-content-center" id="' . $data_row['assessment_events_id(removed)'] . '" readonly > ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
+
 
 
             if ($size_event_team != 0) {
@@ -1659,9 +1660,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly> ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
 
 
@@ -1844,9 +1845,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly> ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
 
 

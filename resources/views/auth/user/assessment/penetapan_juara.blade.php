@@ -163,45 +163,45 @@
                     @csrf
                     @method('POST')
                     <div class="modal-body">
-                        <div class="card mb-3">
-                            <div class="card-header">Form Berita Acara</div>
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-primary text-white font-weight-normal">
+                                Form Berita Acara
+                            </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="chooseEvent">Pilih Event</label>
-                                    <select name="event_id" id="chooseEvent" class="form-control">
+                                    <label for="chooseEvent" class="form-label">Pilih Event</label>
+                                    <select name="event_id" id="chooseEvent" class="form-select">
                                         @foreach ($data_event as $item)
-                                            <option value="{{ $item->id }}">{{ $item->event_name }} -
-                                                {{ $item->year }}</option>
+                                            <option value="{{ $item->id }}">{{ $item->event_name }} - {{ $item->year }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="inputNoSurat">No Surat</label>
-                                    <input type="text" name="no_surat" id="inputNoSurat"
-                                        placeholder="Masukkan Nomor Surat" class="form-control" required>
+                                    <label for="inputNoSurat" class="form-label">No Surat</label>
+                                    <input type="text" name="no_surat" id="inputNoSurat" placeholder="Masukkan Nomor Surat" class="form-control" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="chooseJenisEvent">Jenis Event</label>
-                                    <select name="jenis_event" id="chooseJenisEvent" class="form-control">
+                                    <label for="chooseJenisEvent" class="form-label">Jenis Event</label>
+                                    <select name="jenis_event" id="chooseJenisEvent" class="form-select">
                                         <option value="Internal">Internal</option>
                                         <option value="Grup">Group</option>
                                         <option value="Eksternal">Eksternal</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="inputDate">Tanggal Penetapan Juara</label>
-                                    <input type="date" name="penetapan_juara" id="inputDate" class="form-control"
-                                        required>
+                                    <label for="inputDate" class="form-label">Tanggal Penetapan Juara</label>
+                                    <input type="date" name="penetapan_juara" id="inputDate" class="form-control" required>
                                 </div>
-                                <div class="mb-3">
-                                    <button class="btn btn-primary" type="submit">Save changes</button>
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                                 </div>
                             </div>
                         </div>
+
                 </form>
-                <div class="card mb-3">
+                <div class="card mb-3 shadow-sm">
                     <div class="card-body">
-                        <table id="datatablesSimple">
+                        <table id="datatablesSimple" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -212,27 +212,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                $no = 1;
-                                ?>
+                                <?php $no = 1; ?>
                                 @foreach ($data as $d)
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $d->event_name }}</td>
                                         <td>{{ $d->year }}</td>
-                                        <td>{{ $d->no_surat }} </td>
-                                        <td><a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}"
-                                                class="btn btn-info btn-sm" target="_blank">Show</a>
-                                            <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}"
-                                                class="btn btn-primary btn-sm">Download</a>
-                                            <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                        <td>{{ $d->no_surat }}</td>
+                                        <td>
+                                            <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
+                                            <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
+                                            <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    Hapus
-                                                </button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </td>
                                     </tr>

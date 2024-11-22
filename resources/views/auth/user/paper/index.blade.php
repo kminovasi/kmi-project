@@ -213,9 +213,9 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content shadow">
             <!-- Header -->
-            <div class="modal-header bg-white">
-                <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="detailTeamMemberTitle">Filter</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <!-- Body -->
             <div class="modal-body">
@@ -401,8 +401,9 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton" disabled> Approval</button>
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+
                 </div>
             </form>
         </div>
@@ -450,9 +451,9 @@
 <div class="modal fade" id="showDocument" tabindex="-1" role="dialog" aria-labelledby="showDocumentTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="showDocumentTitle">Show Dokumen Pendukung </h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="showDocumentTitle">Show Dokumen Pendukung</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -490,71 +491,101 @@
 {{-- modal untuk info update --}}
 <div class="modal fade" id="updateData" tabindex="-1" role="dialog" aria-labelledby="updateDataTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateDataTitle">Update Data</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content shadow-sm border-0">
+            <!-- Modal Header -->
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="updateDataTitle">Update Data</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <!-- Form -->
             <form id="updateDataTeam" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="modal-body">
+
+                <!-- Modal Body -->
+                <div class="modal-body px-4 py-3">
+                    <!-- Innovation Title -->
                     <div class="mb-3">
-                        <label for="inputInnovationTitle">Innovation Title</label>
-                        <input class="form-control" id="inputInnovationTitle" type="text" name="innovation_title" value="">
+                        <label for="inputInnovationTitle" class="form-label fw-semibold">Innovation Title</label>
+                        <input type="text" class="form-control shadow-sm" id="inputInnovationTitle" name="innovation_title" value="" placeholder="Enter Innovation Title">
                     </div>
+
+                    <!-- Team Name -->
                     <div class="mb-3">
-                        <label for="inputTeamName">Team Name</label>
-                        <input class="form-control" id="inputTeamName" type="text" value="" name="team_name">
+                        <label for="inputTeamName" class="form-label fw-semibold">Team Name</label>
+                        <input type="text" class="form-control shadow-sm" id="inputTeamName" name="team_name" value="" placeholder="Enter Team Name">
                     </div>
+
+                    <!-- Category -->
                     <div class="mb-3">
-                        <label for="inputCategory">Category</label>
-                        <select name="category" id="inputCategory" class="form-select">
+                        <label for="inputCategory" class="form-label fw-semibold">Category</label>
+                        <select class="form-select shadow-sm" id="inputCategory" name="category">
                             @foreach ($data_category as $category)
-                            <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    <!-- Theme -->
                     <div class="mb-3">
-                        <label for="inputTheme">Theme</label>
-                        <select name="theme" id="inputTheme" class="form-select">
+                        <label for="inputTheme" class="form-label fw-semibold">Theme</label>
+                        <select class="form-select shadow-sm" id="inputTheme" name="theme">
                             @foreach ($data_theme as $theme)
-                            <option value="{{ $theme->id }}">{{ $theme->theme_name }}</option>
+                                <option value="{{ $theme->id }}">{{ $theme->theme_name }}</option>
                             @endforeach
                         </select>
                     </div>
+
+                    <!-- Innovation Status -->
                     <div class="mb-3">
-                        <label for="inputStatusInovasi">Status Inovasi</label>
-                        <select name="status_inovasi" id="inputStatusInovasi" class="form-select">
+                        <label for="inputStatusInovasi" class="form-label fw-semibold">Status Inovasi</label>
+                        <select class="form-select shadow-sm" id="inputStatusInovasi" name="status_inovasi">
                             <option value="Not Implemented">Not Implemented</option>
                             <option value="Progress">Progress</option>
                             <option value="Implemented">Implemented</option>
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer bg-light border-top-0 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary px-4">Submit</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+
 {{-- modal untuk info history --}}
 <div class="modal fade" id="infoHistory" tabindex="-1" role="dialog" aria-labelledby="infoHistoryTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="infoHistoryTitle">History Activity</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Header -->
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="infoHistoryTitle">History Activity</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- Body -->
             <div class="modal-body">
                 <div class="timeline" id="history">
+                    <!-- Example timeline item -->
+                    <div class="timeline-item mb-4">
+                        <div class="timeline-dot bg-primary"></div>
+                        <div class="timeline-content shadow-sm rounded p-3">
+                            <div class="fw-bold mb-1">Activity Title</div>
+                            <div class="small text-muted">Description of the activity goes here.</div>
+                            <div class="small text-muted mt-1">Date: 2024-11-22</div>
+                        </div>
+                    </div>
+                    <!-- Repeat for more items -->
                 </div>
             </div>
+            <!-- Footer -->
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -564,28 +595,34 @@
 <div class="modal fade" id="rollback" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rolbackTitle">Rollback</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <!-- Header -->
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="rolbackTitle">Rollback</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- Form -->
             <form id="formRollback" method="POST" action="{{ route('paper.rollback', ['id' => ':id']) }}">
                 @csrf
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="rollback_option">Rollback Option</label>
-                        <select class="form-select" name="rollback_option" id="rollback_option">
+                    <!-- Rollback Option -->
+                    <div class="mb-4">
+                        <label for="rollback_option" class="form-label fw-semibold">Rollback Option</label>
+                        <select class="form-select shadow-sm" name="rollback_option" id="rollback_option">
                             <option value="full_paper">Rollback Paper</option>
                             <option value="benefit">Rollback Benefit</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="inputCommentRollback" class="">Comment</label>
-                        <textarea name="comment" id="inputCommentRollback" cols="15" rows="7" class="form-control"></textarea>
+                    <!-- Comment -->
+                    <div class="mb-4">
+                        <label for="inputCommentRollback" class="form-label fw-semibold">Comment</label>
+                        <textarea name="comment" id="inputCommentRollback" rows="5"
+                            class="form-control shadow-sm" placeholder="Add your comments here..."></textarea>
                     </div>
                 </div>
+                <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="submit">Submit</button>
                 </div>
             </form>
         </div>
@@ -596,9 +633,9 @@
 <div class="modal fade" id="uploadStep" tabindex="-1" role="dialog" aria-labelledby="uploadDocumentTitle" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadDocumentTitle">Upload Step Document</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white border-bottom-0">
+                <h5 class="modal-title fw-bold text-white" id="uploadDocumentTitle">Upload Step Document</h5>
+                <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="uploadStepForm" class="upload-step-form" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -610,8 +647,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary btn-upload-step" type="submit" data-bs-dismiss="modal">Submit</button>
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+
                 </div>
             </form>
         </div>

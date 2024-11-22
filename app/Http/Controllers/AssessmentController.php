@@ -697,7 +697,7 @@ class AssessmentController extends Controller
     }
     public function showSofi_caucus($id)
     {
-
+        dd(PvtEventTeam::findOrFail($id));
         $dataTeam = Team::join('papers', 'papers.team_id', '=', 'teams.id')
             ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
@@ -706,6 +706,7 @@ class AssessmentController extends Controller
             ->select('pvt_event_teams.id as event_team_id', 'teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
             ->where('pvt_event_teams.id', $id)
             ->first();
+        dd($dataTeam);
 
         $dataNilai = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')

@@ -89,13 +89,13 @@
                             <button class="btn btn-primary btn-sm me-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#filterModal">Filter</button>
                         @endif
-                        @if (Auth::user()->role === 'Superadmin' || Auth::user()->role === 'Admin')
+                        {{-- @if (Auth::user()->role === 'Superadmin' || Auth::user()->role === 'Admin')
                             <select id="filter-status-inovasi" name="filter-status-inovasi" class="form-select">
                                 <option value="Not Implemented">Not Implemented</option>
                                 <option value="Progress">Progress</option>
                                 <option value="Implemented">Implemented</option>
                             </select>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
                 <table id="datatable-makalah" class="display">
@@ -205,42 +205,58 @@
 
     {{-- modal untuk filter khusus admin --}}
     <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content shadow">
+                <!-- Header -->
+                <div class="modal-header bg-white">
                     <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!-- Body -->
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-role">Role</label>
-                        <select id="filter-role" name="filter-role" class="form-select">
-                            <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
-                            <option value="innovator">Innovator</option>
-                            <option value="admin" <?php echo auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' ? 'selected' : ''; ?>>Admin</option>
-                            <?php else: ?>
-                            <option value="innovator" selected>Innovator</option>
-                            <option value="admin">Admin</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-company">Company</label>
-                        <select id="filter-company" name="filter-company" class="form-select">
-                            @foreach ($data_company as $company)
-                                <option value="{{ $company->company_code }}"
-                                    {{ $company->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                    {{ $company->company_name }} </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <form id="filterForm">
+                        <!-- Role Filter -->
+                        <div class="mb-3">
+                            <label for="filter-role" class="form-label fw-semibold">Role</label>
+                            <select id="filter-role" name="filter-role" class="form-select">
+                                <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
+                                    <option value="admin" selected>Admin</option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        <!-- Company Filter -->
+                        <div class="mb-3">
+                            <label for="filter-company" class="form-label fw-semibold">Company</label>
+                            <select id="filter-company" name="filter-company" class="form-select">
+                                @foreach ($data_company as $company)
+                                    <option value="{{ $company->company_code }}"
+                                        {{ $company->company_code == Auth::user()->company_code ? 'selected' : '' }}>
+                                        {{ $company->company_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!-- Status Inovasi Filter -->
+                        <div class="mb-3">
+                            <label for="filter-status-inovasi" class="form-label fw-semibold">Status Inovasi</label>
+                            <select id="filter-status-inovasi" name="filter-status-inovasi" class="form-select">
+                                <option value="" selected>-- Pilih Status --</option>
+                                <option value="Not Implemented">Not Implemented</option>
+                                <option value="Progress">Progress</option>
+                                <option value="Implemented">Implemented</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
+                <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit" form="filterForm">Apply Filter</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     {{-- modal untuk approval makalah fasilitator --}}
     <div class="modal fade" id="accFasilitator" tabindex="-1" role="dialog" aria-labelledby="accFasilitatorTitle"

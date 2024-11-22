@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\AssessmentPoint;
 use App\Models\PvtAssessmentEvent;
 use App\Models\Judge;
+use App\Models\MinimumscoreEvent;
 use Log;
 
 class RegisterAssessmentTemplate extends Command
@@ -134,5 +135,19 @@ class RegisterAssessmentTemplate extends Command
 
             $this->info("Juri berhasil didaftarkan untuk event yang dipilih.");
         }
+
+        // Meminta input nilai minimal untuk on desk dan presentation
+        $minimumOnDesk = $this->ask('Masukkan nilai minimal untuk on desk:');
+        $minimumPresentation = $this->ask('Masukkan nilai minimal untuk presentasi:');
+
+        // Menyimpan nilai minimal ke dalam tabel minimumscore_events
+        MinimumscoreEvent::create([
+            'event_id' => $eventId,
+            'score_minimum_oda' => $minimumOnDesk,
+            'score_minimum_pa' => $minimumPresentation,
+            'category' => 'BI/II', // Anda bisa menyesuaikan kategori jika perlu
+        ]);
+
+        $this->info("Template penilaian berhasil didaftarkan untuk event yang dipilih.");
     }
 }

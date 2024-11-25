@@ -95,10 +95,17 @@ class PvtEventTeamController extends Controller
                 DB::raw('MIN(category_name) as Kategori'),
                 'pvt_event_teams.id AS event_team_id(removed)',
                 'pvt_event_teams.is_best_of_the_best AS is_best_of_the_best',
-                DB::raw('pvt_event_teams.final_score as final_score'),
+                DB::raw('pvt_event_teams.final_score as Score'),
             ];
 
-            // Query utama untuk mengambil data tim
+            // Subquery untuk mendapatkan final_score tertinggi per kategori
+            $subquery = DB::table('pvt_event_teams')
+                ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->select('teams.category_id', DB::raw('MAX(pvt_event_teams.final_score) as max_score'))
+                ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->groupBy('teams.category_id');
+
+            // Query utama untuk mengambil data tim dengan final_score tertinggi
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
@@ -107,12 +114,16 @@ class PvtEventTeamController extends Controller
                 ->join('pvt_assessment_events', function ($join) {
                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                 })
+                ->joinSub($subquery, 'max_scores', function ($join) {
+                    $join->on('teams.category_id', '=', 'max_scores.category_id')
+                        ->on('pvt_event_teams.final_score', '=', 'max_scores.max_score');
+                })
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
                 ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
-                ->groupBy('pvt_event_teams.id')
-                ->select($arr_select_case);
+                ->select($arr_select_case)
+                ->groupBy('teams.id', 'teams.team_name', 'innovation_title', 'categories.category_name', 'pvt_event_teams.id', 'pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score');
 
 
             // Jika filterCategory tidak null, tambahkan filter untuk kategori
@@ -196,8 +207,6 @@ class PvtEventTeamController extends Controller
                     return '-'; // Jika ranking bukan 1, kembalikan tanda '-'
                 }
             });
-
-            // Mark 'Pilih Tim' column as raw
             $dataTable->rawColumns($rawColumns);
 
             // Menghapus kolom yang mengandung kata "removed"

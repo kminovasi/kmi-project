@@ -306,6 +306,23 @@
         });
     });
 
+function toggleRadio(selectedRadio) {
+   $('input[type="radio"][name="pvt_event_team_id"]').click(function() {
+        // Jika radio button yang dipilih sudah terpilih, uncheck
+        if ($(this).is(':checked')) {
+            // Cek apakah radio button yang sama diklik lagi
+            if ($(this).data('clicked')) {
+                $(this).prop('checked', false); // Uncheck jika diklik lagi
+                $(this).data('clicked', false); // Reset data clicked
+            } else {
+                $(this).data('clicked', true); // Tandai sebagai diklik
+            }
+        } else {
+            // Jika radio button tidak terpilih, reset data clicked
+            $(this).data('clicked', false);
+        }
+    });
+}
 
-</script>
+        </script>
     @endpush

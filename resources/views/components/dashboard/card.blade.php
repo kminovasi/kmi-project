@@ -15,6 +15,10 @@
                 background: linear-gradient(45deg, #ffc107, #ff9800);
             }
 
+            .bg-purple {
+                background: linear-gradient(45deg, #6f42c1, #5e35b1);
+            }
+
 
             .icon-circle {
                 min-height: 3.5rem;
@@ -262,12 +266,12 @@
     </div>
 
     <div class="col-lg-6 col-xl-4 mb-4">
-        <div class="card bg-blue text-white h-100">
+        <div class="card bg-purple text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
                         <div class="text-white-75 small mb-2">
-                            Total Innovator Pria
+                            Total Innovator Laki-laki
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsMale }}
@@ -288,7 +292,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
                         <div class="text-white-75 small mb-2">
-                            Total Innovator Wanita
+                            Total Innovator Perempuan
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsFemale }}

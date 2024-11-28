@@ -14,7 +14,7 @@ class SessionController extends Controller
 {
     function index()
     {
-        return view('auth.login');
+        return view('layouts.login');
     }
 
     private function single_auth($data)

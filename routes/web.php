@@ -394,7 +394,7 @@ Route::get('/ck5', function () {
 Route::get('/', function () {
     $flyer = Flyer::all();
     $timeline = Timeline::all();
-    return view('landingpage', [
+    return view('homepage', [
         'flyer' => $flyer,
         'timeline' => $timeline
     ]);

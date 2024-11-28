@@ -54,6 +54,37 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updating(function ($user) {
+            $attributesToTrack = [
+                'directorate_name',
+                'group_function_name',
+                'department_name',
+                'unit_name',
+                'section_name',
+                'sub_section_of',
+            ];
+
+            $changes = $user->getDirty();
+
+            // Periksa apakah ada perubahan pada atribut yang dilacak
+            foreach ($attributesToTrack as $attribute) {
+                if (array_key_exists($attribute, $changes)) {
+                    // Simpan data lama ke dalam user_hierarchy_histories
+                    UserHierarchyHistory::create([
+                        'user_id' => $user->id,
+                        $attribute => $user->getOriginal($attribute),
+                        'effective_start_date' => $user->created_at, // Gunakan timestamp awal jika tidak ada histori
+                        'effective_end_date' => now(), // Set tanggal berakhirnya data lama
+                    ]);
+                }
+            }
+        });
+    }
+
 
     public function atasan()
     {

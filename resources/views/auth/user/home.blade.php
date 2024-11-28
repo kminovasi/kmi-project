@@ -58,8 +58,11 @@
                     </div>
 
                     <!-- Innovation Status Total -->
-                    <div>
+                    {{-- <div>
                         <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    </div> --}}
+                    <div>
+                        <x-dashboard.total-team-chart />
                     </div>
                     <div>
                         <x-dashboard.financial-benefit-total-chart :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />

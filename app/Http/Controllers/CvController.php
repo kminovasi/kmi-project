@@ -29,6 +29,7 @@ class CvController extends Controller
             ->where('pvt_members.employee_id', $employee->employee_id)
             ->select(
                 'papers.*',
+                'teams.id as team_id',
                 'teams.team_name',
                 'teams.status_lomba',
                 'categories.category_name as category',

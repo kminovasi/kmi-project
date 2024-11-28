@@ -27,8 +27,10 @@ class CvController extends Controller
             ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
             ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
             ->where('pvt_members.employee_id', $employee->employee_id)
+            ->where('pvt_event_teams.status', '=', 'Juara')
             ->select(
                 'papers.*',
+                'teams.id as team_id',
                 'teams.team_name',
                 'teams.status_lomba',
                 'categories.category_name as category',

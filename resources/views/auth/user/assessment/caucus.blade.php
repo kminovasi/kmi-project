@@ -169,95 +169,102 @@
 
         </div>
         {{-- modal untuk filter khusus admin dan juri --}}
-        <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <!-- Modal Header -->
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <!-- Modal Body -->
                     <div class="modal-body">
-                        {{-- <div class="md-3">
-                    <input type="text" name="event_id" id="IDEvent" value="">
-                </div> --}}
-                        <div class="mb-3">
-                            <label class="mb-1" for="filter-category">Category</label>
+                        <!-- Filter Category -->
+                        <div class="form-floating mb-4">
                             <select id="filter-category" name="filter-category" class="form-select">
-                                <option value=""> All </option>
+                                <option value="">All</option>
                                 @foreach ($data_category as $category)
-                                    <option value="{{ $category->id }}"> {{ $category->category_name }} </option>
+                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                                 @endforeach
                             </select>
+                            <label for="filter-category">Category</label>
                         </div>
-                        <div class="mb-3">
-                            <label class="mb-1" for="filter-event">Event</label>
+
+                        <!-- Filter Event -->
+                        <div class="form-floating mb-4">
                             <select id="filter-event" name="filter-event" class="form-select"
                                 {{ Auth::user()->role == 'Superadmin' ? '' : 'disabled' }}>
                                 @foreach ($data_event as $event)
                                     <option name="event_id" value="{{ $event->id }}"
                                         {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                        {{ $event->event_name }} - {{ $event->year }} </option>
+                                        {{ $event->event_name }} - {{ $event->year }}
+                                    </option>
                                 @endforeach
-                                <!-- <option value="" selected> - </option> -->
                             </select>
-                            {{-- <input type="text" name="event_id" id="" value="{{ $event->id }}"> --}}
+                            <label for="filter-event">Event</label>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Apply Filter</button>
                     </div>
                 </div>
             </div>
         </div>
 
         {{-- modal untuk executive summary --}}
-        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog"
-            aria-labelledby="executiveSummaryTitle" aria-hidden="true">
+        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog" aria-labelledby="executiveSummaryTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="executiveSummaryTitle">Form Executive Summary</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold" id="executiveSummaryTitle">Form Ringkasan Eksekutif</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
                     <form id="formExecutiveSummary" method="POST" action="{{ route('assessment.summaryExecutive') }}">
                         @csrf
                         <input type="hidden" name="pvt_event_teams_id" id="inputEventTeamID" value="">
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="inputTeamName" class="">Team</label>
-                                <input type="text" name="" id="TeamName" class="form-control" value=""
-                                    readonly>
+                            <!-- Nama Tim -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="TeamName" class="form-control" value="" readonly>
+                                <label for="TeamName">Tim</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="InnovationTitle" class="">Innovation Title</label>
-                                <input type="text" name="" id="InnovationTitle" class="form-control"
-                                    value="" readonly>
+                            <!-- Judul Inovasi -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="InnovationTitle" class="form-control" value="" readonly>
+                                <label for="InnovationTitle">Judul Inovasi</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="Company" class="">Company</label>
-                                <input name="" id="Company" name="" class="form-control" readonly>
+                            <!-- Perusahaan -->
+                            <div class="form-floating mb-4">
+                                <input type="text" name="" id="Company" class="form-control" readonly>
+                                <label for="Company">Perusahaan</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputProblemBackground" class="">Background Masalah</label>
-                                <textarea name="problem_background" id="inputProblemBackground" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Latar Belakang Masalah -->
+                            <div class="form-floating mb-4">
+                                <textarea name="problem_background" id="inputProblemBackground" class="form-control" rows="4"></textarea>
+                                <label for="inputProblemBackground">Latar Belakang Masalah</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputInnovationIdea" class="">Innovation Idea </label>
-                                <textarea name="innovation_idea" id="inputInnovationIdea" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Ide Inovasi -->
+                            <div class="form-floating mb-4">
+                                <textarea name="innovation_idea" id="inputInnovationIdea" class="form-control" rows="4"></textarea>
+                                <label for="inputInnovationIdea">Ide Inovasi</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="inputBenefit" class="">Benefit</label>
-                                <textarea name="benefit" id="inputBenefit" cols="15" rows="5" class="form-control"></textarea>
+                            <!-- Manfaat -->
+                            <div class="form-floating mb-4">
+                                <textarea name="benefit" id="inputBenefit" class="form-control" rows="4"></textarea>
+                                <label for="inputBenefit">Manfaat</label>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Simpan</button>
+                        <div class="modal-footer border-0">
+                            <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                            <button class="btn btn-primary" type="submit">Simpan</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
 
     @endsection
 

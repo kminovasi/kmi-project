@@ -1,29 +1,77 @@
 @extends('layouts.app')
 @section('title', 'Presentasi - Portal Inovasi')
 @push('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+
     <style type="text/css">
-        .active-link {
-            color: #ffc004;
-            background-color: #e81500;
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Menambah jarak antar elemen */
         }
 
-        .submit {
-            width: 200px;
+        #filter-status-inovasi {
+            width: 160px;
+            height: 45px;
+            border: 1px solid #d6d8db;
+            /* Border abu-abu cerah tipis */
+            border-radius: 4px;
+            /* Radius sudut border */
+            padding: 8px 12px;
+            /* Padding di dalam dropdown */
+            background-color: #ffffff;
+            /* Background putih */
+            color: #000000;
+            /* Teks hitam */
+            font-size: 14px;
+            /* Ukuran font */
+            transition: border-color 0.3s;
+            /* Transisi untuk perubahan warna border */
         }
 
-        .next {
-            width: 200px;
-            margin-left: 10px;
+        #filter-status-inovasi:focus {
+            outline: none;
+            /* Menghilangkan outline default */
+            border-color: #d6d8db;
+            /* Border abu-abu cerah saat fokus */
         }
 
-        .display thead th,
-        .display tbody td {
-            border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+        .btn-red {
+            background-color: #ffffff;
+            /* Warna putih cerah */
+            color: #000000;
+            /* Teks hitam */
+            border: 1px solid #d6d8db;
+            /* Border abu-abu cerah tipis */
+            border-radius: 4px;
+            padding: 8px 16px;
+            /* Jarak dalam tombol */
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Efek timbul */
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-red:hover {
+            background-color: #f0f0f0;
+            /* Warna abu-abu sangat cerah saat hover */
+            border-color: #d6d8db;
+            /* Border abu-abu cerah */
+            color: #000000;
+            /* Teks hitam */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            /* Efek timbul lebih dalam saat hover */
+        }
+
+        .btn-red:focus {
+            outline: none;
+            /* Menghilangkan outline default */
         }
     </style>
 @endpush
@@ -46,8 +94,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p-2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                        <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -128,41 +176,49 @@
     </div>
 
     {{-- modal untuk filter khusus admin dan juri --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Modal Header -->
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!-- Modal Body -->
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-category">Category</label>
+                    <!-- Filter Category -->
+                    <div class="form-floating mb-4">
                         <select id="filter-category" name="filter-category" class="form-select">
-                            <option value=""> All </option>
+                            <option value="" selected>All Categories</option>
                             @foreach ($data_category as $category)
-                                <option value="{{ $category->id }}"> {{ $category->category_name }} </option>
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
+                        <label for="filter-category">Category</label>
                     </div>
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-event">Event</label>
+
+                    <!-- Filter Event -->
+                    <div class="form-floating mb-4">
                         <select id="filter-event" name="filter-event" class="form-select">
                             @foreach ($data_event as $event)
                                 <option value="{{ $event->id }}"
                                     {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                    {{ $event->event_name }} - {{ $event->year }} </option>
+                                    {{ $event->event_name }} - {{ $event->year }}
+                                </option>
                             @endforeach
-                            <!-- <option value="" selected> - </option> -->
                         </select>
+                        <label for="filter-event">Event</label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Apply Filter</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     {{-- modal untuk fix all PA --}}
     <div class="modal fade" id="fixModalPA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"

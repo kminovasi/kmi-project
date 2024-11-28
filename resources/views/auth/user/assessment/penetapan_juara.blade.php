@@ -163,45 +163,45 @@
                     @csrf
                     @method('POST')
                     <div class="modal-body">
-                        <div class="card mb-3">
-                            <div class="card-header">Form Berita Acara</div>
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-header bg-primary text-white font-weight-normal">
+                                Form Berita Acara
+                            </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="chooseEvent">Pilih Event</label>
-                                    <select name="event_id" id="chooseEvent" class="form-control">
+                                    <label for="chooseEvent" class="form-label">Pilih Event</label>
+                                    <select name="event_id" id="chooseEvent" class="form-select">
                                         @foreach ($data_event as $item)
-                                            <option value="{{ $item->id }}">{{ $item->event_name }} -
-                                                {{ $item->year }}</option>
+                                            <option value="{{ $item->id }}">{{ $item->event_name }} - {{ $item->year }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="inputNoSurat">No Surat</label>
-                                    <input type="text" name="no_surat" id="inputNoSurat"
-                                        placeholder="Masukkan Nomor Surat" class="form-control" required>
+                                    <label for="inputNoSurat" class="form-label">No Surat</label>
+                                    <input type="text" name="no_surat" id="inputNoSurat" placeholder="Masukkan Nomor Surat" class="form-control" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="chooseJenisEvent">Jenis Event</label>
-                                    <select name="jenis_event" id="chooseJenisEvent" class="form-control">
+                                    <label for="chooseJenisEvent" class="form-label">Jenis Event</label>
+                                    <select name="jenis_event" id="chooseJenisEvent" class="form-select">
                                         <option value="Internal">Internal</option>
                                         <option value="Grup">Group</option>
                                         <option value="Eksternal">Eksternal</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="inputDate">Tanggal Penetapan Juara</label>
-                                    <input type="date" name="penetapan_juara" id="inputDate" class="form-control"
-                                        required>
+                                    <label for="inputDate" class="form-label">Tanggal Penetapan Juara</label>
+                                    <input type="date" name="penetapan_juara" id="inputDate" class="form-control" required>
                                 </div>
-                                <div class="mb-3">
-                                    <button class="btn btn-primary" type="submit">Save changes</button>
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                                 </div>
                             </div>
                         </div>
+
                 </form>
-                <div class="card mb-3">
+                <div class="card mb-3 shadow-sm">
                     <div class="card-body">
-                        <table id="datatablesSimple">
+                        <table id="datatablesSimple" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -212,27 +212,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php
-                                $no = 1;
-                                ?>
+                                <?php $no = 1; ?>
                                 @foreach ($data as $d)
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $d->event_name }}</td>
                                         <td>{{ $d->year }}</td>
-                                        <td>{{ $d->no_surat }} </td>
-                                        <td><a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}"
-                                                class="btn btn-info btn-sm" target="_blank">Show</a>
-                                            <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}"
-                                                class="btn btn-primary btn-sm">Download</a>
-                                            <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                        <td>{{ $d->no_surat }}</td>
+                                        <td>
+                                            <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
+                                            <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
+                                            <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    Hapus
-                                                </button>
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -252,42 +245,45 @@
     </div>
 
     {{-- modal untuk filter khusus admin dan juri --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Modal Header -->
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <!-- Modal Body -->
                 <div class="modal-body">
-                    {{-- <div class="md-3">
-                    <input type="text" name="event_id" id="IDEvent" value="">
-                </div> --}}
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-category">Category</label>
+                    <!-- Filter Category -->
+                    <div class="form-floating mb-4">
                         <select id="filter-category" name="filter-category" class="form-select">
-                            <option value=""> All </option>
+                            <option value="" selected>All Categories</option>
                             @foreach ($data_category as $category)
-                                <option value="{{ $category->id }}"> {{ $category->category_name }} </option>
+                                <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
+                        <label for="filter-category">Category</label>
                     </div>
-                    <div class="mb-3">
-                        <label class="mb-1" for="filter-event">Event</label>
+
+                    <!-- Filter Event -->
+                    <div class="form-floating mb-4">
                         <select id="filter-event" name="filter-event" class="form-select"
                             {{ Auth::user()->role == 'Superadmin' ? '' : 'disabled' }}>
                             @foreach ($data_event as $event)
                                 <option name="event_id" value="{{ $event->id }}"
                                     {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                    {{ $event->event_name }} - {{ $event->year }} </option>
+                                    {{ $event->event_name }} - {{ $event->year }}
+                                </option>
                             @endforeach
-                            <!-- <option value="" selected> - </option> -->
                         </select>
-                        {{-- <input type="text" name="event_id" id="" value="{{ $event->id }}"> --}}
+                        <label for="filter-event">Event</label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Apply Filter</button>
                 </div>
             </div>
         </div>

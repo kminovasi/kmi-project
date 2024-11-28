@@ -208,7 +208,7 @@
     </div>
 </div>
 
-{{-- modal untuk filter khusus admin --}}
+{{-- modal untuk filter khusus superadmin --}}
 <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content shadow">
@@ -254,7 +254,7 @@
             </div>
             <!-- Footer -->
             <div class="modal-footer">
-                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                 <button class="btn btn-primary" type="submit" form="filterForm">Apply Filter</button>
             </div>
         </div>

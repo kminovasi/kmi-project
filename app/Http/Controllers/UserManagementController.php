@@ -38,7 +38,7 @@ class UserManagementController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'employee_id' => 'required|unique:users,employee_id',
             'username' => 'required|unique:users,username',
             'email' => 'required|email|unique:users,email',
@@ -52,9 +52,10 @@ class UserManagementController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role harus dipilih.'
         ]);
-        if ($validatedData->fails()) {
+
+        if ($validator->fails()) {
             return redirect()->back()
-                ->withErrors($validatedData)
+                ->withErrors($validator)
                 ->withInput();
         }
 

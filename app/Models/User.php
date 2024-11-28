@@ -76,4 +76,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Judge::class, 'employee_id');
     }
+
+    public function hierarchyHistories()
+    {
+        return $this->hasMany(UserHierarchyHistory::class);
+    }
 }

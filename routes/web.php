@@ -40,6 +40,8 @@ use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\SummaryExecutiveController;
+use App\Http\Controllers\UserManagement;
+use App\Http\Controllers\UserManagementController;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -249,6 +251,16 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['role:Superadmin,Admin'])->prefix('management-system')->name('management-system.')->group(function () {
         // Route::get('/', [ManagamentSystemController::class, 'index'])->name('index');
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('/', [UserManagementController::class, 'index'])->name('index');
+            Route::get('/create', [UserManagementController::class, 'create'])->name('create');
+            Route::post('/store', [UserManagementController::class, 'store'])->name('store');
+            Route::get('/data', [UserManagementController::class, 'getData'])->name('data');
+            Route::get('/edit/{id}', [UserManagementController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [UserManagementController::class, 'update'])->name('update');
+            Route::delete('/destroy/{id}', [UserManagementController::class, 'destroy'])->name('destroy');
+            Route::get('/show/{id}', [UserManagementController::class, 'show'])->name('show');
+        });
 
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
@@ -338,7 +350,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export/{categoryId}', function ($categoryId) {
             return Excel::download(new PaperExport($categoryId), 'papers_category_' . $categoryId . '.xlsx');
         })->name('excel');
-        Route::get('/download/{id}',[EvidenceController::class, 'download'])->name('download-paper');
+        Route::get('/download/{id}', [EvidenceController::class, 'download'])->name('download-paper');
     });
 
     // Cv

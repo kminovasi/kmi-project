@@ -1294,7 +1294,7 @@ class QueryController extends Controller
             });
 
             $rawColumns[] = 'Ranking';
-            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+            $dataTable->addColumn('Urutan', function ($data_row) use ($request, $categoryid) {
                 Log::debug($data_row);
 
                 // Mengambil data tim berdasarkan total_score_presentation per kategori
@@ -1474,10 +1474,11 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a class="d-flex justify-content-center" id="' . $data_row['assessment_events_id(removed)'] . '" readonly > ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
+
 
 
             if ($size_event_team != 0) {
@@ -1635,8 +1636,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1650,8 +1650,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1661,9 +1660,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly> ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
 
 
@@ -1823,8 +1822,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1838,8 +1836,7 @@ class QueryController extends Controller
                         ->get();
 
                     if ($data_assessment_team_judge->count())
-                        return '<input class="form-control"  type="number" value="' . $data_assessment_team_judge[0]['average'] . '" readonly>
-                            <br>';
+                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
                     else
                         return '-';
                 });
@@ -1848,9 +1845,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly> ' . $data_row['score_max(removed)'] . ' </a>
-                        <br>
-                        <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+            <br>
+            <br>';
             });
 
 

@@ -59,14 +59,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document.getElementById("total-team-chart").getContext("2d");
 
     // Memuat logo sebelum membuat grafik
-    await loadLogos(chartData.logos);
+    await loadLogos(chartDataTotalTeam.logos);
 
     // Membuat grafik
     const chart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: chartData.labels,
-            datasets: chartData.datasets,
+            labels: chartDataTotalTeam.labels,
+            datasets: chartDataTotalTeam.datasets,
         },
         options: {
             responsive: true,

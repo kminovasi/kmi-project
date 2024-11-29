@@ -1,7 +1,6 @@
 <div class="card team-card border-0 shadow-lg mt-3">
     <div class="card-header bg-gradient-primary py-3">
         <div class="d-flex align-items-center">
-            <i class="bi bi-people-fill fs-3 me-3"></i>
             <h5 class="card-title mb-0 fw-bold text-white">Total Tim Terdaftar (Diterima)</h5>
         </div>
     </div>

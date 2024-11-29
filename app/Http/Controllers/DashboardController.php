@@ -227,6 +227,6 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.total-team-chart', ['chartData' => $chartData]);
+        return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
     }
 }

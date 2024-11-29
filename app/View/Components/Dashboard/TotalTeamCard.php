@@ -6,7 +6,7 @@ use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class TotalTeamChart extends Component
+class TotalTeamCard extends Component
 {
     public $teamData;
 
@@ -44,7 +44,7 @@ class TotalTeamChart extends Component
 
     public function render()
     {
-        return view('components.dashboard.total-team-chart', [
+        return view('components.dashboard.total-team-card', [
             'teamData' => $this->teamData
         ]);
     }

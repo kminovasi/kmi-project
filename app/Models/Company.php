@@ -19,4 +19,9 @@ class Company extends Model
         return $this->hasMany(Event::class, 'company_code', 'company_code');
     }
 
+    // Define the relationship to the Team model
+    public function teams()
+    {
+        return $this->hasMany(Team::class, 'company_code', 'company_code');
+    }
 }

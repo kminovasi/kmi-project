@@ -64,6 +64,9 @@
                     <div>
                         <x-dashboard.total-team-card />
                     </div>
+                    <div class="mt-3">
+                        <x-dashboard.total-financial-benefit-card />
+                    </div>
                     <div>
                         <x-dashboard.financial-benefit-total-chart :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>

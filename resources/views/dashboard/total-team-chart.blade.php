@@ -14,7 +14,7 @@
 
         <!-- Tambahkan variabel chartData ke JavaScript -->
         <script>
-            const chartData = @json($chartData);
+            const chartDataTotalTeam = @json($chartDataTotalTeam);
         </script>
         <x-dashboard.total-company-innovator-chart />
 

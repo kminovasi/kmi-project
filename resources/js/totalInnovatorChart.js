@@ -5,9 +5,19 @@ import {
     BarController,
     BarElement,
     Tooltip,
+    Legend,
+    Title,
 } from "chart.js";
 
-Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    BarController,
+    BarElement,
+    Tooltip,
+    Legend,
+    Title
+);
 
 // Array untuk menyimpan gambar logo
 const logoImages = [];
@@ -33,15 +43,15 @@ const loadLogos = async (logos) => {
     }
 };
 
-// Plugin untuk menggambar logo
+// Plugin untuk menggambar logo di bawah label
 const imagePlugin = {
     id: "customImagePlugin",
     afterDraw: (chart) => {
         const { ctx, chartArea, scales } = chart;
 
         chart.data.labels.forEach((label, index) => {
-            const x = scales.x.getPixelForTick(index);
-            const y = chartArea.bottom; // Sesuaikan posisi y
+            const x = scales.x.getPixelForTick(index); // Posisi X label
+            const y = chartArea.bottom + 10; // Posisi Y, tambahkan jarak di bawah chart
 
             if (logoImages[index]) {
                 const img = logoImages[index];
@@ -56,7 +66,9 @@ const imagePlugin = {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const ctx = document.getElementById("total-team-chart").getContext("2d");
+    const ctx = document
+        .getElementById("total-innovator-chart")
+        .getContext("2d");
 
     // Memuat logo sebelum membuat grafik
     await loadLogos(chartData.logos);
@@ -65,8 +77,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const chart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: chartData.labels,
-            datasets: chartData.datasets,
+            labels: chartData.labels, // Nama perusahaan
+            datasets: chartData.datasets, // Data inovator (berisi label tahun dan warna batang)
         },
         options: {
             responsive: true,
@@ -77,27 +89,35 @@ document.addEventListener("DOMContentLoaded", async () => {
             },
             plugins: {
                 legend: {
-                    position: "top",
+                    display: true, // Aktifkan legend untuk warna tahun
+                    position: "top", // Legend di atas chart
+                    labels: {
+                        font: {
+                            size: 12, // Ukuran font legend
+                        },
+                        boxWidth: 20, // Lebar kotak warna di legend
+                        padding: 15, // Jarak antar item legend
+                    },
                 },
                 title: {
                     display: true,
-                    text: "Total Teams by Company (Last 4 Years)",
+                    text: "Jumlah Keterlibatan Inovator per Perusahaan (2020–2023)",
                 },
             },
             scales: {
                 x: {
                     title: {
                         display: false,
-                        text: "Companies",
+                        text: "Perusahaan",
                     },
                     ticks: {
-                        display: false,
+                        display: false, // Sembunyikan teks label agar hanya logo yang tampil
                     },
                 },
                 y: {
                     title: {
                         display: true,
-                        text: "Number of Teams",
+                        text: "Jumlah Inovator",
                     },
                 },
             },

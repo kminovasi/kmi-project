@@ -229,4 +229,119 @@ class DashboardController extends Controller
 
         return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
     }
+
+    public function showTotalBenefitChart()
+    {
+        $currentYear = Carbon::now()->year;
+        $years = range($currentYear - 4, $currentYear);
+
+        $companies = Company::with(['teams.paper' => function ($query) use ($years) {
+            $query->where('status', 'accepted by innovation admin')
+                ->whereBetween('created_at', [
+                    now()->subYears(4)->startOfYear(),
+                    now()->endOfYear()
+                ]);
+        }])->get();
+
+        $chartData = [
+            'labels' => [], // Nama perusahaan
+            'datasets' => [], // Dataset untuk setiap tahun
+            'logos' => [] // Path logo perusahaan
+        ];
+
+        // Warna untuk setiap tahun
+        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
+
+        foreach ($years as $index => $year) {
+            $chartData['datasets'][] = [
+                'label' => $year,
+                'backgroundColor' => $colors[$index % count($colors)],
+                'data' => []
+            ];
+        }
+
+        foreach ($companies as $company) {
+            // Proses nama perusahaan menjadi nama file logo
+            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
+            $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
+            $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
+            $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
+
+            // Cek jika file logo ada, jika tidak gunakan default logo
+            if (!file_exists($logoPath)) {
+                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Ganti dengan logo default
+            } else {
+                $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
+            }
+
+            $chartData['labels'][] = $company->company_name; // Nama perusahaan
+            $chartData['logos'][] = $logoPath; // Path logo perusahaan
+
+            // Hitung total financial benefit per tahun
+            $financialPerYear = [];
+            foreach ($years as $year) {
+                $financialPerYear[$year] = $company->teams->reduce(function ($carry, $team) use ($year) {
+                    // Gunakan relasi papers
+                    $teamFinancial = $team->paper->whereBetween('created_at', [
+                        "$year-01-01",
+                        "$year-12-31"
+                    ])->sum('financial');
+
+                    return $carry + $teamFinancial;
+                }, 0);
+            }
+
+
+            // Tambahkan data ke dataset per tahun
+            foreach ($years as $index => $year) {
+                $chartData['datasets'][$index]['data'][] = $financialPerYear[$year] ?? 0;
+            }
+        }
+
+        return view('dashboard.total-financial-benefit-chart', ['chartDataTotalBenefit' => $chartData]);
+    }
+
+
+    public function showTotalBenefitChartData()
+    {
+        // Ambil data financial benefit dari paper dengan status 'accepted by innovation admin'
+        $data = DB::table('papers')
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+            ->select(
+                'companies.company_name',
+                DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
+                DB::raw('SUM(papers.financial) as total_financial')
+            )
+            ->where('papers.status', 'accepted by innovation admin')
+            ->whereBetween('papers.created_at', [
+                now()->subYears(4)->startOfYear(),
+                now()->endOfYear()
+            ])
+            ->groupBy('companies.company_name', 'year')
+            ->get();
+
+        return response()->json($data);
+    }
+    public function showTotalPotentialBenefitChartData()
+    {
+        // Ambil data financial benefit dari paper dengan status 'accepted by innovation admin'
+        $data = DB::table('papers')
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+            ->select(
+                'companies.company_name',
+                DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
+                DB::raw('SUM(papers.potential_benefit) as total_financial')
+            )
+            ->where('papers.status', 'accepted by innovation admin')
+            ->whereBetween('papers.created_at', [
+                now()->subYears(4)->startOfYear(),
+                now()->endOfYear()
+            ])
+            ->groupBy('companies.company_name', 'year')
+            ->get();
+
+        return response()->json($data);
+    }
 }

@@ -20,4 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/chart-data', [ApiChartController::class, 'chartData']);
-Route::get('/dashboard/total-team-chart-data', [DashboardController::class, 'getTotalTeamChartData'])->name('getTotalTeamChartData');
+Route::middleware(['role:Superadmin'])->group(function () {
+    Route::get('/dashboard/total-team-chart-data', [DashboardController::class, 'getTotalTeamChartData'])->name('getTotalTeamChartData');
+    Route::get('/dashboard/total-benefit-chart-data', [DashboardController::class, 'showTotalBenefitChartData'])->name('showTotalBenefitChartData');
+    Route::get('/dashboard/total-potential-benefit-chart-data', [DashboardController::class, 'showTotalPotentialBenefitChartData'])->name('showTotalPotentialBenefitChartData');
+});

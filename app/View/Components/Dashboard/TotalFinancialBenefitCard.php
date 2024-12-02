@@ -9,6 +9,7 @@ use Carbon\Carbon;
 class TotalFinancialBenefitCard extends Component
 {
     public $financialBenefits;
+    public $potentialBenefits;
 
     /**
      * Create a new component instance.
@@ -17,15 +18,17 @@ class TotalFinancialBenefitCard extends Component
      */
     public function __construct()
     {
-        $this->financialBenefits = $this->getTotalFinancialBenefitPerYear();
+        $this->financialBenefits = $this->getTotalBenefitPerYear('financial');
+        $this->potentialBenefits = $this->getTotalBenefitPerYear('potential_benefit');
     }
 
     /**
-     * Get total financial benefit per year for the last 4 years
+     * Get total benefit per year for the last 4 years
      *
+     * @param string $benefitType
      * @return array
      */
-    private function getTotalFinancialBenefitPerYear()
+    private function getTotalBenefitPerYear($benefitType)
     {
         $currentYear = Carbon::now()->year;
         $benefits = [];
@@ -33,7 +36,7 @@ class TotalFinancialBenefitCard extends Component
         for ($year = $currentYear - 3; $year <= $currentYear; $year++) {
             $totalBenefit = Paper::where('status', 'accepted by innovation admin')
                 ->whereYear('created_at', $year)
-                ->sum('financial');
+                ->sum($benefitType);
 
             $benefits[] = [
                 'year' => $year,
@@ -52,7 +55,8 @@ class TotalFinancialBenefitCard extends Component
     public function render()
     {
         return view('components.dashboard.total-financial-benefit-card', [
-            'financialBenefits' => $this->financialBenefits
+            'financialBenefits' => $this->financialBenefits,
+            'potentialBenefits' => $this->potentialBenefits
         ]);
     }
 }

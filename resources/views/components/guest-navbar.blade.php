@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-light fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg bg-transparent fixed-top shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="#">
             <div class="d-flex align-items-center text-color-main">
@@ -22,11 +22,11 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="#">Berita</a>
                     </li>
                     @if (Auth::user())
                         <li class="nav-item">
-                            <a class="nav-link text-color-main" href="{{ route('dashboard') }}">Dashboard</a>
+                            <a class=" nav-link text-color-main" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="post">
@@ -37,9 +37,7 @@
                         </li>
                     @else
                         <li class="nav-item">
-                            <button class="btn btn-sm btn-danger">
-                                <a class="nav-link text-white" href="{{ route('login') }}">Masuk</a>
-                            </button>
+                            <a class=" text-white btn btn-danger" href="{{ route('login') }}">Masuk</a>
                         </li>
                     @endif
                 </ul>

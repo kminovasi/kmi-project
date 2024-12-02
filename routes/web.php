@@ -70,6 +70,10 @@ Route::get('dashboard', [
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
+Route::prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->name('showTotalTeamChart');
+});
+
 
 
 Route::middleware('auth')->group(function () {

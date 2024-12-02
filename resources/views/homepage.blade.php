@@ -5,25 +5,8 @@
     {{-- Hero Section --}}
     @include('homepage.hero-section')
 
-    {{-- <section class="py-5">
-        <div id="content" class="pt-5">
-            <div class="mb-4" id="pendaftaran-title">
-                <h2 class="color-main animated-title">Timeline Kompetisi Inovasi</h2>
-                <hr class="custom-hr">
-            </div>
-            <ul class="timeline mx-auto">
-                @foreach ($timeline as $t)
-                    <li class="event animated-item"
-                        data-date="{{ \Carbon\Carbon::parse($t->tanggal_mulai)->format('d M Y') }} -
-                            {{ \Carbon\Carbon::parse($t->tanggal_selesai)->format('d M Y') }}
-                            ">
-                        <h3>{{ $t->judul_kegiatan }} </h3>
-                        <p>{{ $t->deskripsi }} </p>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-    </section> --}}
+    @include('homepage.info-section')
+
 
     <section class="container py-5">
         <div class="row g-0">

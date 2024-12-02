@@ -12,6 +12,7 @@
             </div>
         </div>
         <x-dashboard.potential-benefit-total-chart />
+        <x-dashboard.financial-benefit-chart-companies />
     </div>
 @endsection
 

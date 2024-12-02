@@ -344,4 +344,33 @@ class DashboardController extends Controller
 
         return response()->json($data);
     }
+
+    public function getFinancialBenefitsByCompany()
+    {
+        $companies = Company::with(['teams.paper'])->get();
+        $currentYear = now()->year;
+        $years = range($currentYear - 4, $currentYear);
+
+        $financialData = [];
+
+        foreach ($companies as $company) {
+            $dataPerYear = [];
+            foreach ($years as $year) {
+                $totalFinancial = $company->teams->flatMap(function ($team) use ($year) {
+                    return $team->paper->filter(function ($paper) use ($year) {
+                        return $paper->created_at->year == $year;
+                    });
+                })->sum('financial');
+
+                $dataPerYear[$year] = $totalFinancial;
+            }
+
+            $financialData[] = [
+                'company_name' => $company->company_name,
+                'financials' => $dataPerYear,
+            ];
+        }
+
+        return response()->json($financialData);
+    }
 }

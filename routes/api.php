@@ -24,4 +24,5 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/dashboard/total-team-chart-data', [DashboardController::class, 'getTotalTeamChartData'])->name('getTotalTeamChartData');
     Route::get('/dashboard/total-benefit-chart-data', [DashboardController::class, 'showTotalBenefitChartData'])->name('showTotalBenefitChartData');
     Route::get('/dashboard/total-potential-benefit-chart-data', [DashboardController::class, 'showTotalPotentialBenefitChartData'])->name('showTotalPotentialBenefitChartData');
+    Route::get('/dashboard/financial-benefit', [DashboardController::class, 'getFinancialBenefitsByCompany']);
 });

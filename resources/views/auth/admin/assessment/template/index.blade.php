@@ -1,250 +1,251 @@
 @extends('layouts.app')
 @section('title', 'Data Assessment Template')
 @push('css')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link
-        href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
-        rel="stylesheet">
-    <style>
-        #textarea {
-            width: 100%;
-            height: auto;
-        }
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css" rel="stylesheet">
+<style>
+    #textarea {
+        width: 100%;
+        height: auto;
+    }
 
-        .active-link {
-            color: #ffc004;
-            background-color: #e81500;
-        }
+    .active-link {
+        color: #ffc004;
+        background-color: #e81500;
+    }
 
-        .display thead th,
-        .display tbody td {
-            border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
-        }
-    </style>
+    .display thead th,
+    .display tbody td {
+        border: 0.5px solid #ddd;
+        /* Atur warna dan ketebalan garis sesuai kebutuhan */
+    }
+
+</style>
 @endpush
 @section('content')
-    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4">
-            <div class="page-header-content">
-                <div class="row align-items-center justify-content-between pt-3">
-                    <div class="col-auto mb-3">
-                        <h1 class="page-header-title">
-                            <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                            Show Template Assessment
-                        </h1>
+<header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+    <div class="container-xl px-4">
+        <div class="page-header-content">
+            <div class="row align-items-center justify-content-between pt-3">
+                <div class="col-auto mb-3">
+                    <h1 class="page-header-title">
+                        <div class="page-header-icon"><i data-feather="file-text"></i></div>
+                        Show Template Assessment
+                    </h1>
 
-                    </div>
-                    <div class="col-12 col-xl-auto mb-3">
-                        <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
-                            <i class="me-1" data-feather="plus"></i>
-                            Create Point
-                        </a>
-                    </div>
                 </div>
-            </div>
-        </div>
-    </header>
-    <!-- Main page content-->
-    <div class="container-xl px-4 mt-4">
-        <div class="p-2 border-bottom">
-            @if (Auth::user()->role == 'Admin')
-                <a href="{{ route('assessment.show.point') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
-                    Point</a>
-            @elseif (auth()->check() && auth()->user()->role == 'Superadmin')
-                <a href="{{ route('assessment.show.template') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
-                    Assessment</a>
-                <a href="{{ route('assessment.show.point') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
-                    Point Setting</a>
-            @endif
-
-        </div>
-        <div class="mb-3">
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                    {{ session('success') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="col-12 col-xl-auto mb-3">
+                    <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
+                        <i class="me-1" data-feather="plus"></i>
+                        Create Point
+                    </a>
                 </div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
-                    {{ session('error') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-        </div>
-
-        <div class="card mb-4 col-12">
-            <div class="card-body">
-                <div class="mb-3">
-                    <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button"
-                        data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
-                    <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
-                </div>
-                <form action="{{ route('assessment.store.assign.point') }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <table id="datatable-assessment" class="display">
-                    </table>
-                    <hr>
-                    <div class="card lift lift-sm h-100" href="knowledge-base-category.html">
-                        <div class="card-body">
-                            <h6 class="card-title text-primary mb-2">
-                                <i class="me-2" data-feather="info"></i>
-                                Informasi
-                            </h6>
-                            <div id="konfirmasiScore"></div>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <input type="text" name="category" id="inputCategory" hidden>
-                                <h6 for="">Pilih Event</h6>
-                                @foreach ($events as $event)
-                                    <input value="{{ $event->id }}" type="checkbox" name="events[]" value="item1"
-                                        onchange="cek()"> {{ $event->event_name }} - {{ $event->year }}
-                                    <br>
-                                @endforeach
-                                <!-- <select name="year" id="year" class="form-control" onchange="cek()">
-                                                <option value="" disabled selected>Choose Year</option>
-                                                @foreach ($events as $event)
-    <option value="{{ $event->id }}">{{ $event->event_name }} - {{ $event->year }}</option>
-    @endforeach
-                                            </select> -->
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary" id="btnAssign" onclick="lakukanValidasi()"
-                                    disabled>Kirim</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                {{-- {{ dd(session()->all()) }} --}}
             </div>
         </div>
     </div>
+</header>
+<!-- Main page content-->
+<div class="container-xl px-4 mt-4">
+    <div class="p-2 border-bottom">
+        @if (Auth::user()->role == 'Admin')
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
+            Point</a>
+        @elseif (auth()->check() && auth()->user()->role == 'Superadmin')
+        <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
+            Assessment</a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
+            Point Setting</a>
+        @endif
 
-    {{-- modal untuk update template --}}
-    <div class="modal fade" id="updateTemplate" tabindex="-1" role="dialog" aria-labelledby="updateTemplateTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateTemplateTitle">Update Template</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="updateTemplateAssessment" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <!-- <input type="text" name="evaluatedBy" value="innovation admin" hidden> -->
-
-                    <!-- <input type="text" name="status" value="accept" hidden> -->
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="mb-1" for="inputPoint">Point Assessment</label>
-                            <input type="text" class="form-control" name="point" id="inputPoint" value="">
-                        </div>
-                        <div class="mb-3">
-                            <label class="small mb-1" for="inputDetailPoint">Detail</label>
-                            <textarea name="detail_point" id="inputDetailPoint" cols="10" rows="5" class="form-control"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="small mb-1" for="dataStage">Stage</label>
-                            <select name="stage" id="dataStage" class="form-select">
-                                <option value="on desk">On Desk</option>
-                                <option value="presentation">Presentation</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="mb-1" for="inputPDCA">Comment</label>
-                            <select name="pdca" id="inputPDCA" class="form-select">
-                                <option value="Plan">PLAN</option>
-                                <option value="Do">DO</option>
-                                <option value="Check">CHECK</option>
-                                <option value="Action">ACTION</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="mb-1" for="inputScoreMax">Max Score</label>
-                            <input type="text" class="form-control" name="score_max" id="inputScoreMax"
-                                value="">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" data-bs-dismiss="modal"> Save</button>
-                        <button class="btn btn-dark" type="button" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
+    </div>
+    <div class="mb-3">
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+            {{ session('success') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        @endif
+        @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+            {{ session('error') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
     </div>
 
-    {{-- modal untuk update template --}}
-    <div class="modal fade" id="deleteTemplate" tabindex="-1" role="dialog" aria-labelledby="deleteTemplateTitle"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form id="deleteTemplateAssessment" method="POST">
+    <!--Modal Ceklist Event Template Assessment-->
+    <div class="card mb-4 col-12">
+        <div class="card-body">
+            <div class="mb-3">
+                <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
+                <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
+            </div>
+            <form action="{{ route('assessment.store.assign.point') }}" method="POST">
                 @csrf
-                @method ('DELETE')
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteTemplateTitle">Konfirmasi Hapus Data</h5>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                @method('POST')
+                <table id="datatable-assessment" class="display">
+                </table>
+                <hr>
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary mb-3 d-flex align-items-center">
+                            <i class="me-2" data-feather="info"></i>
+                            <span>Information</span>
+                        </h6>
+                        <div id="konfirmasiScore" class="bg-light p-3 rounded border">
+                            <!-- Content for the information will go here -->
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        Apakah yakin data ini akan dihapus ?
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <input type="text" name="category" id="inputCategory" hidden>
+                            <h6 for="">Pilih Event</h6>
+                            @foreach ($events as $event)
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" value="{{ $event->id }}" name="events[]" id="event{{ $event->id }}" onchange="cek()">
+                                <label class="form-check-label" for="event{{ $event->id }}">
+                                    {{ $event->event_name }} - {{ $event->year }}
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-danger" type="submit">Delete</button>
+                    <div class="col-md-12">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnAssign" onclick="lakukanValidasi()" disabled>Kirim</button>
+                        </div>
                     </div>
+                </div>
+
+            </form>
+            {{-- {{ dd(session()->all()) }} --}}
+        </div>
+    </div>
+</div>
+
+{{-- modal untuk update template --}}
+<div class="modal fade" id="updateTemplate" tabindex="-1" aria-labelledby="updateTemplateTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateTemplateTitle">Update Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="updateTemplateAssessment" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="inputPoint">Point Assessment</label>
+                        <input type="text" class="form-control" name="point" id="inputPoint" value="" placeholder="Enter the point value">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputDetailPoint">Detail</label>
+                        <textarea name="detail_point" id="inputDetailPoint" rows="5" class="form-control" placeholder="Enter the details here..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="dataStage">Stage</label>
+                        <select name="stage" id="dataStage" class="form-select">
+                            <option value="on desk">On Desk</option>
+                            <option value="presentation">Presentation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputPDCA">Comment</label>
+                        <select name="pdca" id="inputPDCA" class="form-select">
+                            <option value="Plan">PLAN</option>
+                            <option value="Do">DO</option>
+                            <option value="Check">CHECK</option>
+                            <option value="Action">ACTION</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputScoreMax">Max Score</label>
+                        <input type="number" class="form-control" name="score_max" id="inputScoreMax" value="" placeholder="Enter max score">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
+</div>
 
-    {{-- modal untuk filter --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
+
+{{-- modal untuk delete template assessment --}}
+<div class="modal fade" id="deleteTemplate" tabindex="-1" role="dialog" aria-labelledby="deleteTemplateTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form id="deleteTemplateAssessment" method="POST">
+            @csrf
+            @method ('DELETE')
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter</h5>
+                    <h5 class="modal-title" id="deleteTemplateTitle">Konfirmasi Hapus Data</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="mb-1" for="facilitator">Category</label>
-                        <select id="filter-category" class="form-select" name="filter-category">
-                            <option value="IDEA" selected> IDEA Box </option>
-                            <option value="BI/II" selected> Implemented </option>
-                        </select>
-                    </div>
+                    Apakah yakin data ini akan dihapus ?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                    <button class="btn btn-danger" type="submit">Hapus</button>
                 </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- modal untuk filter Template Assessment--}}
+<div class="modal fade" id="filterModal" role="dialog" aria-labelledby="filterModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow-lg border-0">
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title d-flex align-items-center" id="filterModalTitle">
+                    <i class="me-2" data-feather="filter"></i> Filter Options
+                </h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body px-4 py-3">
+                <!-- Category Filter -->
+                <div class="mb-4">
+                    <label class="mb-1 fw-bold text-muted" for="filter-category">Category</label>
+                    <select id="filter-category" class="form-select shadow-sm" name="filter-category">
+                        <option value="BI/II">Implemented</option>
+                        <option value="IDEA">IDEA Box</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer bg-light d-flex justify-content-end">
+                <button class="btn btn-danger" type="button" data-bs-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
+</div>
+
 
 
 @endsection
 @push('js')
-    <script
-        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-    <script type="">
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script type="">
     $(document).ready(function() {
 
         document.getElementById('inputCategory').value = $('#filter-category').val()

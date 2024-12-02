@@ -97,20 +97,45 @@
 @endpush
 <div class="card team-card border-0 shadow-lg">
     <div class="card-header bg-gradient-primary">
-        <h5 class="card-title text-white">Total Financial Benefit per Tahun</h5>
+        <h5 class="card-title text-white">Total Benefit per Tahun</h5>
     </div>
     <div class="card-body">
-        <div class="row financial-benefits">
-            @foreach ($financialBenefits as $benefit)
-                <div class="financial-benefit-item">
-                    <span class="financial-benefit-year">
-                        {{ $benefit['year'] }}
-                    </span>
-                    <span class="financial-benefit-total">
-                        Rp {{ $benefit['total'] }}
-                    </span>
+        <div class="row">
+            <div class="col-md-12">
+                <h6 class="text-muted">Financial Benefit</h6>
+                <div class="financial-benefits">
+                    @foreach ($financialBenefits as $benefit)
+                        <div class="financial-benefit-item">
+                            <span class="financial-benefit-year">
+                                {{ $benefit['year'] }}
+                            </span>
+                            <span class="financial-benefit-total">
+                                Rp {{ $benefit['total'] }}
+                            </span>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
+            <div class="col-md-12">
+                <h6 class="text-muted">Potential Benefit</h6>
+                <div class="financial-benefits">
+                    @foreach ($potentialBenefits as $benefit)
+                        <div class="financial-benefit-item">
+                            <span class="financial-benefit-year">
+                                {{ $benefit['year'] }}
+                            </span>
+                            <span class="financial-benefit-total">
+                                Rp {{ $benefit['total'] }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <a href="{{ route('dashboard.showTotalBenefitChart') }}" class="btn link-total-team-chart mt-2">
+                Lihat Chart Total Benefit
+            </a>
         </div>
     </div>
 </div>

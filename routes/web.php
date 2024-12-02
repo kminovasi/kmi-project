@@ -72,6 +72,7 @@ Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, '
 
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->name('showTotalTeamChart');
+    Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
 });
 
 

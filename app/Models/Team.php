@@ -39,6 +39,10 @@ class Team extends Model
 
     public function paper()
     {
+        return $this->hasOne(Paper::class, 'team_id', 'id');
+    }
+    public function papers()
+    {
         return $this->hasMany(Paper::class, 'team_id', 'id');
     }
     public function history()

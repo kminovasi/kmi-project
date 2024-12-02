@@ -31,7 +31,7 @@
     }
 </style>
 
-<div class="financial-charts container">
+<div class="financial-charts container mt-3">
     <div class="row">
         @foreach ($financialData as $data)
             <div class="col-md-4 col-sm-6 mb-4">

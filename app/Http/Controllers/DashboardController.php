@@ -282,7 +282,7 @@ class DashboardController extends Controller
             foreach ($years as $year) {
                 $financialPerYear[$year] = $company->teams->reduce(function ($carry, $team) use ($year) {
                     // Gunakan relasi papers
-                    $teamFinancial = $team->paper->whereBetween('created_at', [
+                    $teamFinancial = $team->papers->whereBetween('created_at', [
                         "$year-01-01",
                         "$year-12-31"
                     ])->sum('financial');
@@ -357,7 +357,7 @@ class DashboardController extends Controller
             $dataPerYear = [];
             foreach ($years as $year) {
                 $totalFinancial = $company->teams->flatMap(function ($team) use ($year) {
-                    return $team->paper->filter(function ($paper) use ($year) {
+                    return $team->papers->filter(function ($paper) use ($year) {
                         return $paper->created_at->year == $year;
                     });
                 })->sum('financial');

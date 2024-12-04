@@ -71,9 +71,12 @@ Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index
 Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
-    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->name('showTotalTeamChart');
-    Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
+    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
+    Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->middleware(['role:Superadmin'])->name('showTotalBenefitChart');
+    Route::get('/total-team-chart/{company_code}', [DashboardController::class, 'showTotalTeamChartCompany'])->middleware(['auth'])->name('showTotalTeamChartCompany');
+    Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompany'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
 });
+
 
 
 

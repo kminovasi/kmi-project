@@ -373,4 +373,62 @@ class DashboardController extends Controller
 
         return response()->json($financialData);
     }
+
+    public function showTotalTeamChartCompany($company_code)
+    {
+        $currentYear = Carbon::now()->year;
+        $years = range($currentYear - 4, $currentYear);
+
+        $teams = Company::where('company_code', $company_code)->with(['teams' => function ($query) {
+            $query->whereHas('paper', function ($subQuery) {
+                $subQuery->where('status', 'accepted by innovation admin');
+            });
+        }])->get();
+
+        $chartData = [
+            'labels' => [], // Logo perusahaan
+            'datasets' => [],
+            'logos' => [] // Path logo untuk digunakan pada JavaScript
+        ];
+
+        foreach ($years as $index => $year) {
+            $chartData['datasets'][] = [
+                'label' => $year,
+                'backgroundColor' => ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"][$index % 5],
+                'data' => []
+            ];
+        }
+
+        foreach ($teams as $company) {
+            // Sanitize nama perusahaan untuk mencocokkan nama file logo
+            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
+            $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
+            $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
+            $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
+
+            // Pengecekan apakah file logo ada, jika tidak gunakan logo default
+            if (!file_exists($logoPath)) {
+                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Logo default
+            } else {
+                $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
+            }
+
+            // Tambahkan logo ke labels
+            $chartData['labels'][] = $company->company_name;
+            $chartData['logos'][] = $logoPath;
+
+            $teamCounts = [];
+            foreach ($years as $year) {
+                $teamCounts[$year] = $company->teams
+                    ->whereBetween('created_at', ["$year-01-01", "$year-12-31"])
+                    ->count();
+            }
+
+            foreach ($years as $index => $year) {
+                $chartData['datasets'][$index]['data'][] = $teamCounts[$year];
+            }
+        }
+
+        return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
+    }
 }

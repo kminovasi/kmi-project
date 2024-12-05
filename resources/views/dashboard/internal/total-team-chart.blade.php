@@ -16,9 +16,9 @@
         <script>
             const chartDataTotalTeam = @json($chartDataTotalTeam);
         </script>
-        <x-dashboard.total-company-innovator-chart />
+        <x-dashboard.internal.total-company-innovator-chart />
 
     </div>
 @endsection
 
-@vite(['resources/js/totalTeamChart.js'])
+@vite(['resources/js/totalTeamChartInternal.js'])

@@ -12,7 +12,9 @@
             </div>
         </div>
         <x-dashboard.potential-benefit-total-chart />
-        <x-dashboard.financial-benefit-chart-companies />
+        @if ($isSuperadmin)
+            <x-dashboard.financial-benefit-chart-companies />
+        @endif
     </div>
 @endsection
 

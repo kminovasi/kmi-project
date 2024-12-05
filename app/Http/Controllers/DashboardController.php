@@ -234,19 +234,27 @@ class DashboardController extends Controller
     {
         $currentYear = Carbon::now()->year;
         $years = range($currentYear - 4, $currentYear);
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
 
-        $companies = Company::with(['teams.paper' => function ($query) use ($years) {
+        $companiesQuery  = Company::with(['teams.paper' => function ($query) use ($years) {
             $query->where('status', 'accepted by innovation admin')
                 ->whereBetween('created_at', [
                     now()->subYears(4)->startOfYear(),
                     now()->endOfYear()
                 ]);
-        }])->get();
+        }]);
+        if (!$isSuperadmin) {
+            $companiesQuery->where('company_code', $company_code);
+        }
+
+        $companies = $companiesQuery->get();
 
         $chartData = [
             'labels' => [], // Nama perusahaan
             'datasets' => [], // Dataset untuk setiap tahun
-            'logos' => [] // Path logo perusahaan
+            'logos' => [], // Path logo perusahaan
+            'isSuperadmin' => $isSuperadmin
         ];
 
         // Warna untuk setiap tahun
@@ -256,7 +264,7 @@ class DashboardController extends Controller
             $chartData['datasets'][] = [
                 'label' => $year,
                 'backgroundColor' => $colors[$index % count($colors)],
-                'data' => []
+                'data' => [],
             ];
         }
 
@@ -298,7 +306,7 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.total-financial-benefit-chart', ['chartDataTotalBenefit' => $chartData]);
+        return view('dashboard.total-financial-benefit-chart', ['chartDataTotalBenefit' => $chartData, 'isSuperadmin' => $isSuperadmin]);
     }
 
 
@@ -429,6 +437,6 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
+        return view('dashboard.internal.total-team-chart', ['chartDataTotalTeam' => $chartData]);
     }
 }

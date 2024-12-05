@@ -3,6 +3,7 @@
 namespace App\View\Components\Dashboard;
 
 use App\Models\Company;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\View\Component;
 
@@ -19,19 +20,26 @@ class PotentialBenefitTotalChart extends Component
     {
         $currentYear = Carbon::now()->year;
         $years = range($currentYear - 4, $currentYear);
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
 
-        $companies = Company::with(['teams.paper' => function ($query) use ($years) {
+        $companiesQuery = Company::with(['teams.paper' => function ($query) use ($years) {
             $query->where('status', 'accepted by innovation admin')
                 ->whereBetween('created_at', [
                     now()->subYears(4)->startOfYear(),
                     now()->endOfYear()
                 ]);
-        }])->get();
+        }]);
+        if (!$isSuperadmin) {
+            $companiesQuery->where('company_code', $company_code);
+        }
+        $companies = $companiesQuery->get();
 
         $this->chartData = [
             'labels' => [], // Nama perusahaan
             'datasets' => [], // Dataset untuk setiap tahun
-            'logos' => [] // Path logo perusahaan
+            'logos' => [], // Path logo perusahaan
+            'isSuperadmin' => $isSuperadmin
         ];
 
         // Warna untuk setiap tahun

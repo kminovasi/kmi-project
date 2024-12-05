@@ -6,6 +6,9 @@ import {
     BarElement,
     Tooltip,
     Legend,
+    LineElement,
+    LineController,
+    PointElement,
 } from "chart.js";
 
 Chart.register(
@@ -14,7 +17,10 @@ Chart.register(
     BarController,
     BarElement,
     Tooltip,
-    Legend
+    Legend,
+    LineElement,
+    LineController,
+    PointElement
 );
 
 const logoImages = [];
@@ -78,16 +84,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document.getElementById("total-benefit-chart").getContext("2d");
 
     await loadLogos(chartDataTotalBenefit.logos);
+    const chartType = chartDataTotalBenefit.isSuperadmin ? "bar" : "line";
 
     new Chart(ctx, {
-        type: "bar",
+        type: chartType,
         data: {
             labels: chartDataTotalBenefit.labels,
             datasets: chartDataTotalBenefit.datasets,
         },
         options: {
             responsive: true,
-            indexAxis: "y", // Ini adalah kunci untuk membuat chart horizontal
+            indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x", // Ini adalah kunci untuk membuat chart horizontal
             layout: {
                 padding: {
                     left: 50, // Tambahkan padding kanan untuk logo
@@ -106,7 +113,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 y: {
                     // Sekarang ini adalah sumbu x
                     ticks: {
-                        display: false,
+                        display: chartDataTotalBenefit.isSuperadmin
+                            ? false
+                            : true,
                     },
                 },
                 x: {
@@ -126,18 +135,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document
         .getElementById("total-potential-benefit-chart")
         .getContext("2d");
+    const chartType = chartDataTotalBenefit.isSuperadmin ? "bar" : "line";
 
     await loadLogos(chartDataTotalPotentialBenefit.logos);
 
     new Chart(ctx, {
-        type: "bar",
+        type: chartType,
         data: {
             labels: chartDataTotalPotentialBenefit.labels,
             datasets: chartDataTotalPotentialBenefit.datasets,
         },
         options: {
             responsive: true,
-            indexAxis: "y", // Ini adalah kunci untuk membuat chart horizontal
+            indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x",
             layout: {
                 padding: {
                     left: 50, // Tambahkan padding kanan untuk logo
@@ -156,7 +166,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 y: {
                     // Sekarang ini adalah sumbu x
                     ticks: {
-                        display: false,
+                        indexAxis: chartDataTotalBenefit.isSuperadmin
+                            ? false
+                            : true,
                     },
                 },
                 x: {

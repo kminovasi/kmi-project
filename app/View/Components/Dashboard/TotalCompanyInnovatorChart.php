@@ -56,7 +56,7 @@ class TotalCompanyInnovatorChart extends Component
             $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
             $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
             if (!file_exists($logoPath)) {
-                $logoPath = asset('assets/logos/default.png'); // Logo default
+                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Logo default
             } else {
                 $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
             }

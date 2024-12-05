@@ -67,7 +67,7 @@ class PotentialBenefitTotalChart extends Component
             foreach ($years as $year) {
                 $financialPerYear[$year] = $company->teams->reduce(function ($carry, $team) use ($year) {
                     // Gunakan relasi papers
-                    $teamFinancial = $team->paper->whereBetween('created_at', [
+                    $teamFinancial = $team->papers->whereBetween('created_at', [
                         "$year-01-01",
                         "$year-12-31"
                     ])->sum('potential_benefit');

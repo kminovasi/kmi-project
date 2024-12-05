@@ -62,7 +62,11 @@
                         <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div> --}}
                     <div>
-                        <x-dashboard.total-team-card />
+                        @if ($isSuperadmin)
+                            <x-dashboard.total-team-card />
+                        @else
+                            <x-dashboard.internal.total-team-card />
+                        @endif
                     </div>
                     <div class="mt-3">
                         <x-dashboard.total-financial-benefit-card />

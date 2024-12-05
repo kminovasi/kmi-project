@@ -51,7 +51,8 @@
             Total tim yang diterima dalam 4 tahun terakhir
         </small>
         <br>
-        <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn link-total-team-chart mt-2">Lihat Chart Total
+        <a href="{{ route('dashboard.showTotalTeamChartCompany', ['company_code', $company_code]) }}"
+            class="btn link-total-team-chart mt-2">Lihat Chart Total
             Tim</a>
     </div>
 </div>

@@ -22,6 +22,12 @@
                             Formulir Registrasi
                         </h1>
                     </div>
+                    <div class="col-auto mb-3">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ route('paper.index') }}">
+                            <i class="me-1" data-feather="arrow-left"></i>
+                            Kembali
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -602,5 +608,7 @@
         // function changeStatusLomba(elemen){
         //     document.getElementById('status_lomba').value = (elemen.value == 8) ? "group" : "AP"
         // }
+
+
     </script>
 @endpush

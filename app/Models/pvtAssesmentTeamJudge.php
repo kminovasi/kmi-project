@@ -15,7 +15,8 @@ class pvtAssesmentTeamJudge extends Model
         'score',
         'event_team_id',
         'assessment_event_id',
-        'stage'
+        'stage',
+        'created_at'
     ];
 
     public function judge()

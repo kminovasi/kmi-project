@@ -17,6 +17,7 @@ class PvtMember extends Model
         'team_id',
         'employee_id',
         'status',
+        'created_at'
     ];
     public function user()
     {

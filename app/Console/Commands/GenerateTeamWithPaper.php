@@ -15,6 +15,7 @@ use App\Models\pvtAssesmentTeamJudge;
 use App\Models\PvtAssessmentEvent;
 use App\Models\PvtEventTeam;
 use App\Models\PvtMember;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Log;
 
@@ -30,6 +31,10 @@ class GenerateTeamWithPaper extends Command
 
     public function handle()
     {
+        $createdAt = $this->askWithValidation(
+            'Masukkan tanggal created_at untuk semua entri (format: YYYY-MM-DD):',
+            'Y-m-d'
+        );
         // Step 1: Nama Team
         $teamName = $this->ask('Masukkan nama tim:');
 
@@ -79,36 +84,44 @@ class GenerateTeamWithPaper extends Command
             'company_code' => $companyCode,
             'category_id' => $categoryId,
             'theme_id' => $themeId,
-            'status_lomba' => 'AP',  // Status default
-            'phone_number' => $leader->phone_number,  // Menggunakan nomor telepon ketua tim
+            'status_lomba' => 'AP',
+            'phone_number' => $leader->phone_number,
+            'created_at' => $createdAt, // Tambahkan ini
         ]);
+
 
         // Simpan anggota tim ke dalam pvt_members
         PvtMember::create([
             'team_id' => $team->id,
             'employee_id' => $leader->employee_id,
             'status' => 'leader',
+            'created_at' => $createdAt, // Tambahkan ini
         ]);
+
 
         foreach ($teamMembers as $member) {
             PvtMember::create([
                 'team_id' => $team->id,
                 'employee_id' => $member->employee_id,
                 'status' => 'member',
+                'created_at' => $createdAt, // Tambahkan ini
             ]);
         }
+
 
         // Tambahkan fasilitator dan GM ke dalam pvt_members
         PvtMember::create([
             'team_id' => $team->id,
             'employee_id' => $facilitator->employee_id,
             'status' => 'facilitator',
+            'created_at' => $createdAt,
         ]);
 
         PvtMember::create([
             'team_id' => $team->id,
             'employee_id' => $generalManager->employee_id,
             'status' => 'gm',
+            'created_at' => $createdAt,
         ]);
 
         // Membuat folder untuk menyimpan file berdasarkan status lomba dan nama tim
@@ -189,7 +202,8 @@ class GenerateTeamWithPaper extends Command
             'solution' => 'Solusi inovasi yang diterapkan',
             'potensi_replikasi' => 'Bisa Direplikasi',
             'inovasi_lokasi' => 'Lokasi',
-            'status' => 'accepted by innovation admin'
+            'status' => 'accepted by innovation admin',
+            'created_at' => $createdAt, // Tambahkan ini
         ]);
 
         $this->info('Tim dan paper berhasil di-generate!');
@@ -202,6 +216,7 @@ class GenerateTeamWithPaper extends Command
             'total_score_caucus' => null,
             'final_score' => null,
             'is_best_of_the_best' => false,
+            'created_at' => $createdAt,
         ]);
         $this->info('Tim dan paper berhasil di-generate dengan event yang terdaftar!');
 
@@ -223,6 +238,7 @@ class GenerateTeamWithPaper extends Command
                     'event_team_id' => $eventTeam->id,
                     'assessment_event_id' => $assessmentEvent->id, // Menyimpan ID event penilaian
                     'stage' => $assessmentEvent->stage, // Menyimpan nilai stage dari assessment event
+                    'created_at' => $createdAt
                 ]);
             }
         }
@@ -232,5 +248,25 @@ class GenerateTeamWithPaper extends Command
         // Langkah lainnya: simpan file, data paper, dll.
 
         $this->info('Tim, paper, dan juri berhasil di-generate dengan data penilaian default!');
+    }
+
+    /**
+     * Prompt for input with date validation.
+     *
+     * @param string $question
+     * @param string $format
+     * @return string
+     */
+    private function askWithValidation(string $question, string $format): string
+    {
+        while (true) {
+            $input = $this->ask($question);
+            try {
+                $date = Carbon::createFromFormat($format, $input);
+                return $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                $this->warn("Format tanggal tidak valid. Gunakan format: {$format}");
+            }
+        }
     }
 }

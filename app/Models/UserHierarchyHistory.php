@@ -19,6 +19,7 @@ class UserHierarchyHistory extends Model
         'sub_section_of',
         'effective_start_date',
         'effective_end_date',
+        'created_at'
     ];
 
     public function user()

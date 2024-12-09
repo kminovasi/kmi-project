@@ -71,12 +71,6 @@
                     <div class="mt-3">
                         <x-dashboard.total-financial-benefit-card />
                     </div>
-                    <div>
-                        <x-dashboard.financial-benefit-total-chart :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-                    </div>
-                    <div>
-                        <x-dashboard.potential-benefit-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-                    </div>
                 </div>
 
                 <!-- Right Column - Benefits -->

@@ -35,6 +35,17 @@ export function initializeTotalInnovatorChart(chartData) {
                     display: true,
                     text: "Total Innovators",
                 },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
+                },
             },
         },
     });

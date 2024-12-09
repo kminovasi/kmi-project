@@ -1,7 +1,8 @@
 import { Chart, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 // Daftarkan semua elemen yang dibutuhkan
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 export function initializeTotalTeamChart(chartData) {
     const labels = Object.keys(chartData);
@@ -34,6 +35,17 @@ export function initializeTotalTeamChart(chartData) {
                 title: {
                     display: true,
                     text: "Distribusi Ide dan Inovasi",
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
         },

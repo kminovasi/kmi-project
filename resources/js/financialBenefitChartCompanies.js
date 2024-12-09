@@ -8,6 +8,7 @@ import {
     Legend,
     PointElement,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 // Registrasi komponen Chart.js
 Chart.register(
@@ -17,7 +18,8 @@ Chart.register(
     LineElement,
     Tooltip,
     Legend,
-    PointElement
+    PointElement,
+    ChartDataLabels
 );
 
 // Fungsi inisialisasi Chart.js
@@ -42,6 +44,17 @@ window.initializeChart = (canvasId, labels, data) => {
             plugins: {
                 legend: {
                     display: true,
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
         },

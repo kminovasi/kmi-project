@@ -6,8 +6,16 @@ import {
     BarElement,
     Tooltip,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
-Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip);
+Chart.register(
+    CategoryScale,
+    LinearScale,
+    BarController,
+    BarElement,
+    Tooltip,
+    ChartDataLabels
+);
 
 // Array untuk menyimpan gambar logo
 const logoImages = [];
@@ -58,10 +66,8 @@ const imagePlugin = {
 document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document.getElementById("total-team-chart").getContext("2d");
 
-    // Memuat logo sebelum membuat grafik
     await loadLogos(chartDataTotalTeam.logos);
 
-    // Membuat grafik
     const chart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -72,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             responsive: true,
             layout: {
                 padding: {
-                    bottom: 50, // Tambahkan padding bawah untuk ruang logo
+                    bottom: 50,
                 },
             },
             plugins: {
@@ -81,7 +87,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Teams by Company (Last 4 Years)",
+                    text: "Total Teams Per Perusahaan",
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
             scales: {
@@ -102,6 +119,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
             },
         },
-        plugins: [imagePlugin], // Daftarkan plugin untuk menggambar logo
+        plugins: [imagePlugin], // Daftarkan plugin untuk logo
     });
 });

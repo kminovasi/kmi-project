@@ -3,7 +3,7 @@
         <h5 class="text-white">Total Potential Benefit per Perusahaan </h5>
     </div>
     <div class="card-body">
-        <canvas id="total-potential-benefit-chart"></canvas>
+        <canvas id="total-potential-benefit-chart" style="height: 1500px;"></canvas>
     </div>
 </div>
 

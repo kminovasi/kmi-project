@@ -8,6 +8,7 @@ import {
     Legend,
     Title,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 Chart.register(
     CategoryScale,
@@ -16,7 +17,8 @@ Chart.register(
     BarElement,
     Tooltip,
     Legend,
-    Title
+    Title,
+    ChartDataLabels
 );
 
 // Array untuk menyimpan gambar logo
@@ -102,6 +104,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 title: {
                     display: true,
                     text: "Jumlah Keterlibatan Inovator per Perusahaan (2020–2023)",
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
             scales: {

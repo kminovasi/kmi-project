@@ -17,14 +17,30 @@ class UserManagementController extends Controller
 
     public function getData()
     {
-        $query = User::with('atasan')->select('users.*');
+        $query = User::select('users.*'); // Hilangkan eager loading 'atasan' jika tidak diperlukan
 
+        // Handle DataTables server-side processing
         return DataTables::of($query)
             ->addColumn('actions', function ($user) {
                 return view('management-system.user.actions', compact('user'));
             })
             ->addColumn('manager_name', function ($user) {
                 return $user->atasan ? $user->atasan->name : '-';
+            })
+            ->filter(function ($query) {
+                if (request()->has('search') && !empty(request('search')['value'])) {
+                    $search = request('search')['value'];
+
+                    // Apply search filters, excluding search on 'atasan.name'
+                    $query->where(function ($q) use ($search) {
+                        $q->whereRaw("CAST(users.id AS TEXT) LIKE ?", ["%{$search}%"])
+                            ->orWhere('users.employee_id', 'LIKE', "%{$search}%")
+                            ->orWhere('users.name', 'LIKE', "%{$search}%")
+                            ->orWhere('users.email', 'LIKE', "%{$search}%")
+                            ->orWhere('users.position_title', 'LIKE', "%{$search}%")
+                            ->orWhere('users.role', 'LIKE', "%{$search}%");
+                    });
+                }
             })
             ->rawColumns(['actions'])
             ->make(true);

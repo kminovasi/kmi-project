@@ -16,7 +16,8 @@ class Team extends Model
         'category_id',
         'theme_id',
         'status_lomba',
-        'phone_number'
+        'phone_number',
+        'created_at'
     ];
 
     public function users()

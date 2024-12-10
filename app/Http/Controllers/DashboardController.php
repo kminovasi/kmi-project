@@ -147,11 +147,13 @@ class DashboardController extends Controller
             ->count();
 
         $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale;
+        $totalActiveEvents = Event::where('status', 'active')->count();
 
         return view('auth.user.home', compact(
             'breakthroughInnovation',
             'incrementalInnovation',
             'ideaBox',
+            'totalActiveEvents',
             'detailBreakthroughInnovationPBB',
             'detailBreakthroughInnovationTPP',
             'detailBreakthroughInnovationManagement',

@@ -54,7 +54,8 @@
                     <div class="mb-4">
                         <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
                             :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
-                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
+                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale"
+                            :total-active-events="$totalActiveEvents" />
                     </div>
 
                     <!-- Innovation Status Total -->

@@ -9,6 +9,7 @@ import {
     Legend,
     CategoryScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 // Register the necessary chart components
 Chart.register(
@@ -19,7 +20,8 @@ Chart.register(
     Title,
     Tooltip,
     Legend,
-    CategoryScale
+    CategoryScale,
+    ChartDataLabels
 );
 
 // Wait for the DOM to be fully loaded
@@ -29,24 +31,33 @@ document.addEventListener("DOMContentLoaded", () => {
         .getElementById("total-innovator-chart")
         .getContext("2d");
 
-    // Transform data into a line-compatible format
-    const transformedDatasets = chartData.datasets.map((dataset) => ({
-        label: dataset.label,
-        data: dataset.data,
-        borderColor: dataset.backgroundColor, // Use the background color as the border color
-        backgroundColor: dataset.backgroundColor, // Set the background color
-        fill: false, // Line chart without fill under the curve
-        tension: 0.1, // Slight curve to the line
-        borderWidth: 2,
-        pointRadius: 5,
-    }));
+    // Transform the chartData structure for Line Chart
+    const labels = chartData.datasets.map((dataset) => dataset.label); // Years (x-axis)
+    const data = chartData.datasets.map((dataset) => dataset.data[0]); // Data (y-axis)
 
-    // Create the chart
+    // Create the line chart
     new Chart(ctx, {
-        type: "line", // Ensure this is 'line' for a line chart
+        type: "line",
         data: {
-            labels: chartData.datasets.map((dataset) => dataset.label), // Use labels from the dataset
-            datasets: transformedDatasets,
+            labels: labels, // Years
+            datasets: [
+                {
+                    label: chartData.labels[0], // Company name
+                    data: data, // Innovator data
+                    borderColor: "#007bff", // Primary blue color
+                    backgroundColor: "rgba(0, 123, 255, 0.2)", // Light blue background
+                    tension: 0.1, // Slight curve to the line
+                    borderWidth: 2,
+                    pointBackgroundColor: chartData.datasets.map(
+                        (dataset) => dataset.backgroundColor
+                    ), // Point colors
+                    pointBorderColor: chartData.datasets.map(
+                        (dataset) => dataset.backgroundColor
+                    ), // Border colors for points
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                },
+            ],
         },
         options: {
             responsive: true,
@@ -59,9 +70,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     mode: "index",
                     intersect: false,
                 },
-                legend: {
+                datalabels: {
                     display: true,
-                    position: "top",
+                    align: "top",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
             scales: {

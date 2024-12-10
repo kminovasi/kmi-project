@@ -710,33 +710,64 @@ class QueryController extends Controller
     public function get_berita_acara(Request $request)
     {
         try {
-            // Ambil data perusahaan dari session atau auth
-            $currentUser = auth()->user(); // Ambil informasi pengguna yang sedang login
-            $companyNameUser = $currentUser->company_name; // Asumsikan pengguna memiliki company_name
-            $getCompanyCode = Company::where('company_name', $companyNameUser)->select('company_code')->first();
-            $currentCompanyCode = $getCompanyCode->company_code;
+            // Ambil data pengguna yang sedang login
+            $currentUser = auth()->user();
+            $companyNameUser = $currentUser->company_name;
 
-            // Lakukan join ke tabel events berdasarkan event_id
-            $data_row = BeritaAcara::select("berita_acaras.id", "berita_acaras.event_id", "events.event_name", "berita_acaras.no_surat", "berita_acaras.jenis_event", "berita_acaras.penetapan_juara", "berita_acaras.signed_file")
-                ->join('events', 'berita_acaras.event_id', '=', 'events.id')
-                ->where('events.company_code', $currentCompanyCode); // Pastikan hanya mengambil data untuk perusahaan pengguna
+            // Cek apakah pengguna adalah Superadmin
+            if ($currentUser->role === "Superadmin") {
+                // Superadmin dapat melihat semua data tanpa filter perusahaan
+                $data_row = BeritaAcara::select(
+                    "berita_acaras.id",
+                    "berita_acaras.event_id",
+                    "events.event_name",
+                    "berita_acaras.no_surat",
+                    "berita_acaras.jenis_event",
+                    "berita_acaras.penetapan_juara",
+                    "berita_acaras.signed_file"
+                )->join('events', 'berita_acaras.event_id', '=', 'events.id');
+            } else {
+                // Untuk Admin atau User, filter berdasarkan perusahaan
+                $getCompanyCode = Company::where('company_name', $companyNameUser)->select('company_code')->first();
+                $currentCompanyCode = $getCompanyCode->company_code;
+
+                $data_row = BeritaAcara::select(
+                    "berita_acaras.id",
+                    "berita_acaras.event_id",
+                    "events.event_name",
+                    "berita_acaras.no_surat",
+                    "berita_acaras.jenis_event",
+                    "berita_acaras.penetapan_juara",
+                    "berita_acaras.signed_file"
+                )->join('events', 'berita_acaras.event_id', '=', 'events.id')
+                    ->where('events.company_code', $currentCompanyCode);
+            }
 
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns = ['upload', 'delete', 'view']; // Tambahkan 'view' ke rawColumns
 
             $dataTable->addColumn('upload', function ($data_row) use ($currentUser) {
-                // Cek apakah file sudah diupload (kolom signed_file tidak null)
+                // Cek apakah file sudah diunggah
                 if ($data_row['signed_file']) {
-                    // Jika file sudah ada, hanya tampilkan tombol "Lihat" atau "Edit" berdasarkan peran pengguna
+                    // Jika file sudah ada
                     if ($currentUser->role === "Admin" || $currentUser->role === "Superadmin") {
-                        return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-edit"></i> Edit</button>';
+                        return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')">
+                                    <i class="fa fa-edit"></i> Edit
+                                </button>';
                     }
                 } else {
-                    // Jika file belum ada, tampilkan tombol "Upload"
-                    return '<button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')"><i class="fa fa-upload"></i> Upload</button>';
+                    // Jika file belum ada
+                    if ($currentUser->role === "Admin" || $currentUser->role === "Superadmin") {
+                        return '<button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')">
+                                    <i class="fa fa-upload"></i> Upload
+                                </button>';
+                    }
                 }
+                // User biasa tidak memiliki tombol
+                return '';
             });
+
 
             // Tambahkan kolom hapus jika signed_file sudah ada
             $dataTable->addColumn('delete', function ($data_row) use ($currentUser) {

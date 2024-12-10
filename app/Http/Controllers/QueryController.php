@@ -753,15 +753,13 @@ class QueryController extends Controller
                     // Jika file sudah ada
                     if ($currentUser->role === "Admin" || $currentUser->role === "Superadmin") {
                         return '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')">
-                                    <i class="fa fa-edit"></i> Edit
-                                </button>';
+                                    <i class="fa fa-edit"></i></button>';
                     }
                 } else {
                     // Jika file belum ada
                     if ($currentUser->role === "Admin" || $currentUser->role === "Superadmin") {
                         return '<button class="btn btn-indigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#upload" onclick="modal_update_beritaacara(' . $data_row['id'] . ')">
-                                    <i class="fa fa-upload"></i> Upload
-                                </button>';
+                                    <i class="fa fa-upload"></i></button>';
                     }
                 }
                 // User biasa tidak memiliki tombol
@@ -776,7 +774,7 @@ class QueryController extends Controller
                     return '<form action="' . route('dokumentasi.berita-acara.delete', ['id' => $data_row['id']]) . '" method="POST" onsubmit="return confirm(\'Yakin ingin menghapus file ini?\');">
                             ' . csrf_field() . '
                             ' . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Hapus</button>
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                         </form>';
                 }
                 return ''; // Jika tidak ada file, tidak ada tombol hapus
@@ -786,7 +784,7 @@ class QueryController extends Controller
             $dataTable->addColumn('view', function ($data_row) {
                 if ($data_row['signed_file']) {
                     // Tampilkan tombol lihat jika file sudah diunggah
-                    return '<a href="' . asset('storage/' . $data_row['signed_file']) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Lihat</a>';
+                    return '<a href="' . asset('storage/' . $data_row['signed_file']) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>';
                 }
                 return ''; // Jika tidak ada file, tidak ada tombol lihat
             });

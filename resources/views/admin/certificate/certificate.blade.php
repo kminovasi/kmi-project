@@ -33,26 +33,26 @@
         <div class="card">
             <div class="card-header d-flex justify-content-end">
                 <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                    Upload Sertifikat
+                    <i data-feather="upload" class="me-2"></i> Upload Sertifikat
                 </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-light">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
                             <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Event</th>
-                                <th scope="col">Perusahaan</th>
-                                <th scope="col">Template Gambar</th>
-                                <th scope="col">Aksi</th>
+                                <th scope="col" style="font-weight: normal;">No</th>
+                                <th scope="col" style="font-weight: normal;">Event</th>
+                                <th scope="col" style="font-weight: normal;">Perusahaan</th>
+                                <th scope="col" style="font-weight: normal;">Template Gambar</th>
+                                <th scope="col" style="font-weight: normal;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- Contoh data sertifikat -->
                             @if ($certificates->isEmpty())
                                 <tr class="text-center">
-                                    <td colspan="4">Data Tidak Ditemukan</td>
+                                    <td colspan="5">Data Tidak Ditemukan</td>
                                 </tr>
                             @else
                                 @foreach ($certificates as $key => $certificate)
@@ -62,17 +62,22 @@
                                         <td>{{ $certificate->event->company->company_name }}</td>
                                         <td>
                                             <img src="{{ asset('storage/' . $certificate->template_path) }}"
-                                                alt="Template Gambar" class="img-fluid"
-                                                style="max-width: 100px; height: auto;">
+                                                alt="Template Gambar" class="img-fluid" style="max-width: 100px; height: auto;">
                                         </td>
                                         <td>
+                                            <!-- Button View -->
+                                            <a href="{{ asset('storage/' . $certificate->template_path) }}"
+                                                class="btn btn-sm btn-info" target="_blank" title="Lihat Sertifikat">
+                                                 <i data-feather="eye"></i>
+                                             </a>
+
+                                            <!-- Button Delete -->
                                             <form id="delete-form-{{ $certificate->id }}"
-                                                action="{{ route('certificates.destroy', $certificate->id) }}"
-                                                method="POST" style="display: inline-block;">
+                                                  action="{{ route('certificates.destroy', $certificate->id) }}"
+                                                  method="POST" style="display: inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-danger"
-                                                    onclick="confirmDelete({{ $certificate->id }})">
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete({{ $certificate->id }})">
                                                     <i data-feather="trash"></i>
                                                 </button>
                                             </form>
@@ -99,50 +104,52 @@
                                     </tr>
                                 @endforeach
                             @endif
-
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 
     <!-- Modal Upload -->
     <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form action="{{ route('certificates.store') }}" enctype="multipart/form-data" method="POST">
+            <form action="{{ route('certificates.store') }}" enctype="multipart/form-data" method="POST" class="needs-validation" novalidate>
                 @method('post')
                 @csrf
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="uploadModalLabel">Upload Sertifikat</h1>
+                    <div class="modal-header border-bottom">
+                        <h5 class="modal-title fw-bold" id="uploadModalLabel">Upload Sertifikat</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="event_id" class="form-label">Event</label>
                             <select class="form-select" name="event_id" id="event_id" required>
-                                <option value="">Pilih Event</option>
+                                <option value="" selected disabled>Pilih Event</option>
                                 @foreach ($eventsWithoutCertificate as $event)
-                                    <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}
-                                    </option>
+                                    <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}</option>
                                 @endforeach
                             </select>
+                            <div class="invalid-feedback">Silakan pilih event.</div>
                         </div>
                         <div class="mb-3">
                             <label for="template" class="form-label">Upload Gambar Sertifikat</label>
-                            <input type="file" class="form-control" name="template" id="template" accept="image/*"
-                                required>
+                            <input type="file" class="form-control" name="template" id="template" accept="image/*" required>
+                            <div class="form-text">Unggah File Gambar (JPG, PNG)</div>
+                            <div class="invalid-feedback">Silakan unggah gambar sertifikat.</div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <div class="modal-footer border-top">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Tambah</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
 
 
 

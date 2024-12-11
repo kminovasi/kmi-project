@@ -85,8 +85,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Form Berita Acara</h5>
-                                <button class="btn-close" type="button" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form id="formUpdateBeritaacara" method="POST" enctype="multipart/form-data">
                                 @csrf
@@ -94,15 +93,15 @@
                                 <div class="modal-body">
 
                                     <div class="mb-3">
-                                        <label for="uploadPDF">No Surat</label>
-                                        <input type="file" name="signed_file" id="uploadPDF" class="form-control"
-                                            accept=".pdf" required>
+                                        <label for="uploadPDF" class="form-label">No Surat</label>
+                                        <input type="file" name="signed_file" id="uploadPDF" class="form-control" accept=".pdf" required>
+                                        <div class="form-text">Unggah file PDF Berita Acara.</div>
                                     </div>
 
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                                    <button class="btn btn-primary" type="submit">Save changes</button>
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
                                 </div>
                             </form>
                         </div>

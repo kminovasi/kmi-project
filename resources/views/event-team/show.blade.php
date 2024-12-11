@@ -18,6 +18,12 @@
                             List Team | Event {{ $event->event_name }}
                         </h1>
                     </div>
+                    <div class="col-auto mb-3">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ route('event-team.index') }}">
+                            <i class="me-1" data-feather="arrow-left"></i>
+                            Kembali
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

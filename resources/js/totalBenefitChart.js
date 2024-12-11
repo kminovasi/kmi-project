@@ -10,6 +10,7 @@ import {
     LineController,
     PointElement,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 Chart.register(
     CategoryScale,
@@ -20,7 +21,8 @@ Chart.register(
     Legend,
     LineElement,
     LineController,
-    PointElement
+    PointElement,
+    ChartDataLabels
 );
 
 const logoImages = [];
@@ -94,6 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x", // Ini adalah kunci untuk membuat chart horizontal
             layout: {
                 padding: {
@@ -107,6 +110,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 title: {
                     display: true,
                     text: "Total Financial Benefit (Last 4 Years)",
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
             scales: {
@@ -147,6 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x",
             layout: {
                 padding: {
@@ -161,11 +176,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                     display: true,
                     text: "Total Financial Benefit (Last 4 Years)",
                 },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
+                },
             },
             scales: {
                 y: {
                     // Sekarang ini adalah sumbu x
                     ticks: {
+                        display: chartDataTotalBenefit.isSuperadmin
+                            ? false
+                            : true,
                         indexAxis: chartDataTotalBenefit.isSuperadmin
                             ? false
                             : true,

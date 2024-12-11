@@ -3,6 +3,7 @@
 namespace App\View\Components\Dashboard;
 
 use Illuminate\View\Component;
+use Log;
 
 class Card extends Component
 {
@@ -22,6 +23,7 @@ class Card extends Component
     public  $totalInnovators;
     public  $totalInnovatorsMale;
     public  $totalInnovatorsFemale;
+    public $totalActiveEvents;
     /**
      * Create a new component instance.
      *
@@ -42,6 +44,7 @@ class Card extends Component
         $totalInnovators = null,
         $totalInnovatorsMale = null,
         $totalInnovatorsFemale = null,
+        $totalActiveEvents = null,
     ) {
         $this->breakthroughInnovation = $breakthroughInnovation;
         $this->detailBreakthroughInnovationManagement = $detailBreakthroughInnovationManagement;
@@ -57,6 +60,7 @@ class Card extends Component
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
+        $this->totalActiveEvents = $totalActiveEvents;
     }
 
 

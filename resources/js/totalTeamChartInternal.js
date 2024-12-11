@@ -9,6 +9,7 @@ import {
     Legend,
     CategoryScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 // Register the necessary chart components
 Chart.register(
@@ -19,7 +20,8 @@ Chart.register(
     Title,
     Tooltip,
     Legend,
-    CategoryScale
+    CategoryScale,
+    ChartDataLabels
 );
 
 // Wait for the DOM to be fully loaded
@@ -65,6 +67,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 tooltip: {
                     mode: "index",
                     intersect: false,
+                },
+                datalabels: {
+                    // Konfigurasi plugin Data Labels
+                    display: true,
+                    align: "end",
+                    anchor: "end",
+                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    font: {
+                        weight: "bold",
+                        size: 12,
+                    },
                 },
             },
             scales: {

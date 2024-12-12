@@ -237,6 +237,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/penetapanJuara', [AssessmentController::class, 'penetapanJuara'])->name('penetapanJuara');
         Route::post('/addBODvalue', [AssessmentController::class, 'addBODvalue'])->name('addBODvalue');
+        Route::put('/fixSubmitAllCaucus', [AssessmentController::class, 'fixSubmitAllCaucus'])->name('fixSubmitAllCaucus');
         Route::post('/keputusanBOD', [AssessmentController::class, 'keputusanBOD'])->name('keputusanBOD');
         Route::put('/updateScoreKeputusanBOD', [PvtEventTeamController::class, 'updateScoreKeputusanBOD'])->name('updateScoreKeputusanBOD');
         Route::get('/pdf-summary/{team_id}', [AssessmentController::class, 'pdfSummary'])->name('pdfSummary');

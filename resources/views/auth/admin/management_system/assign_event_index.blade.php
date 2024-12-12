@@ -93,51 +93,52 @@
         </div>
     </div>
 
-    {{-- modal untuk change event --}}
-    <div class="modal fade" id="updateEvent" tabindex="-1" role="dialog" aria-labelledby="updateEventTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateEventTitle">Update Data Event</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+    {{-- modal untuk edit event --}}
+    <div class="modal fade" id="updateEvent" tabindex="-1" aria-labelledby="updateEventTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title text-primary fw-semibold" id="updateEventTitle">Update Data Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateDataForm" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="modal-body">
-                        <input class="form-control" id="upStatus" type="hidden" name="status">
+                    <div class="modal-body bg-white">
+                        <input type="hidden" id="upStatus" name="status">
                         <div class="mb-3">
-                            <label for="upEventName">Nama Event</label>
-                            <input class="form-control" id="upEventName" type="text" name="event_name">
+                            <label for="upEventName" class="form-label fw-semibold">Nama Event</label>
+                            <input type="text" class="form-control" id="upEventName" name="event_name" placeholder="Masukkan Nama Event">
                         </div>
                         <div class="mb-3">
-                            <label for="upCompany">Pilih Perushaan</label>
-                            <select name="company_code" id="upCompany" class="form-select">
+                            <label for="upCompany" class="form-label fw-semibold">Pilih Perusahaan</label>
+                            <select class="form-select" id="upCompany" name="company_code">
                                 @foreach ($datas_company as $cp)
                                     <option value="{{ $cp->company_code }}">{{ $cp->company_name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="upYear">Pilih Tahun</label>
-                            <select name="year" id="upYear" class="form-select">
+                            <label for="upYear" class="form-label fw-semibold">Pilih Tahun</label>
+                            <select class="form-select" id="upYear" name="year">
                                 @foreach ($years as $year)
                                     <option value="{{ $year }}">{{ $year }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="upStartDate">Pilih Tanggal Mulai</label>
-                            <input class="form-control" id="upStartDate" type="date" name="start_date">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="upStartDate" class="form-label fw-semibold">Tanggal Mulai</label>
+                                <input type="date" class="form-control" id="upStartDate" name="start_date">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="upEndDate" class="form-label fw-semibold">Tanggal Berakhir</label>
+                                <input type="date" class="form-control" id="upEndDate" name="end_date">
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="upEndDate">Pilih Tanggal Berakhir</label>
-                            <input class="form-control" id="upEndDate" type="date" name="end_date">
-                        </div>
-                        <div class="mb-3">
-                            <label for="upType">Tipe Event</label>
-                            <select name="type" id="upType" class="form-select">
+                            <label for="upType" class="form-label fw-semibold">Tipe Event</label>
+                            <select class="form-select" id="upType" name="type">
                                 <option value="AP">Anak Perusahaan</option>
                                 <option value="group">Group</option>
                                 <option value="national">National</option>
@@ -145,50 +146,46 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="upDescription">Deskrispi</label>
-                            <textarea name="description" id="upDescription" cols="30" rows="10" class="form-control"
-                                name="data_description"></textarea>
+                            <label for="upDescription" class="form-label fw-semibold">Deskripsi</label>
+                            <textarea class="form-control" id="upDescription" name="description" rows="5" placeholder="Masukkan Deskripsi"></textarea>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="submit" data-bs-dismiss="modal">Submit</button>
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    {{-- modal untuk change event --}}
-    <div class="modal fade" id="changeEvent" tabindex="-1" role="dialog" aria-labelledby="changeEventTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="changeEventTitle">Change Status Event</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    {{-- modal untuk change status event --}}
+    <div class="modal fade" id="changeEvent" tabindex="-1" aria-labelledby="changeEventTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title text-primary fw-semibold" id="changeEventTitle">Ubah Status Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateStatusEvent" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="modal-body">
-                        <p>Pilih untuk mengubah status event</p>
-                        <label for="not active">
-                            <input type="radio" id="not active" name="status" value="not active" required>
-                            Not Active
-                        </label>
-                        <label for="active">
-                            <input type="radio" id="active" name="status" value="active" required>
-                            Active
-                        </label>
-                        <label for="finish">
-                            <input type="radio" id="finish" name="status" value="finish" required>
-                            Finish
-                        </label>
+                    <div class="modal-body bg-white">
+                        <p class="text-muted mb-3">Update status baru untuk event ini:</p>
+                        <div class="mb-3">
+                            <label for="statusDropdown" class="form-label fw-semibold">Status Event</label>
+                            <select id="statusDropdown" name="status" class="form-select" required>
+                                <option value="" selected disabled>Pilih Status</option>
+                                <option value="not active">Not Active</option>
+                                <option value="active">Active</option>
+                                <option value="finish">Finish</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="submit" data-bs-dismiss="modal">Submit</button>
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>

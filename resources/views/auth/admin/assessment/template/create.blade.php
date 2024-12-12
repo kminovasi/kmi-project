@@ -15,7 +15,7 @@
                     <div class="col-12 col-xl-auto mb-3">
                         <a class="btn btn-sm btn-light text-primary" href="{{route('assessment.show.template')}}">
                             <i class="me-1" data-feather="chevron-left"></i>
-                            Back
+                            Kembali
                         </a>
                     </div>
                 </div>
@@ -40,45 +40,49 @@
                 <div class="card mb-4">
                     <div class="card-header">Form Template Assessment</div>
                     <div class="card-body">
-                        <form action="{{route('assessment.store.template')}}" method="POST">
-                            <!-- Form Group (point)-->
+                        <form action="{{ route('assessment.store.template') }}" method="POST">
                             @csrf
+                            <!-- Form Group (Point) -->
                             <div class="mb-3">
-                                <label class="small mb-1" for="dataPoint">Point Assessment</label>
-                                <input class="form-control" id="dataPoint" type="text"
-                                    placeholder="Enter point assessment" value="" name="point" />
+                                <label class="form-label" for="dataPoint">Point Assessment</label>
+                                <input class="form-control" id="dataPoint" type="text" placeholder="Enter point assessment" name="point" value="" />
                             </div>
-                            <!-- Form Group (detail)-->
+
+                            <!-- Form Group (Detail) -->
                             <div class="mb-3">
-                                <label class="small mb-1" for="dataDetail">Detail</label>
+                                <label class="form-label" for="dataDetail">Detail</label>
                                 <textarea name="detail_point" id="dataDetail" cols="10" rows="5" class="form-control"></textarea>
                             </div>
-                            <!-- Form Row        -->
-                            <div class="row gx-3 mb-3">
-                                <!-- Form Group (conmpany name)-->
-                                
-                                <!-- Form Group (position)-->
+
+                            <!-- Form Row -->
+                            <div class="row g-3 mb-3">
+                                <!-- Form Group (Cluster) -->
                                 <div class="col-md-3">
-                                    <label class="small mb-1" for="dataCategory">Cluster</label>
-                                    <select name="category" id="dataCategory" class="form-control" onchange="if_idea_or_biorii()">
-                                        <option value="IDEA">IDEA Box</option>
+                                    <label class="form-label" for="dataCategory">Cluster</label>
+                                    <select name="category" id="dataCategory" class="form-select" onchange="if_idea_or_biorii()">
                                         <option value="BI/II">Implemented</option>
+                                        <option value="IDEA">IDEA Box</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="small mb-1" for="dataSkor">Maximum Skor</label>
-                                    <input name="score_max" class="form-control" id="dataSkor" type="number"
-                                        placeholder="Enter your location" value=""  />
-                                </div>
+
+                                <!-- Form Group (Maximum Score) -->
                                 <div class="col-md-3">
-                                    <label class="small mb-1" for="dataStage">Stage</label>
+                                    <label class="form-label" for="dataSkor">Maximum Score</label>
+                                    <input name="score_max" class="form-control" id="dataSkor" type="number" placeholder="Enter maximum score" value="" />
+                                </div>
+
+                                <!-- Form Group (Stage) -->
+                                <div class="col-md-3">
+                                    <label class="form-label" for="dataStage">Stage</label>
                                     <select name="stage" id="dataStage" class="form-select">
                                         <option value="on desk">On Desk</option>
                                         <option value="presentation">Presentation</option>
                                     </select>
                                 </div>
+
+                                <!-- Form Group (PDCA) -->
                                 <div class="col-md-3">
-                                    <label class="small mb-1" for="dataPDCA">PDCA</label>
+                                    <label class="form-label" for="dataPDCA">PDCA</label>
                                     <select name="pdca" id="dataPDCA" class="form-select">
                                         <option value="Plan">PLAN</option>
                                         <option value="Do">DO</option>
@@ -86,14 +90,14 @@
                                         <option value="Action">ACTION</option>
                                     </select>
                                 </div>
-                                <div class="d-grid">
-                                    <button class="btn btn-primary" type="submit" id="button_submit">
-                                        Submit</button>
-                                    <!-- <a class="btn btn-secondary">Save</a> -->
-                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit" id="button_submit">Submit</button>
                             </div>
                         </form>
-                        
+
                     </div>
                 </div>
             </div>
@@ -110,7 +114,7 @@
 
     function if_idea_or_biorii(){
         category = document.getElementById('dataCategory').value;
-        
+
         if(category == 'BI/II'){
             document.getElementById('dataPDCA').removeAttribute('disabled')
         }else{

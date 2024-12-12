@@ -16,7 +16,8 @@ class Team extends Model
         'category_id',
         'theme_id',
         'status_lomba',
-        'phone_number'
+        'phone_number',
+        'created_at'
     ];
 
     public function users()
@@ -40,6 +41,10 @@ class Team extends Model
     public function paper()
     {
         return $this->hasOne(Paper::class, 'team_id', 'id');
+    }
+    public function papers()
+    {
+        return $this->hasMany(Paper::class, 'team_id', 'id');
     }
     public function history()
     {

@@ -64,6 +64,10 @@
                 background: linear-gradient(45deg, #4e73df, #224abe);
             }
 
+            .bg-gradient-green {
+                background: linear-gradient(45deg, #28a745, #218838);
+            }
+
 
             .bg-white-25 {
                 background-color: rgba(255, 255, 255, 0.25);
@@ -303,6 +307,32 @@
                         <i class="fa-solid fa-venus fa-xl"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card bg-gradient-green text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3 flex-grow-1">
+                        <div class="text-white-75 small mb-2">
+                            Total Event Aktif
+                        </div>
+                        <div class="text-lg fw-bold d-flex align-items-center">
+                            {{ $totalActiveEvents }}
+                            <small class="ms-2">(Event)</small>
+                        </div>
+                    </div>
+                    <div class="icon-circle bg-white-25 flex-shrink-0">
+                        <i class="fas fa-calendar-alt fa-xl text-white"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between small">
+                <a class="text-white stretched-link" href="/">
+                    Lihat Daftar Event
+                </a>
+                <div class="text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>

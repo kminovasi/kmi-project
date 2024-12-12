@@ -59,6 +59,7 @@ class User extends Authenticatable
         parent::boot();
 
         static::updating(function ($user) {
+            // Atribut yang ingin dilacak perubahan
             $attributesToTrack = [
                 'directorate_name',
                 'group_function_name',
@@ -68,23 +69,52 @@ class User extends Authenticatable
                 'sub_section_of',
             ];
 
+            // Ambil data yang berubah
             $changes = $user->getDirty();
 
-            // Periksa apakah ada perubahan pada atribut yang dilacak
             foreach ($attributesToTrack as $attribute) {
                 if (array_key_exists($attribute, $changes)) {
-                    // Simpan data lama ke dalam user_hierarchy_histories
-                    UserHierarchyHistory::create([
-                        'user_id' => $user->id,
-                        $attribute => $user->getOriginal($attribute),
-                        'effective_start_date' => $user->created_at, // Gunakan timestamp awal jika tidak ada histori
-                        'effective_end_date' => now(), // Set tanggal berakhirnya data lama
-                    ]);
+                    // Cari histori dengan tanggal efektif sama
+                    $existingHistories = UserHierarchyHistory::where('user_id', $user->id)
+                        ->whereDate('effective_start_date', now()->toDateString())
+                        ->get();
+
+                    // Jika ada histori dengan tanggal sama
+                    if ($existingHistories->isNotEmpty()) {
+                        foreach ($existingHistories as $history) {
+                            // Perbarui histori dengan data baru
+                            $history->update([
+                                'directorate_name' => $user->directorate_name,
+                                'group_function_name' => $user->group_function_name,
+                                'department_name' => $user->department_name,
+                                'unit_name' => $user->unit_name,
+                                'section_name' => $user->section_name,
+                                'sub_section_of' => $user->sub_section_of,
+                            ]);
+                        }
+                    } else {
+                        // Tutup histori lama (jika ada)
+                        UserHierarchyHistory::where('user_id', $user->id)
+                            ->whereNull('effective_end_date') // Hanya yang masih aktif
+                            ->update(['effective_end_date' => now()]);
+
+                        // Buat histori baru untuk perubahan
+                        UserHierarchyHistory::create([
+                            'user_id' => $user->id,
+                            'directorate_name' => $user->directorate_name,
+                            'group_function_name' => $user->group_function_name,
+                            'department_name' => $user->department_name,
+                            'unit_name' => $user->unit_name,
+                            'section_name' => $user->section_name,
+                            'sub_section_of' => $user->sub_section_of,
+                            'effective_start_date' => now(),
+                            'effective_end_date' => null, // Biarkan null untuk aktif
+                        ]);
+                    }
                 }
             }
         });
     }
-
 
     public function atasan()
     {
@@ -93,6 +123,21 @@ class User extends Authenticatable
     public function bawahan()
     {
         return $this->hasMany(User::class, 'manager_id');
+    }
+
+    public function atasan__()
+    {
+        return $this->belongsTo(User::class, 'manager_id')
+            ->withDefault([
+                'name' => 'No Manager',
+                'position_title' => '-'
+            ]);
+    }
+
+    public function bawahan__()
+    {
+        return $this->hasMany(User::class, 'manager_id')
+            ->whereRaw('manager_id::integer = ?', [$this->id]);
     }
     public function teams()
     {

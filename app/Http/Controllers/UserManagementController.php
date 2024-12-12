@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Log;
 use Yajra\DataTables\DataTables;
 
 class UserManagementController extends Controller
@@ -17,14 +18,30 @@ class UserManagementController extends Controller
 
     public function getData()
     {
-        $query = User::with('atasan')->select('users.*');
+        $query = User::select('users.*'); // Hilangkan eager loading 'atasan' jika tidak diperlukan
 
+        // Handle DataTables server-side processing
         return DataTables::of($query)
             ->addColumn('actions', function ($user) {
                 return view('management-system.user.actions', compact('user'));
             })
             ->addColumn('manager_name', function ($user) {
                 return $user->atasan ? $user->atasan->name : '-';
+            })
+            ->filter(function ($query) {
+                if (request()->has('search') && !empty(request('search')['value'])) {
+                    $search = request('search')['value'];
+
+                    // Apply search filters, excluding search on 'atasan.name'
+                    $query->where(function ($q) use ($search) {
+                        $q->whereRaw("CAST(users.id AS TEXT) LIKE ?", ["%{$search}%"])
+                            ->orWhere('users.employee_id', 'LIKE', "%{$search}%")
+                            ->orWhere('users.name', 'LIKE', "%{$search}%")
+                            ->orWhere('users.email', 'LIKE', "%{$search}%")
+                            ->orWhere('users.position_title', 'LIKE', "%{$search}%")
+                            ->orWhere('users.role', 'LIKE', "%{$search}%");
+                    });
+                }
             })
             ->rawColumns(['actions'])
             ->make(true);
@@ -142,7 +159,36 @@ class UserManagementController extends Controller
 
     public function show($id)
     {
-        $user = User::with(['atasan', 'bawahan'])->findOrFail($id);
-        return view('management-system.user.show', compact('user'));
+        try {
+            $user = User::findOrFail($id);
+
+            // Safely handle manager relationship
+            $atasan = null;
+            if ($user->manager_id && is_numeric($user->manager_id)) {
+                $atasan = User::where('id', $user->manager_id)->first();
+            }
+
+            // Safely fetch subordinates
+            $bawahan = User::where('manager_id', $user->id)
+                ->when(!is_numeric($user->id), function ($query) {
+                    return $query->where('1', '=', '0'); // Return empty collection if ID is not numeric
+                })
+                ->get();
+
+            // Add related data to the user object
+            $user->atasan = $atasan;
+            $user->bawahan = $bawahan;
+
+            return view('management-system.user.show', compact('user'));
+        } catch (\Exception $e) {
+            \Log::error('User show error', [
+                'message' => $e->getMessage(),
+                'user_id' => $id,
+                'manager_id' => $user->manager_id ?? 'N/A'
+            ]);
+
+            return redirect()->route('management-system.user.index')
+                ->with('error', 'User not found or invalid data');
+        }
     }
 }

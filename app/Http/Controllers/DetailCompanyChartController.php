@@ -103,6 +103,7 @@ class DetailCompanyChartController extends Controller
             ->where('teams.company_code', $company->company_code)
             ->sum('papers.financial');
         $formattedTotalFinancialBenefit = number_format($totalFinancialBenefit, 0, ',', '.');
+        $companyId = $id;
 
         return view('detail_company_chart.show', compact(
             'company',
@@ -113,7 +114,8 @@ class DetailCompanyChartController extends Controller
             'availableYears',
             'year',
             'formattedTotalPotentialBenefit',
-            'formattedTotalFinancialBenefit'
+            'formattedTotalFinancialBenefit',
+            'companyId'
         ));
     }
 }

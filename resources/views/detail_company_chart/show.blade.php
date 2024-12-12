@@ -89,20 +89,17 @@
         </div>
         <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" :available-years="$availableYears" />
         <div class="row mt-4">
-            <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.idea-and-innovation-chart :organization-unit="$organizationUnit" :company-id="$company->id" :year="$year" />
+            <div class="col-lg-12 col-md-12">
+                <x-dashboard.total-team-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
             </div>
-            <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.innovator-organization :organization-unit="$organizationUnit" :company-id="$company->id" :year="$year" />
+            <div class="col-lg-12 col-md-12 mt-4">
+                <x-dashboard.total-innovator-by-organization-charts :organization-unit="$organizationUnit" :company-id="$companyId" />
             </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.benefit-organization :organization-unit="$organizationUnit" :company-id="$company->id" :year="$year" />
+            <div class="col-lg-12 col-md-12 mt-4">
+                <x-dashboard.total-financial-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
             </div>
-            <div class="col-lg-6 col-md-12">
-                <x-detail-company-chart.financial-benefit-organization :organization-unit="$organizationUnit" :company-id="$company->id"
-                    :year="$year" />
+            <div class="col-lg-12 col-md-12 mt-4">
+                <x-dashboard.total-potential-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
             </div>
         </div>
 

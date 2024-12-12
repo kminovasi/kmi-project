@@ -54,7 +54,8 @@
                     <div class="mb-4">
                         <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
                             :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
-                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale" />
+                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale"
+                            :total-active-events="$totalActiveEvents" />
                     </div>
 
                     <!-- Innovation Status Total -->
@@ -62,13 +63,14 @@
                         <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div> --}}
                     <div>
-                        <x-dashboard.total-team-chart />
+                        @if ($isSuperadmin)
+                            <x-dashboard.total-team-card />
+                        @else
+                            <x-dashboard.internal.total-team-card />
+                        @endif
                     </div>
-                    <div>
-                        <x-dashboard.financial-benefit-total-chart :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-                    </div>
-                    <div>
-                        <x-dashboard.potential-benefit-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    <div class="mt-3">
+                        <x-dashboard.total-financial-benefit-card />
                     </div>
                 </div>
 

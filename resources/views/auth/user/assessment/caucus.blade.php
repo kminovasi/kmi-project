@@ -76,8 +76,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                                                                                                                                                    <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                                                                                                                                                    @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                                                                                                                                                                                                        <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                                                                                                                                                                                                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -193,7 +193,7 @@
                         <!-- Filter Event -->
                         <div class="form-floating mb-4">
                             <select id="filter-event" name="filter-event" class="form-select"
-                                {{ Auth::user()->role == 'Superadmin' ? '' : 'disabled' }}>
+                                {{ Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' ? '' : 'disabled' }}>
                                 @foreach ($data_event as $event)
                                     <option name="event_id" value="{{ $event->id }}"
                                         {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
@@ -214,7 +214,8 @@
         </div>
 
         {{-- modal untuk executive summary --}}
-        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog" aria-labelledby="executiveSummaryTitle" aria-hidden="true">
+        <div class="modal fade" id="executiveSummary" tabindex="-1" role="dialog"
+            aria-labelledby="executiveSummaryTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header border-0">
@@ -227,12 +228,14 @@
                         <div class="modal-body">
                             <!-- Nama Tim -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="" id="TeamName" class="form-control" value="" readonly>
+                                <input type="text" name="" id="TeamName" class="form-control" value=""
+                                    readonly>
                                 <label for="TeamName">Tim</label>
                             </div>
                             <!-- Judul Inovasi -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="" id="InnovationTitle" class="form-control" value="" readonly>
+                                <input type="text" name="" id="InnovationTitle" class="form-control"
+                                    value="" readonly>
                                 <label for="InnovationTitle">Judul Inovasi</label>
                             </div>
                             <!-- Perusahaan -->
@@ -265,7 +268,32 @@
             </div>
         </div>
 
+        <div class="modal fade" id="fixModalPA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="title">Fix all Caucus Participant</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="form-fixall-pa" action="{{ route('assessment.fixSubmitAllCaucus') }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <input id="fix-all-caucus" name="event_id" type="text" hidden value="">
+                                <p>Apakah anda yakin ingin memfiksasi semua penilaian peserta Caucus?</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @endsection
 
 
@@ -318,7 +346,9 @@
         const selectElement = document.getElementById('filter-event');
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const eventName = selectedOption.text;
+        const eventId = selectedOption.value;
         document.getElementById('event-title').innerHTML = eventName;
+        document.getElementById('fix-all-caucus').value = eventId;
         newColumn = []
         $.ajax({
             url: "{{ route('query.get_caucus') }}", // Misalnya, URL untuk mengambil kolom yang dinamis

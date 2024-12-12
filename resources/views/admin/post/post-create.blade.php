@@ -33,19 +33,26 @@
         <div class="card-body">
             <form action="{{ route('post.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                <!-- Input untuk Judul -->
                 <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}" required>
+                    <label for="title" class="form-label">Judul</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Masukkan judul" required>
                 </div>
+
+                <!-- Input untuk Gambar -->
                 <div class="mb-3">
-                    <label for="content" class="form-label">Content</label>
-                    <textarea class="form-control" id="content" name="content" rows="3" required>{{ old('content') }}</textarea>
+                    <label for="cover_image" class="form-label">Gambar</label>
+                    <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
                 </div>
+
+                <!-- Input untuk Konten -->
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    <label for="content" class="form-label">Isi</label>
+                    <textarea class="summernote form-control" id="content" name="content" rows="5" placeholder="Masukkan isi postingan" required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+
+                <!-- Tombol Submit -->
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
         </div>
 

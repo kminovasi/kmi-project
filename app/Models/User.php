@@ -124,6 +124,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'manager_id');
     }
+
+    public function atasan__()
+    {
+        return $this->belongsTo(User::class, 'manager_id')
+            ->withDefault([
+                'name' => 'No Manager',
+                'position_title' => '-'
+            ]);
+    }
+
+    public function bawahan__()
+    {
+        return $this->hasMany(User::class, 'manager_id')
+            ->whereRaw('manager_id::integer = ?', [$this->id]);
+    }
     public function teams()
     {
         return $this->belongsToMany(Team::class, 'pvt_members');

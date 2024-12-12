@@ -3,7 +3,7 @@
         <div class="row align-items-center justify-content-between">
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="d-flex align-items-center">
-                    <div>
+                    <div class="d-flex">
                         <h2 class="my-2">
                             @if (Auth::user()->role == 'User')
                                 Dashboard Innovator

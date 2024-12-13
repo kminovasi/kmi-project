@@ -104,10 +104,9 @@
                                     <option value="">Select Role</option>
                                     <option value="Superadmin">Superadmin</option>
                                     <option value="Admin">Admin</option>
-                                    <option value="Pengelola Inovasi">Pengelola Inovasi</option>
                                     <option value="BOD">BOD</option>
-                                    <option value="5">5</option>
                                     <option value="User">User</option>
+                                    <option value="Juri">Juri</option>
                                 </select>
                             </div>
                             <div class="form-group">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,13 @@ class UserManagementController extends Controller
     public function getData()
     {
         $query = User::select('users.*'); // Hilangkan eager loading 'atasan' jika tidak diperlukan
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
+
+        // Jika bukan superadmin, tambahkan kondisi untuk membatasi data berdasarkan company_code
+        if (!$isSuperadmin) {
+            $query->where('users.company_code', $company_code);
+        }
 
         // Handle DataTables server-side processing
         return DataTables::of($query)
@@ -46,6 +54,7 @@ class UserManagementController extends Controller
             ->rawColumns(['actions'])
             ->make(true);
     }
+
 
     public function create()
     {

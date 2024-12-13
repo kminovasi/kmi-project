@@ -344,6 +344,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/post-management', [PostController::class, 'index'])->name('post.index');
         Route::get('/post-management/create', [PostController::class, 'create'])->name('post.create');
         Route::post('/post-management/store', [PostController::class, 'store'])->name('post.store');
+        Route::get('/post-management/edit/{id}', [PostController::class, 'edit'])->name('post.edit');
+        Route::put('/post-management/update/{id}', [PostController::class, 'update'])->name('post.update');
+        Route::get('post/{slug}', [PostController::class, 'show'])->name('post.show');
 
         // Rute Certificates
         Route::resource('certificates', CertificateController::class)->only(['index', 'store', 'destroy']);

@@ -83,13 +83,14 @@
                                     id="id_category" value="{{ old('category') }}" placeholder="Pilih Kategori Inovasi Anda"
                                     onChange="addRow(this)" required>
                                     <!-- <option selected disabled>Select a category :</option>
-                                                                                @foreach ($datas_category as $row)
+                                                                                    @foreach ($datas_category as $row)
     <option value="{{ $row->id }}">{{ $row->category_name }}</option>
     @endforeach -->
                                 </select>
                             </div>
+                            <input type="hidden" name="status_lomba" value="AP">
 
-                            <div class="mb-4">
+                            {{-- <div class="mb-4">
                                 <h6 class="small mb-1">Event</h6>
                                 <select class="form-select" aria-label="Default select example" name="status_lomba"
                                     id="chooseEvent" value="{{ old('event') }}" placeholder="Pilih Kategori Inovasi Anda"
@@ -97,7 +98,7 @@
                                     <option value="AP"> Event Internal</option>
                                     <option value="group"> Event Group</option>
                                 </select>
-                            </div>
+                            </div> --}}
                             <!-- <input name="status_lomba" id="status_lomba" type="text" hidden> -->
                             <div class="mb-4">
                                 <h6 class="small mb-1">Ketua Tim</h6>
@@ -124,8 +125,8 @@
                             </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Unit</h6>
-                                <input class="form-control form-control-solid" name="" id="unit"
-                                    type="text" value="{{ old('') }}" readonly required />
+                                <input class="form-control form-control-solid" name="" id="unit" type="text"
+                                    value="{{ old('') }}" readonly required />
                             </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Departemen</h6>
@@ -152,7 +153,7 @@
                                 <select class="form-select" aria-label="Default select example" name="theme"
                                     id="id_theme" value="{{ old('theme') }}" required>
                                     <!-- <option selected disabled>Select a theme :</option>
-                                                @foreach ($datas_theme as $row)
+                                                    @foreach ($datas_theme as $row)
     <option value="{{ $row->id }}">{{ $row->theme_name }}</option>
     @endforeach -->
                                 </select>
@@ -608,7 +609,5 @@
         // function changeStatusLomba(elemen){
         //     document.getElementById('status_lomba').value = (elemen.value == 8) ? "group" : "AP"
         // }
-
-
     </script>
 @endpush

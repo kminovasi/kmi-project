@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ApiChartController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +27,5 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/dashboard/total-potential-benefit-chart-data', [DashboardController::class, 'showTotalPotentialBenefitChartData'])->name('showTotalPotentialBenefitChartData');
     Route::get('/dashboard/financial-benefit', [DashboardController::class, 'getFinancialBenefitsByCompany']);
 });
+
+Route::get('/comments/by-paper', [CommentController::class, 'getCommentsByPaper']);

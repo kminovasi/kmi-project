@@ -1389,12 +1389,22 @@ class AssessmentController extends Controller
         $companyCode = Auth::user()->company_code;
 
         if ($isSuperadmin) {
+            // Jika Superadmin, lihat semua event aktif
             $data_event = Event::where('status', 'active')->get();
+        } elseif ($is_judge) {
+            // Jika Juri, hanya lihat event yang relevan
+            $data_event = Event::where('status', 'active')
+                ->whereHas('judges', function ($query) use ($userEmployeeId) {
+                    $query->where('employee_id', $userEmployeeId);
+                })
+                ->get();
         } else {
+            // Untuk pengguna lain, filter berdasarkan perusahaan
             $data_event = Event::where('status', 'active')
                 ->where('company_code', $companyCode)
                 ->get();
         }
+
         $data_category = Category::all();
         return view('auth.user.assessment.caucus', [
             "data_event" => $data_event,
@@ -1402,6 +1412,7 @@ class AssessmentController extends Controller
             'is_judge' => $is_judge
         ]);
     }
+
     public function summaryExecutive(Request $request)
     {
         try {

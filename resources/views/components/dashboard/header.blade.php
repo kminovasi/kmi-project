@@ -3,7 +3,7 @@
         <div class="row align-items-center justify-content-between">
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="d-flex align-items-center">
-                    <div>
+                    <div class="d-flex">
                         <h2 class="my-2">
                             @if (Auth::user()->role == 'User')
                                 Dashboard Innovator
@@ -21,12 +21,18 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-6 justify-content-end">
-                @php
-                    $formattedDateTime = now()->isoFormat('dddd · D MMMM YYYY') . ' · ' . now()->format('H:i');
-                @endphp
-                <div class="page-header-subtitle mt-1 d-flex align-items-center">
-                    <i class="bi bi-calendar-date me-2"></i>
-                    <span>{{ $formattedDateTime }}</span>
+                <div class="d-flex">
+                    @php
+                        $formattedDateTime = now()->isoFormat('dddd · D MMMM YYYY') . ' · ' . now()->format('H:i');
+                    @endphp
+                    <div class="page-header-subtitle mt-1 d-flex align-items-center">
+                        <i class="bi bi-calendar-date me-2"></i>
+                        <span>{{ $formattedDateTime }}</span>
+                    </div>
+                    <button type="button" class="btn-sm m-2 btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
+                        data-bs-target="#yearFilterInnovator">
+                        <i class="fas fa-filter me-1"></i>
+                    </button>
                 </div>
             </div>
         </div>

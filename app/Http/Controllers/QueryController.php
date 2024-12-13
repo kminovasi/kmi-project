@@ -1150,7 +1150,9 @@ class QueryController extends Controller
                 }
                 $rawColumns[] = 'fix';
                 $dataTable->addColumn('fix', function ($data_row) {
-                    if (auth()->user()->role === 'Admin' || (auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
+                    if ((auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                    } else if ((auth()->user()->role === 'Admin' && $data_row['status(removed)'] === 'On Desk')) {
                         return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                     } else {
                         return '-';

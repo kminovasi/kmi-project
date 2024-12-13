@@ -42,7 +42,7 @@
 
 @section('content')
     <div class="bgBase1">
-        <x-dashboard.header />
+        <x-dashboard.header :year="$year" />
 
         <!-- Main page content-->
         <div class="container">

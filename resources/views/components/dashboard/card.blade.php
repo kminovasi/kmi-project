@@ -329,7 +329,7 @@
                 </div>
             </div>
             <div class="card-footer d-flex align-items-center justify-content-between small">
-                <a class="text-white stretched-link" href="/">
+                <a class="text-white stretched-link" href="{{ route('dashboard-event.list') }}">
                     Lihat Daftar Event
                 </a>
                 <div class="text-white"><i class="fas fa-angle-right"></i></div>

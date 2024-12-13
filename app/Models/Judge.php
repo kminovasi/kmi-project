@@ -28,5 +28,8 @@ class Judge extends Model
         return $this->belongsTo(Event::class, 'event_id');
     }
 
-
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_judge', 'judge_id', 'event_id');
+    }
 }

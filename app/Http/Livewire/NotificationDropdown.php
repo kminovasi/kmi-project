@@ -3,7 +3,6 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-
 use Illuminate\Support\Facades\Auth;
 
 class NotificationDropdown extends Component
@@ -12,7 +11,8 @@ class NotificationDropdown extends Component
 
     public function mount()
     {
-        $this->notifications = Auth::user()->notifications;
+        // Pastikan notifications adalah koleksi
+        $this->notifications = collect(Auth::user()->notifications);
     }
 
     public function destroy($id)
@@ -20,21 +20,22 @@ class NotificationDropdown extends Component
         $notification = Auth::user()->notifications()->find($id);
         if ($notification) {
             $notification->delete();
-            $this->notifications = Auth::user()->notifications; // Update notifications
-            $this->dispatchBrowserEvent('notificationDeleted'); // Emit event for animation
+            $this->notifications = collect(Auth::user()->notifications); // Update sebagai koleksi
+            $this->dispatchBrowserEvent('notificationDeleted'); // Emit event untuk animasi
         }
     }
 
     public function updatedNotifications()
     {
-        $this->notifications = Auth::user()->notifications;
+        // Perbarui notifications sebagai koleksi
+        $this->notifications = collect(Auth::user()->notifications);
     }
 
     public function destroyAll()
     {
         Auth::user()->notifications()->delete();
-        $this->notifications = []; // Clear notifications
-        $this->dispatchBrowserEvent('allNotificationsDeleted'); // Emit event for animation
+        $this->notifications = collect([]); // Kosongkan sebagai koleksi
+        $this->dispatchBrowserEvent('allNotificationsDeleted'); // Emit event untuk animasi
     }
 
     public function render()

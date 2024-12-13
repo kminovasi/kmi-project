@@ -36,6 +36,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
 use App\Http\Controllers\AssessmentMatrixController;
+use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
@@ -405,6 +406,11 @@ Route::middleware('auth')->prefix('event')->name('event-team.')->group(function 
     Route::put('/check-paper/{id}/{eventId}', [EventTeamController::class, 'updatePaperStatus'])->name('updatePaperStatus')->middleware(['role:Superadmin']);
 });
 
+Route::middleware(['role:Superadmin,Admin'])->prefix('dashboard-event')->name('dashboard-event.')->group(function () {
+    Route::get('/list', [DashboardEventController::class, 'getActiveEvent'])->name('list');
+    Route::get('/dashboard-event/{id}/show', [DashboardEventController::class, 'show'])->name('show');
+    Route::get('/dashboard-event/{id}/statistics', [DashboardEventController::class, 'statistics'])->name('statistics');
+});
 
 
 

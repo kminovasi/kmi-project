@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BodEvent;
+use Auth;
 use Illuminate\Http\Request;
 use Log;
 
@@ -10,7 +11,21 @@ class BodEventController extends Controller
 {
     public function index()
     {
-        $bodEvents = BodEvent::with(['user', 'event'])->get();
+        // Cek apakah user yang sedang login adalah Superadmin
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
+
+        // Jika Superadmin, tampilkan semua data
+        if ($isSuperadmin) {
+            $bodEvents = BodEvent::with(['user', 'event'])->get();
+        } else {
+            // Jika bukan Superadmin, filter berdasarkan company_code yang sama dengan user yang login
+            $bodEvents = BodEvent::with(['user', 'event'])
+                ->whereHas('event', function ($query) use ($company_code) {
+                    $query->where('company_code', $company_code);
+                })
+                ->get();
+        }
 
         return response()->json([
             'data' => $bodEvents->map(function ($bodEvent) {
@@ -33,6 +48,7 @@ class BodEventController extends Controller
             }),
         ]);
     }
+
 
 
 

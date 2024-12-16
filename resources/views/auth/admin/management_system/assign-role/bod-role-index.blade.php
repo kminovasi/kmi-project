@@ -69,6 +69,25 @@
 
         </div>
     </div>
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus data ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 @endsection
 
@@ -80,36 +99,96 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script type="">
 $(document).ready(function() {
-    var dataTable = $('#datatable-innovator').DataTable({
-        "processing": true,
-        "serverSide": false, // Since data is fetched by Ajax, set to false
-        "ajax": {
-            "url": '{{ route('query.get_role') }}',
-            "type": "GET",
-            "dataType": "json",
-            "dataSrc": function (data) {
-                // console.log('Jumlah data total: ' + data.recordsTotal);
-                // console.log('Jumlah data setelah filter: ' + data.recordsFiltered);
-                // console.log('Jumlah data setelah filter: ' + data.data);
-                return data.data;
-            },
-            "data": function (d) {
-                    d.role = 'BOD'
-            },
+    let selectedId = null; // Untuk menyimpan ID data yang akan dihapus
 
-        },
-        "columns": [
-            {"data": "DT_RowIndex", "title": "No"},
-            {"data": "name", "title": "Name"},
-            {"data": "co_name", "title": "Perusahaan"},
-            {"data": "position_title", "title": "Posisi"},
-            {"data": "job_level", "title": "Job Level"}
+    let table = $('#datatable-innovator').DataTable({
+        processing: true,
+        serverSide: false,
+        ajax: "{{ route('bodevent.index') }}",
+        columns: [
+            { data: 'bod_name', title: 'Nama BOD' },
+            { data: 'company_name', title: 'Nama Perusahaan' },
+            { data: 'position', title: 'Posisi' },
+            { data: 'event_name', title: 'Event' },
+            { data: 'event_type', title: 'Tipe Event' }, // Kolom baru untuk tipe event
+            { data: 'job_level', title: 'Job Level' },
+            {
+                data: 'action',
+                title: 'Action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-sm btn-primary toggle-status-btn" data-id="${row.id}" data-status="${row.status}">
+                            ${row.status === 'active' ? 'Non Aktifkan' : 'Aktifkan'}
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}">
+                            Delete
+                        </button>`;
+                }
+
+
+                },
         ],
-        "scrollY": true,
-        "scrollX": false,
-        "stateSave": true,
     });
+
+    // Tampilkan modal saat tombol delete diklik
+   $('#datatable-innovator').on('click', '.delete-btn', function() {
+    selectedId = $(this).data('id'); // Simpan ID
+    if (!selectedId) {
+        alert('Invalid data ID!');
+        return;
+    }
+    $('#deleteModal').modal('show');
 });
+
+
+    // Konfirmasi penghapusan
+ $('#confirmDeleteBtn').on('click', function() {
+    if (selectedId) {
+        $.ajax({
+            url: `/api/bodevent/${selectedId}`,
+            type: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                $('#deleteModal').modal('hide');
+                alert(response.message);
+                table.ajax.reload();
+            },
+            error: function(xhr) {
+                $('#deleteModal').modal('hide');
+                alert('Error: ' + xhr.responseJSON.message);
+            }
+        });
+    }
+});
+
+$('#datatable-innovator').on('click', '.toggle-status-btn', function() {
+    const id = $(this).data('id');
+    const currentStatus = $(this).data('status');
+
+    if (id) {
+        $.ajax({
+            url: `/api/bodevent/toggle-status/${id}`,
+            type: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                alert(response.message);
+                $('#datatable-innovator').DataTable().ajax.reload();
+            },
+            error: function(xhr) {
+                alert('Error: ' + xhr.responseJSON.message);
+            }
+        });
+    }
+});
+
+});
+// $('#datatable-innovator').DataTable().ajax.reload();
 
 
 </script>

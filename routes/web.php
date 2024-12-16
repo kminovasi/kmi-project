@@ -40,6 +40,7 @@ use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\JuriController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\UserManagement;
 use App\Http\Controllers\UserManagementController;
@@ -330,7 +331,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Group Route Superadmin and Admin
-    Route::middleware([])->group(function () {
+    Route::middleware(['role:Superadmin,Admin'])->group(function () {
         // Rute Benefit
         Route::prefix('benefit')->name('benefit.')->group(function () {
             Route::get('/', [BenefitController::class, 'createBenefitAdmin'])->name('index');
@@ -341,6 +342,15 @@ Route::middleware('auth')->group(function () {
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);
 
+        // Rute Post
+        Route::get('/post-management', [PostController::class, 'index'])->name('post.index');
+        Route::get('/post-management/create', [PostController::class, 'create'])->name('post.create');
+        Route::post('/post-management/store', [PostController::class, 'store'])->name('post.store');
+        Route::get('/post-management/edit/{id}', [PostController::class, 'edit'])->name('post.edit');
+        Route::put('/post-management/update/{id}', [PostController::class, 'update'])->name('post.update');
+        Route::get('post/{slug}', [PostController::class, 'show'])->name('post.show');
+        Route::get('post', [PostController::class, 'list'])->name('post.list');
+
         // Rute Certificates
         Route::resource('certificates', CertificateController::class)->only(['index', 'store', 'destroy']);
         Route::post('certificates/{id}/activate', [CertificateController::class, 'activate'])->name('certificates.activate');
@@ -349,7 +359,6 @@ Route::middleware('auth')->group(function () {
         //Rute Timeline
         Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy', 'activate']);
     });
-
 
 
     // Evidence
@@ -419,12 +428,11 @@ Route::get('/ck5', function () {
 });
 
 Route::get('/', function () {
-    $flyer = Flyer::all();
-    $timeline = Timeline::all();
-    return view('homepage', [
-        'flyer' => $flyer,
-        'timeline' => $timeline
-    ]);
+    return view('homepage');
+});
+
+Route::get('/news', function () {
+    return view('news');
 });
 
 Route::get('/testing', function () {

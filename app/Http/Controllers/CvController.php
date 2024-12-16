@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class CvController extends Controller
 {
-    function index()
+    public function index()
     {
 
         // get current user employee_id

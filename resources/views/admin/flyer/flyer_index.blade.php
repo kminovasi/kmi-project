@@ -8,10 +8,10 @@
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
         <div class="container-xl px-4">
             <div class="page-header-content">
-                <div class="row align-items-center justify-content-between pt-3">
+                <div class="row align-items-center justify-content-between">
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
-                            <div class="page-header-icon"><i data-feather="image"></i></div>
+                            <i data-feather="image"></i>
                             Flyer
                         </h1>
                     </div>

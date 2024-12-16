@@ -11,7 +11,6 @@
     <!-- Tambahkan chartData sebagai JSON -->
     <script>
         const chartData = @json($chartData);
-        console.log(chartData);
     </script>
 </div>
 @vite(['resources/js/totalInnovatorChartInternal.js'])

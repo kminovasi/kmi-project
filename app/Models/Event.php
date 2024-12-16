@@ -39,4 +39,21 @@ class Event extends Model
     {
         return $this->hasMany(Judge::class, 'event_id');
     }
+
+    public function pvtEventTeams()
+    {
+        return $this->hasMany(PvtEventTeam::class, 'event_id', 'id');
+    }
+
+    public function papers()
+    {
+        return $this->hasManyThrough(
+            Paper::class,
+            PvtEventTeam::class,
+            'event_id',     // Foreign key di PvtEventTeam yang menunjuk ke Event
+            'team_id',      // Foreign key di Paper yang menunjuk ke Team
+            'id',           // Primary key di Event
+            'team_id'       // Foreign key di PvtEventTeam yang menunjuk ke Team
+        );
+    }
 }

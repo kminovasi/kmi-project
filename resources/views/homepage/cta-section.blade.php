@@ -1,5 +1,6 @@
-<section class="container py-5">
-    <div class="shadow rounded text-center text-white p-5"
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="shadow rounded text-center text-white p-5"
         style="  background: rgb(195, 34, 34);
             background: linear-gradient(
                 120deg,
@@ -14,5 +15,6 @@
         </p>
         <a href="/dashboard" class="btn btn-warning text-black text-decoration-none mt-3 mb-3 shadow">Daftarkan Tim
             Anda</a>
+    </div>
     </div>
 </section>

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-transparent fixed-top shadow-sm">
+<nav id="guest-navbar" class="navbar navbar-expand-lg bg-transparent fixed-top">
     <div class="container">
         <a class="navbar-brand" href="#">
             <div class="d-flex align-items-center text-color-main">

@@ -1,28 +1,28 @@
-<section class="relative pt-5 pb-5 bg-dark bg-cover mt-5"
-    style="background-image:url(https://images.unsplash.com/photo-1549082984-1323b94df9a6?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80)">
-    <!-- Content -->
-    <div class="container max-w-screen-xl position-relative overlap-10 text-center text-lg-start pt-5 pb-5 pt-lg-6">
-        <div class="row row-grid align-items-center">
-            <div class="col-lg-8 text-center text-lg-start">
-                <!-- Title -->
-                <h1 class="fw-bold font-bolder display-5 text-dark mb-5">
-                    Portal Inovasi
+<section class="hero-section d-flex align-items-center bg-light" style="height: 80vh;">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Left Content -->
+            <div class="col-lg-6 text-center text-lg-start">
+                <h1 class="display-4 fw-bold text-danger mb-3">
+                    Mendorong <span class="text-dark">Inovasi</span>, Membangun Masa Depan
                 </h1>
-                <!-- Text -->
-                <p class="lead text-dark text-opacity-75 mb-10 w-lg-2/3">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse quibusdam cupiditate quasi eligendi
-                    explicabo minus voluptatem natus odit impedit cum.
+                <p class="lead text-muted mb-4">
+                    SIG Innovation Award hadir untuk mengapresiasi solusi kreatif yang membawa perusahaan menuju keberlanjutan dan pertumbuhan.
                 </p>
-                <!-- Buttons -->
-                <div class="mt-10 mx-n2">
-                    <a href="#" class="btn btn-lg btn-danger shadow-sm mx-2 px-lg-8">
-                        Dashboard
+                <div>
+                    <a href="#register" class="btn btn-danger btn-lg me-3">
+                        Masuk Portal
                     </a>
-                    <a href="#" class="btn btn-lg btn-neutral mx-2 px-lg-8">
-                        Learn more
+                    <a href="#categories" class="btn btn-outline-danger btn-lg">
+                        Lihat Inovasi
                     </a>
                 </div>
+            </div>
+            <!-- Right Image -->
+            <div class="col-lg-6 text-center">
+                <img src="" alt="Innovation" class="img-fluid">
             </div>
         </div>
     </div>
 </section>
+

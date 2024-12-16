@@ -17,10 +17,12 @@
     <link href="{{ asset('template/dist/css/styles.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/sigialogo.png') }}" />
-    <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js"
-        crossorigin="anonymous"></script>
+    <script data-search-pseudo-elements defer
+        src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous">
     </script>
+    <link rel="stylesheet" href="{{ asset('summernote/summernote-lite.css') }}">
+    <script src="{{ asset('summernote/summernote-lite.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('css')
 </head>
@@ -55,6 +57,13 @@
     @livewireScripts
     <script src="{{ asset('template/dist/js/scripts.js') }}"></script>
     <script src="{{ asset('template/dist/js/litepicker.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                height: 200
+            });
+        });
+    </script>
     @stack('js')
 </body>
 

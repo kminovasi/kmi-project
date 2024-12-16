@@ -5,6 +5,7 @@ namespace App\View\Components\Dashboard\Event;
 use App\Models\Event;
 use Illuminate\View\Component;
 use DB;
+use Log;
 
 class InnovatorCard extends Component
 {
@@ -45,6 +46,10 @@ class InnovatorCard extends Component
             ->where('categories.category_parent', 'INCREMENTAL INNOVATION')
             ->count();
 
+        // Gabungkan jumlah Breakthrough dan Incremental Innovation
+        $this->statistics['totalInnovation'] =
+            $this->statistics['breakthroughInnovation'] + $this->statistics['incrementalInnovation'];
+
         $this->statistics['ideaBox'] = DB::table('pvt_event_teams')
             ->join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
             ->join('categories', 'teams.category_id', '=', 'categories.id')
@@ -75,6 +80,7 @@ class InnovatorCard extends Component
             $this->statistics['totalInnovatorsMale'] + $this->statistics['totalInnovatorsFemale'];
     }
 
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -82,6 +88,7 @@ class InnovatorCard extends Component
      */
     public function render()
     {
+        Log::debug($this->statistics);
         return view('components.dashboard.event.innovator-card', [
             'statistics' => $this->statistics,
         ]);

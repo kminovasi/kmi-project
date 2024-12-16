@@ -36,6 +36,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
 use App\Http\Controllers\AssessmentMatrixController;
+use App\Http\Controllers\BodEventController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
@@ -440,3 +441,7 @@ Route::get('/testing', function () {
 });
 
 Route::post('merger-pdf', [App\Http\Controllers\PDFMergerController::class, 'merge'])->name('merge-pdf');
+
+Route::get('/getAllBodEvent', [BodEventController::class, 'index'])->name('bodevent.index')->middleware('auth');
+Route::delete('/bodevent/{id}', [BodEventController::class, 'destroy'])->name('bodevent.destroy')->middleware('auth');
+Route::patch('/bodevent/toggle-status/{id}', [BodEventController::class, 'toggleStatus'])->middleware('auth');

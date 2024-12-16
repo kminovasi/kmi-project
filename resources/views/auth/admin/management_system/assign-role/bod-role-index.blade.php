@@ -147,7 +147,7 @@ $(document).ready(function() {
  $('#confirmDeleteBtn').on('click', function() {
     if (selectedId) {
         $.ajax({
-            url: `/api/bodevent/${selectedId}`,
+            url: `/bodevent/${selectedId}`,
             type: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -171,7 +171,7 @@ $('#datatable-innovator').on('click', '.toggle-status-btn', function() {
 
     if (id) {
         $.ajax({
-            url: `/api/bodevent/toggle-status/${id}`,
+            url: `/bodevent/toggle-status/${id}`,
             type: 'PATCH',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

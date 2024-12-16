@@ -101,6 +101,11 @@ class PostController extends Controller
 
     public function show($slug){
         $post = Post::where('slug', $slug)->firstOrFail();
-        return view('homepage.post.showPost', compact('post'));
+        return view('homepage.post.show-post', compact('post'));
+    }
+
+    public function list(){
+        $posts = Post::with('user')->paginate(10);
+        return view('homepage.post.list-post', compact('posts'));
     }
 }

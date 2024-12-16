@@ -7,7 +7,7 @@
     style="background-image: url('{{ asset('storage/' . $post->cover_image) }}');
            background-size: cover;
            background-position: center;
-           height: 50vh;">
+           height: 60vh;">
     <div class="container">
         <div class="hero-content">
             <h1 class="display-4 fw-bold">{{ $post->title }}</h1>

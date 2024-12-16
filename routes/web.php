@@ -347,6 +347,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/post-management/edit/{id}', [PostController::class, 'edit'])->name('post.edit');
         Route::put('/post-management/update/{id}', [PostController::class, 'update'])->name('post.update');
         Route::get('post/{slug}', [PostController::class, 'show'])->name('post.show');
+        Route::get('post', [PostController::class, 'list'])->name('post.list');
 
         // Rute Certificates
         Route::resource('certificates', CertificateController::class)->only(['index', 'store', 'destroy']);

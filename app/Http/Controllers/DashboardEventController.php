@@ -12,11 +12,11 @@ class DashboardEventController extends Controller
         $events = Event::select('*')
             ->orderByRaw("
             CASE
-                WHEN status = 'active' AND date_start <= now() AND date_end >= now() THEN 1
+                WHEN status = 'active' THEN 1
                 ELSE 2
             END
-        ")
-            ->orderBy('date_start', 'asc') // Urutkan berdasarkan tanggal mulai untuk event aktif
+        ") // Status 'active' prioritas utama
+            ->orderBy('date_start', 'asc') // Urutkan berdasarkan tanggal mulai setelah status
             ->get();
 
         return view('dashboard.event.index', compact('events'));

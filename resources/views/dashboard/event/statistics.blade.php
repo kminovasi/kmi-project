@@ -13,6 +13,7 @@
             <div class="col-lg-7 col-md-7 col-10 col-sm-12">
                 <x-dashboard.event.innovator-card :event-id="$eventId" />
                 <x-dashboard.event.total-benefit-company-chart :event-id="$eventId" />
+                <x-dashboard.event.total-potential-benefit-company-chart :event-id="$eventId" />
             </div>
         </div>
     </div>

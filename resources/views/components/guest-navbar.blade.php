@@ -19,14 +19,14 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link {{ request()->routeIs('homepage') ? 'active' : '' }}" href="{{ route('homepage') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Berita</a>
+                        <a class="nav-link {{ request()->routeIs('post.list') ? 'active' : '' }}" href="{{ route('post.list') }}">Berita</a>
                     </li>
                     @if (Auth::user())
                         <li class="nav-item">
-                            <a class=" nav-link text-color-main" href="{{ route('dashboard') }}">Dashboard</a>
+                            <a class=" nav-link text-color-main {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="post">

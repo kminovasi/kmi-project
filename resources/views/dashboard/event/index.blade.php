@@ -30,11 +30,11 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $event->event_name }}</td>
                                 <td>
-                                    @if ($event->status === 'active' && now()->between($event->date_start, $event->date_end))
-                                        <span class="badge bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge bg-secondary">Tidak Aktif</span>
-                                    @endif
+                                    @if ($event->status === 'active')
+                                    <span class="badge bg-success">Aktif</span>
+                                @else
+                                    <span class="badge bg-secondary">Tidak Aktif</span>
+                                @endif
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($event->date_start)->format('d M Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($event->date_end)->format('d M Y') }}</td>

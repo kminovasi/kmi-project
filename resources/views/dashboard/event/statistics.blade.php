@@ -14,6 +14,8 @@
                 <x-dashboard.event.innovator-card :event-id="$eventId" />
                 <x-dashboard.event.total-benefit-company-chart :event-id="$eventId" />
                 <x-dashboard.event.total-potential-benefit-company-chart :event-id="$eventId" />
+                <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" />
+
             </div>
         </div>
     </div>

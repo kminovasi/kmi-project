@@ -32,13 +32,15 @@ class DashboardEventController extends Controller
     }
 
 
-    public function statistics($id)
+    public function statistics(Request $request, $id)
     {
         $event = Event::findOrFail($id);
+        $organizationUnit = $request->input('organization-unit'); // Ambil filter dari request
 
         return view('dashboard.event.statistics', [
             'eventId' => $event->id,
             'eventName' => $event->event_name,
+            'organizationUnit' => $organizationUnit,
         ]);
     }
 }

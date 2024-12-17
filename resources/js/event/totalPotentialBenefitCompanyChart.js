@@ -66,6 +66,8 @@ const imagePlugin = {
     },
 };
 
+let totalBenefitChartInstance = null; // Simpan referensi instance chart
+
 export async function renderTotalBenefitChart(companies) {
     const ctx = document.getElementById("totalPotentialBenefitChart").getContext("2d");
 
@@ -76,8 +78,13 @@ export async function renderTotalBenefitChart(companies) {
     // Memuat logo sebelum membuat grafik
     await loadLogos(logos);
 
+    // Jika chart sudah ada, destroy terlebih dahulu
+    if (totalBenefitChartInstance) {
+        totalBenefitChartInstance.destroy();
+    }
+
     // Render Chart.js Bar Chart
-    new Chart(ctx, {
+    totalBenefitChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
             labels: labels,
@@ -127,3 +134,4 @@ export async function renderTotalBenefitChart(companies) {
         plugins: [imagePlugin], // Daftarkan plugin untuk menggambar logo
     });
 }
+

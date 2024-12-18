@@ -17,7 +17,7 @@
                     <tr>
                         <th>Status:</th>
                         <td>
-                            @if ($event->status === 'active' && now()->between($event->date_start, $event->date_end))
+                            @if ($event->status === 'active')
                                 <span class="badge bg-success">Aktif</span>
                             @else
                                 <span class="badge bg-secondary">Tidak Aktif</span>

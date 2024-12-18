@@ -68,7 +68,7 @@
                                             type="text" name="potential_benefit"
                                             value="{{ $row->getPotentialBenefitFormattedAttribute() }}"
                                             oninput="formatCurrency(this)"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}
+                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                             required {{ $is_owner ? '' : 'disabled' }}>
                                     </div>
                                     @foreach ($benefit_custom as $bc)
@@ -78,7 +78,7 @@
                                             <input class="form-control" id="bencus-{{ $bc['id'] }}"
                                                 name="bencus[{{ $bc['id'] }}]" type="text"
                                                 value="{{ $bc['value'] }}" oninput="formatCurrency(this)"
-                                                {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}
+                                                {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                                 required {{ $is_owner ? '' : 'disabled' }}>
                                         </div>
                                     @endforeach
@@ -88,7 +88,7 @@
                                         <select class="form-select" aria-label="Default select example"
                                             name="potensi_replikasi" id="choosePotensiReplikasi"
                                             value="{{ old('potensi_replikasi') }}"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}
+                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                             required {{ $is_owner ? '' : 'disabled' }}>
                                             <option value="Bisa Direplikasi">Bisa Direplikasi</option>
                                             <option value="Tidak Bisa Direplikasi">Tidak Bisa Direplikasi</option>
@@ -112,7 +112,7 @@
                                             Financial</label>
                                         <textarea class="form-control" id="dataBenefitNonFin{{ $row->paper_id }}" type="text" rows="5"
                                             name="non_financial" value=""
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}
+                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                             {{ $is_owner ? '' : 'disabled' }}>{{ $row->non_financial }}</textarea>
                                     </div>
 
@@ -141,7 +141,7 @@
                                         <input class="form-control" id="file_review_{{ $row->paper_id }}" type="file"
                                             name="file_review" accept=".pdf"
                                             oninput="check_file('{{ $row->paper_id }}')"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' ? '' : 'readonly disabled' }}>
+                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}>
                                         <!-- <input type="text" id="file_path_{{ $row->paper_id }}" value="{{ $row->file_review }}" hidden> -->
                                         <div class="is-invalid" id="invalid_file_{{ $row->paper_id }}"></div>
                                         <div class="invalid-feedback" id="feedback_file_{{ $row->paper_id }}"></div>

@@ -332,7 +332,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Group Route Superadmin and Admin
-    Route::middleware(['role:Superadmin,Admin'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         // Rute Benefit
         Route::prefix('benefit')->name('benefit.')->group(function () {
             Route::get('/', [BenefitController::class, 'createBenefitAdmin'])->name('index');

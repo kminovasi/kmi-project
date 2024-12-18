@@ -61,14 +61,16 @@
                                                 <i class="fas fa-edit dropdown-item-icon"></i> Edit</a>
                                         </li>
                                         <li>
-                                            <form action="{{ route('management-system.juri-updateStatus', $j->id) }}"
+                                            {{-- <form action="{{ route('management-system.juri-updateStatus', $j->id) }}"
                                                 method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <button class="dropdown-item" type="submit">
                                                     <i class="fas fa-refresh dropdown-item-icon"></i>Update
                                                     Status</button>
-                                            </form>
+                                            </form> --}}
+                                            <a class="dropdown-item" wire:click="updateStatus({{ $j->id }})">
+                                                <i class="fas fa-refresh dropdown-item-icon"></i>Update Status</a>
                                         </li>
                                         <li><a class="dropdown-item"
                                                 href="{{ asset('storage/surat-juri/' . $j->letter_path) }}"

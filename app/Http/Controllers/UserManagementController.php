@@ -116,7 +116,7 @@ class UserManagementController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'name' => 'required',
             'password' => 'nullable|min:6|confirmed',
-            'role' => 'required|in:Superadmin,Admin,Pengelola Inovasi,BOD,5,User',
+            'role' => 'required|in:Superadmin,Admin,Pengelola Inovasi,BOD,Juri,User',
         ], [
             'employee_id.unique' => 'Employee ID sudah terdaftar.',
             'username.unique' => 'Username sudah digunakan.',

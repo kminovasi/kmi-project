@@ -15,11 +15,12 @@ class PostTable extends Component
     use WithPagination;
     use WithFileUploads;
 
+    protected $posts = [];
+    protected $userId;
+
     public function deletePost($id)
     {
         $post = Post::find($id);
-
-
         // Hapus gambar jika ada
         if ($post->cover_image) {
             Storage::disk('public')->delete($post->cover_image);
@@ -30,12 +31,17 @@ class PostTable extends Component
         session()->flash('success', 'Post berhasil dihapus.');
     }
 
+    public function mount()
+    {
+        $this->userId = auth()->user()->id;
+        $this->posts = Post::with('user')->where('user_id', $this->userId)->paginate(10);
+    }
+
     public function render()
     {
-        $posts = Post::with('user')->paginate(10);
 
         return view('livewire.post-table', [
-            'posts' => $posts,
+            'posts' => $this->posts
         ]);
     }
 }

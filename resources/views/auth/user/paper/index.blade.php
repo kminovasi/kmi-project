@@ -809,7 +809,7 @@
         var dataTable = $('#datatable-makalah').DataTable({
             "processing": true,
             "serverSide": true,
-            "responsive" : true,
+            // "responsive" : true,
             "dom": 'lBfrtip',
             "buttons": [
                 'excel', 'csv', 'pdf'

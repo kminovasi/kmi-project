@@ -44,7 +44,13 @@ class ManagamentSystemController extends Controller
 
     public function assignEventCreate()
     {
-        $datas_company = Company::all();
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
+        if ($isSuperadmin) {
+            $datas_company = Company::all();
+        } else {
+            $datas_company = Company::where('company_code', $company_code)->get();
+        }
         $currentYear = Carbon::now()->year;
         $years = range($currentYear, $currentYear + 10);
         return view('auth.admin.management_system.assign_event', [

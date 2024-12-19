@@ -73,4 +73,9 @@ class Team extends Model
         return $this->belongsToMany(Event::class, 'pvt_event_teams', 'team_id', 'event_id')
             ->where('type', 'AP');
     }
+
+    public function pvtEventTeams()
+    {
+        return $this->hasMany(PvtEventTeam::class, 'team_id');
+    }
 }

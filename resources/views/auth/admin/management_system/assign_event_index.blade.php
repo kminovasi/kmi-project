@@ -71,7 +71,7 @@
         </div>
         <div class="card card-header-actions mb-4">
             <div class="card-header">
-                @if (Auth::user()->role == 'Superadmin')
+                @if (Auth::user()->role == 'Superadmin' ||Auth::user()->role == 'Admin'  )
                     <a class="btn btn-sm btn-primary text-white"
                         href="{{ route('management-system.assign.event.create') }}">
                         <i class="me-1" data-feather="plus"></i>

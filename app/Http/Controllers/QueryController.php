@@ -2005,11 +2005,20 @@ class QueryController extends Controller
     }
     public function get_event(Request $request)
     {
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
+
         try {
-            $data_row = Event::orderBy('id', 'desc') // newest events first
-                ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END")
-                ->get();
-            //
+            $data_row = Event::orderBy('id', 'desc')
+                ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END");
+
+            // Jika user bukan Superadmin, filter berdasarkan company_code
+            if (!$isSuperadmin) {
+                $data_row->where('company_code', $company_code);
+            }
+
+            $data_row = $data_row->get();
+
             $dataTable = DataTables::of($data_row);
             $rawColumns = [];
 
@@ -2020,7 +2029,6 @@ class QueryController extends Controller
                     ->select('company_name')
                     ->get()
                     ->toArray();
-
 
                 $company = array_column($list_company, 'company_name');
                 $company_name = implode(",  ", $company);
@@ -2063,6 +2071,7 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
 
     public function get_fix_assessment(Request $request)
     {

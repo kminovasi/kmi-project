@@ -9,8 +9,8 @@
 @endpush
 
 @section('content')
+<x-header-content title="Daftar Event"></x-header-content>
     <div class="container mt-4">
-        <h1 class="mb-4">Daftar Event</h1>
         <div class="card">
             <div class="card-body">
                 <table id="eventsTable" class="table table-striped">

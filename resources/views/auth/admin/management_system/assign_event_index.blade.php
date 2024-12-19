@@ -112,7 +112,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="upCompany" class="form-label fw-semibold">Pilih Perusahaan</label>
-                            <select class="form-select" id="upCompany" name="company_code">
+                            <select class="form-select" id="upCompany" name="company_code" disabled="{{ Auth::user()->role == 'Superadmin' ? '' : 'disabled' }}">
                                 @foreach ($datas_company as $cp)
                                     <option value="{{ $cp->company_code }}">{{ $cp->company_name }}</option>
                                 @endforeach
@@ -266,7 +266,6 @@
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
                 document.getElementById("upEventName").value = response[0].event_name;
                 document.getElementById("upStatus").value = response[0].status;
                 document.getElementById("upStartDate").value = response[0].date_start;

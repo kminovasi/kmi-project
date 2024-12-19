@@ -46,6 +46,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\UserManagement;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\MetodologiPaperController;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -274,6 +275,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/destroy/{id}', [UserManagementController::class, 'destroy'])->name('destroy');
             Route::get('/show/{id}', [UserManagementController::class, 'show'])->name('show');
         });
+        Route::resource('metodologi_papers', MetodologiPaperController::class)->middleware('auth');
 
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
@@ -398,6 +400,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/realisasiKaryawanChart', [ChartDashboardController::class, 'realisasiKaryawanChart'])->name('realisasiKaryawanChart');
         Route::get('/benefitTeamChart', [ChartDashboardController::class, 'benefitTeamChart'])->name('benefitTeamChart');
     });
+
+
 });
 
 Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(function () {

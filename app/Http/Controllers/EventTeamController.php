@@ -258,9 +258,19 @@ class EventTeamController extends Controller
 
     public function showCheckPaper($id, $eventId)
     {
-        $paper = Paper::with('team')->findOrFail($id);
-        return view('event-team.check-paper', compact('paper', 'eventId'));
+        $paper = Paper::with([
+            'team',
+            'team.pvtMembers.user' // Ambil data anggota tim beserta user terkait
+        ])->findOrFail($id);
+
+        // Pisahkan anggota berdasarkan status
+        $facilitator = $paper->team->pvtMembers->firstWhere('status', 'facilitator');
+        $leader = $paper->team->pvtMembers->firstWhere('status', 'leader');
+        $members = $paper->team->pvtMembers->whereNotIn('status', ['facilitator', 'leader']);
+
+        return view('event-team.check-paper', compact('paper', 'eventId', 'facilitator', 'leader', 'members'));
     }
+
     public function updatePaperStatus(Request $request, $id, $eventId)
     {
         $paper = Paper::findOrFail($id);

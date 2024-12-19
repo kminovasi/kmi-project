@@ -73,6 +73,12 @@
                                     <p class="form-control-plaintext">{{ $paper->team->team_name }}</p>
                                 </div>
                                 <div class="mb-3">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailTeamMember">
+                                        Detail Team Member
+                                    </button>
+
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label fw-bold">Innovation Title</label>
                                     <p class="form-control-plaintext">{{ $paper->innovation_title }}</p>
                                 </div>
@@ -230,6 +236,76 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="detailTeamMember" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle"
+    aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {{-- <h5 class="modal-title" id="detailTeamMemberTitle">Detail Team Member</h5> --}}
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 mb-3">
+                            <!-- Detail Team -->
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h5 class="m-0">Detail Team</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="modal-card-form">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="facilitator">Fasilitator</label>
+                                            <input class="form-control form-control-lg" id="facilitator" type="text"
+                                                value="{{ $facilitator->user->name ?? 'Tidak ada' }}" readonly />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="leader">Leader</label>
+                                            <input class="form-control form-control-lg" id="leader" type="text"
+                                                value="{{ $leader->user->name ?? 'Tidak ada' }}" readonly />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Foto Tim -->
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h5 class="m-0">Foto Tim</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <img src="{{ asset('storage/'.$paper->proof_idea) ?? '' }}" id="idFotoTim" alt="Foto Tim"
+                                        class="img-fluid rounded-3 shadow-sm" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="card shadow-sm mb-3">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h5 class="m-0">Anggota Tim</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        @foreach ($members as $member)
+                                            <li class="list-group-item">
+                                                {{ $member->user->name ?? 'Tidak diketahui' }}
+                                                <span class="badge bg-secondary">{{ $member->status }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

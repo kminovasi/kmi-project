@@ -310,6 +310,7 @@
             </div>
         </div>
     </div>
+    @if($isSuperadmin || $isAdmin)
     <div class="col-lg-6 col-xl-4 mb-4">
         <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
@@ -336,4 +337,5 @@
             </div>
         </div>
     </div>
+    @endif
 </div>

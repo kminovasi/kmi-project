@@ -88,8 +88,11 @@ class SessionController extends Controller
                 'username' => __('auth.failed'),
             ]);
         }
+        if ($user->role === 'Admin' || $user->role === 'Superadmin') {
+            return redirect()->intended('dashboard');
+        }
 
-        return redirect()->intended('dashboard');
+        return redirect()->route('homepage');
     }
 
     public function logout(Request $request)

@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Dashboard;
 
+use Auth;
 use Illuminate\View\Component;
 use Log;
 
@@ -71,6 +72,11 @@ class Card extends Component
      */
     public function render()
     {
-        return view('components.dashboard.card');
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $isAdmin = Auth::user()->role === 'Admin';
+        return view('components.dashboard.card', [
+            'isSuperadmin' => $isSuperadmin,
+            'isAdmin' => $isAdmin,
+        ]);
     }
 }

@@ -40,6 +40,7 @@ use App\Http\Controllers\BodEventController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
+use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SummaryExecutiveController;
@@ -68,7 +69,7 @@ Route::post('/logout', [SessionController::class, 'logout'])->name('logout')->mi
 Route::get('dashboard', [
     DashboardController::class,
     'showDashboard'
-])->name('dashboard')->middleware(['auth']);
+])->name('dashboard')->middleware(['role:Superadmin,Admin'], 'auth');
 
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
@@ -431,6 +432,8 @@ Route::get('/ck5', function () {
 Route::get('/', function () {
     return view('homepage');
 })->name('homepage');
+
+Route::get('/dashboard-innovator', [InnovatorDashboard::class, 'index'])->name('dashboard-innovator')->middleware('auth');
 
 Route::get('/news', function () {
     return view('news');

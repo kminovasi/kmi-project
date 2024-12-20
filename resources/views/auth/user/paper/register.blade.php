@@ -81,25 +81,22 @@
                                 <h6 class="small mb-1">Kategori</h6>
                                 <select class="form-select" aria-label="Default select example" name="category"
                                     id="id_category" value="{{ old('category') }}" placeholder="Pilih Kategori Inovasi Anda"
-                                    onChange="addRow(this)" required>
+                                    required onchange="addRow(this)">
                                     <!-- <option selected disabled>Select a category :</option>
-                                                                                    @foreach ($datas_category as $row)
+                                                                                            @foreach ($datas_category as $row)
     <option value="{{ $row->id }}">{{ $row->category_name }}</option>
     @endforeach -->
                                 </select>
                             </div>
-                            <input type="hidden" name="status_lomba" value="AP">
 
-                            {{-- <div class="mb-4">
-                                <h6 class="small mb-1">Event</h6>
-                                <select class="form-select" aria-label="Default select example" name="status_lomba"
-                                    id="chooseEvent" value="{{ old('event') }}" placeholder="Pilih Kategori Inovasi Anda"
-                                    onChange="changeStatusLomba(this)" required>
-                                    <option value="AP"> Event Internal</option>
-                                    <option value="group"> Event Group</option>
+
+                            <input type="hidden" name="status_lomba" value="AP">
+                            <div class="mb-4">
+                                <h6 class="small mb-1">Metodologi Makalah</h6>
+                                <select class="form-select" name="metodologi_paper_id" id="id_metodologi_paper" required">
+                                    <!-- Select2 akan mengisi opsi ini melalui AJAX -->
                                 </select>
-                            </div> --}}
-                            <!-- <input name="status_lomba" id="status_lomba" type="text" hidden> -->
+                            </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Ketua Tim</h6>
                                 <select class="form-select" aria-label="Default select example" name="leader"
@@ -125,8 +122,8 @@
                             </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Unit</h6>
-                                <input class="form-control form-control-solid" name="" id="unit" type="text"
-                                    value="{{ old('') }}" readonly required />
+                                <input class="form-control form-control-solid" name="" id="unit"
+                                    type="text" value="{{ old('') }}" readonly required />
                             </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Departemen</h6>
@@ -153,7 +150,7 @@
                                 <select class="form-select" aria-label="Default select example" name="theme"
                                     id="id_theme" value="{{ old('theme') }}" required>
                                     <!-- <option selected disabled>Select a theme :</option>
-                                                    @foreach ($datas_theme as $row)
+                                                            @foreach ($datas_theme as $row)
     <option value="{{ $row->id }}">{{ $row->theme_name }}</option>
     @endforeach -->
                                 </select>
@@ -317,6 +314,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             select2s('id_category');
             select2s('id_theme');
+            select2s('id_metodologi_paper');
             search_select2('id_leader');
             search_facilitator('id_fasil');
         });
@@ -372,15 +370,18 @@
         function addRow(element) {
             var anggota_array = document.querySelectorAll('select[name="anggota[]"]');
             var anggota_selectField_count = anggota_array.length;
-            var value = element.value;
             jumlah = 0;
-            if (value == 8 || value == 9) {
-                jumlah = 1
-            } else if (value != 0) {
-                console.log(value);
-                jumlah = 4
-            }
-            // console.log(anggota_selectField_count)
+            $('#id_metodologi_paper').on('select2:select', function(e) {
+                var selectedData = e.params.data;
+                console.log('Selected Max User:', selectedData.max_user);
+                jumlah = selectedData.max_user;
+            });
+            // if (value == 8 || value == 9) {
+            //     jumlah = 1
+            // } else if (value != 0) {
+            //     console.log(value);
+            //     jumlah = 4
+            // }
             if (anggota_selectField_count < jumlah)
                 addInputRow(jumlah - anggota_selectField_count, anggota_selectField_count)
             else if (anggota_selectField_count > jumlah)
@@ -389,18 +390,20 @@
 
         // fungsi mengurangi row select field
         function removeInputRow(jumlah, jumlah_yg_ada) {
-            for (var i = jumlah_yg_ada; i > jumlah_yg_ada - jumlah; i--) {
-                var div_input_row = document.getElementById("id_anggota_row_" + i);
+    console.log("Jumlah yang dihapus:", jumlah, "Jumlah yang ada:", jumlah_yg_ada);
 
-                // var parentElement = selectField.parentNode;
-
-                div_input_row.remove();
-            }
+    // Hapus elemen dari indeks terakhir ke awal
+    for (var i = jumlah_yg_ada; i > jumlah_yg_ada - jumlah; i--) {
+        var div_input_row = document.getElementById(`id_anggota_row_${i}`);
+        if (div_input_row) {
+            div_input_row.remove();
+        } else {
+            console.error(`Elemen dengan ID id_anggota_row_${i} tidak ditemukan.`);
         }
-
+    }
+}
         // fungsi menambah row select field
         function addInputRow(jumlah, jumlah_yg_ada) {
-            // div_anggota = document.getElementById('anggota')
             for (var i = jumlah_yg_ada; i < jumlah + jumlah_yg_ada; i++) {
                 const div_input_anggota_field = `
                     <div class="mb-3" id="id_anggota_row_${(i + 1)}">
@@ -412,11 +415,6 @@
                 addSelect(`id_anggota_row_${(i + 1)}`);
 
             }
-
-            // for (var i = jumlah_yg_ada; i < jumlah + jumlah_yg_ada; i++) {
-            //     search_select2(`id_anggota_${(i + 1)}`);
-            //     // console.log('ini dari addInputRow ' + `id_anggota_${(i + 1)}`)
-            // }
         }
 
         async function addSelect(id) {
@@ -609,5 +607,56 @@
         // function changeStatusLomba(elemen){
         //     document.getElementById('status_lomba').value = (elemen.value == 8) ? "group" : "AP"
         // }
+        $(document).ready(function() {
+            $('#id_metodologi_paper').select2({
+                width: '100%',
+                placeholder: 'Pilih Metodologi Paper',
+                ajax: {
+                    url: '{{ route('query.metodologi_papers') }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.name,
+                                    max_user: item.max_user
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            // Event listener untuk mengatur jumlah form anggota
+            $('#id_metodologi_paper').on('select2:select', function(e) {
+                var selectedData = e.params.data;
+                var maxUser = selectedData.max_user;
+
+                console.log('Selected Max User:', maxUser);
+
+                // Hitung jumlah elemen anggota yang ada
+                var anggotaArray = document.querySelectorAll('select[name="anggota[]"]');
+                var anggotaCount = anggotaArray.length;
+                console.log('Current Anggota Count:', anggotaCount);
+
+                // Tambah atau hapus form anggota sesuai kebutuhan
+                if (anggotaCount < maxUser) {
+                    addInputRow(maxUser - anggotaCount, anggotaCount);
+                } else if (anggotaCount > maxUser) {
+                    removeInputRow(Math.abs(maxUser - anggotaCount), anggotaCount);
+
+                }
+
+            });
+        });
     </script>
 @endpush

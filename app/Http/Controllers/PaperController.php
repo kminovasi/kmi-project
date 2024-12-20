@@ -39,6 +39,7 @@ use Illuminate\Validation\Rules\File;
 use App\Http\Requests\updateTeamPaperRequests;
 use App\Models\History;
 use App\Models\Judge;
+use App\Models\MetodologiPaper;
 use App\Notifications\PaperNotification;
 use App\Notifications\EmailNotification;
 use Mpdf\Mpdf;
@@ -118,7 +119,6 @@ class PaperController extends Controller
      */
     public function registerTeam(Request $request)
     {
-        //
         $datas_category = Category::all();
         $datas_theme = Theme::all();
         $datas_event = Event::all();
@@ -246,10 +246,8 @@ class PaperController extends Controller
      */
     public function store(Team $newTeam, registerRequests $request)
     {
-        //dd($request->all());
         try {
             $now = Carbon::now();
-
             // Memulai transaksi
             DB::beginTransaction();
 
@@ -262,7 +260,8 @@ class PaperController extends Controller
                 // 'event_id' => $request->input('event'),
                 'phone_number' => $request->input('phone_number'),
                 'status_lomba' => $request->input('status_lomba'),
-                'inovasi_lokasi' => $request->input('inovasi_lokasi')
+                'inovasi_lokasi' => $request->input('inovasi_lokasi'),
+
             ]);
 
             History::create([
@@ -270,8 +269,8 @@ class PaperController extends Controller
                 'activity' => "Team " . $newTeam->team_name . " created",
                 'status' => 'created'
             ]);
-
-            if (strpos(Category::where('id', $request->category)->pluck('category_name')[0], "GKM") !== false) {
+            $step = MetodologiPaper::where('id', $request->input('metodologi_paper_id'))->pluck('step')[0];
+            if ($step <=8) {
 
                 Paper::create([
                     'innovation_title' => $request->input('innovation_title'),
@@ -295,6 +294,7 @@ class PaperController extends Controller
                         Str::slug(pathinfo($request->file('innovation_photo')->getClientOriginalName(), PATHINFO_FILENAME)) . "." . $request->file('innovation_photo')->getClientOriginalExtension(),
                         'public'
                     ),
+                    'metodologi_paper_id' => $request->input('metodologi_paper_id'),
                 ]);
             } else {
                 // dd($request->input('inovasi_lokasi'));
@@ -321,6 +321,7 @@ class PaperController extends Controller
                         Str::slug(pathinfo($request->file('innovation_photo')->getClientOriginalName(), PATHINFO_FILENAME)) . "." . $request->file('innovation_photo')->getClientOriginalExtension(),
                         'public'
                     ),
+                    'metodologi_paper_id' => $request->input('metodologi_paper_id'),
                 ]);
             }
 

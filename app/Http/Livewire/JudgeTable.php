@@ -38,6 +38,21 @@ class JudgeTable extends Component
         $this->resetPage();
     }
 
+    public function updateStatus($id)
+    {
+
+        $judge = Judge::findOrFail($id);
+
+        if ($judge->status == 'active') {
+            $judge->status = 'nonactive';
+        } else {
+            $judge->status = 'active';
+        }
+
+        $judge->save();
+
+    }
+
     public function render()
     {
         $query = Judge::with('event')

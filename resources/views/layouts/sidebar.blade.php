@@ -86,6 +86,11 @@
                             <a class="nav-link {{ request()->routeIs('management-system.team.category.index') ? 'active' : '' }}"
                                 href="{{ route('management-system.team.category.index') }}">Category Role</a>
                             @if (Auth::user()->role == 'Superadmin')
+                                <a class="nav-link {{ request()->routeIs('management-system.metodologi_papers.index') ? 'active' : '' }}"
+                                    href="{{ route('management-system.metodologi_papers.index') }}">
+                                    Metodologi Makalah</a>
+                            @endif
+                            @if (Auth::user()->role == 'Superadmin')
                                 <a class="nav-link {{ request()->routeIs('management-system.assessment-matrix.index') ? 'active' : '' }}"
                                     href="{{ route('management-system.assessment-matrix.index') }}">Matriks
                                     Penilaian</a>

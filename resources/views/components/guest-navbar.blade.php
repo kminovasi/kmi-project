@@ -25,9 +25,14 @@
                         <a class="nav-link {{ request()->routeIs('post.list') ? 'active' : '' }}" href="{{ route('post.list') }}">Berita</a>
                     </li>
                     @if (Auth::user())
-                        <li class="nav-item">
-                            <a class=" nav-link text-color-main {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                        </li>
+                        @if (Auth::user()->role == 'admin' || Auth::user()->role == 'Superadmin')
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                            </li>
+                            @else
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('homepage') ? 'active' : '' }}" href="{{ route('dashboard-innovator') }}">Beranda</a>
+                        @endif
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="post">
                                 @csrf

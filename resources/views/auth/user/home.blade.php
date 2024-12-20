@@ -49,13 +49,20 @@
             <!-- Main Dashboard Content -->
             <div class="row"> <!-- Added g-4 for better gap spacing -->
                 <!-- Left Column - Innovation Data -->
-                <div class="col-12 col-lg-7 dashboard-section">
+                <div class="col-12 col-lg-6 col-md-8 col-sm-10 dashboard-section">
                     <!-- Innovation Cards -->
                     <div class="mb-4">
-                        <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
-                            :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
-                            :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale" :total-innovators-female="$totalInnovatorsFemale"
-                            :total-active-events="$totalActiveEvents" />
+                        <div class="card">
+                            <div class="card-header bg-gradient-primary ">
+                                <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Tersubmit </h5>
+                            </div>
+                            <div class="p-3">
+                            <x-dashboard.card :breakthrough-innovation="$breakthroughInnovation" :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement" :incremental-innovation="$incrementalInnovation" :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
+                                :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice" :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant" :idea-box="$ideaBox" :detail-idea-box-idea="$detailIdeaBoxIdea" :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
+                                :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP" :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
+                                :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" />
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Innovation Status Total -->
@@ -69,17 +76,17 @@
                             <x-dashboard.internal.total-team-card />
                         @endif
                     </div>
-                    <div class="mt-3">
-                        <x-dashboard.total-financial-benefit-card />
-                    </div>
                 </div>
 
                 <!-- Right Column - Benefits -->
-                <div class="col-12 col-lg-5 dashboard-section">
+                <div class="col-12 col-lg-6 col-md-8 dashboard-section">
                     <!-- Benefit Section -->
                     <div class="mb-4">
                         <h4 class="mb-3">Akumulasi Total benefit</h4>
                         <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    </div>
+                    <div class="mb-3">
+                        <x-dashboard.total-financial-benefit-card />
                     </div>
 
                     <!-- Total Value Custom Benefit -->

@@ -9,8 +9,8 @@
 @endpush
 
 @section('content')
+<x-header-content title="Daftar Event"></x-header-content>
     <div class="container mt-4">
-        <h1 class="mb-4">Daftar Event</h1>
         <div class="card">
             <div class="card-body">
                 <table id="eventsTable" class="table table-striped">
@@ -47,6 +47,10 @@
                                         class="btn btn-sm btn-info">
                                         <i class="bi bi-bar-chart"></i> Statistik
                                     </a>
+                                    <a href="{{ route('event-team.show', $event->id) }}"
+                                        class="btn btn-sm text-white" style="background-color: #eb4a3a">
+                                        <i class="bi bi-bar-chart"></i> List Team
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -54,6 +58,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 @endsection
 

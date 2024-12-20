@@ -66,7 +66,7 @@ class BenefitController extends Controller
         } else {
             $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
                 ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
-                ->whereIn('status', ['member', 'leader', 'facilitator']) // Atau status lain yang menunjukkan pemilik benefit
+                ->whereIn('status', ['member', 'leader']) // Atau status lain yang menunjukkan pemilik benefit
                 ->exists(); // Gunakan exists() untuk cek keberadaan pemilik benefit
         }
 

@@ -26,6 +26,7 @@ class Paper extends Model
         'file_review',
         'non_financial',
         'team_id',
+        'metodologi_paper_id', // new column
         'abstract',
         'problem',
         // 'problem_impact',
@@ -147,5 +148,10 @@ class Paper extends Model
     public function customBenefits()
     {
         return $this->hasMany(PvtCustomBenefit::class);
+    }
+
+    public function metodologiPaper()
+    {
+        return $this->belongsTo(MetodologiPaper::class);
     }
 }

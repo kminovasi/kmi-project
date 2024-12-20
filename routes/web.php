@@ -156,6 +156,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/get_role', [QueryController::class, 'get_role'])->name('get_role');
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');
+        Route::get('/metodologi_papers', [QueryController::class, 'getMetodologiPapers'])->name('metodologi_papers');
+
 
         Route::get('/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
 

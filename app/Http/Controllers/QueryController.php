@@ -22,6 +22,7 @@ use App\Models\PvtEventTeam;
 use App\Models\Judge;
 use App\Models\BodEvent;
 use App\Models\BeritaAcara;
+use App\Models\MetodologiPaper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -339,6 +340,7 @@ class QueryController extends Controller
                 'file_review',
                 'potential_benefit',
                 'papers.status',
+                'papers.metodologi_paper_id',
                 'papers.status_rollback',
                 DB::raw("CASE
                             WHEN SUBSTRING(step_1, 1, 1) = 'w' THEN 3
@@ -402,7 +404,8 @@ class QueryController extends Controller
                 'papers.step_6 as step__initial',
                 'papers.step_2 as step_2_initial',
                 'papers.step_8 as step_8_initial',
-                'papers.status as paper_status'
+                'papers.status as paper_status',
+
             ];
             if ($request->filterRole == 'admin') {
                 $query_data->where('companies.company_code', $request->filterCompany);
@@ -562,18 +565,10 @@ class QueryController extends Controller
             });
 
             $jumlah_step = 8;
-
             for ($i = 1; $i <= $jumlah_step; $i++) {
                 $dataTable->addColumn('step_' . $i, function ($data_row) use ($i) {
-                    // if(!(strpos($data_row->category_name, "GKM") !== false) && $i == 8){
-                    //         return '-';
-                    // }
-
-                    if ($data_row->{"step_" . $i} == 4 && $i == 8) {
-                        return '-';
-                    }
-
                     $html = '';
+
                     if ($data_row->{"step_" . $i} == 0) {
                         $html .= "<a class=\"btn btn-primary btn-xs\" href=\" " . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . "\">Add</a>";
                         $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'step_' . $i . '\' )" >Upload</button>';
@@ -594,6 +589,7 @@ class QueryController extends Controller
                 $rawColumns[] = 'step_' . $i;
             }
 
+
             $dataTable->rawColumns($rawColumns);
             return $dataTable->addIndexColumn()->toJson();
         } catch (Exception $e) {
@@ -611,7 +607,6 @@ class QueryController extends Controller
                 ->get();
 
             $data_anggotas = PvtMember::where('team_id', $request->team_id)->get();
-            Log::debug($data_anggotas);
 
             $data_karyawan = [];
             foreach ($data_anggotas as $data_anggota) {
@@ -2694,4 +2689,19 @@ class QueryController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getMetodologiPapers(Request $request)
+{
+    $search = $request->input('search');
+    $query = MetodologiPaper::query();
+
+    if (!empty($search)) {
+        $query->where('name', 'LIKE', "%{$search}%");
+    }
+
+    $results = $query->select('id', 'name', 'max_user')->limit(100)->get();
+
+    return response()->json($results);
+}
+
 }

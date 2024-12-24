@@ -21,6 +21,11 @@ class InnovatorDashboard extends Controller
         $teamIds = PvtMember::where('employee_id', $user->employee_id)->pluck('team_id');
         $teams = Team::with(['paper', 'pvtEventTeams.event'])->whereIn('id', $teamIds)->get();
 
-        return view('innovator.dashboard.index', compact('user', 'teams'));
+        // Memuat event aktif yang sedang diikuti
+        $activeEvents = Event::whereHas('pvtEventTeams', function ($query) use ($teamIds) {
+            $query->whereIn('team_id', $teamIds);
+        })->where('status', 'active')->get();
+
+        return view('innovator.dashboard.index', compact('user', 'teams', 'activeEvents'));
     }
 }

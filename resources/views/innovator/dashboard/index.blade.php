@@ -22,6 +22,7 @@
 
         <!-- Bagian Tim dan Paper -->
         <div class="col-lg-8">
+            <x-dashboard.innovator.schedule-event :activeEvents="$activeEvents" />
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">Tim & Paper Anda</h5>

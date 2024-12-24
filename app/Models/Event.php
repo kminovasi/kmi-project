@@ -56,4 +56,9 @@ class Event extends Model
             'team_id'       // Foreign key di PvtEventTeam yang menunjuk ke Team
         );
     }
+
+    public function timelines()
+    {
+        return $this->hasMany(Timeline::class, 'event_id', 'id');
+    }
 }

@@ -7,7 +7,10 @@
     @include('homepage.hero-section')
 
     {{-- Info Section --}}
-    @include('homepage.info-section')
+    {{-- @include('homepage.info-section') --}}
+
+    {{-- news section --}}
+    @include('homepage.news-section')
 
     {{-- Content Section --}}
     @include('homepage.content-section')
@@ -17,9 +20,6 @@
 
     {{-- Call to Action --}}
     @include('homepage.cta-section')
-
-    {{-- news section --}}
-    @include('homepage.news-section')
 
     {{-- FAQ --}}
     @include('homepage.faq-section')

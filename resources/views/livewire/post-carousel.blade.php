@@ -16,8 +16,8 @@
                     @foreach ($posts as $post )
                     <div class="item">
                         <div class="p-2 border rounded-2">
-                            <img class="img-fluid rounded-2" src="{{ '/storage/' . $post->cover_image }}"
-                                alt="post image">
+                            <img class="img-fluid rounded-2" src="{{ asset('storage/' . $post->cover_image) }}"
+                                alt="post image" style="width: 100%; height: auto; aspect-ratio: 4 / 3;">
                             <div class="p-2">
                                 <a href="{{ route('post.show', $post->slug) }}" class="text-decoration-none text-dark"><h4>{{ $post->title }}</h4></a>
                                 <small class="text-muted">{{ $post->created_at->diffForHumans() }}</small>

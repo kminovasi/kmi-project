@@ -3,10 +3,10 @@
 
 @section('content')
 
-<section class="hero-section text-white text-center d-flex align-items-center" style="background-color: #a00000;
+<section class="text-white text-center d-flex align-items-center" style="background-color: #a00000;
            background-size: cover;
            background-position: center;
-           height: 60vh;">
+           height: 50vh;">
     <div class="container">
         <div class="hero-content">
             <h1 class="display-4 fw-bold">Post</h1>
@@ -35,5 +35,4 @@
         </div>
     </div>
 </div>
-
 @endsection

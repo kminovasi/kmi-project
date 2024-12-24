@@ -21,12 +21,20 @@
                 </a>
                 <!-- Sidenav Menu Heading (Core)-->
                 <div class="sidenav-menu-heading text-white">activity</div>
-                <!-- Sidenav Accordion (Dashboard)-->
-                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                    href="{{ route('dashboard') }}" aria-expanded="false">
+                @if (auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Admin')
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                        href="{{ route('dashboard') }}" aria-expanded="false">
+                        <div class="nav-link-icon"><i data-feather="sliders"></i></div>
+                        Dashboards
+                    </a>
+                @else
+                <a class="nav-link {{ request()->routeIs('dashboard-innovator') ? 'active' : '' }}"
+                    href="{{ route('dashboard-innovator') }}" aria-expanded="false">
                     <div class="nav-link-icon"><i data-feather="sliders"></i></div>
                     Dashboards
                 </a>
+                @endif
+                <!-- Sidenav Accordion (Dashboard)-->
                 <a class="nav-link {{ request()->routeIs('paper.index') ? 'active' : '' }}"
                     href="{{ route('paper.index') }}">
                     <div class="nav-link-icon"><i data-feather="clipboard"></i></div>

@@ -1,3 +1,0 @@
-qrcode[pil]
-reportlab
-PyPDF2

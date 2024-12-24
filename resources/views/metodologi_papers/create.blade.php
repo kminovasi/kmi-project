@@ -27,7 +27,14 @@
                         </div>
                         <div class="form-group">
                             <label for="step">Langkah:</label>
-                            <input type="number" name="step" class="form-control" placeholder="Langkah">
+                            <div>
+                                <input type="radio" id="step7" name="step" value="7">
+                                <label for="step7">7</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="step8" name="step" value="8">
+                                <label for="step8">8</label>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="max_user">Maksimal Pengguna:</label>

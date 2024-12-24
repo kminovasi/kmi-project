@@ -28,7 +28,7 @@ use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
-use App\Http\Controllers\TimelineContoller;
+use App\Http\Controllers\TimelineController;
 use App\Models\Evidence;
 use App\Models\Flyer;
 use App\Models\Timeline;
@@ -363,7 +363,7 @@ Route::middleware('auth')->group(function () {
 
 
         //Rute Timeline
-        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy', 'activate']);
+        Route::resource('timeline', TimelineController::class);
     });
 
 

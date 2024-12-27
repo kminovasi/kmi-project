@@ -28,7 +28,7 @@ use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
-use App\Http\Controllers\TimelineContoller;
+use App\Http\Controllers\TimelineController;
 use App\Models\Evidence;
 use App\Models\Flyer;
 use App\Models\Timeline;
@@ -40,11 +40,13 @@ use App\Http\Controllers\BodEventController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\GroupEventController;
+use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\UserManagement;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\MetodologiPaperController;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -68,7 +70,7 @@ Route::post('/logout', [SessionController::class, 'logout'])->name('logout')->mi
 Route::get('dashboard', [
     DashboardController::class,
     'showDashboard'
-])->name('dashboard')->middleware(['auth']);
+])->name('dashboard')->middleware(['role:Superadmin,Admin'], 'auth');
 
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
@@ -154,6 +156,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/get_role', [QueryController::class, 'get_role'])->name('get_role');
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');
+        Route::get('/metodologi_papers', [QueryController::class, 'getMetodologiPapers'])->name('metodologi_papers');
+
 
         Route::get('/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
 
@@ -273,6 +277,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/destroy/{id}', [UserManagementController::class, 'destroy'])->name('destroy');
             Route::get('/show/{id}', [UserManagementController::class, 'show'])->name('show');
         });
+        Route::resource('metodologi_papers', MetodologiPaperController::class)->middleware('auth');
 
         Route::get('/juri', [JuriController::class, 'index'])->name('juri');
         Route::get('/juri-create', [JuriController::class, 'create'])->name('juri-create');
@@ -358,7 +363,7 @@ Route::middleware('auth')->group(function () {
 
 
         //Rute Timeline
-        Route::resource('timeline', TimelineContoller::class)->only(['index', 'store', 'destroy', 'activate']);
+        Route::resource('timeline', TimelineController::class);
     });
 
 
@@ -397,6 +402,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/realisasiKaryawanChart', [ChartDashboardController::class, 'realisasiKaryawanChart'])->name('realisasiKaryawanChart');
         Route::get('/benefitTeamChart', [ChartDashboardController::class, 'benefitTeamChart'])->name('benefitTeamChart');
     });
+
+
 });
 
 Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(function () {
@@ -431,6 +438,8 @@ Route::get('/ck5', function () {
 Route::get('/', function () {
     return view('homepage');
 })->name('homepage');
+
+Route::get('/dashboard-innovator', [InnovatorDashboard::class, 'index'])->name('dashboard-innovator')->middleware('auth');
 
 Route::get('/news', function () {
     return view('news');

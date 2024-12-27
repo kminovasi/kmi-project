@@ -91,18 +91,18 @@
             }
         </style>
     @endpush
-    <div class="col-lg-6 col-xl-4 mb-4">
+    <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-gradient-primary text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
-                        <div class="text-white-75 small mb-1">Total Inovasi</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $breakthroughInnovation + $incrementalInnovation }}
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-rocket fa-xl text-white"></i>
+                        <i class="fa-solid fa-rocket fa-xl text-white" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
@@ -188,24 +188,24 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6 col-xl-4 mb-4">
+    <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-gradient-warning text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="text-white-75 small mb-1">Total IDE</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total IDE</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
                             <small class="ms-2">(Ide)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-lightbulb fa-xl text-white"></i>
+                        <i class="fa-solid fa-lightbulb fa-xl text-white" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
@@ -243,88 +243,44 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6 col-xl-4 mb-4">
+    <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-teal text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="text-white-75 small mb-2">
-                            Total Innovator
-                        </div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovators }}
                             <small class="ms-2">(Orang)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fas fa-people-group"></i>
+                        <i class="fas fa-people-group" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-6 col-xl-4 mb-4">
-        <div class="card bg-purple text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3 flex-grow-1">
-                        <div class="text-white-75 small mb-2">
-                            Total Innovator Laki-laki
-                        </div>
-                        <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $totalInnovatorsMale }}
-                            <small class="ms-2">(Orang)</small>
-                        </div>
-                    </div>
-                    <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-mars fa-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 col-xl-4 mb-4">
-        <div class="card bg-pink text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3 flex-grow-1">
-                        <div class="text-white-75 small mb-2">
-                            Total Innovator Perempuan
-                        </div>
-                        <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $totalInnovatorsFemale }}
-                            <small class="ms-2">(Orang)</small>
-                        </div>
-                    </div>
-                    <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-venus fa-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-xl-4 mb-4">
+    @if($isSuperadmin || $isAdmin)
+    <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="text-white-75 small mb-2">
-                            Total Event Aktif
-                        </div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Event Aktif</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalActiveEvents }}
                             <small class="ms-2">(Event)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fas fa-calendar-alt fa-xl text-white"></i>
+                        <i class="fas fa-calendar-alt fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
                 </div>
             </div>
@@ -336,4 +292,46 @@
             </div>
         </div>
     </div>
+    @endif
+
+    <div class="col-lg-6 col-xl-5 mb-4">
+        <div class="card bg-purple text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3 flex-grow-1">
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator laki-laki</div>
+                        <div class="text-lg fw-bold d-flex align-items-center">
+                            {{ $totalInnovatorsMale }}
+                            <small class="ms-2">(Orang)</small>
+                        </div>
+                    </div>
+                    <div class="icon-circle bg-white-25 flex-shrink-0">
+                        <i class="fa-solid fa-mars fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-xl-5 mb-4">
+        <div class="card bg-pink text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3 flex-grow-1">
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Perempuan</div>
+                        <div class="text-lg fw-bold d-flex align-items-center">
+                            {{ $totalInnovatorsFemale }}
+                            <small class="ms-2">(Orang)</small>
+                        </div>
+                    </div>
+                    <div class="icon-circle bg-white-25 flex-shrink-0">
+                        <i class="fa-solid fa-venus fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

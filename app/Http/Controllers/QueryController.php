@@ -22,6 +22,7 @@ use App\Models\PvtEventTeam;
 use App\Models\Judge;
 use App\Models\BodEvent;
 use App\Models\BeritaAcara;
+use App\Models\MetodologiPaper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -31,6 +32,7 @@ use App\Models\SummaryExecutive;
 use App\Services\JudgeService;
 use DataTables;
 use Exception;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
@@ -338,6 +340,7 @@ class QueryController extends Controller
                 'file_review',
                 'potential_benefit',
                 'papers.status',
+                'papers.metodologi_paper_id',
                 'papers.status_rollback',
                 DB::raw("CASE
                             WHEN SUBSTRING(step_1, 1, 1) = 'w' THEN 3
@@ -401,7 +404,8 @@ class QueryController extends Controller
                 'papers.step_6 as step__initial',
                 'papers.step_2 as step_2_initial',
                 'papers.step_8 as step_8_initial',
-                'papers.status as paper_status'
+                'papers.status as paper_status',
+
             ];
             if ($request->filterRole == 'admin') {
                 $query_data->where('companies.company_code', $request->filterCompany);
@@ -561,18 +565,10 @@ class QueryController extends Controller
             });
 
             $jumlah_step = 8;
-
             for ($i = 1; $i <= $jumlah_step; $i++) {
                 $dataTable->addColumn('step_' . $i, function ($data_row) use ($i) {
-                    // if(!(strpos($data_row->category_name, "GKM") !== false) && $i == 8){
-                    //         return '-';
-                    // }
-
-                    if ($data_row->{"step_" . $i} == 4 && $i == 8) {
-                        return '-';
-                    }
-
                     $html = '';
+
                     if ($data_row->{"step_" . $i} == 0) {
                         $html .= "<a class=\"btn btn-primary btn-xs\" href=\" " . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . "\">Add</a>";
                         $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'step_' . $i . '\' )" >Upload</button>';
@@ -593,6 +589,7 @@ class QueryController extends Controller
                 $rawColumns[] = 'step_' . $i;
             }
 
+
             $dataTable->rawColumns($rawColumns);
             return $dataTable->addIndexColumn()->toJson();
         } catch (Exception $e) {
@@ -610,7 +607,6 @@ class QueryController extends Controller
                 ->get();
 
             $data_anggotas = PvtMember::where('team_id', $request->team_id)->get();
-            Log::debug($data_anggotas);
 
             $data_karyawan = [];
             foreach ($data_anggotas as $data_anggota) {
@@ -2004,11 +2000,20 @@ class QueryController extends Controller
     }
     public function get_event(Request $request)
     {
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $company_code = Auth::user()->company_code;
+
         try {
-            $data_row = Event::orderBy('id', 'desc') // newest events first
-                ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END")
-                ->get();
-            //
+            $data_row = Event::orderBy('id', 'desc')
+                ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END");
+
+            // Jika user bukan Superadmin, filter berdasarkan company_code
+            if (!$isSuperadmin) {
+                $data_row->where('company_code', $company_code);
+            }
+
+            $data_row = $data_row->get();
+
             $dataTable = DataTables::of($data_row);
             $rawColumns = [];
 
@@ -2019,7 +2024,6 @@ class QueryController extends Controller
                     ->select('company_name')
                     ->get()
                     ->toArray();
-
 
                 $company = array_column($list_company, 'company_name');
                 $company_name = implode(",  ", $company);
@@ -2062,6 +2066,7 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
 
     public function get_fix_assessment(Request $request)
     {
@@ -2684,4 +2689,19 @@ class QueryController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getMetodologiPapers(Request $request)
+{
+    $search = $request->input('search');
+    $query = MetodologiPaper::query();
+
+    if (!empty($search)) {
+        $query->where('name', 'LIKE', "%{$search}%");
+    }
+
+    $results = $query->select('id', 'name', 'max_user')->limit(100)->get();
+
+    return response()->json($results);
+}
+
 }

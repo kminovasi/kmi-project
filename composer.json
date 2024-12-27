@@ -51,7 +51,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/NumberToWordsHelper.php"
+            "app/Helpers/NumberToWordsHelper.php",
+            "app/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

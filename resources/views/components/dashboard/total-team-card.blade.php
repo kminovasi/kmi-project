@@ -1,7 +1,7 @@
 <div class="card team-card border-0 shadow-lg mt-3">
     <div class="card-header bg-gradient-primary py-3">
         <div class="d-flex align-items-center">
-            <h5 class="card-title mb-0 fw-bold text-white">Total Tim Terdaftar </h5>
+            <h5 class="card-title mb-0 fw-bold text-white">Total Tim Terverifikasi Oleh Pengelola Inovasi </h5>
         </div>
     </div>
     <div class="card-body">

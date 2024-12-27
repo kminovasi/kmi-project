@@ -12,7 +12,6 @@ class Event extends Model
 
     protected $fillable = [
         'event_name',
-        'company_code',
         'date_start',
         'date_end',
         'status',
@@ -24,6 +23,12 @@ class Event extends Model
     {
         return $this->belongsTo(Company::class, 'company_code', 'company_code');
     }
+
+    public function companies()
+{
+    return $this->belongsToMany(Company::class, 'company_event', 'event_id', 'company_id');
+}
+
 
     public function teams()
     {

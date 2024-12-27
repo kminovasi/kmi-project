@@ -2009,7 +2009,9 @@ class QueryController extends Controller
 
             // Jika user bukan Superadmin, filter berdasarkan company_code
             if (!$isSuperadmin) {
-                $data_row->where('company_code', $company_code);
+                $data_row->whereHas('companies', function ($query) use ($company_code) {
+                    $query->where('company_code', $company_code);
+                });
             }
 
             $data_row = $data_row->get();
@@ -2019,15 +2021,9 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Company';
             $dataTable->addColumn('company', function ($data_row) {
-                $idevent = explode(",", $data_row->company_code);
-                $list_company = Company::whereIn('company_code', $idevent)
-                    ->select('company_name')
-                    ->get()
-                    ->toArray();
-
-                $company = array_column($list_company, 'company_name');
-                $company_name = implode(",  ", $company);
-                return $company_name;
+                $companies = $data_row->companies->pluck('company_name')->toArray();
+                $company_name = implode("<br>", $companies); // Use <br> for line breaks
+                return $companies;
             });
 
             $rawColumns[] = 'status';
@@ -2056,7 +2052,6 @@ class QueryController extends Controller
                     <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
             });
-
             $dataTable->rawColumns($rawColumns);
 
             return $dataTable->toJson();

@@ -50,11 +50,23 @@
                     <form action="{{ route('management-system.assign.event.store') }}" method="POST" id="assign-juri-form">
                         @csrf
                         <div class="mb-3">
+                            <label class="form-label" for="type">Event Type</label>
+                            <select class="form-select" id="type" name="type" required onchange="handleEventTypeChange()">
+                                <option value="" selected disabled>Pilih Tipe Event</option>
+                                <option value="AP">Anak Perusahaan</option>
+                                <option value="internal">Internal</option>
+                                <option value="group">Group</option>
+                                <option value="national">National</option>
+                                <option value="international">International</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label" for="selectCompany">Company</label>
                             <select id="selectCompany" class="form-select shadow-sm" name="company_code[]" required>
-                                <option value="" selected disabled>Select a company</option>
+                                <option value="select_all">Select All</option>
                                 @foreach ($datas_company as $cp)
-                                    <option value="{{ $cp->company_code }}">{{ $cp->company_name }}</option>
+                                    <option value="{{ $cp->id }}">{{ $cp->company_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -89,17 +101,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="type">Event Type</label>
-                            <select class="form-select" id="type" name="type" required>
-                                <option value="" selected disabled>Pilih Tipe Event</option>
-                                <option value="AP">Anak Perusahaan</option>
-                                <option value="group">Group</option>
-                                <option value="national">National</option>
-                                <option value="international">International</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
                             <label class="form-label" for="data_description">Description</label>
                             <textarea class="form-control" name="description" id="data_description" rows="5"
                                       placeholder="Masukkan deskripsi event..." required></textarea>
@@ -122,7 +123,6 @@
 
 @endsection
 @push('js')
-    </script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     {{-- <!-- <script src="{{asset('template/dist/js/scripts.js')}}"></script> --> --}}
@@ -139,23 +139,31 @@
             }
         }
 
-        document.getElementById('selectCompany').addEventListener('change', function() {
-            const inputEventName = document.getElementById('inputEventName');
-            const selectedOptions = this.selectedOptions;
-            if (selectedOptions.length > 0) {
-                let companyName = selectedOptions[0].text.replace(/^PT\.?\s*/i, '').trim();
+        function handleEventTypeChange() {
+            const eventType = document.getElementById('type').value;
+            const selectCompany = $('#selectCompany');
 
-                // Jika perusahaan adalah Semen Indonesia
-                if (companyName === 'Semen Indonesia,Tbk' || companyName === 'Semen Indonesia (BUOP Tuban)') {
-                    inputEventName.value = 'SIG INNOVATION AWARD';
-                } else if (companyName === 'Semen Indonesia Logistik') { // Tambahkan kondisi untuk SILOG
-                    inputEventName.value = 'SILOG INNOVATION AWARD';
+            if (eventType) {
+                selectCompany.prop('disabled', false);
+                if (eventType === 'AP') {
+                    selectCompany.prop('multiple', false).select2('destroy');
+                    selectCompany.find('option[value="select_all"]').hide();
                 } else {
-                    let companyInitial = companyName.split(' ').map(word => word[0]).join(
-                        ''); // Ambil huruf pertama
-                    inputEventName.value = `${companyInitial} INNOVATION AWARD`; // Setel nama event
+                    selectCompany.prop('multiple', true).select2();
+                    if (eventType === 'group' || eventType === 'national' || eventType === 'international') {
+                        selectCompany.find('option[value="select_all"]').show();
+                    } else {
+                        selectCompany.find('option[value="select_all"]').hide();
+                    }
                 }
+            } else {
+                selectCompany.prop('disabled', true).select2('destroy');
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            handleEventTypeChange();
         });
+
     </script>
 @endpush

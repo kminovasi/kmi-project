@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('status_lomba', [
                 'AP',
                 'group',
+                'internal',
                 'national',
                 'international',
                 'group, national',

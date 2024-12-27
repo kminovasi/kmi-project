@@ -125,8 +125,18 @@ class GenerateTeamWithPaper extends Command
         ]);
 
         // Membuat folder untuk menyimpan file berdasarkan status lomba dan nama tim
-        $statusLomba = 'AP'; // atau gunakan variabel lain jika ini bisa dinamis
-        $storagePath = "internal/{$statusLomba}/{$teamName}";
+
+        $events = Event::pluck('event_name', 'id')->toArray();
+        $eventName = $this->choice('Pilih event yang akan diikuti:', array_values($events));
+
+        // Cari ID event berdasarkan nama yang dipilih
+        $eventId = array_search($eventName, $events);
+        $eventData = Event::findOrFail($eventId);
+        $eventType = $eventData->type; // atau gunakan variabel lain jika ini bisa dinamis
+        $storagePath = "internal/{$eventType}/{$teamName}";
+        $team->update([
+            'status_lomba' => $eventType
+        ]);
 
         // Pastikan folder tersedia, jika tidak, buat foldernya
         Storage::makeDirectory($storagePath);
@@ -171,11 +181,7 @@ class GenerateTeamWithPaper extends Command
         } else {
             $this->error("File proof idea tidak ditemukan di {$localTestImage}");
         }
-        $events = Event::pluck('event_name', 'id')->toArray();
-        $eventName = $this->choice('Pilih event yang akan diikuti:', array_values($events));
 
-        // Cari ID event berdasarkan nama yang dipilih
-        $eventId = array_search($eventName, $events);
 
 
         // Simpan file paper ke dalam tabel papers

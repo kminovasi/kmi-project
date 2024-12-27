@@ -218,6 +218,13 @@
                         name: 'papers.innovation_title'
                     },
                     {
+                        title: 'Event AP',  // Ubah judul kolom
+                        data: 'ap_events',  // Gunakan nama data baru
+                        name: 'ap_events',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         title: 'Event Internal',  // Ubah judul kolom
                         data: 'internal_events',  // Gunakan nama data baru
                         name: 'internal_events',

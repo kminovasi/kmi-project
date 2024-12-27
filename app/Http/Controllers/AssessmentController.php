@@ -511,7 +511,9 @@ class AssessmentController extends Controller
             $data_event = Event::where('status', '=', 'active')->get();
         } elseif (auth()->user()->role == "Admin") {
             $data_event = Event::where('status', '=', 'active')
-                ->where('company_code', auth()->user()->company_code)
+                ->whereHas('companies', function ($query) {
+                    $query->where('company_code', auth()->user()->company_code);
+                })
                 ->get();
         } elseif (
             auth()->user()->role == "Juri" ||
@@ -546,7 +548,9 @@ class AssessmentController extends Controller
             $data_event = Event::where('status', '=', 'active')->get();
         } elseif (auth()->user()->role == "Admin") {
             $data_event = Event::where('status', '=', 'active')
-                ->where('company_code', auth()->user()->company_code)
+                ->whereHas('companies', function ($query) {
+                    $query->where('company_code', auth()->user()->company_code);
+                })
                 ->get();
         } elseif (auth()->user()->role == "Juri" || $is_judge) {
             $judge_event_id = Judge::where('employee_id', auth()->user()->employee_id)
@@ -1398,9 +1402,10 @@ class AssessmentController extends Controller
                 })
                 ->get();
         } else {
-            // Untuk pengguna lain, filter berdasarkan perusahaan
-            $data_event = Event::where('status', 'active')
-                ->where('company_code', $companyCode)
+            $data_event = Event::where('status', '=', 'active')
+                ->whereHas('companies', function ($query) {
+                    $query->where('company_code', auth()->user()->company_code);
+                })
                 ->get();
         }
 

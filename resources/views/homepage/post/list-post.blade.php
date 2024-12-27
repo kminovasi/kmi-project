@@ -1,9 +1,9 @@
 @extends('layouts.guest')
-@section('title', '{{ $post->title }}')
+@section('title', 'berita')
 
 @section('content')
 
-<section class="text-white text-center d-flex align-items-center" style="background-color: #a00000;
+<section class="hero-section text-white text-center d-flex align-items-center" style="background-color: #a00000;
            background-size: cover;
            background-position: center;
            height: 50vh;">
@@ -36,3 +36,29 @@
     </div>
 </div>
 @endsection
+
+@push('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const navbar = document.getElementById("guest-navbar");
+        const heroSection = document.querySelector(".hero-section");
+
+        window.addEventListener("scroll", function () {
+            const heroHeight = heroSection.offsetHeight;
+            if (window.scrollY > heroHeight) {
+                navbar.classList.remove("bg-transparent");
+                navbar.classList.add("bg-white", "shadow-sm");
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.style.color = '';
+                });
+            } else {
+                navbar.classList.remove("bg-white", "shadow-sm");
+                navbar.classList.add("bg-transparent");
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.style.color = 'white';
+                });
+            }
+        });
+    });
+</script>
+@endpush

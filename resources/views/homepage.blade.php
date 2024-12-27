@@ -25,3 +25,23 @@
     @include('homepage.faq-section')
 
 @endsection
+
+@push('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const navbar = document.getElementById("guest-navbar");
+        const heroSection = document.querySelector(".hero-section");
+
+        window.addEventListener("scroll", function () {
+            const heroHeight = heroSection.offsetHeight;
+            if (window.scrollY > heroHeight) {
+                navbar.classList.remove("bg-transparent");
+                navbar.classList.add("bg-white", "shadow-sm");
+            } else {
+                navbar.classList.remove("bg-white", "shadow-sm");
+                navbar.classList.add("bg-transparent");
+            }
+        });
+    });
+</script>
+@endpush

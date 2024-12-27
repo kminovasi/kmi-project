@@ -1028,13 +1028,13 @@
         remove_detail()
     });
 
-    function check_admin_approve(idTeam){
+    async function check_admin_approve(idTeam){
         statusSelectField = document.getElementById('status_by_admin')
         adminButton = document.getElementById('accAdminButton')
 
-        data_event = check_if_accept(idTeam)
+        data_event = await check_if_accept(idTeam)
 
-        if(statusSelectField.value != "-" && data_event.status != 'not active' && data_event.event_name != undefined){
+        if(statusSelectField.value != "-" && data_event[0].status != 'not active' && data_event[0].event_name != undefined){
             adminButton.removeAttribute("disabled");
         }else{
             adminButton.setAttribute("disabled", true);
@@ -1222,65 +1222,83 @@
             }
         });
     }
+    function check_if_accept(idTeam) {
+    return new Promise((resolve, reject) => {
+        const registEventDiv = $('#registEvent'); // Gunakan jQuery untuk memilih elemen
+        const statusSelectField = $('#status_by_admin'); // Gunakan jQuery untuk memilih elemen
 
-    function check_if_accept(idTeam){
-        registEventDiv = document.getElementById('registEvent')
-        statusSelectField = document.getElementById('status_by_admin')
+        if (statusSelectField.val() === 'accept') {
+            // Ambil data tim menggunakan fungsi AJAX yang sudah ada
+            const data_team = get_single_data_from_ajax('teams', { id: idTeam });
 
-        var year_now = new Date().getFullYear();
-        // alert(year_now)
-        if(statusSelectField.value == 'accept'){
-            data_team = get_single_data_from_ajax('teams', {'id': idTeam})
-            data_event = get_single_data_from_ajax('events', {
-                'company_code': data_team.company_code,
-                'status': ['active']
-            },3)
-            // console.log(data_event);
-            if(data_event.event_name == undefined){
-                new_input = `
+            if (!data_team || !data_team.company_code) {
+                registEventDiv.html(`
                     <div class="mb-3">
-                        <label class="mb-1" for="id_eventID">Event - Year</label>
-                        <select class="form-select" aria-label="Default select example"
-                            name="event_id" id="id_eventID"
-                            placeholder="Pilih year" readonly required>
-                            <option value=""> - </option>
-                        </select>
+                        <p>Data tim tidak valid atau tidak terhubung ke perusahaan.</p>
                     </div>
-                `;
-            }else{
-                new_input = `
-                    <div class="mb-3">
-                        <label class="mb-1" for="id_eventID">Event - Year</label>
-                        <select class="form-select" aria-label="Default select example"
-                            name="event_id" id="id_eventID"
-                            placeholder="Pilih year" readonly required>
-                            <option value="${data_event.id}"> ${data_event.event_name} - ${data_event.year}</option>
-                        </select>
-                    </div>
-
-                `;
+                `);
+                reject('Data tim tidak valid atau tidak terhubung ke perusahaan.');
+                return;
             }
 
+            // Bangun URL secara dinamis dengan company_code dari data tim
+            const url = `/user/events/${data_team.company_code}`;
 
-            // <div class="mb-3">
-            //         <label class="mb-1" for="id_year">Year</label>
-            //         <select class="form-select" aria-label="Default select example"
-            //             name="year" id="id_year"
-            //             placeholder="Pilih year" required>
-            //             <option value="${year_now}"> ${year_now}</option>
-            //             <option value="${year_now + 1}"> ${year_now + 1}</option>
-            //             <option value="${year_now + 2}"> ${year_now + 2}</option>
-            //             <option value="${year_now + 3}"> ${year_now + 3}</option>
-            //         </select>
-            //     </div>
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Tambahkan CSRF token jika diperlukan
+                },
+                type: 'GET',
+                url: url,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success && data.events.length > 0) {
+                        const options = data.events.map(event =>
+                            `<option value="${event.id}">${event.event_name} - ${event.year}</option>`
+                        ).join('');
 
-            registEventDiv.insertAdjacentHTML('beforeend', new_input);
-        }else{
-            registEventDiv.innerHTML = ""
+                        // Tambahkan elemen dropdown baru ke dalam DOM
+                        const newInput = `
+                            <div class="mb-3">
+                                <label class="mb-1" for="id_eventID">Event - Year</label>
+                                <select class="form-select" aria-label="Default select example"
+                                    name="event_id" id="id_eventID" required>
+                                    <option value="">Pilih Event</option>
+                                    ${options}
+                                </select>
+                            </div>
+                        `;
+
+                        registEventDiv.html(newInput); // Ganti konten div dengan elemen baru
+                        resolve(data.events); // Kembalikan data events
+                    } else {
+                        registEventDiv.html(`
+                            <div class="mb-3">
+                                <p>Tidak ada event yang tersedia untuk perusahaan Anda.</p>
+                            </div>
+                        `);
+                        resolve([]); // Kembalikan array kosong jika tidak ada event
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching events:', xhr.responseText);
+                    registEventDiv.html(`
+                        <div class="mb-3">
+                            <p>Terjadi kesalahan saat memuat event.</p>
+                        </div>
+                    `);
+                    reject('Terjadi kesalahan saat memuat event.');
+                }
+            });
+        } else {
+            registEventDiv.html(""); // Kosongkan konten jika status bukan "accept"
+            resolve(null); // Kembalikan null jika status bukan "accept"
         }
+    });
+}
 
-        return data_event
-    }
+
+
 
     $('#accAdmin').on('hidden.bs.modal', function () {
         var form = document.getElementById('accAdminForm');

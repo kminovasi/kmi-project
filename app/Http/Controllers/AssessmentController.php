@@ -505,6 +505,8 @@ class AssessmentController extends Controller
     {
         $userEmployeeId = Auth::user()->employee_id;
         $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
+        $data_event = collect(); // Inisialisasi default untuk $data_event
+
         if (auth()->user()->role == "Superadmin") {
             $data_event = Event::where('status', '=', 'active')->get();
         } elseif (auth()->user()->role == "Admin") {
@@ -528,9 +530,6 @@ class AssessmentController extends Controller
             $data_event = Event::where('status', '=', 'active')->get();
         }
         $data_category = Category::all();
-
-
-
 
         return view('auth.user.assessment.ondesk', [
             "data_event" => $data_event,

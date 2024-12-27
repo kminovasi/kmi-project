@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
@@ -200,4 +201,30 @@ class UserManagementController extends Controller
                 ->with('error', 'User not found or invalid data');
         }
     }
+
+    public function getUserEvents($companyCode)
+{
+    try {
+
+        if (!$companyCode) {
+            return response()->json(['error' => 'User tidak terhubung ke perusahaan'], 404);
+        }
+
+        // Ambil event berdasarkan company_code
+        $events = Event::whereHas('companies', function ($query) use ($companyCode) {
+            $query->where('company_code', $companyCode);
+        })->get();
+
+        return response()->json([
+            'success' => true,
+            'events' => $events,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }

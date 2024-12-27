@@ -22,16 +22,14 @@
 </header>
 
 <div class="container-xl px-4 mt-4">
-    {{-- notif --}}
-    {{-- Menampilkan pesan sukses --}}
+    {{-- Notifikasi --}}
     <x-toast-alert type="success" message="{{ session('success') }}" />
-    {{-- Menampilkan pesan error --}}
     <x-toast-alert type="danger" message="{{ session('error') }}" />
 
     <div class="card mb-4">
         <div class="card-header">Create Post</div>
         <div class="card-body">
-            <form action="{{ route('post.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('post.store') }}" method="POST" enctype="multipart/form-data" id="postForm">
                 @csrf
                 <!-- Input untuk Judul -->
                 <div class="mb-3">
@@ -43,6 +41,7 @@
                 <div class="mb-3">
                     <label for="cover_image" class="form-label">Gambar</label>
                     <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                    <small class="text-danger d-none" id="fileError">Ukuran gambar tidak boleh lebih dari 2MB.</small>
                 </div>
 
                 <!-- Input untuk Konten -->
@@ -55,8 +54,26 @@
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
         </div>
-
+    </div>
 </div>
+
+<script>
+    document.getElementById('postForm').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('cover_image');
+        const fileError = document.getElementById('fileError');
+
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (file.size > 2 * 1024 * 1024) { // 2MB
+                e.preventDefault();
+                fileError.classList.remove('d-none');
+            } else {
+                fileError.classList.add('d-none');
+            }
+        }
+    });
+</script>
+
 
 @endsection
 

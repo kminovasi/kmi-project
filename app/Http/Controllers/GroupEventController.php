@@ -23,6 +23,17 @@ class GroupEventController extends Controller
     ];
 
     private const STATUS_CLASSES = [
+        'AP' => [
+            'Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'tidak lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Tidak lolos Caucus' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Caucus' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Presentation BOD' => 'bg-secondary bg-opacity-25 text-secondary',
+            'Juara' => 'bg-secondary bg-opacity-25 text-secondary',
+            'tidak lolos On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
+            'On Desk' => 'bg-secondary bg-opacity-25 text-secondary',
+        ],
         'internal' => [
             'Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
             'tidak lolos Presentation' => 'bg-secondary bg-opacity-25 text-secondary',
@@ -78,8 +89,11 @@ class GroupEventController extends Controller
             },
             'team.events',
             // Tambahkan relasi untuk event internal
-            'team.internalEvents' => function ($query) {
+            'team.apEvents' => function ($query) {
                 $query->where('type', 'AP');
+            },
+            'team.internalEvents' => function ($query) {
+                $query->where('type', 'internal');
             }
         ])
             ->join('teams', 'papers.team_id', '=', 'teams.id')
@@ -119,9 +133,23 @@ class GroupEventController extends Controller
                 fn($row) =>
                 '<input type="checkbox" name="paper_checkbox" class="paper_checkbox" value="' . $row->id . '">'
             )
+            ->addColumn('ap_events', function ($row) {
+                // Ambil event internal (group)
+                $apEvents = $row->team->events()->where('type', 'AP')->get()->map(function ($event) {
+                    $statusClass = self::STATUS_CLASSES['internal'][$event->pivot->status] ?? 'bg-secondary';
+                    return sprintf(
+                        '<span class="badge %s">%s (%s)</span>',
+                        $statusClass,
+                        $event->event_name,
+                        $event->pivot->status
+                    );
+                })->implode(' ');
+
+                return $apEvents ?: '<span class="badge bg-primary">Team Tidak Mengikuti Event AP</span>';
+            })
             ->addColumn('internal_events', function ($row) {
                 // Ambil event internal (group)
-                $internalEvents = $row->team->events()->where('type', 'AP')->get()->map(function ($event) {
+                $internalEvents = $row->team->events()->where('type', 'internal')->get()->map(function ($event) {
                     $statusClass = self::STATUS_CLASSES['internal'][$event->pivot->status] ?? 'bg-secondary';
                     return sprintf(
                         '<span class="badge %s">%s (%s)</span>',
@@ -149,7 +177,7 @@ class GroupEventController extends Controller
 
                 return $groupEvents ?: '<span class="badge bg-danger">Team Tidak Mengikuti Event Group</span>';
             })
-            ->rawColumns(['checkbox', 'internal_events', 'group_events'])
+            ->rawColumns(['checkbox', 'internal_events', 'group_events', 'ap_events'])
             ->make(true);
     }
     public function assignTeamsToEvent(Request $request)
@@ -226,3 +254,5 @@ class GroupEventController extends Controller
         }
     }
 }
+
+

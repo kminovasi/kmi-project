@@ -2006,6 +2006,7 @@ class QueryController extends Controller
         try {
             $data_row = Event::orderBy('id', 'desc')
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END");
+            Log::debug($data_row->get());
 
             // Jika user bukan Superadmin, filter berdasarkan company_code
             if (!$isSuperadmin) {
@@ -2022,7 +2023,6 @@ class QueryController extends Controller
             $rawColumns[] = 'Company';
             $dataTable->addColumn('company', function ($data_row) {
                 $companies = $data_row->companies->pluck('company_name')->toArray();
-                $company_name = implode("<br>", $companies); // Use <br> for line breaks
                 return $companies;
             });
 
@@ -2047,7 +2047,7 @@ class QueryController extends Controller
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
 
-                if ($isAdmin && $userCompanyName === $getCompanyName->company_name) {
+                if ($isAdmin && $getCompanyName && $userCompanyName === $getCompanyName->company_name) {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                     <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }

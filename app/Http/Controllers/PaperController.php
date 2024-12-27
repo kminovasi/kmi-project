@@ -1285,7 +1285,12 @@ class PaperController extends Controller
 
         if ($request->status == "accept" && $status_paper_before != 'rollback') {
             $team_id = Paper::where('id', $id)->pluck('team_id')[0];
+            $team = Team::findOrFail($team_id);
             $event_id = Event::where('id', $request->event_id)->pluck('id')[0];
+            $eventData = Event::findOrFail($event_id);
+            $team->update([
+                'status_lomba' => $eventData->type
+            ]);
             $idEventTeam = PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,
                 'event_id' => $event_id,
@@ -1692,4 +1697,34 @@ class PaperController extends Controller
             return true;
         }
     }
+
+    public function getEventsByCompanyCode($companyCode)
+{
+    try {
+        // Cari perusahaan berdasarkan company_code
+        $company = Company::where('company_code', $companyCode)->first();
+
+        // Jika perusahaan tidak ditemukan, lempar error
+        if (!$company) {
+            return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);
+        }
+
+        // Ambil daftar event terkait perusahaan
+        $events = $company->events()->get();
+
+        // Kembalikan response dengan data event
+        return response()->json([
+            'success' => true,
+            'company' => $company->company_name,
+            'events' => $events,
+        ]);
+    } catch (\Exception $e) {
+        // Tangani error
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Data Paper')
 @push('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
@@ -105,49 +106,51 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body bg-white">
-                        <input type="hidden" id="upStatus" name="status">
                         <div class="mb-3">
                             <label for="upEventName" class="form-label fw-semibold">Nama Event</label>
-                            <input type="text" class="form-control" id="upEventName" name="event_name" placeholder="Masukkan Nama Event">
-                        </div>
-                        <div class="mb-3">
-                            <label for="upCompany" class="form-label fw-semibold">Pilih Perusahaan</label>
-                            <select class="form-select" id="upCompany" name="company_code" disabled="{{ Auth::user()->role == 'Superadmin' ? '' : 'disabled' }}">
-                                @foreach ($datas_company as $cp)
-                                    <option value="{{ $cp->company_code }}">{{ $cp->company_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="upYear" class="form-label fw-semibold">Pilih Tahun</label>
-                            <select class="form-select" id="upYear" name="year">
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}">{{ $year }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="upStartDate" class="form-label fw-semibold">Tanggal Mulai</label>
-                                <input type="date" class="form-control" id="upStartDate" name="start_date">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="upEndDate" class="form-label fw-semibold">Tanggal Berakhir</label>
-                                <input type="date" class="form-control" id="upEndDate" name="end_date">
-                            </div>
+                            <input type="text" class="form-control" id="upEventName" name="event_name" placeholder="Masukkan Nama Event" required>
                         </div>
                         <div class="mb-3">
                             <label for="upType" class="form-label fw-semibold">Tipe Event</label>
-                            <select class="form-select" id="upType" name="type">
+                            <select class="form-select" id="upType" name="type" required onchange="handleEditEventTypeChange()">
+                                <option value="" selected disabled>Pilih Tipe Event</option>
                                 <option value="AP">Anak Perusahaan</option>
+                                <option value="internal">Internal</option>
                                 <option value="group">Group</option>
                                 <option value="national">National</option>
                                 <option value="international">International</option>
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label for="upCompany" class="form-label fw-semibold">Pilih Perusahaan</label>
+                            <select class="form-select" id="upCompany" name="company_code[]" required disabled>
+                                <option value="select_all">Select All</option>
+                                @foreach ($datas_company as $cp)
+                                    <option value="{{ $cp->id }}">{{ $cp->company_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="upStartDate" class="form-label fw-semibold">Tanggal Mulai</label>
+                                <input type="date" class="form-control" id="upStartDate" name="start_date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="upEndDate" class="form-label fw-semibold">Tanggal Berakhir</label>
+                                <input type="date" class="form-control" id="upEndDate" name="end_date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="upYear" class="form-label fw-semibold">Pilih Tahun</label>
+                            <select class="form-select" id="upYear" name="year" required>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="upDescription" class="form-label fw-semibold">Deskripsi</label>
-                            <textarea class="form-control" id="upDescription" name="description" rows="5" placeholder="Masukkan Deskripsi"></textarea>
+                            <textarea class="form-control" id="upDescription" name="description" rows="5" placeholder="Masukkan Deskripsi" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light border-0">
@@ -194,6 +197,9 @@
 @endsection
 
 @push('js')
+
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script
         src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
     </script>
@@ -203,6 +209,17 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script type="">
     $(document).ready(function() {
+        initializeSelect2();
+        $('#updateEvent').on('shown.bs.modal', function () {
+            initializeSelect2();
+            const selectCompany = $('#upCompany');
+            if (selectCompany.hasClass("select2-hidden-accessible")) {
+                selectCompany.select2('destroy');
+            }
+            selectCompany.select2();
+
+        });
+
         var dataTable = $('#datatable-events').DataTable({
             "processing": true,
             "serverSide": true,
@@ -237,6 +254,43 @@
         });
 
     });
+    function handleEditEventTypeChange() {
+    const eventType = document.getElementById('upType').value;
+    const selectCompany = $('#upCompany');
+
+    // First destroy existing Select2 instance
+    if (selectCompany.hasClass("select2-hidden-accessible")) {
+        selectCompany.select2('destroy');
+    }
+
+    if (eventType) {
+        selectCompany.prop('disabled', false);
+        selectCompany.find('option').show();
+
+        if (eventType === 'AP') {
+            selectCompany.prop('multiple', false);
+            selectCompany.find('option[value="select_all"]').hide();
+        } else {
+            selectCompany.prop('multiple', true);
+            selectCompany.find('option[value="select_all"]').show();
+        }
+
+        // Re-initialize Select2 with proper configuration
+        selectCompany.select2({
+            width: '100%',
+            dropdownParent: $('#updateEvent'),
+            closeOnSelect: eventType === 'AP'
+        });
+
+    } else {
+        selectCompany.prop('disabled', true);
+    }
+}
+
+
+
+
+
     function update_modal(eventId) {
         set_data_on_modal_event(eventId);
         $.ajax({
@@ -244,41 +298,28 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'GET',
-
             url: '{{ route('query.custom') }}',
             data: {
                 table: "events",
-
-                where: {
-                    "id": eventId
-                },
+                where: { "id": eventId },
                 limit: 1,
-                select:[
-                    'event_name',
-                    'company_code',
-                    'date_start',
-                    'date_end',
-                    'status',
-                    'year',
-                    'description',
-                     'type'
+                select: [
+                    'event_name', 'date_start', 'date_end', 'status', 'year', 'description', 'type'
                 ]
             },
-            // dataType: 'json',
             success: function(response) {
                 document.getElementById("upEventName").value = response[0].event_name;
-                document.getElementById("upStatus").value = response[0].status;
                 document.getElementById("upStartDate").value = response[0].date_start;
                 document.getElementById("upEndDate").value = response[0].date_end;
                 document.getElementById("upDescription").value = response[0].description;
-                 document.getElementById("upType").value = response[0].type;
+                document.getElementById("upType").value = response[0].type;
 
                 var selectElement = document.getElementById("upCompany");
-                selectElement.value = response[0].company_code;
+                selectElement.value = response[0].company_id;
 
                 for (var i = 0; i < selectElement.options.length; i++) {
                     var option = selectElement.options[i];
-                    if (option.value === response[0].company_code) {
+                    if (option.value === response[0].company_id) {
                         option.selected = true;
                     } else {
                         option.selected = false;
@@ -301,30 +342,38 @@
                 var url = `{{ route('management-system.update.event', ['id' => ':eventId']) }}`;
                 url = url.replace(':eventId', eventId);
                 form.action = url;
+
+                // Trigger the event type change handler to ensure the company select is updated
+                handleEditEventTypeChange();
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
             }
         });
-
-        //link untuk update
-        // var form = document.getElementById('updatePointAssessment');
-        // var url = `{{ route('assessment.update.point', ['id' => ':assessment_point_id']) }}`;
-        // url = url.replace(':assessment_point_id', assessment_point_id);
-        // form.action = url;
-
     }
-    function set_data_on_modal_event(event_id){
+
+    function set_data_on_modal_event(event_id) {
         var form = document.getElementById('updateDataForm');
         var url = `{{ route('management-system.update.event', ['id' => ':event_id']) }}`;
         url = url.replace(':event_id', event_id);
         form.action = url;
     }
-    function set_data_on_modal(event_id){
+
+    function set_data_on_modal(event_id) {
         var form = document.getElementById('updateStatusEvent');
         var url = `{{ route('management-system.change.event', ['id' => ':event_id']) }}`;
         url = url.replace(':event_id', event_id);
         form.action = url;
     }
+    function initializeSelect2() {
+    const selectCompany = $('#upCompany');
+    if (selectCompany.hasClass("select2-hidden-accessible")) {
+        selectCompany.select2('destroy');
+    }
+    selectCompany.select2({
+        width: '100%',
+        dropdownParent: $('#updateEvent') // This ensures the dropdown appears over the modal
+    });
+}
 </script>
 @endpush

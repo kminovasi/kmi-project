@@ -25,11 +25,12 @@ class eventRequest extends FormRequest
     {
         return [
             'event_name' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'year' => 'required',
-            'company_code' => 'required',
-            'type' => 'required|in:AP,group,national,international',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'year' => 'required|integer',
+            'company_code' => 'required|array',
+            'company_code.*' => 'required|string',
+            'type' => 'required|in:AP,internal,group,national,international',
         ];
     }
 }

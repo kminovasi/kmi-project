@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand" href="#">
             <div class="d-flex align-items-center text-color-main">
-                <img class="me-3" src="{{ asset('assets/landingpage/logo.png') }}" alt="">
+                <img class="me-3" src="{{ asset('assets/landingpage/logo.png') }}" alt="logo">
             </div>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg"

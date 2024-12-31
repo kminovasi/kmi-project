@@ -356,11 +356,11 @@
                 inputDetailPoint.value = inputDetailPoint.defaultValue;
 
                 var isDeleting = false;
-                inputDetailPoint.addEventListener("keydown", function(event) {
-                    if (event.key === "Backspace" || event.key === "Delete") {
-                        isDeleting = true;
-                    }
-                });
+                // inputDetailPoint.addEventListener("keydown", function(event) {
+                //     if (event.key === "Backspace" || event.key === "Delete") {
+                //         isDeleting = true;
+                //     }
+                // });
 
                 inputDetailPoint.addEventListener("input", function(event) {
                     if (isDeleting && event.target.value.length < inputDetailPoint.defaultValue.length) {

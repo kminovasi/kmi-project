@@ -270,7 +270,7 @@ class PaperController extends Controller
                 'status' => 'created'
             ]);
             $step = MetodologiPaper::where('id', $request->input('metodologi_paper_id'))->pluck('step')[0];
-            if ($step <=8) {
+            if ($step < 8) {
 
                 Paper::create([
                     'innovation_title' => $request->input('innovation_title'),
@@ -295,6 +295,7 @@ class PaperController extends Controller
                         'public'
                     ),
                     'metodologi_paper_id' => $request->input('metodologi_paper_id'),
+                    'step_8' => '-',
                 ]);
             } else {
                 // dd($request->input('inovasi_lokasi'));
@@ -302,7 +303,6 @@ class PaperController extends Controller
                     'innovation_title' => $request->input('innovation_title'),
                     'inovasi_lokasi' => $request->input('inovasi_lokasi'),
                     'team_id' => $newTeam->id,
-                    'step_8' => '-',
                     'abstract' => $request->input('abstract'),
                     'problem' => $request->input('problem'),
                     'status_inovasi' => $request->input('status_inovasi'),

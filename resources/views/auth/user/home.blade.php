@@ -53,15 +53,40 @@
                     <!-- Innovation Cards -->
                     <div class="mb-4">
                         <div class="card">
-                            <div class="card-header bg-gradient-primary ">
-                                <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Tersubmit </h5>
+                            <div class="card-header bg-gradient-primary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Tersubmit</h5>
+                                    <a href="http://127.0.0.1:8000/detail-company-chart" class="text-white" style="font-size: 1.7rem;">
+                                        <i class="bi bi-bar-chart-line"></i> <!-- Icon for chart -->
+                                    </a>
+                                </div>
                             </div>
                             <div class="p-3">
+<<<<<<< HEAD
                             <x-dashboard.card :categories="$categories" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
                                 :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" />
+=======
+                                <x-dashboard.card
+                                    :breakthrough-innovation="$breakthroughInnovation"
+                                    :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement"
+                                    :incremental-innovation="$incrementalInnovation"
+                                    :detail-incremental-innovation-g-k-m-office="$detailIncrementalInnovationGKMOffice"
+                                    :detail-incremental-innovation-p-k-m-office="$detailIncrementalInnovationPKMOffice"
+                                    :detail-incremental-innovation-s-s-plant="$detailIncrementalInnovationSSPlant"
+                                    :idea-box="$ideaBox"
+                                    :detail-idea-box-idea="$detailIdeaBoxIdea"
+                                    :detail-breakthrough-innovation-p-b-b="$detailBreakthroughInnovationPBB"
+                                    :detail-breakthrough-innovation-t-p-p="$detailBreakthroughInnovationTPP"
+                                    :detail-incremental-innovation-p-k-m-plant="$detailIncrementalInnovationPKMPlant"
+                                    :total-innovators="$totalInnovators"
+                                    :total-innovators-male="$totalInnovatorsMale"
+                                    :total-innovators-female="$totalInnovatorsFemale"
+                                    :total-active-events="$totalActiveEvents" />
+>>>>>>> origin/main
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Innovation Status Total -->
                     {{-- <div>
@@ -80,9 +105,10 @@
                 <div class="col-12 col-lg-6 col-md-8 dashboard-section">
                     <!-- Benefit Section -->
                     <div class="mb-4">
-                        <h4 class="mb-3">Akumulasi Total benefit</h4>
+                        <h4 class="mb-3" style="background-color: red; color: white; padding: 17px;">Akumulasi Total Benefit</h4>
                         <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
+
                     <div class="mb-3">
                         <x-dashboard.total-financial-benefit-card />
                     </div>
@@ -105,3 +131,5 @@
 @endsection
 
 @vite(['resources/js/benefitChart.js'])
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+

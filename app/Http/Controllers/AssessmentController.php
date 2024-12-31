@@ -42,11 +42,22 @@ class AssessmentController extends Controller
     //     return view('auth.juri.assessment');
     // }
     public function showTemplate()
-    {
-        $events = Event::whereNot('status', 'finish')->get();
+{
+    $checkStatus = Auth::user()->role;
+    $userCompanyCode = Auth::user()->company_code;
 
-        return view('auth.admin.assessment.template.index', compact('events'));
+    if ($checkStatus == 'Superadmin') {
+        $events = Event::where('status', '!=', 'finish')->get();
+    } else {
+        $events = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
+            $query->where('company_code', $userCompanyCode);
+        })->where('status', '!=', 'finish')
+          ->where('type', 'AP')
+          ->get();
     }
+
+    return view('auth.admin.assessment.template.index', compact('events'));
+}
     public function createTemplate()
     {
         // $rows = TemplateAssessmentPoint::get();
@@ -143,20 +154,18 @@ class AssessmentController extends Controller
     public function showAssessmentPoint()
     {
         $checkStatus = Auth::user()->role;
+        $userCompanyId = Auth::user()->company_id;
+
         if ($checkStatus == 'Admin') {
-            $data_event = Event::where('company_code', auth()->user()->company_code)
-                ->whereNot('status', 'finish')
-                ->get();
+            $data_event = Event::whereHas('companies', function ($query) use ($userCompanyId) {
+                $query->where('company_id', $userCompanyId);
+            })->where('status', '!=', 'finish')->get();
         } elseif ($checkStatus == 'Superadmin') {
-            $data_event = Event::whereNot('status', 'finish')
-                ->get();
+            $data_event = Event::where('status', '!=', 'finish')->get();
         }
-        // $data_year = Event::distinct()->pluck('year');
-        //dd($data_event);
 
         return view('auth.admin.assessment.assessment_point', [
             'data_event' => $data_event,
-            // 'data_year' => $data_year
         ]);
     }
 

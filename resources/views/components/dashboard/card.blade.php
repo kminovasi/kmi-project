@@ -96,19 +96,21 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $breakthroughInnovation + $incrementalInnovation }}
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-rocket fa-xl text-white" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
+                        <i class="fa-solid fa-rocket fa-xl text-white"
+                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex align-items-center justify-content-between small">
                 <a class="text-white stretched-link" href="#" data-bs-toggle="modal"
-                    data-bs-target="#breakthroughInnovationModal">
+                    data-bs-target="#exampleModal">
                     Lihat Detail
                 </a>
                 <div class="text-white"><i class="fas fa-angle-right"></i></div>
@@ -116,76 +118,71 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="breakthroughInnovationModal" tabindex="-1"
-        aria-labelledby="breakthroughInnovationModalLabel" aria-hidden="true">
+    <!-- Add the modal with id="exampleModal" -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title fw-bold" id="exampleModalLabel">
+                        <i class="fa-solid fa-rocket me-2"></i> Detail Inovasi
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    @foreach ($categories as $category)
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-danger text-white text-center">
+                                        <h6 class="fw-bold text-uppercase mb-0">{{ $category->category_name }}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span class="text-muted">Jumlah Tim</span>
+                                                <span class="badge rounded-pill bg-danger">{{ $category->teams_count }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="modal-footer bg-gradient-light">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- filepath: /e:/Appi/magang/kmi-project/resources/views/auth/user/home.blade.php -->
+    <div class="modal fade" tabindex="-1" aria-hidden="true" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title text-white" id="breakthroughInnovationModalLabel">
+                    <h5 class="modal-title text-white">
                         <i class="fa-solid fa-rocket me-2"></i>Detail Inovasi
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold">Breakthrough Innovation</h6>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Produk Dan Bahan Baku
-                                    <span
-                                        class="badge bg-primary rounded-pill">{{ $detailBreakthroughInnovationPBB }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Teknologi Dan Proses Produksi
-                                    <span
-                                        class="badge bg-primary rounded-pill">{{ $detailBreakthroughInnovationTPP }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Manajemen
-                                    <span
-                                        class="badge bg-primary rounded-pill">{{ $detailBreakthroughInnovationManagement }}</span>
-                                </li>
-                            </ul>
+                    @foreach ($categories as $category)
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold">{{ $category->category_name }}</h6>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ $category->category_name }}
+                                        <span class="badge bg-primary rounded-pill">{{ $category->teams_count }}</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold">Incremental Innovation</h6>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GKM Plant
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationGKMPlant }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GKM Office
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationGKMOffice }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    PKM Plant
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationPKMPlant }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    PKM Office
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationPKMOffice }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    SS Plant
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationSSPlant }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    SS Office
-                                    <span
-                                        class="badge bg-success rounded-pill">{{ $detailIncrementalInnovationSSOffice }}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
@@ -193,19 +190,22 @@
             </div>
         </div>
     </div>
+
     <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-gradient-warning text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total IDE</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total IDE
+                        </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
                             <small class="ms-2">(Ide)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-lightbulb fa-xl text-white" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
+                        <i class="fa-solid fa-lightbulb fa-xl text-white"
+                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
@@ -253,45 +253,49 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            Inovator</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovators }}
                             <small class="ms-2">(Orang)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fas fa-people-group" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                        <i class="fas fa-people-group"
+                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @if($isSuperadmin || $isAdmin)
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-gradient-green text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Event Aktif</div>
-                        <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $totalActiveEvents }}
-                            <small class="ms-2">(Event)</small>
+    @if ($isSuperadmin || $isAdmin)
+        <div class="col-lg-6 col-xl-5 mb-4">
+            <div class="card bg-gradient-green text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-3 flex-grow-1">
+                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                                Event Aktif</div>
+                            <div class="text-lg fw-bold d-flex align-items-center">
+                                {{ $totalActiveEvents }}
+                                <small class="ms-2">(Event)</small>
+                            </div>
+                        </div>
+                        <div class="icon-circle bg-white-25 flex-shrink-0">
+                            <i class="fas fa-calendar-alt fa-xl"
+                                style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                         </div>
                     </div>
-                    <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fas fa-calendar-alt fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
-                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between small">
+                    <a class="text-white stretched-link" href="{{ route('dashboard-event.list') }}">
+                        Lihat Daftar Event
+                    </a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
-            <div class="card-footer d-flex align-items-center justify-content-between small">
-                <a class="text-white stretched-link" href="{{ route('dashboard-event.list') }}">
-                    Lihat Daftar Event
-                </a>
-                <div class="text-white"><i class="fas fa-angle-right"></i></div>
-            </div>
         </div>
-    </div>
     @endif
 
     <div class="col-lg-6 col-xl-5 mb-4">
@@ -299,14 +303,16 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator laki-laki</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            Inovator laki-laki</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsMale }}
                             <small class="ms-2">(Orang)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-mars fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                        <i class="fa-solid fa-mars fa-xl"
+                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
 
                 </div>
@@ -319,14 +325,16 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Perempuan</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            Inovator Perempuan</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsFemale }}
                             <small class="ms-2">(Orang)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-venus fa-xl" style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                        <i class="fa-solid fa-venus fa-xl"
+                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
 
                 </div>

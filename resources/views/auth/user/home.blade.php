@@ -62,6 +62,10 @@
                                 </div>
                             </div>
                             <div class="p-3">
+<<<<<<< HEAD
+                            <x-dashboard.card :categories="$categories" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
+                                :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" />
+=======
                                 <x-dashboard.card
                                     :breakthrough-innovation="$breakthroughInnovation"
                                     :detail-breakthrough-innovation-management="$detailBreakthroughInnovationManagement"
@@ -78,6 +82,7 @@
                                     :total-innovators-male="$totalInnovatorsMale"
                                     :total-innovators-female="$totalInnovatorsFemale"
                                     :total-active-events="$totalActiveEvents" />
+>>>>>>> origin/main
                             </div>
                         </div>
                     </div>

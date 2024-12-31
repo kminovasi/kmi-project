@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Event;
 use App\Models\Paper;
@@ -27,87 +28,10 @@ class DashboardController extends Controller
             });
         };
 
-        // Menghitung jumlah tim berdasarkan kategori utama
-        $breakthroughInnovation = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_parent', 'BREAKTHROUGH INNOVATION')
-        )->count();
-
-        $incrementalInnovation = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_parent', 'INCREMENTAL INNOVATION')
-        )->count();
-
-        $ideaBox = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_parent', 'IDEA BOX')
-        )->count();
-
-        // Menghitung jumlah tim berdasarkan kategori detail dalam "Breakthrough Innovation"
-        $detailBreakthroughInnovationPBB = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'PRODUK DAN BAHAN BAKU')
-        )->count();
-
-        $detailBreakthroughInnovationTPP = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'TEKHNOLOGY & PROSES PRODUKSI')
-        )->count();
-
-        $detailBreakthroughInnovationManagement = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'MANAGEMENT')
-        )->count();
-
-        // Menghitung jumlah tim berdasarkan kategori detail dalam "Incremental Innovation"
-        $detailIncrementalInnovationGKMPlant = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'GKM PLANT')
-        )->count();
-
-        $detailIncrementalInnovationGKMOffice = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'GKM OFFICE')
-        )->count();
-
-        $detailIncrementalInnovationPKMPlant = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'PKM PLANT')
-        )->count();
-
-        $detailIncrementalInnovationPKMOffice = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'PKM OFFICE')
-        )->count();
-
-        $detailIncrementalInnovationSSPlant = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'SS PLANT')
-        )->count();
-
-        $detailIncrementalInnovationSSOffice = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'SS OFFICE')
-        )->count();
-
-        // Menghitung jumlah tim berdasarkan kategori detail dalam "Idea Box"
-        $detailIdeaBoxIdea = $addCompanyFilter(
-            DB::table('teams')
-                ->join('categories', 'categories.id', '=', 'teams.category_id')
-                ->where('categories.category_name', 'IDEA')
-        )->count();
+        // Fetch all categories and count teams for each category
+        $categories = Category::withCount(['teams' => function ($query) use ($addCompanyFilter) {
+            $addCompanyFilter($query);
+        }])->get();
 
         $availableYears = Event::select('year')
             ->groupBy('year')
@@ -149,20 +73,8 @@ class DashboardController extends Controller
         $totalActiveEvents = Event::where('status', 'active')->count();
 
         return view('auth.user.home', compact(
-            'breakthroughInnovation',
-            'incrementalInnovation',
-            'ideaBox',
             'totalActiveEvents',
-            'detailBreakthroughInnovationPBB',
-            'detailBreakthroughInnovationTPP',
-            'detailBreakthroughInnovationManagement',
-            'detailIncrementalInnovationGKMPlant',
-            'detailIncrementalInnovationGKMOffice',
-            'detailIncrementalInnovationPKMPlant',
-            'detailIncrementalInnovationPKMOffice',
-            'detailIncrementalInnovationSSPlant',
-            'detailIncrementalInnovationSSOffice',
-            'detailIdeaBoxIdea',
+            'categories',
             'year',
             'availableYears',
             'totalInnovators',

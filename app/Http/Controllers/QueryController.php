@@ -724,8 +724,8 @@ class QueryController extends Controller
                 )->join('events', 'berita_acaras.event_id', '=', 'events.id');
             } else {
                 // Untuk Admin atau User, filter berdasarkan perusahaan
-                $getCompanyCode = Company::where('company_name', $companyNameUser)->select('company_code')->first();
-                $currentCompanyCode = $getCompanyCode->company_code;
+                $getCompanyCode = Company::where('company_name', $companyNameUser)->select('id')->first();
+                $currentCompanyId = $getCompanyCode->id;
 
                 $data_row = BeritaAcara::select(
                     "berita_acaras.id",
@@ -736,7 +736,8 @@ class QueryController extends Controller
                     "berita_acaras.penetapan_juara",
                     "berita_acaras.signed_file"
                 )->join('events', 'berita_acaras.event_id', '=', 'events.id')
-                    ->where('events.company_code', $currentCompanyCode);
+                    ->join('company_event', 'events.id', '=', 'company_event.event_id')
+                    ->where('company_event.company_id', $currentCompanyId);
             }
 
             $dataTable = DataTables::of($data_row->get());
@@ -761,7 +762,6 @@ class QueryController extends Controller
                 // User biasa tidak memiliki tombol
                 return '';
             });
-
 
             // Tambahkan kolom hapus jika signed_file sudah ada
             $dataTable->addColumn('delete', function ($data_row) use ($currentUser) {
@@ -827,8 +827,10 @@ class QueryController extends Controller
 
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateTemplate" onclick="get_data_template(' . $data_row->id . ')">Update</button>
-                <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteTemplate" onclick="delete_template(' . $data_row->id . ')">Delete</button>';
+                if (auth()->user()->role == 'Superadmin') {
+                    return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateTemplate" onclick="get_data_template(' . $data_row->id . ')">Update</button>
+                            <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteTemplate" onclick="delete_template(' . $data_row->id . ')">Delete</button>';
+                }
             });
 
             $rawColumns[] = 'detail_point';
@@ -872,7 +874,6 @@ class QueryController extends Controller
                         END, pvt_assessment_events.id ASC");
 
             $dataTable = DataTables::of($data_row->get());
-
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
                 if ($data_row->status_point == 'nonactive') {
@@ -2040,16 +2041,18 @@ class QueryController extends Controller
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
                 $userCompanyName = Auth::user()->company_name;
-                $getCompanyName = Company::where('company_code', $data_row->company_code)->select('company_name')->first();
+                $companyCodeUser = Auth::user()->company_code;
                 $isAdmin = Auth::user()->role === "Admin";
+                $event = Event::find($data_row->id);
+
                 if (auth()->user()->role == 'Superadmin') {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
 
-                if ($isAdmin && $getCompanyName && $userCompanyName === $getCompanyName->company_name) {
+                if ($isAdmin && $event->companies()->where('company_code', $companyCodeUser)->exists() && $event->type === 'AP') {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
-                    <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
+                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
             });
             $dataTable->rawColumns($rawColumns);

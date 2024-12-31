@@ -25,43 +25,24 @@ class Card extends Component
     public  $totalInnovatorsMale;
     public  $totalInnovatorsFemale;
     public $totalActiveEvents;
+    public $categories;
     /**
      * Create a new component instance.
      *
      * @return void
      */
     public function __construct(
-        $breakthroughInnovation = null,
-        $detailBreakthroughInnovationManagement = null,
-        $incrementalInnovation = null,
-        $detailIncrementalInnovationGKMOffice = null,
-        $detailIncrementalInnovationPKMOffice = null,
-        $detailIncrementalInnovationSSPlant = null, // Nilai default null
-        $ideaBox = null,
-        $detailIdeaBoxIdea = null,
-        $detailBreakthroughInnovationPBB = null,
-        $detailBreakthroughInnovationTPP = null,
-        $detailIncrementalInnovationPKMPlant = null,
+        $categories = null,
         $totalInnovators = null,
         $totalInnovatorsMale = null,
         $totalInnovatorsFemale = null,
         $totalActiveEvents = null,
     ) {
-        $this->breakthroughInnovation = $breakthroughInnovation;
-        $this->detailBreakthroughInnovationManagement = $detailBreakthroughInnovationManagement;
-        $this->incrementalInnovation = $incrementalInnovation;
-        $this->detailIncrementalInnovationGKMOffice = $detailIncrementalInnovationGKMOffice;
-        $this->detailIncrementalInnovationPKMOffice = $detailIncrementalInnovationPKMOffice;
-        $this->detailIncrementalInnovationSSPlant = $detailIncrementalInnovationSSPlant;
-        $this->ideaBox = $ideaBox;
-        $this->detailIdeaBoxIdea = $detailIdeaBoxIdea;
-        $this->detailBreakthroughInnovationPBB = $detailBreakthroughInnovationPBB;
-        $this->detailBreakthroughInnovationTPP = $detailBreakthroughInnovationTPP;
-        $this->detailIncrementalInnovationPKMPlant = $detailIncrementalInnovationPKMPlant;
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
         $this->totalActiveEvents = $totalActiveEvents;
+        $this->categories = $categories;
     }
 
 

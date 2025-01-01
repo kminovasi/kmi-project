@@ -120,37 +120,42 @@
 
     <!-- Add the modal with id="exampleModal" -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow-lg rounded">
-                <div class="modal-header bg-gradient-primary text-white">
-                    <h5 class="modal-title fw-bold" id="exampleModalLabel">
-                        <i class="fa-solid fa-rocket me-2"></i> Detail Inovasi
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header  text-white">
+                    <h5 class="modal-title fw-bold d-flex align-items-center" id="exampleModalLabel">
+                        <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Detail Inovasi</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <div class="modal-body bg-light">
-                    @foreach ($categories as $category)
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-danger text-white text-center">
-                                        <h6 class="fw-bold text-uppercase mb-0">{{ $category->category_name }}</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span class="text-muted">Jumlah Tim</span>
-                                                <span class="badge rounded-pill bg-danger">{{ $category->teams_count }}</span>
-                                            </li>
-                                        </ul>
+                    <div class="row">
+                        @foreach ($categories as $category)
+                            @php
+                                $colors = ['text-success', 'text-warning', 'text-info', 'text-primary', 'text-secondary'];
+                                $icons = ['zap', 'layers', 'box', 'shield', 'star'];
+                                $color = $colors[$loop->index % count($colors)];
+                                $icon = $icons[$loop->index % count($icons)];
+                            @endphp
+                            <div class="col-md-6 mb-4">
+                                <div class="card shadow-sm border-0 rounded">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $category->category_name }}</h5>
+                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                            {{ $category->teams_count ?? 0 }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
                 <div class="modal-footer bg-gradient-light">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-outline-primary fw-bold" data-bs-dismiss="modal">
+                        <i data-feather="x-circle" class="me-1"></i> Tutup
+                    </button>
                 </div>
             </div>
         </div>
@@ -221,16 +226,16 @@
 
     <!-- Modal -->
     <div class="modal fade" id="ideaBoxModal" tabindex="-1" aria-labelledby="ideaBoxModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title" id="ideaBoxModalLabel">
-                        <i class="fa-solid fa-lightbulb me-2"></i>Detail Idea Box
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header text-white">
+                    <h5 class="modal-title fw-bold d-flex align-items-center" id="ideaBoxModalLabel">
+                        <i class="fa-solid fa-lightbulb me-2"></i> <span class="fw-bold">Detail Idea Box</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+
+                <div class="modal-body bg-light">
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="list-group list-group-flush">
@@ -242,12 +247,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+
+                <div class="modal-footer bg-gradient-light">
+                    <button type="button" class="btn btn-outline-primary fw-bold" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-x-circle me-1"></i> Tutup
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-lg-6 col-xl-5 mb-4">
         <div class="card bg-teal text-white h-100">
             <div class="card-body">

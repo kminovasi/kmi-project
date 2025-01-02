@@ -12,43 +12,43 @@ use Illuminate\Support\Facades\DB;
 class CvController extends Controller
 {
     public function index()
-    {
+{
+    // get current user employee_id
+    $employee = Auth::user();
 
-        // get current user employee_id
-        $employee = Auth::user();
+    $innovations = \DB::table('pvt_members')
+        ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
+        ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
+        ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+        ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
+        ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
+        ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')
+        ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
+        ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
+        ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
+        ->where('pvt_members.employee_id', $employee->employee_id)
+        ->where('pvt_event_teams.status', '=', 'Juara')
+        ->select(
+            'papers.*',
+            'teams.id as team_id',
+            'teams.team_name',
+            'teams.status_lomba',
+            'categories.category_name as category',
+            'events.event_name',
+            'events.year',
+            'companies.company_name',
+            'certificates.template_path as certificate',
+            'pvt_event_teams.status as event_status',
+            'themes.id',
+            'themes.theme_name',
+            'pvt_event_teams.status',
+            'pvt_event_teams.is_best_of_the_best',
+        );
 
-        $innovations = \DB::table('pvt_members')
-            ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
-            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
-            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->leftJoin('companies', 'events.company_code', '=', 'companies.company_code')
-            ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
-            ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
-            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
-            ->where('pvt_members.employee_id', $employee->employee_id)
-            ->where('pvt_event_teams.status', '=', 'Juara')
-            ->select(
-                'papers.*',
-                'teams.id as team_id',
-                'teams.team_name',
-                'teams.status_lomba',
-                'categories.category_name as category',
-                'events.event_name',
-                'events.year',
-                'companies.company_name',
-                'certificates.template_path as certificate',
-                'pvt_event_teams.status as event_status',
-                'themes.id',
-                'themes.theme_name',
-                'pvt_event_teams.status',
-                'pvt_event_teams.is_best_of_the_best',
-            );
+    $innovations = $innovations->paginate(10);
 
-        $innovations = $innovations->paginate(10);
-
-        return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
-    }
+    return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
+}
 
     public function generateCertificate(Request $request)
     {

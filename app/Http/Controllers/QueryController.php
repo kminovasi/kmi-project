@@ -103,26 +103,23 @@ class QueryController extends Controller
         ]);
     }
     public function get_fasilitator(Request $request)
-    {
-        $unit = $request->input('unit');
-        $department = $request->input('department');
-        $directorate = $request->input('directorate');
-        $query = $request->input('query');
-        $results = User::where('name', 'ilike', "%$query%")
-            ->where('email', 'ilike', "%$query%")
-            ->whereIn('job_level', ["Band 2", "Band 1"])
-            ->whereRaw("CASE
-                            WHEN job_level = 'Band 2' THEN unit_name = ?
-                            WHEN job_level = 'Band 1' AND department_name IS NOT NULL THEN department_name = ?
-                            WHEN job_level = 'Band 1' AND department_name IS NULL THEN directorate_name = ?
-                        END", [$unit, $department, $directorate])
-            ->join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->select('employee_id', 'name', 'companies.company_name', 'job_level')
-            ->limit(10)
-            ->get();
+{
+    $unit = $request->input('unit');
+    $department = $request->input('department');
+    $directorate = $request->input('directorate');
+    $query = $request->input('query');
+    $results = User::with('company')
+        ->where(function($q) use ($query) {
+            $q->where('name', 'ilike', "%$query%")
+              ->orWhere('email', 'ilike', "%$query%");
+        })
+        ->whereIn('job_level', ["Band 2", "Band 1"])
+        ->select('employee_id', 'name', 'company_name', 'job_level')
+        ->limit(10)
+        ->get();
 
-        return response()->json($results);
-    }
+    return response()->json($results);
+}
 
     public function get_GM(Request $request)
     {
@@ -221,6 +218,7 @@ class QueryController extends Controller
             //     ->whereRaw($where_column. '='. $where_data)
             //     ->limit($limit)
             //     ->get();
+            Log::debug($result);
 
             if ($result->isEmpty()) {
                 return response()->json([
@@ -579,8 +577,13 @@ class QueryController extends Controller
                             elseif ($data_row->{"step_" . $i} == 3 || $data_row->{"step_" . $i} == 1)
                                 $html .= "<a class=\"btn btn-warning btn-xs\" href=\"" . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . " \">Edit</a>";
                         }
-
-                        $html .= "<a class=\"btn btn-info btn-xs\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'step_' . $i]) . " \" target=\"_blank\">Detail</a>";
+                        $metodologiPaper = MetodologiPaper::findOrFail($data_row->metodologi_paper_id);
+                        $metodologiPaperStep = $metodologiPaper->step;
+                        if($metodologiPaperStep === 7 && $i === 8){
+                              $html .= "-";
+                        }else{
+                            $html .= "<a class=\"btn btn-info btn-xs\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'step_' . $i]) . " \" target=\"_blank\">Detail</a>";
+                        }
                     }
 
                     return $html;
@@ -724,8 +727,8 @@ class QueryController extends Controller
                 )->join('events', 'berita_acaras.event_id', '=', 'events.id');
             } else {
                 // Untuk Admin atau User, filter berdasarkan perusahaan
-                $getCompanyCode = Company::where('company_name', $companyNameUser)->select('company_code')->first();
-                $currentCompanyCode = $getCompanyCode->company_code;
+                $getCompanyCode = Company::where('company_name', $companyNameUser)->select('id')->first();
+                $currentCompanyId = $getCompanyCode->id;
 
                 $data_row = BeritaAcara::select(
                     "berita_acaras.id",
@@ -736,7 +739,8 @@ class QueryController extends Controller
                     "berita_acaras.penetapan_juara",
                     "berita_acaras.signed_file"
                 )->join('events', 'berita_acaras.event_id', '=', 'events.id')
-                    ->where('events.company_code', $currentCompanyCode);
+                    ->join('company_event', 'events.id', '=', 'company_event.event_id')
+                    ->where('company_event.company_id', $currentCompanyId);
             }
 
             $dataTable = DataTables::of($data_row->get());
@@ -761,7 +765,6 @@ class QueryController extends Controller
                 // User biasa tidak memiliki tombol
                 return '';
             });
-
 
             // Tambahkan kolom hapus jika signed_file sudah ada
             $dataTable->addColumn('delete', function ($data_row) use ($currentUser) {
@@ -827,8 +830,10 @@ class QueryController extends Controller
 
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateTemplate" onclick="get_data_template(' . $data_row->id . ')">Update</button>
-                <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteTemplate" onclick="delete_template(' . $data_row->id . ')">Delete</button>';
+                if (auth()->user()->role == 'Superadmin') {
+                    return '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateTemplate" onclick="get_data_template(' . $data_row->id . ')">Update</button>
+                            <button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#deleteTemplate" onclick="delete_template(' . $data_row->id . ')">Delete</button>';
+                }
             });
 
             $rawColumns[] = 'detail_point';
@@ -872,7 +877,6 @@ class QueryController extends Controller
                         END, pvt_assessment_events.id ASC");
 
             $dataTable = DataTables::of($data_row->get());
-
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
                 if ($data_row->status_point == 'nonactive') {
@@ -2006,10 +2010,13 @@ class QueryController extends Controller
         try {
             $data_row = Event::orderBy('id', 'desc')
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 WHEN status = 'not active' THEN 1 WHEN status = 'finish' THEN 2 ELSE 3 END");
+            Log::debug($data_row->get());
 
             // Jika user bukan Superadmin, filter berdasarkan company_code
             if (!$isSuperadmin) {
-                $data_row->where('company_code', $company_code);
+                $data_row->whereHas('companies', function ($query) use ($company_code) {
+                    $query->where('company_code', $company_code);
+                });
             }
 
             $data_row = $data_row->get();
@@ -2019,15 +2026,8 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Company';
             $dataTable->addColumn('company', function ($data_row) {
-                $idevent = explode(",", $data_row->company_code);
-                $list_company = Company::whereIn('company_code', $idevent)
-                    ->select('company_name')
-                    ->get()
-                    ->toArray();
-
-                $company = array_column($list_company, 'company_name');
-                $company_name = implode(",  ", $company);
-                return $company_name;
+                $companies = $data_row->companies->pluck('company_name')->toArray();
+                return $companies;
             });
 
             $rawColumns[] = 'status';
@@ -2044,19 +2044,20 @@ class QueryController extends Controller
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
                 $userCompanyName = Auth::user()->company_name;
-                $getCompanyName = Company::where('company_code', $data_row->company_code)->select('company_name')->first();
+                $companyCodeUser = Auth::user()->company_code;
                 $isAdmin = Auth::user()->role === "Admin";
+                $event = Event::find($data_row->id);
+
                 if (auth()->user()->role == 'Superadmin') {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
                             <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
 
-                if ($isAdmin && $userCompanyName === $getCompanyName->company_name) {
+                if ($isAdmin && $event->companies()->where('company_code', $companyCodeUser)->exists() && $event->type === 'AP') {
                     return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
-                    <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
+                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
                 }
             });
-
             $dataTable->rawColumns($rawColumns);
 
             return $dataTable->toJson();

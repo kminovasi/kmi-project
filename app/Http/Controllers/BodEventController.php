@@ -21,7 +21,7 @@ class BodEventController extends Controller
         } else {
             // Jika bukan Superadmin, filter berdasarkan company_code yang sama dengan user yang login
             $bodEvents = BodEvent::with(['user', 'event'])
-                ->whereHas('event', function ($query) use ($company_code) {
+                ->whereHas('event.companies', function ($query) use ($company_code) {
                     $query->where('company_code', $company_code);
                 })
                 ->get();

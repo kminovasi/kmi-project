@@ -16,8 +16,9 @@ class Company extends Model
     ];
     public function events()
     {
-        return $this->hasMany(Event::class, 'company_code', 'company_code');
+        return $this->belongsToMany(Event::class, 'company_event', 'company_id', 'event_id');
     }
+
 
     // Define the relationship to the Team model
     public function teams()

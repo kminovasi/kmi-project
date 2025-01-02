@@ -23,9 +23,10 @@ class CertificateController extends Controller
         if ($userRole->role == 'Admin') {
             $eventsWithoutCertificate = \DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
-                // ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
+                ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
+                ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')
                 ->whereNull('certificates.event_id')
-                ->where('events.company_code', '=', $userRole->company_code)
+                ->where('companies.company_code', '=', $userRole->company_code)
                 ->select(
                     'events.id as event_id',
                     'events.event_name',
@@ -34,8 +35,8 @@ class CertificateController extends Controller
                 )
                 ->get();
 
-                $certificates = Certificate::with(['event.company'])
-                ->whereHas('event', function ($query) use ($userRole) {
+            $certificates = Certificate::with(['event.companies'])
+                ->whereHas('event.companies', function ($query) use ($userRole) {
                     $query->where('company_code', '=', $userRole->company_code);
                 })
                 ->get();
@@ -43,8 +44,9 @@ class CertificateController extends Controller
         } else {
             $eventsWithoutCertificate = \DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
+                ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
+                ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')
                 ->whereNull('certificates.event_id')
-                ->leftJoin('companies', 'companies.company_code', '=', 'events.company_code')
                 ->select(
                     'events.id as event_id',
                     'events.event_name',
@@ -54,9 +56,8 @@ class CertificateController extends Controller
                 )
                 ->get();
 
-
-                $certificates = Certificate::with('event.company')->get();
-            }
+            $certificates = Certificate::with('event.companies')->get();
+        }
 
         return view("admin.certificate.certificate", compact('certificates', 'eventsWithoutCertificate'));
     }

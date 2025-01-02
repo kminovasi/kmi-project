@@ -19,6 +19,7 @@ use App\Http\Requests\eventRequest;
 use App\Http\Requests\judgeRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\getEvents;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Log;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -70,42 +71,41 @@ class ManagamentSystemController extends Controller
         return response()->json($datas_event);
     }
 
-
-
-
-
     public function assignEventStore(eventRequest $request)
     {
         try {
-            // Validate the form data
+            // Validasi data dari request
             $validatedData = $request->validated();
+            FacadesLog::info('Validated Data:', $validatedData);
 
-            // Begin database transaction
+            // Mulai transaksi database
             DB::beginTransaction();
 
-            // Ensure 'company_code' is an array, even if only one value is provided
-            $companyCodes = (array)$validatedData['company_code'];
-
-            // Join the filtered company codes into a comma-separated string
-            $companyCodesString = implode(',', $companyCodes);
-
-            // Create the event with the combined company codes and the new 'type' field
-            Event::create([
+            // Buat event baru
+            $event = Event::create([
                 'event_name' => $validatedData['event_name'],
-                'date_start' => $validatedData['start_date'], // Pastikan menggunakan 'date_start'
-                'date_end' => $validatedData['end_date'], // Pastikan menggunakan 'date_end'
+                'date_start' => $validatedData['start_date'], // Gunakan 'date_start'
+                'date_end' => $validatedData['end_date'],     // Gunakan 'date_end'
                 'year' => $validatedData['year'],
-                'company_code' => $companyCodesString, // Store as comma-separated string
                 'status' => 'not active',
-                'description' => $request['description'] ?? '', // Provide default value if not set
-                'type' => $validatedData['type'], // Tambahkan kolom 'type' di sini
+                'description' => $request['description'] ?? '', // Default jika deskripsi tidak ada
+                'type' => $validatedData['type'], // Tambahkan 'type'
             ]);
 
-            // Commit the transaction
+            // Handle "select_all" option
+            $companyIds = array_filter($validatedData['company_code'], function($value) {
+                return $value !== 'select_all';
+            });
+
+            // Hubungkan perusahaan ke event melalui tabel pivot
+            $event->companies()->attach($companyIds);
+
+            // Commit transaksi
             DB::commit();
+
             return redirect()->route('management-system.assign.event')->with('success', 'Event assigned successfully');
         } catch (\Exception $e) {
-            // Rollback the transaction in case of error
+            // Rollback transaksi jika ada error
             DB::rollback();
             return redirect()->route('management-system.assign.event.create')->withErrors('Error: ' . $e->getMessage());
         }
@@ -117,28 +117,37 @@ class ManagamentSystemController extends Controller
         try {
             DB::beginTransaction();
 
-            $event = Event::findOrFail($id);  // Mengambil event berdasarkan ID
-            $companyCode = $event->company_code;  // Mengambil kode perusahaan dari event
+            // Ambil event berdasarkan ID
+            $event = Event::findOrFail($id);
+
+            // Ambil semua perusahaan terkait event
+            $companies = $event->companies;
 
             // Jika status yang ingin diubah menjadi 'active'
             if ($request->status === 'active') {
-                // Cek apakah ada event lain yang aktif pada perusahaan yang sama
-                $activeEvent = Event::where('status', 'active')
-                    ->where('company_code', $companyCode)
-                    ->where('id', '!=', $id)
-                    ->first();
+                foreach ($companies as $company) {
+                    // Cek apakah ada event lain yang aktif untuk perusahaan yang sama
+                    $activeEventExists = DB::table('events')
+                        ->join('company_event', 'events.id', '=', 'company_event.event_id')
+                        ->where('company_event.company_id', $company->id)
+                        ->where('events.status', 'active')
+                        ->where('events.id', '!=', $id) // Hindari ambiguitas dengan menambahkan alias tabel
+                        ->exists();
 
-                if ($activeEvent) {
-                    return redirect()->route('management-system.assign.event')->withErrors('Error: Perusahaan hanya dapat memiliki satu event aktif pada satu waktu.');
+                    if ($activeEventExists) {
+                        return redirect()->route('management-system.assign.event')
+                            ->withErrors('Error: Perusahaan hanya dapat memiliki satu event aktif pada satu waktu.');
+                    }
                 }
             }
 
-            // Mengupdate status event
+            // Update status event
             $event->update([
                 'status' => $request->status,
             ]);
 
             DB::commit();
+
             return redirect()->route('management-system.assign.event')->with('success', 'Change Status Event successful');
         } catch (\Exception $e) {
             DB::rollback();
@@ -148,26 +157,58 @@ class ManagamentSystemController extends Controller
 
 
 
+
     public function updateEvent(Request $request, $id)
     {
         try {
             DB::beginTransaction();
+
+            // Find the event
             $event = Event::findOrFail($id);
+
+            // Basic event data update
             $event->update([
                 'event_name' => $request->input('event_name'),
                 'date_start' => $request->input('start_date'),
                 'date_end' => $request->input('end_date'),
                 'year' => $request->input('year'),
-                'company_code' => $request->input('company_code'),
-                'status' => $request->input('status'),
                 'description' => $request->input('description'),
                 'type' => $request->input('type'),
             ]);
+
+            // Handle company relationships based on event type
+            if ($request->input('type') === 'AP') {
+                // For AP type, handle single company
+                $companyId = $request->input('company_code');
+                if (!is_array($companyId)) {
+                    $companyId = [$companyId];
+                }
+                $event->companies()->sync($companyId);
+            } else {
+                // For other types, handle multiple companies
+                $companyIds = $request->input('company_code', []);
+
+                // If "select_all" is included, get all company IDs
+                if (in_array('select_all', $companyIds)) {
+                    $companyIds = Company::pluck('id')->toArray();
+                }
+
+                // Remove 'select_all' from the array if it exists
+                $companyIds = array_filter($companyIds, function($value) {
+                    return $value !== 'select_all';
+                });
+
+                $event->companies()->sync($companyIds);
+            }
+
             DB::commit();
-            return redirect()->route('management-system.assign.event')->with('success', 'Data Event updated successfully');
+            return redirect()->route('management-system.assign.event')
+                ->with('success', 'Data Event updated successfully');
+
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('management-system.assign.event')
+                ->withErrors('Error: ' . $e->getMessage());
         }
     }
 

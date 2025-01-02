@@ -52,9 +52,10 @@
                             <td>>Rp.{{ number_format($paper->potential_benefit, 0, ',', '.') }}</td>
                             <td>
                                 @if ($paper->is_best_of_the_best == false)
-                                    {{ $paper->status }}
+                                    Juara {{ $paper->rank }}
                                 @else
-                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                                Juara {{ $paper->rank }}
+                                    <button type="button" class="btn btn-warning btn-xs" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                         data-bs-title="Best of The Best">
                                         <i class="fas fa-trophy" aria-hidden="true"></i>

@@ -13,6 +13,6 @@ class Category extends Model
 
     public function teams()
     {
-        return $this->hasMany(Team::class,'foreign_key', 'category_id');
+        return $this->hasMany(Team::class, 'category_id', 'id');
     }
 }

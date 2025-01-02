@@ -71,6 +71,11 @@ class Team extends Model
     public function internalEvents()
     {
         return $this->belongsToMany(Event::class, 'pvt_event_teams', 'team_id', 'event_id')
+            ->where('type', 'internal');
+    }
+    public function apEvents()
+    {
+        return $this->belongsToMany(Event::class, 'pvt_event_teams', 'team_id', 'event_id')
             ->where('type', 'AP');
     }
 

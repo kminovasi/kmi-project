@@ -270,7 +270,7 @@ class PaperController extends Controller
                 'status' => 'created'
             ]);
             $step = MetodologiPaper::where('id', $request->input('metodologi_paper_id'))->pluck('step')[0];
-            if ($step <=8) {
+            if ($step < 8) {
 
                 Paper::create([
                     'innovation_title' => $request->input('innovation_title'),
@@ -295,6 +295,7 @@ class PaperController extends Controller
                         'public'
                     ),
                     'metodologi_paper_id' => $request->input('metodologi_paper_id'),
+                    'step_8' => '-',
                 ]);
             } else {
                 // dd($request->input('inovasi_lokasi'));
@@ -302,7 +303,6 @@ class PaperController extends Controller
                     'innovation_title' => $request->input('innovation_title'),
                     'inovasi_lokasi' => $request->input('inovasi_lokasi'),
                     'team_id' => $newTeam->id,
-                    'step_8' => '-',
                     'abstract' => $request->input('abstract'),
                     'problem' => $request->input('problem'),
                     'status_inovasi' => $request->input('status_inovasi'),
@@ -1285,7 +1285,12 @@ class PaperController extends Controller
 
         if ($request->status == "accept" && $status_paper_before != 'rollback') {
             $team_id = Paper::where('id', $id)->pluck('team_id')[0];
+            $team = Team::findOrFail($team_id);
             $event_id = Event::where('id', $request->event_id)->pluck('id')[0];
+            $eventData = Event::findOrFail($event_id);
+            $team->update([
+                'status_lomba' => $eventData->type
+            ]);
             $idEventTeam = PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,
                 'event_id' => $event_id,
@@ -1692,4 +1697,34 @@ class PaperController extends Controller
             return true;
         }
     }
+
+    public function getEventsByCompanyCode($companyCode)
+{
+    try {
+        // Cari perusahaan berdasarkan company_code
+        $company = Company::where('company_code', $companyCode)->first();
+
+        // Jika perusahaan tidak ditemukan, lempar error
+        if (!$company) {
+            return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);
+        }
+
+        // Ambil daftar event terkait perusahaan
+        $events = $company->events()->get();
+
+        // Kembalikan response dengan data event
+        return response()->json([
+            'success' => true,
+            'company' => $company->company_name,
+            'events' => $events,
+        ]);
+    } catch (\Exception $e) {
+        // Tangani error
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }

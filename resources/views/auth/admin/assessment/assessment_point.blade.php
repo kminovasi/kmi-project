@@ -41,7 +41,7 @@
 </header>
 <!-- Main page content-->
 <div class="container-xl px-4 mt-4">
-    @if (auth()->check() && auth()->user()->role == 'Superadmin')
+    @if (auth()->check() && auth()->user()->role == 'Superadmin' ||  auth()->user()->role == 'Admin')
     <div class="p-2 border-bottom">
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
             Assessment</a>
@@ -381,7 +381,6 @@
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
                 document.getElementById("inputPoint").value = response[0].point;
                 document.getElementById("inputScoreMax").value = response[0].score_max;
                 //document.getElementById("inputDetailPoint").value = response[0].detail_point;

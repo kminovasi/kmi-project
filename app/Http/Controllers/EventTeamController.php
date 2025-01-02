@@ -31,16 +31,23 @@ class EventTeamController extends Controller
         return view('event-team.index', compact('companies'));
     }
 
-    public function getEvents(Request $request)
-    {
-        // Ambil user yang sedang login
-        $user = Auth::user();
+public function getEvents(Request $request)
+{
+    // Ambil user yang sedang login
+    $user = Auth::user();
 
-        // Buat query untuk mengambil event
-        $query = Event::with('company'); // Ambil semua event dengan relasi company
+    // Buat query untuk mengambil event
+    $query = Event::with('company'); // Ambil semua event dengan relasi company
 
-        // Jika user bukan Superadmin, ambil tim yang diikuti oleh user
-        if ($user->role !== 'Superadmin') {
+    // Jika user bukan Superadmin, ambil tim yang diikuti oleh user
+    if ($user->role !== 'Superadmin') {
+        // Jika user adalah Admin, ambil event yang berkaitan dengan company asal dari admin tersebut
+        if ($user->role === 'Admin') {
+            $companyCode = $user->company_code;
+            $query->whereHas('companies', function ($q) use ($companyCode) {
+                $q->where('company_code', $companyCode);
+            });
+        } else {
             // Ambil tim yang diikuti oleh user
             $teams = PvtMember::where('employee_id', $user->employee_id)
                 ->pluck('team_id');
@@ -58,32 +65,33 @@ class EventTeamController extends Controller
                 return DataTables::of([])->toJson();
             }
         }
-
-        // Filter berdasarkan type
-        if ($request->has('type') && $request->type != '') {
-            $query->where('type', $request->type);
-        }
-
-        // Filter berdasarkan perusahaan
-        if ($request->has('company_code') && $request->company_code != '') {
-            $query->where('company_code', $request->company_code);
-        }
-
-        // Filter berdasarkan status
-        if ($request->has('status') && $request->status != '') {
-            $query->where('status', $request->status);
-        }
-
-        // Urutkan berdasarkan status (active first) dan tanggal mulai terbaru
-        $query->orderByRaw("CASE WHEN status = 'active' THEN 1 ELSE 2 END")
-            ->orderBy('date_start', 'desc');
-
-        return DataTables::of($query)
-            ->addColumn('company', function ($event) {
-                return $event->company ? $event->company->company_name : 'N/A';
-            })
-            ->toJson();
     }
+
+    // Filter berdasarkan type
+    if ($request->has('type') && $request->type != '') {
+        $query->where('type', $request->type);
+    }
+
+    // Filter berdasarkan perusahaan
+    if ($request->has('company_code') && $request->company_code != '') {
+        $query->where('company_code', $request->company_code);
+    }
+
+    // Filter berdasarkan status
+    if ($request->has('status') && $request->status != '') {
+        $query->where('status', $request->status);
+    }
+
+    // Urutkan berdasarkan status (active first) dan tanggal mulai terbaru
+    $query->orderByRaw("CASE WHEN status = 'active' THEN 1 ELSE 2 END")
+        ->orderBy('date_start', 'desc');
+
+    return DataTables::of($query)
+        ->addColumn('company', function ($event) {
+            return $event->company ? $event->company->company_name : 'N/A';
+        })
+        ->toJson();
+}
     public function show($id)
     {
         $event = Event::findOrFail($id);

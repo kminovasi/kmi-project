@@ -99,7 +99,10 @@
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;"
                             data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $breakthroughInnovation + $incrementalInnovation }}
+                            <!-- Menampilkan total jumlah inovasi berdasarkan kategori -->
+                            {{ $categories->sum(function ($category) {
+                                return $category->teams_count;
+                            }) }}
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">

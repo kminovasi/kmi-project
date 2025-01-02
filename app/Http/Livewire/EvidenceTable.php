@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Paper;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -91,6 +92,10 @@ class EvidenceTable extends Component
 
         $papers = $papers->paginate($this->perPage);
         $currentPage = $papers->currentPage();
+        $rank = 1;
+        foreach ($papers as $paper) {
+            $paper->rank = $rank++;
+        }
 
         return view('livewire.evidence-table', compact('papers', 'currentPage'));
     }

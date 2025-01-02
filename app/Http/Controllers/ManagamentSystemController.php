@@ -71,7 +71,6 @@ class ManagamentSystemController extends Controller
         return response()->json($datas_event);
     }
 
-
     public function assignEventStore(eventRequest $request)
     {
         try {
@@ -93,8 +92,12 @@ class ManagamentSystemController extends Controller
                 'type' => $validatedData['type'], // Tambahkan 'type'
             ]);
 
+            // Handle "select_all" option
+            $companyIds = array_filter($validatedData['company_code'], function($value) {
+                return $value !== 'select_all';
+            });
+
             // Hubungkan perusahaan ke event melalui tabel pivot
-            $companyIds = $validatedData['company_code']; // Array berisi ID perusahaan
             $event->companies()->attach($companyIds);
 
             // Commit transaksi

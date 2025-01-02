@@ -15,8 +15,6 @@
         Inovasi</a>
 
     @if (Auth::user()->role == 'Juri' ||
-    Auth::user()->role == 'User' ||
-    Auth::user()->role == 'BOD' ||
     Auth::user()->role == 'Admin' ||
     Auth::user()->role == 'Superadmin' ||
     $is_judge)

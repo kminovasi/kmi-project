@@ -59,7 +59,7 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $certificate->event->event_name }} {{ $certificate->event->year }}</td>
-                                        <td>{{ $certificate->event->company->company_name }}</td>
+                                        <td>{{ $certificate->event && $certificate->event->company ? $certificate->event->company->company_name : '-' }}</td>
                                         <td>
                                             <img src="{{ asset('storage/' . $certificate->template_path) }}"
                                                 alt="Template Gambar" class="img-fluid" style="max-width: 100px; height: auto;">

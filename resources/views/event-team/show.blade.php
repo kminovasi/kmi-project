@@ -166,7 +166,7 @@
                             } else {
                                 return data ?
                                     '<span class="badge bg-success">Masuk Grup</span>' :
-                                    '<span class="badge bg-danger">Reject</span>';
+                                    '<span class="badge bg-danger">Belum Terverifikasi oleh Superadmin</span>';
                             }
                         }
                     });

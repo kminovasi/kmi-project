@@ -326,7 +326,7 @@
             var unitField = document.getElementById("unit");
             var departmentField = document.getElementById("department");
             var directorateField = document.getElementById("directorate");
-
+            console.log(leader_value)
 
             $.ajax({
                 headers: {
@@ -353,12 +353,12 @@
                     limit: 1
                 },
                 success: function(response) {
+                    console.log(response)
                     companyField.value = response[0].co_name
                     unitField.value = response[0].unit_name
                     departmentField.value = response[0].department_name
                     directorateField.value = response[0].directorate_name
 
-                    console.log(response);
                 },
                 error: function(xhr, status, error) {
                     // Tangani kesalahan jika ada

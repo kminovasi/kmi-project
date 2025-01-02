@@ -103,26 +103,23 @@ class QueryController extends Controller
         ]);
     }
     public function get_fasilitator(Request $request)
-    {
-        $unit = $request->input('unit');
-        $department = $request->input('department');
-        $directorate = $request->input('directorate');
-        $query = $request->input('query');
-        $results = User::where('name', 'ilike', "%$query%")
-            ->where('email', 'ilike', "%$query%")
-            ->whereIn('job_level', ["Band 2", "Band 1"])
-            ->whereRaw("CASE
-                            WHEN job_level = 'Band 2' THEN unit_name = ?
-                            WHEN job_level = 'Band 1' AND department_name IS NOT NULL THEN department_name = ?
-                            WHEN job_level = 'Band 1' AND department_name IS NULL THEN directorate_name = ?
-                        END", [$unit, $department, $directorate])
-            ->join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->select('employee_id', 'name', 'companies.company_name', 'job_level')
-            ->limit(10)
-            ->get();
+{
+    $unit = $request->input('unit');
+    $department = $request->input('department');
+    $directorate = $request->input('directorate');
+    $query = $request->input('query');
+    $results = User::with('company')
+        ->where(function($q) use ($query) {
+            $q->where('name', 'ilike', "%$query%")
+              ->orWhere('email', 'ilike', "%$query%");
+        })
+        ->whereIn('job_level', ["Band 2", "Band 1"])
+        ->select('employee_id', 'name', 'company_name', 'job_level')
+        ->limit(10)
+        ->get();
 
-        return response()->json($results);
-    }
+    return response()->json($results);
+}
 
     public function get_GM(Request $request)
     {
@@ -221,6 +218,7 @@ class QueryController extends Controller
             //     ->whereRaw($where_column. '='. $where_data)
             //     ->limit($limit)
             //     ->get();
+            Log::debug($result);
 
             if ($result->isEmpty()) {
                 return response()->json([
@@ -579,8 +577,13 @@ class QueryController extends Controller
                             elseif ($data_row->{"step_" . $i} == 3 || $data_row->{"step_" . $i} == 1)
                                 $html .= "<a class=\"btn btn-warning btn-xs\" href=\"" . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . " \">Edit</a>";
                         }
-
-                        $html .= "<a class=\"btn btn-info btn-xs\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'step_' . $i]) . " \" target=\"_blank\">Detail</a>";
+                        $metodologiPaper = MetodologiPaper::findOrFail($data_row->metodologi_paper_id);
+                        $metodologiPaperStep = $metodologiPaper->step;
+                        if($metodologiPaperStep === 7 && $i === 8){
+                              $html .= "-";
+                        }else{
+                            $html .= "<a class=\"btn btn-info btn-xs\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'step_' . $i]) . " \" target=\"_blank\">Detail</a>";
+                        }
                     }
 
                     return $html;

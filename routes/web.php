@@ -70,7 +70,7 @@ Route::post('/logout', [SessionController::class, 'logout'])->name('logout')->mi
 Route::get('dashboard', [
     DashboardController::class,
     'showDashboard'
-])->name('dashboard')->middleware(['role:Superadmin,Admin'], 'auth');
+])->name('dashboard')->middleware('auth');
 
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{id}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');

@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <x-dashboard.total-financial-benefit-card />
+                        <x-dashboard.total-financial-benefit-card :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
 
                     <!-- Total Value Custom Benefit -->

@@ -28,13 +28,19 @@ class Benefit extends Component
         ];
 
         // Mengambil data total benefit untuk setiap perusahaan berdasarkan status yang sudah disetujui
-        $data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+        $query = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
             ->whereIn('papers.status', $acceptedStatuses)
             ->groupBy('companies.company_name')
-            ->orderBy('total_benefit', 'DESC')
-            ->get();
+            ->orderBy('total_benefit', 'DESC');
+
+        // Filter data based on user's company code if not a superadmin
+        if (!$this->isSuperadmin) {
+            $query->where('teams.company_code', $this->userCompanyCode);
+        }
+
+        $data = $query->get();
 
         // Menyiapkan data untuk Chart.js
         foreach ($data as $row) {

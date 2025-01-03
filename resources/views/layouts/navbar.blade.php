@@ -7,7 +7,7 @@
     <!-- * * Tip * * You can use text or an image for your navbar brand.-->
     <!-- * * * * * * When using an image, we recommend the SVG format.-->
     <!-- * * * * * * Dimensions: Maximum height: 32px, maximum width: 240px-->
-    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="{{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? route('dashboard') : route('dashboard-innovator') }}">Portal inovasi SIG</a>
+    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="/">Portal inovasi SIG</a>
     <!-- Navbar Search Input-->
 
     <!-- * * Note: * * Visible only on and above the lg breakpoint-->

@@ -88,6 +88,11 @@
                                 <input type="text" name="sub_section_of" class="form-control"
                                     value="{{ $user->sub_section_of }}">
                             </div>
+                            <div class="form-group">
+                                <label>Job Level</label>
+                                <input type="text" name="job_level" class="form-control"
+                                    value="{{ $user->job_level }}">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">

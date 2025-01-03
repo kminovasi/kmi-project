@@ -129,6 +129,8 @@ class PaperController extends Controller
             ->get();
 
         $datas_company = Company::all();
+        $userEmployeeId = Auth::user()->employee_id;
+        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
 
         if ($request->input('nextevent') == 'External') {
             $nextEvent = $request->input('nextevent');
@@ -174,7 +176,8 @@ class PaperController extends Controller
                 'datas_company' => $datas_company,
                 'data_member' => $datas_member,
                 'dt_team' => $dt_team,
-                'nextEvent' => $nextEvent
+                'nextEvent' => $nextEvent,
+                'is_judge' => $is_judge,
             ]);
         } elseif ($request->input('nextevent') == 'Group') {
             $nextEvent = $request->input('nextevent');
@@ -225,7 +228,8 @@ class PaperController extends Controller
                 'datas_user' => $datas_user,
                 'data_member' => $datas_member,
                 'dt_team' => $dt_team,
-                'nextEvent' => $nextEvent
+                'nextEvent' => $nextEvent,
+                'is_judge' => $is_judge,
             ]);
         } else {
             return view('auth.user.paper.register', [
@@ -234,6 +238,7 @@ class PaperController extends Controller
                 'datas_event' => $datas_event,
                 'datas_user' => $datas_user,
                 'fasil' => $fasil,
+                'is_judge' => $is_judge,
             ]);
         }
     }

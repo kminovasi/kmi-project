@@ -159,7 +159,9 @@
                         render: function(data, type, row) {
                             if (data === 'active') {
                                 return '<span class="badge badge-success">Active</span>';
-                            } else {
+                            } else if(data === 'finish') {
+                                return '<span class="badge bg-primary text-white">Finish</span>';
+                            }else{
                                 return '<span class="badge badge-danger">Not Active</span>';
                             }
                         }

@@ -227,4 +227,30 @@ class UserManagementController extends Controller
     }
 }
 
+public function getUsersWithCompany(Request $request)
+{
+    $employeeId = $request->query('employee_id');
+
+    $user = User::where('employee_id', $employeeId)
+        ->join('companies', 'companies.company_code', '=', 'users.company_code')
+        ->select(
+            'companies.company_name as co_name',
+            'users.unit_name as unit_name',
+            'users.department_name as department_name',
+            'users.directorate_name as directorate_name'
+        )
+        ->first();
+
+    if ($user) {
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+        ]);
+    } else {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found',
+        ], 404);
+    }
+}
 }

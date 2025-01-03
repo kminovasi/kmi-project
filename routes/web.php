@@ -450,6 +450,8 @@ Route::get('/testing', function () {
     return view('testmerge');
 });
 
+Route::get('/getUsersWithCompany', [UserManagementController::class, 'getUsersWithCompany'])->name('getUsersWithCompany');
+
 Route::post('merger-pdf', [App\Http\Controllers\PDFMergerController::class, 'merge'])->name('merge-pdf');
 
 Route::get('/getAllBodEvent', [BodEventController::class, 'index'])->name('bodevent.index')->middleware('auth');

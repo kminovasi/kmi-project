@@ -32,8 +32,13 @@ use Carbon\Carbon;
                         <div class="float-end text-danger small">{{ Carbon::parse($event->date_start)->format('d M') }}
                             - {{ Carbon::parse($event->date_end)->format('d M Y') }}</div>
                         <h4 class="card-title text-danger">{{ $event->event_name }} - {{ $event->event_year }}</h4>
+                        <p class="card-text ">
+                            <strong> Event lomba {{ $event->type }}</strong>
+                        </p>
                         <p class="card-text">
-                            Event lomba {{ $event->type }}
+                            Jadikan Kesempatan ini sebagai momen untuk menunjukkan kreativitas dan solusi terbaik Anda.
+                            Berpartisipasilah dalam lomba ini dan jadilah bagian dari perubahan besar di lingkungan perusahaan.
+                            Jangan lewatkan peluang untuk meraih peghargaan atas inovasi Anda!.
                         </p>
                     </div>
                 </div>
@@ -50,7 +55,12 @@ use Carbon\Carbon;
                             - {{ Carbon::parse($event->date_end)->format('d M Y') }}</div>
                         <h4 class="card-title text-danger">{{ $event->event_name }} - {{ $event->event_year }}</h4>
                         <p class="card-text">
-                            Event inovasi grup</p>
+                           <strong> Event inovasi grup</strong></p>
+                            <p class="card-text">
+                                Jadikan Kesempatan ini sebagai momen untuk menunjukkan kreativitas dan solusi terbaik Anda.
+                                Berpartisipasilah dalam lomba ini dan jadilah bagian dari perubahan besar di lingkungan perusahaan.
+                                Jangan lewatkan peluang untuk meraih peghargaan atas inovasi Anda!.
+                            </p>
                     </div>
                 </div>
             </div>

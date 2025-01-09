@@ -423,7 +423,6 @@ class QueryController extends Controller
             $data_row = $query_data->select($select)->get();
 
             $dataTable = DataTables::of($data_row);
-            Log::debug($data_row);
 
             $rawColumns = ['detail_team'];
             $dataTable->addColumn('detail_team', function ($data_row) {
@@ -464,7 +463,12 @@ class QueryController extends Controller
                     }
                 } else {
                     if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                        Log::debug($data_row->status);
+                        if($data_row->status === "not finish"){
+                            return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
+                        }else{
+                            return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                        }
                     } else {
                         return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
                     }

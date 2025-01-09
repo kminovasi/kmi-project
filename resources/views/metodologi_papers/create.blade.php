@@ -38,7 +38,7 @@
                         </div>
                         <div class="form-group">
                             <label for="max_user">Maksimal Pengguna:</label>
-                            <input type="number" name="max_user" class="form-control" placeholder="Maksimal Pengguna">
+                            <input type="number" name="max_user" class="form-control" placeholder="Maksimal Pengguna" min="0">
                         </div>
                         <button type="submit" class="btn btn-primary mt-3">Submit</button>
                     </form>

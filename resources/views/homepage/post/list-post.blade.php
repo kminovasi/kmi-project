@@ -16,25 +16,30 @@
 
 <div class="container py-5">
     <div class="row">
+        @foreach ($posts as $post )
         <div class="col-md-4">
-            @foreach ($posts as $post )
             <div class="p-2 border rounded-2">
                 <img class="img-fluid rounded-2" src="{{ 'storage/' . $post->cover_image }}" alt="">
                 <div class="p-2">
-                    <a href="{{ route('post.show', $post->slug) }}" class="text-decoration-none text-dark"><h4>{{ $post->title }}</h4></a>
+                    <a href="{{ route('post.show', $post->slug) }}" class="text-decoration-none text-dark">
+                        <h4>{{ $post->title }}</h4>
+                    </a>
                     <small class="text-muted mb-1"><strong>{{ $post->user->username }}</strong></small>
                     <small class="text-muted">{{ $post->created_at->diffForHumans() }}</small>
                 </div>
             </div>
-            @endforeach
-            @if ($posts->hasPages())
-                <div class="mt-4">
-                    {{ $posts->links() }}
-                </div>
-            @endif
         </div>
+        @endforeach
+
     </div>
 </div>
+
+@if ($posts->hasPages())
+<div class="mt-4">
+    {{ $posts->links() }}
+</div>
+@endif
+
 @endsection
 
 @push('js')

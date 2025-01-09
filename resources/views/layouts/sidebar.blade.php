@@ -106,11 +106,11 @@
                         <div class="nav-link-icon"><i data-feather="award"></i></div>
                         <span class="text-white">Certificate</span>
                     </a>
-                    <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
+                    {{-- <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
                         href="{{ route('flyer.index') }}">
                         <div class="nav-link-icon"><i data-feather="airplay"></i></div>
                         <span class="text-white">Flyer</span>
-                    </a>
+                    </a> --}}
                     <a class="nav-link {{ request()->routeIs('timeline.index') ? 'active' : '' }}"
                         href="{{ route('timeline.index') }}">
                         <div class="nav-link-icon"><i data-feather="clock"></i></div>

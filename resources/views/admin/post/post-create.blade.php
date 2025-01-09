@@ -34,7 +34,8 @@
                 <!-- Input untuk Judul -->
                 <div class="mb-3">
                     <label for="title" class="form-label">Judul</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="Masukkan judul" required>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Masukkan judul"
+                        required>
                 </div>
 
                 <!-- Input untuk Gambar -->
@@ -47,7 +48,8 @@
                 <!-- Input untuk Konten -->
                 <div class="mb-3">
                     <label for="content" class="form-label">Isi</label>
-                    <textarea class="summernote form-control" id="content" name="content" rows="5" placeholder="Masukkan isi postingan" required></textarea>
+                    <textarea class="summernote form-control" id="content" name="content" rows="5"
+                        placeholder="Masukkan isi postingan" required></textarea>
                 </div>
 
                 <!-- Tombol Submit -->
@@ -74,6 +76,14 @@
     });
 </script>
 
-
 @endsection
 
+@push('js')
+<script>
+    $(document).ready(function() {
+        $('.summernote').summernote({
+            height: 200
+        });
+    });
+</script>
+@endpush

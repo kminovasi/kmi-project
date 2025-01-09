@@ -57,13 +57,7 @@
     @livewireScripts
     <script src="{{ asset('template/dist/js/scripts.js') }}"></script>
     <script src="{{ asset('template/dist/js/litepicker.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $('.summernote').summernote({
-                height: 200
-            });
-        });
-    </script>
+
     @stack('js')
 </body>
 

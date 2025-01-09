@@ -54,7 +54,7 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label class="mb-1" for="dataFinancial{{ $row->paper_id }}">Financial
-                                            (Real)</label>
+                                            (Real) {{$row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager'}} {{$is_owner}} </label>
                                         <input class="form-control" id="dataFinancial{{ $row->paper_id }}" type="text"
                                             name="financial" value="{{ $row->getFinancialFormattedAttribute() }}"
                                             oninput="formatCurrency(this)"

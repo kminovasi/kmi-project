@@ -999,8 +999,8 @@
                 // var performanceElement = document.getElementById('performance');
                 // performanceElement.textContent = data.paper[0].performance;
 
-                fotoTim =  '{{route('query.getFile')}}' + '?directory=' + data.paper[0].proof_idea;
-                fotoInovasi =  '{{route('query.getFile')}}' + '?directory=' + data.paper[0].innovation_photo;
+                fotoTim =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].proof_idea);
+                fotoInovasi =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].innovation_photo);
 
                 // Set the URL as the source for the iframe
                 document.getElementById("idFotoTim").src = fotoTim;

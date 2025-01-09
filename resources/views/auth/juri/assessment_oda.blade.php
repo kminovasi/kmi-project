@@ -109,7 +109,7 @@
                     </div>
                     <div class="col-md-5 mb-3">
                         <label class="small mb-1" for="fotoTim">Foto Tim</label>
-                        <img src="{{ route('query.getFile') }}?directory={{ $datas->proof_idea }}" id="fotoTim">
+                        <img src="{{ route('query.getFile') }}?directory={{ encodeURIComponent($datas->proof_idea) }}" id="fotoTim">
                     </div>
                 </div>
                 <div class="row">

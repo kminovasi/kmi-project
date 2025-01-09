@@ -1,5 +1,5 @@
 <div class="container py-4">
-    @if ($event->type === 'group')
+    @if ($event->type === 'group' || $event->type === 'internal' || $event->type === 'national' || $event->type === 'international')
         <!-- Card and Chart for Group Event -->
         <div class="card p-3 mb-4">
             <div class="card-header">

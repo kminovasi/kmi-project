@@ -321,51 +321,39 @@
 
         // fungsi untuk menampilkan dan mengset input value company beradasarkan leader
         function show_identity(element) {
-            var leader_value = element.value;
-            var companyField = document.getElementById("company");
-            var unitField = document.getElementById("unit");
-            var departmentField = document.getElementById("department");
-            var directorateField = document.getElementById("directorate");
-            console.log(leader_value)
+    var leader_value = element.value;
+    var companyField = document.getElementById("company");
+    var unitField = document.getElementById("unit");
+    var departmentField = document.getElementById("department");
+    var directorateField = document.getElementById("directorate");
+    console.log(leader_value)
 
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET', // Metode HTTP POST
-                url: '{{ route('query.custom') }}',
-                dataType: 'json',
-                async: false,
-                data: {
-                    table: "users",
-
-                    where: {
-                        'employee_id': leader_value
-                    },
-                    join: {
-                        'companies': {
-                            'companies.company_code': 'users.company_code'
-                        }
-                    },
-                    select: ['companies.company_name as co_name', 'users.unit_name as unit_name',
-                        'users.department_name as department_name', 'users.directorate_name as directorate_name'
-                    ],
-                    limit: 1
-                },
-                success: function(response) {
-                    console.log(response)
-                    companyField.value = response[0].co_name
-                    unitField.value = response[0].unit_name
-                    departmentField.value = response[0].department_name
-                    directorateField.value = response[0].directorate_name
-
-                },
-                error: function(xhr, status, error) {
-                    // Tangani kesalahan jika ada
-                    console.error(xhr.responseText);
-                }
-            });
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '{{ route('getUsersWithCompany') }}',
+        dataType: 'json',
+        data: {
+            employee_id: leader_value
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log(response.data)
+                companyField.value = response.data.co_name
+                unitField.value = response.data.unit_name
+                departmentField.value = response.data.department_name
+                directorateField.value = response.data.directorate_name
+            } else {
+                console.error(response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
         }
+    });
+}
 
         function addRow(element) {
             var anggota_array = document.querySelectorAll('select[name="anggota[]"]');

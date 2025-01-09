@@ -42,7 +42,7 @@ class TotalBenefitCompanyChart extends Component
         ];
 
         // Cek tipe event
-        if ($event->type === 'group') {
+        if ($event->type === 'group' || $event->type === 'internal' || $event->type === 'national' || $event->type === 'international') {
             // Ambil data perusahaan beserta total financial benefit untuk tipe event 'group'
             $companies = $event->papers
                 ->groupBy('team.company.company_name') // Kelompokkan berdasarkan nama perusahaan

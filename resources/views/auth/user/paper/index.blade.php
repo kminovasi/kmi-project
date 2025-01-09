@@ -746,7 +746,12 @@
             }, {
                 "data": "theme_name",
                 "title": "Theme"
-            }, {
+            },
+            {
+                "data": "metodologi_makalah",
+                "title": "Metodologi Makalah"
+            },
+             {
                 "data": "step_1",
                 "title": "Step 1"
             }, {
@@ -836,6 +841,7 @@
                 {"data": "company_name","title": "Company"},
                 {"data": "category_name","title": "Category"},
                 {"data": "theme_name","title": "Theme"},
+                {"data": "metodologi_makalah","title": "Metodologi Makalah"},
                 {"data": "step_1","title": "Step 1"},
                 {"data": "step_2","title": "Step 2"},
                 {"data": "step_3","title": "Step 3"},

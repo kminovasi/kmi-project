@@ -323,6 +323,7 @@ class QueryController extends Controller
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->join('themes', 'teams.theme_id', '=',  'themes.id')
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
+                ->join('metodologi_papers', 'papers.metodologi_paper_id', '=', 'metodologi_papers.id')
                 ->orderBy('papers.created_at', 'desc');
 
             $select = [
@@ -340,6 +341,7 @@ class QueryController extends Controller
                 'papers.status',
                 'papers.metodologi_paper_id',
                 'papers.status_rollback',
+                'metodologi_papers.name as metodologi_makalah', // Select metodologi makalah
                 DB::raw("CASE
                             WHEN SUBSTRING(step_1, 1, 1) = 'w' THEN 3
                             WHEN SUBSTRING(step_1, 1, 1) = 'f' THEN 2
@@ -421,11 +423,18 @@ class QueryController extends Controller
             $data_row = $query_data->select($select)->get();
 
             $dataTable = DataTables::of($data_row);
+            Log::debug($data_row);
 
             $rawColumns = ['detail_team'];
             $dataTable->addColumn('detail_team', function ($data_row) {
                 return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember" onclick="get_data_on_modal(' . $data_row->team_id . ')" >Detail</button>';
             });
+
+            //     // Add metodologi makalah column
+            // $rawColumns[] = 'metodologi_makalah';
+            // $dataTable->addColumn('metodologi_makalah', function ($data_row) {
+            //     return $data_row->metodologi_makalah;
+            // });
 
             //button untuk full paper
             $rawColumns[] = 'full_paper';

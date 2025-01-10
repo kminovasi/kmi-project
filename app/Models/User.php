@@ -58,7 +58,17 @@ class User extends Authenticatable
     {
         parent::boot();
 
+        static::deleting(function ($user) {
+            if ($user->role === 'Superadmin' && User::where('role', 'Superadmin')->count() === 1) {
+                throw new \Exception("Tidak dapat menghapus satu-satunya pengguna Superadmin.");
+            }
+        });
+
+
         static::updating(function ($user) {
+            if ($user->isDirty('role') && $user->role === 'Superadmin' && User::where('role', 'Superadmin')->count() === 1) {
+                throw new \Exception("Tidak dapat mengubah peran satu-satunya pengguna Superadmin.");
+            }
             // Atribut yang ingin dilacak perubahan
             $attributesToTrack = [
                 'directorate_name',

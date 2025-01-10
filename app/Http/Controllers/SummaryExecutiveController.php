@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PvtEventTeam;
 use App\Models\SummaryExecutive;
 use Illuminate\Http\Request;
 use Log;
@@ -33,5 +34,24 @@ class SummaryExecutiveController extends Controller
             'innovation_idea' => $summaryExecutive->innovation_idea,
             'benefit' => $summaryExecutive->benefit,
         ]);
+    }
+
+    public function getSummaryByTeamAndEventTeam($team_id, $pvt_event_teams_id)
+    {
+        $summary = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+            ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->where('teams.id', $team_id)
+            ->where('pvt_event_teams.id', $pvt_event_teams_id)
+            ->select(
+                'teams.id as team_id',
+                'papers.innovation_title',
+                'teams.team_name',
+                'companies.company_name',
+                'pvt_event_teams.id as pvt_event_teams_id'
+            )
+            ->first();
+
+        return response()->json($summary);
     }
 }

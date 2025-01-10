@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 
 class AdminAuthController extends Controller
 {
@@ -18,26 +19,19 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'username' => ['required'],
             'password' => 'required',
         ]);
 
         $credentials = $request->only('username', 'password');
 
-        $data = array(
-            'username' => $request->username,
-            'password' => $request->password,
-        );
-
-    
         if (!Auth::guard('admin')->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'username' => __('auth.failed'),
             ]);
         }
-        
-        // dd(Auth::guard('admin')->check());
+
         return redirect()->route('admin.coba');
     }
 

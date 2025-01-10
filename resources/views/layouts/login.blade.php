@@ -25,12 +25,6 @@
 <body>
     <div class="container-sm vh-100 d-flex align-items-center justify-content-center">
 
-        @error('username')
-            <div class="errormessage text-danger">
-                {{ $message }}
-            </div>
-        @enderror
-
         <div class="row shadow-lg rounded mx-auto w-100" style="max-height: 80vh; min-height: 600px; overflow: auto;">
             <div class="col-lg-6 bg-custom">
                 <!-- background full -->
@@ -40,6 +34,11 @@
                     <h3 class="text-danger fw-bold" style="font-size: 1.8rem;">Welcome to Portal Innovasi</h3>
                     <small class="text-muted" style="font-size: 1.1rem;">Silahkan login dulu</small>
                 </header>
+                @if(Session::has('error'))
+                    <div class="alert alert-danger">
+                        {{ Session::get('error') }}
+                    </div>
+                @endif
                 <div class="flex-grow-1 d-flex align-items-center">
                     <form action="{{ route('postLogin') }}" method="POST" class="w-100">
                         @csrf

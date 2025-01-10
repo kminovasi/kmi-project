@@ -55,39 +55,19 @@ class SessionController extends Controller
 
         $remember = $request->remember_me;
 
-        /* Has Active if Use SSO Provide */
-        /*        $respon = $this->single_auth($data);
-
-                if(!is_null($respon) && $respon['success']) {
-
-                    $user = User::where('username',$credentials['username'])->first();
-                    if(is_null($user)){
-                        throw ValidationException::withMessages([
-                            'username' => __('auth.nofound'),
-                        ]);
-                    }
-
-
-                    Auth::login($user, $remember);
-                    return redirect('/');
-                }*/
-
         // ketika fail dari sso
         $user = User::where('username', $credentials['username'])->first();
         // dd($user);
         if (is_null($user)) {
-            throw ValidationException::withMessages([
-                'username' => __('auth.nofound'),
-            ]);
+            Session::flash('error', __('User Tidak Ditemukan'));
+            return back();
         }
-
-
 
         if (!Auth::guard('web')->attempt($credentials, $remember)) {
-            throw ValidationException::withMessages([
-                'username' => __('auth.failed'),
-            ]);
+            Session::flash('error', __('Password Salah'));
+            return back();
         }
+
         if ($user->role === 'Admin' || $user->role === 'Superadmin') {
             return redirect()->intended('dashboard');
         }

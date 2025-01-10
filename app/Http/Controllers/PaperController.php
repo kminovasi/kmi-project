@@ -637,6 +637,7 @@ class PaperController extends Controller
     public function storeFileStages(Request $request, $id, $stage)
     {
         // dd($stage);
+        // dd($request->file_stage);
         try {
             if ($this->checkIsCompressed($request)) {
                 return redirect()->back()->withErrors('File Terkompres');

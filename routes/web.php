@@ -239,7 +239,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/best-of-the-best-team', [PvtEventTeamController::class, 'showDeterminingTheBestOfTheBestTeam'])->name('showDeterminingTheBestOfTheBestTeam');
         Route::post('/summaryExecutive', [AssessmentController::class, 'summaryExecutive'])->name('summaryExecutive');
         Route::put('/summaryExecutivePPT', [AssessmentController::class, 'summaryPPT'])->name('summaryPPT');
-        Route::get('/summary/get/{team_id}/{pvt_event_teams_id}', [SummaryExecutiveController::class, 'getSummaryByTeamAndEventTeam'])->name('getSummary');
         Route::get('/presentasiBOD', [AssessmentController::class, 'presentasiBOD'])->name('presentasiBOD');
 
         Route::put('/best-of-the-best', [PvtEventTeamController::class, 'determiningTheBestOfTheBestTeam'])->name('determiningTheBestOfTheBestTeam');

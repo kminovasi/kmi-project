@@ -76,8 +76,8 @@
     <div class="container-xl px-4 mt-4">
         <div class="p2">
             <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                                                                                                                                                                                                                <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                                                                                                                                                                                                                @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                                                                                                                                                                                                                                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                                                                                                                                                                                                                                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
     <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a> -->
             <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
             <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
@@ -446,19 +446,52 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'GET',
-            url: '{{ route('assessment.getSummary', ['team_id' => 'TEAM_ID', 'pvt_event_teams_id' => 'PVT_EVENT_TEAMS_ID']) }}'.replace('TEAM_ID', team_id).replace('PVT_EVENT_TEAMS_ID', pvt_event_teams_id),
+            url: '{{ route('query.custom') }}',
             dataType: 'json',
             async: false,
+            data: {
+                table: "teams",
+                where: {
+                    "teams.id": team_id,
+                    "pvt_event_teams.id": pvt_event_teams_id
+                },
+                limit: 1,
+                join: {
+                        'papers':{
+                            'papers.team_id': 'teams.id'
+                        },
+                        'categories':{
+                            'categories.id': 'teams.category_id'
+                        },
+                        'themes':{
+                            'themes.id': 'teams.theme_id'
+                        },
+                        'companies':{
+                            'companies.company_code' : 'teams.company_code'
+                        },
+                        'pvt_event_teams':{
+                            'pvt_event_teams.team_id' : 'teams.id'
+                        },
+                    },
+                select:[
+                        'teams.id as team_id',
+                        'innovation_title',
+                        'team_name',
+                        'company_name',
+                        'pvt_event_teams.id as pvt_event_teams_id',
+                    ]
+            },
+            // dataType: 'json',
             success: function(response) {
                 console.log("tim", response)
-                document.getElementById("TeamName").value = response.team_name;
-                document.getElementById("InnovationTitle").value = response.innovation_title;
-                document.getElementById("Company").value = response.company_name;
-                document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
-                pvtEventTeamId = response.pvt_event_teams_id;
+                document.getElementById("TeamName").value = response[0].team_name;
+                document.getElementById("InnovationTitle").value = response[0].innovation_title;
+                document.getElementById("Company").value = response[0].company_name;
+                document.getElementById("inputEventTeamID").value = response[0].pvt_event_teams_id;
+                pvtEventTeamId = response[0].pvt_event_teams_id;
             },
             error: function(xhr, status, error) {
-                console.error("Error fetching summary:", error);
+                console.error(xhr.responseText);
             }
         });
         $.ajax({

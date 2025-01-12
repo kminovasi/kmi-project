@@ -1,5 +1,7 @@
-import { Chart } from "chart.js/auto";
+import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+Chart.register(...registerables, ChartDataLabels);
 document.addEventListener("DOMContentLoaded", function () {
     // Paper Count Chart
     const chartElement = document.getElementById("paperCountChart");
@@ -33,6 +35,15 @@ document.addEventListener("DOMContentLoaded", function () {
                             size: 14,
                         },
                         bodyFont: {
+                            size: 12,
+                        },
+                    },
+                    datalabels: {
+                        color: 'black',
+                        anchor: 'center', // Center the label horizontally
+                        align: 'center', // Center the label vertically
+                        font: {
+                            weight: 'bold',
                             size: 12,
                         },
                     },
@@ -70,23 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                     },
                 },
-                plugins: [
-                    {
-                        afterDraw: function (chart) {
-                            var ctx = chart.ctx;
-                            chart.data.datasets.forEach(function (dataset, i) {
-                                var meta = chart.getDatasetMeta(i);
-                                meta.data.forEach(function (bar, index) {
-                                    var data = dataset.data[index];
-                                    ctx.fillStyle = "black";
-                                    ctx.textAlign = "center";
-                                    ctx.textBaseline = "middle";
-                                    ctx.fillText(data, bar.x, bar.y - 5);
-                                });
-                            });
-                        },
-                    },
-                ],
             },
         });
     }
@@ -168,6 +162,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 title: {
                     display: false,
                 },
+                datalabels: {
+                    color: 'black',
+                    anchor: 'center', // Center the label horizontally
+                    align: 'center', // Center the label vertically
+                    font: {
+                        weight: 'bold',
+                        size: 12,
+                    },
+                },
             },
             scales: {
                 x: {
@@ -208,29 +211,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
-        plugins: [
-            {
-                afterDraw: function (chart) {
-                    var ctx = chart.ctx;
-                    chart.data.datasets.forEach(function (dataset, i) {
-                        var meta = chart.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                            var data = dataset.data[index];
-                            if (data > 0) {
-                                // Only show if value is greater than 0
-                                ctx.fillStyle = "black";
-                                ctx.textAlign = "center";
-                                ctx.textBaseline = "middle";
-                                var padding = 5;
-                                // For horizontal bar chart (indexAxis: 'y')
-                                var xPos = bar.x - bar.width / 2;
-                                ctx.fillText(data, xPos + padding, bar.y);
-                            }
-                        });
-                    });
-                },
-            },
-        ],
     });
 
     const legendItems = [
@@ -284,6 +264,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 legend: {
                     display: false,
                 },
+                datalabels: {
+                    color: 'black',
+                    anchor: 'center', // Center the label horizontally
+                    align: 'center', // Center the label vertically
+                    font: {
+                        weight: 'bold',
+                        size: 12,
+                    },
+                },
             },
             scales: {
                 x: {
@@ -295,27 +284,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
-        plugins: [
-            {
-                afterDraw: function (chart) {
-                    var ctx = chart.ctx;
-                    chart.data.datasets.forEach(function (dataset, i) {
-                        var meta = chart.getDatasetMeta(i);
-                        meta.data.forEach(function (bar, index) {
-                            var data = dataset.data[index];
-                            if (data > 0) {
-                                ctx.fillStyle = "black";
-                                ctx.textAlign = "left";
-                                ctx.textBaseline = "middle";
-                                var padding = 5;
-                                var xPos = bar.x - bar.width / 2;
-                                ctx.fillText(data, xPos + padding, bar.y);
-                            }
-                        });
-                    });
-                },
-            },
-        ],
     });
 });
 

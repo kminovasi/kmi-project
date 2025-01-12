@@ -10,6 +10,15 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
+// Fungsi untuk memformat nilai ke dalam bentuk Rupiah
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+};
+
 // Registrasi komponen Chart.js
 Chart.register(
     CategoryScale,
@@ -45,18 +54,31 @@ window.initializeChart = (canvasId, labels, data) => {
                 legend: {
                     display: true,
                 },
-                datalabels: {
-                    // Konfigurasi plugin Data Labels
-                    display: true,
-                    align: "end",
-                    anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
-                    font: {
-                        weight: "bold",
-                        size: 12,
-                    },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            return formatRupiah(tooltipItem.raw);
+                        }
+                    }
                 },
+                datalabels: {
+                    formatter: (value) => {
+                        return formatRupiah(value);
+                    },
+                    color: 'black',
+                    anchor: 'center', // Center the label horizontally
+                    align: 'center', // Center the label vertically
+                }
             },
-        },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return formatRupiah(value);
+                        }
+                    }
+                }
+            }
+        }
     });
 };

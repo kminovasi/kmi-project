@@ -8,7 +8,9 @@
                         {{ $title }}
                     </h1>
                 </div>
-
+                <div class="col-auto mb-3">
+                    {{ $slot }}
+                </div>
             </div>
         </div>
     </div>

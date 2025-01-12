@@ -44,7 +44,7 @@ class TotalInnovatorByOrganizationCharts extends Component
         // Ambil data total inovator
         $this->chartData = Team::select(
             DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit}) as organization_unit"),
-            DB::raw('EXTRACT(YEAR FROM teams.created_at) as year'),
+            DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
             DB::raw('COUNT(DISTINCT pvt_members.employee_id) as total_innovators')
         )
             ->join('pvt_members', function ($join) {
@@ -57,9 +57,13 @@ class TotalInnovatorByOrganizationCharts extends Component
                     ->whereRaw('teams.created_at >= COALESCE(user_hierarchy_histories.effective_start_date, teams.created_at)')
                     ->whereRaw('teams.created_at <= COALESCE(user_hierarchy_histories.effective_end_date, teams.created_at)');
             })
-            ->where('teams.company_code', $companyCode)
-            ->whereBetween(DB::raw('EXTRACT(YEAR FROM teams.created_at)'), [$currentYear - 3, $currentYear])
-            ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM teams.created_at)'))
+            ->join('papers', function ($join) {
+                $join->on('teams.id', '=', 'papers.team_id')
+                    ->where('papers.status', 'accepted by innovation admin');
+            })
+            ->where('users.company_code', $companyCode)
+            ->whereBetween(DB::raw('EXTRACT(YEAR FROM papers.created_at)'), [$currentYear - 3, $currentYear])
+            ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
             ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))
             ->get()
             ->groupBy('organization_unit')
@@ -81,3 +85,5 @@ class TotalInnovatorByOrganizationCharts extends Component
         ]);
     }
 }
+
+

@@ -57,6 +57,7 @@ class TotalPotentialBenefitByOrganizationChart extends Component
                     ->whereRaw('papers.created_at <= COALESCE(user_hierarchy_histories.effective_end_date, papers.created_at)');
             })
             ->where('teams.company_code', $companyCode)
+            ->where('papers.status', 'accepted by innovation admin')
             ->whereBetween(DB::raw('EXTRACT(YEAR FROM papers.created_at)'), [$currentYear - 3, $currentYear])
             ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
             ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))

@@ -12,6 +12,15 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
+// Fungsi untuk memformat nilai ke dalam bentuk Rupiah
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+};
+
 Chart.register(
     CategoryScale,
     LinearScale,
@@ -114,14 +123,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "end",
-                    anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    color: 'black',
+                    align: "center", // Center the label vertically
+                    anchor: "center", // Center the label horizontally
+                    formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
                         size: 12,
                     },
                 },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            return formatRupiah(tooltipItem.raw);
+                        }
+                    }
+                }
             },
             scales: {
                 y: {
@@ -139,12 +156,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         text: "Financial Benefit",
                     },
                     beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return formatRupiah(value);
+                        }
+                    }
                 },
             },
         },
         plugins: [imagePlugin],
     });
 });
+
 document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document
         .getElementById("total-potential-benefit-chart")
@@ -179,23 +202,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "end",
-                    anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    align: "center", // Center the label vertically
+                    anchor: "center", // Center the label horizontally
+                    formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
                         size: 12,
                     },
                 },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            return formatRupiah(tooltipItem.raw);
+                        }
+                    }
+                }
             },
             scales: {
                 y: {
                     // Sekarang ini adalah sumbu x
                     ticks: {
                         display: chartDataTotalBenefit.isSuperadmin
-                            ? false
-                            : true,
-                        indexAxis: chartDataTotalBenefit.isSuperadmin
                             ? false
                             : true,
                     },
@@ -207,6 +234,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                         text: "Potential Benefit",
                     },
                     beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return formatRupiah(value);
+                        }
+                    }
                 },
             },
         },

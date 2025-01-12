@@ -1,6 +1,6 @@
 @vite(['resources/js/innovatorChart.js'])
 <div>
-    <canvas id="{{ $chartId }}"></canvas>
+    <canvas id="{{ $chartId }}" style="height: 300px;"></canvas>
 </div>
 <script>
     window.chartData = window.chartData || {};

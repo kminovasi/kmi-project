@@ -6,27 +6,7 @@ import {
     BarElement,
     Tooltip,
 } from "chart.js";
-const drawValuePlugin = {
-    id: "drawValue",
-    afterDatasetsDraw: (chart, args, options) => {
-        const ctx = chart.ctx;
-        chart.data.datasets.forEach((dataset, datasetIndex) => {
-            const meta = chart.getDatasetMeta(datasetIndex);
-            if (!meta.hidden) {
-                meta.data.forEach((element, index) => {
-                    const value = dataset.data[index];
-                    const position = element.tooltipPosition();
-
-                    ctx.fillStyle = "black";
-                    ctx.font = "12px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(value, position.x, position.y);
-                });
-            }
-        });
-    },
-};
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // Register necessary components
 Chart.register(
@@ -35,7 +15,7 @@ Chart.register(
     BarController,
     BarElement,
     Tooltip,
-    drawValuePlugin
+    ChartDataLabels
 );
 
 // Define your colors for the chart
@@ -63,11 +43,11 @@ const colors = [
 ];
 
 // Get data from the data-attributes
-const labels = JSON.parse(document.getElementById("chartData").dataset.labels);
+const labels = JSON.parse(document.getElementById("chartDataAkumulasiBenefit").dataset.labels);
 const dataValues = JSON.parse(
-    document.getElementById("chartData").dataset.data
+    document.getElementById("chartDataAkumulasiBenefit").dataset.data
 );
-const logos = JSON.parse(document.getElementById("chartData").dataset.logos);
+const logos = JSON.parse(document.getElementById("chartDataAkumulasiBenefit").dataset.logos);
 
 // Create a custom plugin for drawing images
 const imagePlugin = {
@@ -168,13 +148,20 @@ const initChart = async () => {
                             },
                             label: (tooltipItem) => {
                                 // Display the value of the hovered item
-                                return `Value: ${
-                                    dataValues[tooltipItem.dataIndex]
-                                }`;
+                                return `Nilai: ${formatRupiah(dataValues[tooltipItem.dataIndex])}`;
                             },
                         },
                     },
-                    drawValue: true,
+                    datalabels: {
+                        formatter: (value) => formatRupiah(value),
+                        color: 'black',
+                        anchor: 'center', // Center the label horizontally
+                        align: 'center', // Center the label vertically
+                        font: {
+                            weight: 'bold',
+                            size: 12,
+                        },
+                    },
                     customImagePlugin: imagePlugin,
                 },
             },
@@ -187,3 +174,11 @@ const initChart = async () => {
 
 // Initialize the chart
 initChart();
+
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+};

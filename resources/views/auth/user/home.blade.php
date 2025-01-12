@@ -86,7 +86,7 @@
                 <div class="col-12 col-lg-6 col-md-8 dashboard-section">
                     <!-- Benefit Section -->
                     <div class="mb-4">
-                        <h4 class="mb-3" style="background-color: red; color: white; padding: 17px;">Akumulasi Total Benefit</h4>
+                        <h4 class="mb-3" style="background-color: red; color: white; padding: 17px;">Akumulasi Total Financial dan Potential Benefit</h4>
                         <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
 

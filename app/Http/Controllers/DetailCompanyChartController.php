@@ -119,3 +119,4 @@ class DetailCompanyChartController extends Controller
         ));
     }
 }
+

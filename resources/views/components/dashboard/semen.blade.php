@@ -1,6 +1,4 @@
 <div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         .dashboard-section {
             background-color: #f8f9fa;
@@ -70,85 +68,8 @@
             @foreach ($charts as $index => $chart)
                 <div class="chart-container">
                     <img src="{{ $logos[$index] }}" alt="Logo Perusahaan" class="logo-image">
-                    <canvas id="chart-{{ $index }}"></canvas>
+                    <canvas id="persebaran-inovasi-perusahaan-chart-{{ $index }}"></canvas>
                 </div>
-
-                <script>
-                    (function() {
-                        // Plugin kustom untuk menggambar nilai
-                        const drawValuePlugin = {
-                            id: 'drawValue',
-                            afterDatasetsDraw: (chart, args, options) => {
-                                const ctx = chart.ctx;
-                                chart.data.datasets.forEach((dataset, datasetIndex) => {
-                                    const meta = chart.getDatasetMeta(datasetIndex);
-                                    if (!meta.hidden) {
-                                        meta.data.forEach((element, index) => {
-                                            const value = dataset.data[index];
-                                            const position = element.tooltipPosition();
-
-                                            ctx.fillStyle = 'black';
-                                            ctx.font = '12px Arial';
-                                            ctx.textAlign = 'center';
-                                            ctx.textBaseline = 'middle';
-                                            ctx.fillText(value, position.x, position.y);
-                                        });
-                                    }
-                                });
-                            }
-                        };
-
-                        // Register plugin
-                        Chart.register(drawValuePlugin);
-
-                        let ctx = document.getElementById('chart-{{ $index }}').getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: {!! json_encode($chart['categories']) !!},
-                                datasets: [{
-                                    label: '{{ $chart['company'] }}',
-                                    data: {!! json_encode($chart['data']) !!},
-                                    backgroundColor: {!! json_encode(
-                                        array_map(function ($cat) use ($categories) {
-                                            return $categories[$cat] ?? '#ffffff';
-                                        }, $chart['categories']),
-                                    ) !!},
-                                    borderWidth: 1,
-                                    barThickness: 10
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        ticks: {
-                                            color: '#000'
-                                        },
-                                        grid: {
-                                            color: 'rgba(0, 0, 0, 0.1)'
-                                        }
-                                    },
-                                    x: {
-                                        display: false,
-                                        grid: {
-                                            color: 'rgba(0, 0, 0, 0.1)'
-                                        }
-                                    }
-                                },
-                                plugins: {
-                                    legend: {
-                                        labels: {
-                                            color: '#000'
-                                        }
-                                    },
-                                    drawValue: true // Enable custom plugin
-                                }
-                            }
-                        });
-                    })
-                    ();
-                </script>
             @endforeach
         </div>
 
@@ -203,3 +124,7 @@
         </div>
     </div>
 </div>
+
+<script id="charts-data-persebaran-inovasi-setiap-perusahaan" type="application/json">@json($charts)</script>
+<script id="categories-data" type="application/json">@json($categories)</script>
+@vite(['resources/js/semenChart.js'])

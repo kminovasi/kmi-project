@@ -1,4 +1,4 @@
-<div class="mt-3">
+<div class="mt-3 card p-3">
     <h3>Total Potential Benefit per tahun</h3>
     <p>{{ $title }}</p>
     <canvas id="potentialBenefitChart"></canvas>

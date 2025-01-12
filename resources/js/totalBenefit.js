@@ -1,4 +1,6 @@
-import { Chart } from "chart.js/auto";
+import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+Chart.register(...registerables, ChartDataLabels);
 
 export function initFinancialBenefitChart(chartData) {
     const ctxTotalBenefit = document
@@ -47,6 +49,16 @@ export function initFinancialBenefitChart(chartData) {
                                 maximumFractionDigits: 0,
                             }).format(context.raw);
                         },
+                    },
+                },
+                datalabels: {
+                    formatter: (value) => formatRupiah(value),
+                    color: 'black',
+                    anchor: 'right', // Center the label horizontally
+                    align: 'right', // Center the label vertically
+                    font: {
+                        weight: 'bold',
+                        size: 12,
                     },
                 },
             },
@@ -102,7 +114,25 @@ export function initPotentialBenefitChart(chartData) {
                         },
                     },
                 },
+                   datalabels: {
+                    formatter: (value) => formatRupiah(value),
+                    color: 'black',
+                    anchor: 'right', // Center the label horizontally
+                    align: 'right', // Center the label vertically
+                    font: {
+                        weight: 'bold',
+                        size: 12,
+                    },
+                },
             },
         },
     });
 }
+
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+};

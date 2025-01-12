@@ -1,28 +1,8 @@
-import { Chart, registerables } from "chart.js";
-const drawValuePlugin = {
-    id: "drawValue",
-    afterDatasetsDraw: (chart, args, options) => {
-        const ctx = chart.ctx;
-        chart.data.datasets.forEach((dataset, datasetIndex) => {
-            const meta = chart.getDatasetMeta(datasetIndex);
-            if (!meta.hidden) {
-                meta.data.forEach((element, index) => {
-                    const value = dataset.data[index];
-                    const position = element.tooltipPosition();
-
-                    ctx.fillStyle = "black";
-                    ctx.font = "12px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(value, position.x, position.y);
-                });
-            }
-        });
-    },
-};
+import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // Register the custom plugin
-Chart.register(...registerables, drawValuePlugin);
+Chart.register(...registerables, ChartDataLabels);
 
 document.addEventListener("DOMContentLoaded", function () {
     const charts = document.querySelectorAll('canvas[id^="innovatorChart_"]');
@@ -35,16 +15,40 @@ document.addEventListener("DOMContentLoaded", function () {
         if (chartData) {
             new Chart(ctx, {
                 type: "bar",
-                data: chartData,
+                data: {
+                    ...chartData,
+                    datasets: chartData.datasets.map(dataset => ({
+                        ...dataset,
+                        label: 'Total Innovator per Kategori'
+                    }))
+                },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true, // Set to true to maintain aspect ratio
                     scales: {
                         y: {
                             beginAtZero: true,
                         },
                     },
                     plugins: {
-                        drawValue: true,
+                        datalabels: {
+                            color: 'black',
+                            anchor: 'center', // Center the label horizontally
+                            align: 'center', // Center the label vertically
+                            font: {
+                                weight: 'bold',
+                                size: 12,
+                            },
+                        },
+                        legend: {
+                            display: true,
+                            labels: {
+                                font: {
+                                    size: 12,
+                                    weight: 'bold',
+                                },
+                            },
+                        },
                     },
                 },
             });

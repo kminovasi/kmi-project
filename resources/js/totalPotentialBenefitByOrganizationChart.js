@@ -38,9 +38,10 @@ export function initializeTotalPotentialChart(chartData) {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "end",
-                    anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
+                    align: "center",
+                    anchor: "center",
+                    color: 'black',
+                    formatter: (value) => formatRupiah(value.toLocaleString()), // Format angka (opsional)
                     font: {
                         weight: "bold",
                         size: 12,
@@ -50,3 +51,11 @@ export function initializeTotalPotentialChart(chartData) {
         },
     });
 }
+
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+};

@@ -1,5 +1,5 @@
 <div class="card p-3 mt-3">
-    <h5 class="text-center">Total Innovators by Category</h5>
+    <h5 class="text-center">Total Inovator per Kategori</h5>
     <canvas id="totalInnovatorChart"></canvas>
 </div>
 

@@ -7,11 +7,12 @@
 <div class="container mt-4">
     <!-- Header -->
     <div class="row mb-3">
-        <div class="col-12">
-            <h2 class="text-center">{{ $eventName }}</h2>
-            <p class="text-muted text-center">Statistik & Analitik untuk Event</p>
+        <div class="col-12 text-center">
+            <h2 class="fw-bold text-primary">{{ $eventName }}</h2>
+            <p class="text-muted fs-5">Statistik & Analitik untuk Event</p>
         </div>
     </div>
+
 
     <!-- Ringkasan Statistik -->
     <div class="row mb-4">

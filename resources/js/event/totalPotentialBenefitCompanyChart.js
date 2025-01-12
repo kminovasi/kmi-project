@@ -57,10 +57,10 @@ const imagePlugin = {
             if (logoImages[index]) {
                 const img = logoImages[index];
                 const aspectRatio = img.width / img.height;
-                const imgWidth = 30; // Lebar gambar
+                const imgWidth = 50; // Lebar gambar
                 const imgHeight = imgWidth / aspectRatio; // Tinggi gambar berdasarkan rasio aspek
 
-                ctx.drawImage(img, x - imgWidth / 2, y, imgWidth, imgHeight); // Gambar logo
+                ctx.drawImage(img, x - imgWidth / 7, y, imgWidth, imgHeight); // Gambar logo
             }
         });
     },
@@ -109,6 +109,18 @@ export async function renderTotalBenefitChart(companies) {
                             return `Benefit: Rp ${value}`;
                         },
                     },
+                },
+                // Plugin untuk menampilkan angka di tengah batang chart dengan format titik dan bold
+                datalabels: {
+                    display: true,
+                    anchor: "center", // Posisi angka di tengah batang
+                    align: "center", // Penyesuaian posisi angka
+                    formatter: (value) => value.toLocaleString("id-ID"), // Format angka dengan format Indonesia
+                    font: {
+                        weight: "bold", // Tebalkan font
+                        size: 14, // Ukuran font
+                    },
+                    color: "#000", // Warna hitam untuk angka
                 },
             },
             responsive: true,

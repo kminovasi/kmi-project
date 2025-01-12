@@ -1,5 +1,5 @@
 <div class="card p-3 mt-3">
-    <h5 class="text-center">Total Innovators Per Stage</h5>
+    <h5 class="text-center">Total Inovator per Tahap</h5>
     <canvas id="totalInnovatorStagesChart"></canvas>
 </div>
 

@@ -29,10 +29,10 @@
                         <i class="bi bi-calendar-date me-2"></i>
                         <span>{{ $formattedDateTime }}</span>
                     </div>
-                    <button type="button" class="btn-sm m-2 btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
+                    {{-- <button type="button" class="btn-sm m-2 btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
                         data-bs-target="#yearFilterInnovator">
                         <i class="fas fa-filter me-1"></i>
-                    </button>
+                    </button> --}}
                 </div>
             </div>
         </div>

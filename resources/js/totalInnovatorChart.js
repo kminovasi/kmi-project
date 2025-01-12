@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Jumlah Keterlibatan Inovator per Perusahaan (2020–2023)",
+                    text: "Jumlah Keterlibatan Inovator per Perusahaan",
                 },
                 datalabels: {
                     // Konfigurasi plugin Data Labels

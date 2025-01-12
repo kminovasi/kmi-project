@@ -1,7 +1,7 @@
 <div class="card p-3">
-    <h2 class="chart-title text-center">Total Innovator per Organisasi</h2>
+    <h2 class="chart-title text-center">Total Inovator per Organisasi</h2>
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#filterModal">
-        Filter by Organization
+        Filter Berdasarkan Organisasi
     </button>
     <canvas id="totalInnovatorEventChart"></canvas>
 </div>
@@ -11,17 +11,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="filterModalLabel">Filter by Organization Unit</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="filterModalLabel">Filter Berdasarkan Unit Organisasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body">
                 <form id="filterForm" method="GET" action="{{ route('dashboard-event.statistics', ['id' => $eventId]) }}">
                     <div class="mb-3">
                         <label for="organizationLevel" class="form-label">Pilih Tingkat Organisasi</label>
                         <select class="form-select" id="organizationLevel" name="organization-unit">
-                            <option disabled selected>Select Organization Level</option>
+                            <option disabled selected>Pilih Tingkat Organisasi</option>
                             <option value="directorate_name">Direktorat</option>
-                            <option value="group_function_name">Group</option>
+                            <option value="group_function_name">Grup</option>
                             <option value="department_name">Departemen</option>
                             <option value="unit_name">Unit</option>
                             <option value="section_name">Seksi</option>
@@ -29,8 +29,8 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Apply Filter</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </form>
             </div>

@@ -30,6 +30,15 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                             return `Jumlah: ${context.raw}`;
                         }
                     }
+                },
+                datalabels: {
+                    color: '#000',
+                    font: {
+                        weight: 'bold', // Membuat angka di dalam chart menjadi bold
+                        size: 14 // Ukuran font angka
+                    },
+                    anchor: 'end', // Tempatkan angka di bagian atas batang
+                    align: 'start' // Penempatan angka di dalam batang
                 }
             },
             scales: {
@@ -37,13 +46,21 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Jumlah Team'
+                        text: 'Jumlah Team',
+                        font: {
+                            size: 14, // Ukuran font
+                            weight: 'bold' // Membuat teks Y axis menjadi bold
+                        }
                     }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Tahapan'
+                        text: 'Tahapan',
+                        font: {
+                            size: 14, // Ukuran font
+                            weight: 'bold' // Membuat teks X axis menjadi bold
+                        }
                     }
                 }
             }

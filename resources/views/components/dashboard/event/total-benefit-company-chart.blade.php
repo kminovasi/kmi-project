@@ -6,19 +6,19 @@
                 <h5>Total Benefit Group Event</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Total Financial Benefit</h5>
+                <h5 class="card-title">Akumulasi Total Financial Benefit</h5>
                 <p class="card-text">
                 </p>
 
                 <!-- Logo and Benefits for each company -->
-                @foreach ($companies as $company)
+                {{-- @foreach ($companies as $company)
                     <div class="company-info mb-2">
                         <img src="{{ $company['logo'] }}" alt="{{ $company['company_name'] }} logo" width="50"
                             height="50">
                         <strong>{{ $company['company_name'] }}</strong>: Rp
                         {{ number_format($company['total_benefit'], 0, ',', '.') }}
                     </div>
-                @endforeach
+                @endforeach --}}
 
                 <!-- Chart Container -->
                 <canvas id="totalBenefitChart" width="400" height="400"></canvas>

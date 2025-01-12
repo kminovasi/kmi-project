@@ -1,56 +1,69 @@
 <div class="dashboard-card">
-    <div class="card-header">
-        <h5>Statistik Inovator</h5>
+    <div class="card-header text-center">
+        <h5 class="fw-bold text-primary">Statistik Inovator</h5>
     </div>
     <div class="card-body">
-        <div class="statistic-item">
-            <div class="statistic-icon">
-                <i class="fa-solid fa-rocket"></i>
+        <div class="row text-center">
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fa-solid fa-rocket fa-3x text-info"></i>
+                        <span class="badge bg-info text-white rounded-pill">Inovasi</span>
+                    </div>
+                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovation'] }}</h5>
+                    <p class="text-muted">Total Inovasi</p>
+                </div>
             </div>
-            <div class="statistic-info">
-                <p class="statistic-title">Total Inovasi</p>
-                <p class="statistic-value">{{ $statistics['totalInnovation'] }}</p>
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fa-solid fa-lightbulb fa-3x text-warning"></i>
+                        <span class="badge bg-warning text-dark rounded-pill">Idea Box</span>
+                    </div>
+                    <h5 class="fw-bold mt-2">{{ $statistics['ideaBox'] }}</h5>
+                    <p class="text-muted">Jumlah Idea Box</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fa-solid fa-users fa-3x text-success"></i>
+                        <span class="badge bg-success text-white rounded-pill">Total Inovator</span>
+                    </div>
+                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovators'] }}</h5>
+                    <p class="text-muted">Total Inovator</p>
+                </div>
             </div>
         </div>
-        <div class="statistic-item">
-            <div class="statistic-icon">
-                <i class="fa-solid fa-lightbulb"></i>
-            </div>
-            <div class="statistic-info">
-                <p class="statistic-title">Idea Box</p>
-                <p class="statistic-value">{{ $statistics['ideaBox'] }}</p>
-            </div>
-        </div>
+
         <hr>
-        <div class="statistic-item">
-            <div class="statistic-icon">
-                <i class="fas fa-male"></i>
+
+        <div class="row text-center">
+            <div class="col-12 col-md-6 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fas fa-male fa-3x text-primary"></i>
+                        <span class="badge bg-primary text-white rounded-pill">Laki-Laki</span>
+                    </div>
+                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovatorsMale'] }}</h5>
+                    <p class="text-muted">Total Inovator Laki-Laki</p>
+                </div>
             </div>
-            <div class="statistic-info">
-                <p class="statistic-title">Total Inovator Laki-Laki</p>
-                <p class="statistic-value">{{ $statistics['totalInnovatorsMale'] }}</p>
-            </div>
-        </div>
-        <div class="statistic-item">
-            <div class="statistic-icon">
-                <i class="fas fa-female"></i>
-            </div>
-            <div class="statistic-info">
-                <p class="statistic-title">Total Inovator Perempuan</p>
-                <p class="statistic-value">{{ $statistics['totalInnovatorsFemale'] }}</p>
-            </div>
-        </div>
-        <div class="statistic-item">
-            <div class="statistic-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="statistic-info">
-                <p class="statistic-title">Total Inovator</p>
-                <p class="statistic-value">{{ $statistics['totalInnovators'] }}</p>
+            <div class="col-12 col-md-6 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fas fa-female fa-3x text-danger"></i>
+                        <span class="badge bg-danger text-white rounded-pill">Perempuan</span>
+                    </div>
+                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovatorsFemale'] }}</h5>
+                    <p class="text-muted">Total Inovator Perempuan</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
 
 <style>
     .dashboard-card {

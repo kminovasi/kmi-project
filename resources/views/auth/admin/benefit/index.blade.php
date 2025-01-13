@@ -38,7 +38,7 @@
 
                 </div>
                 <button type="button" class="btn btn-primary" id="addBenefitNonFin"
-                    onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Tambahkan Non Financial</button>
+                    onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Tambahkan Benefit Non Financial</button>
             </div>
         </div>
     </div>

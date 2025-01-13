@@ -22,6 +22,10 @@
 
                 <!-- Chart Container -->
                 <canvas id="totalPotentialBenefitChart" width="400" height="400"></canvas>
+                <div class="mt-3 text-center">
+                    <button class="btn btn-success export-excel-totalBenefitPotentialCompanyChart">Export to Excel</button>
+                    <button class="btn btn-danger export-pdf-totalBenefitPotentialCompanyChart">Export to PDF</button>
+                </div>
             </div>
         </div>
 
@@ -34,7 +38,9 @@
 
                 // Data untuk Chart.js
                 const chartData = @json($chartData);
-
+                const event_name = @json($event_name);
+                window.chartData = chartData; // Store chart data globally
+                window.event_name = event_name; // Store event name globally
                 // Render chart
                 renderTotalBenefitChart(chartData);
             </script>
@@ -58,3 +64,5 @@
         </div>
     @endif
 </div>
+
+@vite(['resources/js/event/exportTotalPotentialBenefitCompanyChart.js'])

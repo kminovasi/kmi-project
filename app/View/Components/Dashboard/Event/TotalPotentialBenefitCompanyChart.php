@@ -8,6 +8,7 @@ use Illuminate\View\Component;
 class TotalPotentialBenefitCompanyChart extends Component
 {
     public $eventId;
+    public $event_name;
 
     /**
      * Create a new component instance.
@@ -17,6 +18,7 @@ class TotalPotentialBenefitCompanyChart extends Component
     public function __construct($eventId)
     {
         $this->eventId = $eventId;
+        $this->event_name = Event::where('id', $eventId)->value('event_name');
     }
 
     /**
@@ -55,9 +57,6 @@ class TotalPotentialBenefitCompanyChart extends Component
                     $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
                     $logoPath = public_path("assets/logos/{$sanitizedCompanyName}.png");
 
-                    // Debug: periksa nama yang diproses
-                    \Log::info('Sanitized company name: ' . $sanitizedCompanyName);
-
                     return [
                         'company_name' => $companyName,
                         'total_benefit' => $totalBenefit,
@@ -88,6 +87,6 @@ class TotalPotentialBenefitCompanyChart extends Component
         }
 
         // Menampilkan card dan chart jika tipe event adalah 'group' atau 'AP'
-        return view('components.dashboard.event.total-potential-benefit-company-chart', $data);
+        return view('components.dashboard.event.total-potential-benefit-company-chart', $data, ['event_name' => $this->event_name]);
     }
 }

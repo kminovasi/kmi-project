@@ -27,9 +27,10 @@
     } from "{{ Vite::asset('resources/js/totalTeamByOrganizationChart.js') }}";
     const chartData = @json($chartData); // Kirim data ke JavaScript
     const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
-    console.log(chartData);
+    const company_name = @json($company_name);
     window.chartData = chartData; // Store chart data globally
     window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
+    window.company_name = company_name; // Store organization unit label globally
     initializeTotalTeamChart(chartData); // Panggil fungsi dari file JS
 </script>
 @vite(['resources/js/exportTotalTeamByOrganization.js'])

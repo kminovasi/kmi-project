@@ -29,8 +29,10 @@
 
     const chartData = @json($chartData); // Kirim data ke JavaScript
     const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
+    const company_name = @json($company_name);
     window.chartData = chartData; // Store chart data globally
     window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
+    window.company_name = company_name; // Store company name globally
     initializeTotalInnovatorChart(chartData); // Panggil fungsi dari file JS
 </script>
 @vite(['resources/js/exportTotalInnovatorByOrganization.js'])

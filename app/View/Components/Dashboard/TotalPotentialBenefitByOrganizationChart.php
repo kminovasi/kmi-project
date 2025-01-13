@@ -11,6 +11,7 @@ class TotalPotentialBenefitByOrganizationChart extends Component
 {
     public $organizationUnit;
     public $chartData;
+    public $company_name;
     /**
      * Create a new component instance.
      *
@@ -38,6 +39,7 @@ class TotalPotentialBenefitByOrganizationChart extends Component
         $company = Company::findOrFail($companyId);
         $companyCode = $company->company_code;
         $currentYear = now()->year;
+        $this->company_name = $company->company_name;
 
         // Ambil data total financial benefit
         $this->chartData = Paper::select(
@@ -79,6 +81,7 @@ class TotalPotentialBenefitByOrganizationChart extends Component
         return view('components.dashboard.total-potential-benefit-by-organization-chart', [
             'chartData' => $this->chartData,
             'organizationUnit' => $this->organizationUnit,
+            'company_name' => $this->company_name,
         ]);
     }
 }

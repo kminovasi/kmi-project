@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">User Management</h3>
+                <h3 class="card-title">Manajemen Pengguna</h3>
                 <div class="card-tools">
                     <a href="{{ route('management-system.user.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Tambahkan Pengguna

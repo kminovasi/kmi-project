@@ -1,7 +1,7 @@
 <div class="card team-card border-0 shadow-lg mt-3">
     <div class="card-header bg-gradient-primary py-3">
-        <div class="d-flex align-items-center">
-            <h5 class="card-title mb-0 fw-bold text-white">Total Tim Terverifikasi Oleh Pengelola Inovasi </h5>
+        <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-title mb-0 fw-bold text-white">Total Tim Terverifikasi Oleh Pengelola Inovasi</h5>
         </div>
     </div>
     <div class="card-body">
@@ -32,9 +32,8 @@
             @endphp
             @foreach ($teamData as $year => $count)
                 <div class="col-6 col-md-3">
-                    <div
-                        class="card {{ $colors[$loop->index % count($colors)]['bg'] }} {{ $colors[$loop->index % count($colors)]['text'] }} text-center rounded-4 position-relative overflow-hidden">
-                        <div class="card-body py-4 position-relative z-1">
+                    <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['gradient'] }};">
+                        <div class="card-body py-4 position-relative z-1 text-center text-white">
                             <h6 class="text-uppercase mb-2 opacity-75">Tahun {{ $year }}</h6>
                             <div class="display-6 fw-bold">{{ $count }}</div>
                             <div class="mt-2 small opacity-75">Tim Terdaftar</div>
@@ -51,10 +50,12 @@
             Total tim yang diterima dalam 4 tahun terakhir
         </small>
         <br>
-        <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn link-total-team-chart mt-2">Lihat Chart Total
-            Tim</a>
+        <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn btn-danger mt-3 px-4 py-2 text-white" style="border-radius: 10px;">
+            Lihat Chart Total Tim
+        </a>
     </div>
 </div>
+
 
 <style>
     .bg-gradient-primary {

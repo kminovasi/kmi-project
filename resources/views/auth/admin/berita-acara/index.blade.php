@@ -6,7 +6,7 @@
         <link rel="icon" type="image/x-icon" href="{{asset('template/dist/assets/img/favicon.png')}}" />
         <script data-search-pseudo-elements defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js" crossorigin="anonymous"></script>
-        
+
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -16,7 +16,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            List Berita Acara
+                            Daftar Berita Acara
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -44,7 +44,7 @@
                 <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             @endif
-        </div>          
+        </div>
         <div class="card mb-4">
             <div class="card-header">Berita Acara</div>
             <div class="card-body">
@@ -120,7 +120,7 @@
                         </div>
                      </form>
                 </div>
-                
+
             </div>
         </div>
     </div>

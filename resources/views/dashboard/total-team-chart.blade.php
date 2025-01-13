@@ -5,7 +5,7 @@
     <div class="container mt-3">
         <div class="card">
             <div class="card-header" style="background-color: #eb4a3a">
-                <h5 class="text-white">Total Team Chart</h5>
+                <h5 class="text-white">Total Tim Chart</h5>
             </div>
             <div class="card-body">
                 <canvas id="total-team-chart"></canvas>

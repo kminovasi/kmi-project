@@ -7,12 +7,12 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">User Details</h3>
+                        <h3 class="card-title">Detail Pengguna</h3>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>Personal Information</h4>
+                                <h4>Informasi Personal</h4>
                                 <table class="table table-bordered">
                                     <tr>
                                         <th>Employee ID</th>
@@ -36,7 +36,7 @@
                                     </tr>
                                 </table>
 
-                                <h4>Organizational Details</h4>
+                                <h4>Detail Organisasi</h4>
                                 <table class="table table-bordered">
                                     <tr>
                                         <th>Position Title</th>
@@ -62,7 +62,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <h4>Manager Information</h4>
+                                <h4>Informasi Manajer</h4>
                                 @if ($user->atasan)
                                     <table class="table table-bordered">
                                         <tr>
@@ -75,10 +75,10 @@
                                         </tr>
                                     </table>
                                 @else
-                                    <p>No manager assigned</p>
+                                    <p>Tidak ada manajer ditugaskan</p>
                                 @endif
 
-                                <h4>Subordinates</h4>
+                                <h4>Bawahan</h4>
                                 @if ($user->bawahan && $user->bawahan->count() > 0)
                                     <table class="table table-bordered">
                                         <thead>
@@ -97,14 +97,13 @@
                                         </tbody>
                                     </table>
                                 @else
-                                    <p>No subordinates</p>
+                                    <p>Tidak ada bawahan</p>
                                 @endif
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Back to User
-                            List</a>
+                        <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary"> Kembali</a>
                     </div>
                 </div>
             </div>

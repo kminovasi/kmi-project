@@ -6,7 +6,7 @@
                 <h5>Total Benefit Group Event</h5>
             </div>
             <div class="card-body">
-                <h5 class="card-title">Akumulasi Total Financial Benefit</h5>
+                <h5 class="card-title">Akumulasi Total Finansial Benefit</h5>
                 <p class="card-text">
                 </p>
 
@@ -43,7 +43,7 @@
         <!-- Card for AP Event -->
         <div class="card mb-4">
             <div class="card-header">
-                <h5>Total Financial Benefit AP Event</h5>
+                <h5>Total Benefit Finansial Event AP</h5>
             </div>
             <div class="card-body">
                 <p class="card-text">

@@ -5,6 +5,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 Chart.register(...registerables, ChartDataLabels);
 
 export function initializeTotalFinancialChart(chartData) {
+    console.log('ok');
     const labels = Object.keys(chartData);
     const datasets = [];
 

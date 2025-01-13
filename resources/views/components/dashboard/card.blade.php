@@ -204,11 +204,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total IDE
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi dengan kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
-                            <small class="ms-2">(Ide)</small>
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">

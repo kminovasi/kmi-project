@@ -6,7 +6,7 @@
         @if ($isSuperadmin)
             <div class="card">
                 <div class="card-header" style="background-color: #eb4a3a">
-                    <h5 class="text-white">Total Financial Benefit per Perusahaan </h5>
+                    <h5 class="text-white">Total Finansial Benefit per Perusahaan </h5>
                 </div>
                 <div class="card-body">
                     <canvas id="total-benefit-chart" style="height: 1500px;"></canvas>

@@ -13,7 +13,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="image"></i></div>
-                        Management Post
+                        Manajement Post
                     </h1>
                 </div>
             </div>
@@ -29,7 +29,7 @@
     <x-toast-alert type="danger" message="{{ $errors->first('error') }}" />
 
     <div>
-        <a class="btn btn-primary mb-3" href="{{ route('post.create') }}">Create Post</a>
+        <a class="btn btn-primary mb-3" href="{{ route('post.create') }}">Buat Post</a>
     </div>
 
     @livewire('post-table')

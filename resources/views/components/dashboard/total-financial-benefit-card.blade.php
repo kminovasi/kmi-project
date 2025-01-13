@@ -102,7 +102,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <h6 class="text-muted">Financial Benefit</h6>
+                <h6 class="text-muted">Finansial Benefit</h6>
                 <div class="financial-benefits">
                     @foreach ($financialBenefits as $benefit)
                         <div class="financial-benefit-item">
@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <h6 class="text-muted">Potential Benefit</h6>
+                <h6 class="text-muted">Potensial Benefit</h6>
                 <div class="financial-benefits">
                     @foreach ($potentialBenefits as $benefit)
                         <div class="financial-benefit-item">

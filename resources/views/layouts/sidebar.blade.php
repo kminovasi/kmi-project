@@ -100,11 +100,11 @@
                             <!-- Nested Sidenav Accordion (Pages -> Account)-->
                         </nav>
                     </div>
-                    <div class="sidenav-menu-heading text-white">Management Event</div>
+                    <div class="sidenav-menu-heading text-white">Manajement Event</div>
                     <a class="nav-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}"
                         href="{{ route('certificates.index') }}">
                         <div class="nav-link-icon"><i data-feather="award"></i></div>
-                        <span class="text-white">Certificate</span>
+                        <span class="text-white">Sertifikat</span>
                     </a>
                     {{-- <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
                         href="{{ route('flyer.index') }}">
@@ -119,7 +119,7 @@
                     <a class="nav-link {{ request()->routeIs('post.index') ? 'active' : '' }}"
                         href="{{ route('post.index') }}">
                         <div class="nav-link-icon"><i data-feather="file-text"></i></div>
-                        <span class="text-white">Post</span>
+                        <span class="text-white">Postingan</span>
                     </a>
                 @endif
             </div>

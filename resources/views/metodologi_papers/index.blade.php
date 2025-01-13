@@ -60,7 +60,7 @@
                 Apakah Anda yakin ingin menghapus Makalah Metodologi ini?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Batal</button>
                 <form action="{{ route('management-system.metodologi_papers.destroy', $metodologiPaper->id) }}" method="POST">
                     @csrf
                     @method('DELETE')

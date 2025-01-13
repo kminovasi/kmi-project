@@ -16,9 +16,9 @@
         </div>
     @endif
     <div class="mb-3">
-        <label for="event-filter" class="form-label">Filter by Event</label>
+        <label for="event-filter" class="form-label">Filter berdasarkan event</label>
         <select id="event-filter" class="form-select select2">
-            <option value="">All Events</option>
+            <option value="">Semua Event</option>
             @foreach($events as $event)
                 <option value="{{ $event->event_name }}">{{ $event->event_name }}</option>
             @endforeach
@@ -26,7 +26,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <a href="{{ route('timeline.create') }}" class="btn btn-primary mb-3">Create Timeline</a>
+            <a href="{{ route('timeline.create') }}" class="btn btn-primary mb-3">Buat Timeline</a>
             <table id="timeline-table" class="table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -50,7 +50,7 @@
                         <td>{{ $timeline->deskripsi }}</td>
                         <td>
                             <a href="{{ route('timeline.edit', $timeline->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $timeline->id }}">Delete</button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $timeline->id }}">Hapus</button>
                         </td>
                     </tr>
                     @endforeach
@@ -65,18 +65,18 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Penghapusan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this timeline?
+                Anda yakin ingin menghapus ?
             </div>
             <div class="modal-footer">
                 <form id="deleteForm" method="POST" action="">
                     @csrf
                     @method('DELETE')
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus</button>
                 </form>
             </div>
         </div>

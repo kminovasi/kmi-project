@@ -64,20 +64,20 @@
 
         <!-- Account details card-->
         <div class="card mb-4">
-            <div class="card-header">Detail Team</div>
+            <div class="card-header">Detail Tim</div>
             <div class="card-body">
                 <!-- Form Group (first name)-->
                 <div class="col-md-12 mb-3">
-                    <label class="small mb-1" for="inputFirstName">Team Name</label>
+                    <label class="small mb-1" for="inputFirstName">Nama Tim</label>
                     <input class="form-control" id="inputFirstName" type="text" value="{{ $datas->team_name }}" readonly>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="small mb-1" for="inputFirstName">Innovation Title</label>
+                    <label class="small mb-1" for="inputFirstName">Judul Inovasi</label>
                     <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name"
                         value="{{ $datas->innovation_title }}" readonly>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <label class="small mb-1" for="inputFirstName">Category</label>
+                    <label class="small mb-1" for="inputFirstName">Kategori</label>
                     <input class="form-control" id="inputFirstName" type="text" placeholder="Enter your first name"
                         value="{{ $datas->category_name }}" readonly>
                 </div>

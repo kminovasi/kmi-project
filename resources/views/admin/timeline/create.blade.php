@@ -17,7 +17,7 @@
         <div class="mb-3">
             <label for="event_id" class="form-label">Event</label>
             <select id="event_id" name="event_id" class="form-select select2">
-                <option value="">Select an event</option>
+                <option value="">Pilih Event</option>
                 @foreach($events as $event)
                     <option value="{{ $event->id }}" data-start="{{ $event->date_start }}" data-end="{{ $event->date_end }}">{{ $event->event_name }}</option>
                 @endforeach
@@ -40,7 +40,7 @@
             <label for="deskripsi" class="form-label">Deskripsi</label>
             <textarea id="deskripsi" name="deskripsi" class="form-control" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
 </div>
 

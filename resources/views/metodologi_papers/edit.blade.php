@@ -4,44 +4,44 @@
 
 @section('content')
 <x-header-content title="Edit Makalah Metodologi" />
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-lg-12">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
             @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Whoops!</strong> Ada beberapa masalah dengan input Anda.<br><br>
-                    <ul>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Whoops!</strong> Ada beberapa masalah dengan input Anda.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <ul class="mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
             @endif
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <form action="{{ route('management-system.metodologi_papers.update', $metodologiPaper->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
-                            <label for="name">Nama:</label>
-                            <input type="text" name="name" class="form-control" value="{{ $metodologiPaper->name }}" placeholder="Nama">
+                            <label for="name" class="font-weight-bold">Nama:</label>
+                            <input type="text" name="name" class="form-control shadow-sm" value="{{ $metodologiPaper->name }}" placeholder="Nama" required>
                         </div>
                         <div class="form-group">
-                            <label for="step">Langkah:</label>
-                            <div>
-                                <input type="radio" id="step7" name="step" value="7" {{ $metodologiPaper->step == 7 ? 'checked' : '' }}>
-                                <label for="step7">7</label>
-                            </div>
-                            <div>
-                                <input type="radio" id="step8" name="step" value="8" {{ $metodologiPaper->step == 8 ? 'checked' : '' }}>
-                                <label for="step8">8</label>
-                            </div>
+                            <label for="step" class="font-weight-bold">Langkah:</label>
+                            <select name="step" class="form-control shadow-sm" required>
+                                <option value="">Pilih Langkah</option>
+                                <option value="7" {{ $metodologiPaper->step == 7 ? 'selected' : '' }}>7</option>
+                                <option value="8" {{ $metodologiPaper->step == 8 ? 'selected' : '' }}>8</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="max_user">Maksimal Pengguna:</label>
-                            <input type="number" name="max_user" class="form-control" value="{{ $metodologiPaper->max_user }}" placeholder="Maksimal Pengguna">
+                            <label for="max_user" class="font-weight-bold">Maksimal Pengguna:</label>
+                            <input type="number" name="max_user" class="form-control shadow-sm" value="{{ $metodologiPaper->max_user }}" placeholder="Maksimal Pengguna" min="0" required>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        <button type="submit" class="btn btn-primary mt-3 w-100 py-2">Simpan</button>
                     </form>
                 </div>
             </div>
@@ -49,3 +49,4 @@
     </div>
 </div>
 @endsection
+

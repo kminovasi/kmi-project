@@ -12,18 +12,18 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>Informasi Personal</h4>
+                                <h4>Informasi Pribadi</h4>
                                 <table class="table table-bordered">
                                     <tr>
-                                        <th>Employee ID</th>
+                                        <th>ID Karyawan</th>
                                         <td>{{ $user->employee_id ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nama</th>
                                         <td>{{ $user->name ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Username</th>
+                                        <th>Nama Pengguna</th>
                                         <td>{{ $user->username ?? '-' }}</td>
                                     </tr>
                                     <tr>
@@ -31,7 +31,7 @@
                                         <td>{{ $user->email ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Role</th>
+                                        <th>Peran</th>
                                         <td>{{ $user->role ?? '-' }}</td>
                                     </tr>
                                 </table>
@@ -39,19 +39,19 @@
                                 <h4>Detail Organisasi</h4>
                                 <table class="table table-bordered">
                                     <tr>
-                                        <th>Position Title</th>
+                                        <th>Jabatan</th>
                                         <td>{{ $user->position_title ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Company</th>
+                                        <th>Perusahaan</th>
                                         <td>{{ $user->company_name ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Directorate</th>
+                                        <th>Direktorat</th>
                                         <td>{{ $user->directorate_name ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Department</th>
+                                        <th>Departemen</th>
                                         <td>{{ $user->department_name ?? '-' }}</td>
                                     </tr>
                                     <tr>
@@ -66,16 +66,16 @@
                                 @if ($user->atasan)
                                     <table class="table table-bordered">
                                         <tr>
-                                            <th>Manager Name</th>
+                                            <th>Nama Manajer</th>
                                             <td>{{ $user->atasan->name ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Manager Position</th>
+                                            <th>Jabatan Manajer</th>
                                             <td>{{ $user->atasan->position_title ?? '-' }}</td>
                                         </tr>
                                     </table>
                                 @else
-                                    <p>Tidak ada manajer ditugaskan</p>
+                                    <p>Tidak ada manajer yang ditugaskan</p>
                                 @endif
 
                                 <h4>Bawahan</h4>
@@ -83,8 +83,8 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Position</th>
+                                                <th>Nama</th>
+                                                <th>Jabatan</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -103,10 +103,11 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary"> Kembali</a>
+                        <a href="{{ route('management-system.user.index') }}" class="btn btn-primary">Kembali ke Daftar Pengguna</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+

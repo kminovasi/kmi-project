@@ -14,125 +14,129 @@
                 </ul>
             </div>
         @endif
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Tambah Pengguna Baru</h3>
-            </div>
+        <div class="card shadow-sm">
             <form action="{{ route('management-system.user.store') }}" method="POST">
                 @csrf
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Employee ID</label>
-                                <input type="text" name="employee_id" class="form-control" required>
+                                <label for="employee_id">ID Karyawan</label>
+                                <input type="text" name="employee_id" class="form-control" id="employee_id" required>
                             </div>
                             <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" name="username" class="form-control" required>
+                                <label for="username">Nama Pengguna</label>
+                                <input type="text" name="username" class="form-control" id="username" required>
                             </div>
                             <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" name="name" class="form-control" required>
+                                <label for="name">Nama</label>
+                                <input type="text" name="name" class="form-control" id="name" required>
                             </div>
                             <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <label for="email">Email</label>
+                                <input type="email" name="email" class="form-control" id="email" required>
                             </div>
                             <div class="form-group">
-                                <label>Position Title</label>
-                                <input type="text" name="position_title" class="form-control">
+                                <label for="position_title">Jabatan</label>
+                                <input type="text" name="position_title" class="form-control" id="position_title">
                             </div>
                             <div class="form-group">
-                                <label>Company Code</label>
-                                <input type="text" name="company_code" class="form-control">
+                                <label for="company_code">Kode Perusahaan</label>
+                                <input type="text" name="company_code" class="form-control" id="company_code">
                             </div>
                             <div class="form-group">
-                                <label>Company Name</label>
-                                <input type="text" name="company_name" class="form-control">
+                                <label for="company_name">Nama Perusahaan</label>
+                                <input type="text" name="company_name" class="form-control" id="company_name">
                             </div>
                             <div class="form-group">
-                                <label>Directorate Name</label>
-                                <input type="text" name="directorate_name" class="form-control">
+                                <label for="directorate_name">Nama Direktorat</label>
+                                <input type="text" name="directorate_name" class="form-control" id="directorate_name">
                             </div>
                             <div class="form-group">
-                                <label>Group Function Name</label>
-                                <input type="text" name="group_function_name" class="form-control">
+                                <label for="group_function_name">Nama Grup Fungsi</label>
+                                <input type="text" name="group_function_name" class="form-control" id="group_function_name">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Department Name</label>
-                                <input type="text" name="department_name" class="form-control">
+                                <label for="department_name">Nama Departemen</label>
+                                <input type="text" name="department_name" class="form-control" id="department_name">
                             </div>
                             <div class="form-group">
-                                <label>Unit Name</label>
-                                <input type="text" name="unit_name" class="form-control">
+                                <label for="unit_name">Nama Unit</label>
+                                <input type="text" name="unit_name" class="form-control" id="unit_name">
                             </div>
                             <div class="form-group">
-                                <label>Section Name</label>
-                                <input type="text" name="section_name" class="form-control">
+                                <label for="section_name">Nama Seksi</label>
+                                <input type="text" name="section_name" class="form-control" id="section_name">
                             </div>
                             <div class="form-group">
-                                <label>Sub Section Of</label>
-                                <input type="text" name="sub_section_of" class="form-control">
+                                <label for="sub_section_of">Sub Seksi Dari</label>
+                                <input type="text" name="sub_section_of" class="form-control" id="sub_section_of">
                             </div>
                             <div class="form-group">
-                                <label>Date of Birth</label>
-                                <input type="date" name="date_of_birth" class="form-control">
+                                <label for="date_of_birth">Tanggal Lahir</label>
+                                <input type="date" name="date_of_birth" class="form-control" id="date_of_birth">
                             </div>
                             <div class="form-group">
-                                <label>Gender</label>
-                                <select name="gender" class="form-control">
-                                    <option value="">Pilih Gender</option>
-                                    <option value="Male">Laki-Laki</option>
-                                    <option value="Female">Perempuan</option>
-                                </select>
+                                <label for="gender">Jenis Kelamin</label>
+                                <div class="dropdown">
+                                    <select name="gender" id="gender" class="form-control custom-select">
+                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="Male">Laki-laki</option>
+                                        <option value="Female">Perempuan</option>
+                                    </select>
+                                    <span class="dropdown-arrow"></span>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label>Job Level</label>
-                                <input type="text" name="job_level" class="form-control">
+                                <label for="job_level">Tingkat Pekerjaan</label>
+                                <input type="text" name="job_level" class="form-control" id="job_level">
                             </div>
                             <div class="form-group">
-                                <label>Contract Type</label>
-                                <input type="text" name="contract_type" class="form-control">
+                                <label for="contract_type">Jenis Kontrak</label>
+                                <input type="text" name="contract_type" class="form-control" id="contract_type">
                             </div>
                             <div class="form-group">
-                                <label>Home Company</label>
-                                <input type="text" name="home_company" class="form-control">
+                                <label for="home_company">Perusahaan Asal</label>
+                                <input type="text" name="home_company" class="form-control" id="home_company">
                             </div>
                             <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" name="password" class="form-control" required>
+                                <label for="password">Kata Sandi</label>
+                                <input type="password" name="password" class="form-control" id="password" required>
                             </div>
                             <div class="form-group">
-                                <label>Confirm Password</label>
-                                <input type="password" name="password_confirmation" class="form-control" required>
+                                <label for="password_confirmation">Konfirmasi Kata Sandi</label>
+                                <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" required>
                             </div>
                             <div class="form-group">
-                                <label>Role</label>
-                                <select name="role" class="form-control" required>
-                                    <option value="">Select Role</option>
+                                <label for="role">Peran</label>
+                                <select name="role" id="role" class="form-control" required>
+                                    <option value="">Pilih Peran</option>
                                     <option value="Superadmin">Superadmin</option>
                                     <option value="Admin">Admin</option>
                                     <option value="Pengelola Inovasi">Pengelola Inovasi</option>
                                     <option value="BOD">BOD</option>
                                     <option value="5">5</option>
-                                    <option value="User">User</option>
+                                    <option value="User">Pengguna</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Manager ID (Optional)</label>
-                                <input type="text" name="manager_id" class="form-control">
+                                <label for="manager_id">ID Manajer (Opsional)</label>
+                                <input type="text" name="manager_id" class="form-control" id="manager_id">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Batal</a>
+                    <div class="d-flex justify-content-start">
+                        <button type="submit" class="btn btn-primary mr-2">Tambahkan Pengguna</button>
+                        <a href="{{ route('management-system.user.index') }}" class="btn btn-danger">Batal</a>
+                    </div>
                 </div>
+
             </form>
         </div>
     </div>
 @endsection
+

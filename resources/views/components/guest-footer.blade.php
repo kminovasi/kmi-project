@@ -5,8 +5,9 @@
                 <a href="#" class="footer-site-logo d-block mb-4 text-decoration-none text-white">
                     <img src="{{ asset('assets/landingpage/logo.png') }}" alt="">
                 </a>
-                <p class="text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi quasi
-                    perferendis ratione perspiciatis accusantium.</p>
+                <p class="text-white">Innovation Award adalah ajang tahunan SIG untuk mengapresiasi inovator yang
+                    membawa inovasi baru bagi perusahaan. Kegiatan ini mewadahi kreativitas karyawan dalam menciptakan
+                    solusi inovatif.</p>
             </div>
             <div class="col-md d-flex justify-content-md-end p-3">
                 <ul class="list-unstyled nav-links">

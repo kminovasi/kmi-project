@@ -35,8 +35,9 @@
                                 data-bs-parent="#accordionCompany{{ $company->id }}">
                                 <div class="accordion-body">
                                     <a href="{{ route('detail-company-chart-show', ['id' => $company->id]) }}" class="text-decoration-none">
-                                        <div class="card company-card" data-company-id="{{ $company->id }}"
-                                            data-company-code="{{ $company->company_code }}">
+                                        <div class="card" >
+                                            <div class="company-card" data-company-id="{{ $company->id }}"
+                                                data-company-code="{{ $company->company_code }}">
                                             <div class="card-header bg-light">
                                                 <h5 class="card-title mb-0 text-center">{{ $company->company_name }}</h5>
                                             </div>
@@ -50,6 +51,7 @@
                                                         :company-code="$company->company_code" />
                                                 </div>
                                             </div>
+                                        </div>
                                             <div class="p-3">
                                                 <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['id' => $company->id])}}">Lihat Detail</a>
                                                 <button class="btn btn-success export-excel"

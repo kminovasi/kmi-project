@@ -14,6 +14,10 @@
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
     <canvas id="totalTeamChart"></canvas>
+    <div class="mt-3 text-center">
+        <button class="btn btn-success export-excel">Export to Excel</button>
+        <button class="btn btn-danger export-pdf">Export to PDF</button>
+    </div>
 </div>
 @vite(['resources/js/totalTeamByOrganization.js']);
 
@@ -22,5 +26,10 @@
         initializeTotalTeamChart
     } from "{{ Vite::asset('resources/js/totalTeamByOrganizationChart.js') }}";
     const chartData = @json($chartData); // Kirim data ke JavaScript
+    const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
+    console.log(chartData);
+    window.chartData = chartData; // Store chart data globally
+    window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
     initializeTotalTeamChart(chartData); // Panggil fungsi dari file JS
 </script>
+@vite(['resources/js/exportTotalTeamByOrganization.js'])

@@ -28,7 +28,7 @@ class MetodologiPaperController extends Controller
 
         MetodologiPaper::create($request->all());
 
-        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Paper created successfully.');
+        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Makalah berhasil dibuat.');
     }
 
     public function edit(MetodologiPaper $metodologiPaper)
@@ -46,13 +46,13 @@ class MetodologiPaperController extends Controller
 
         $metodologiPaper->update($request->all());
 
-        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Paper updated successfully.');
+        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Makalah berhasil diperbarui.');
     }
 
     public function destroy(MetodologiPaper $metodologiPaper)
     {
         $metodologiPaper->delete();
 
-        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Paper deleted successfully.');
+        return redirect()->route('management-system.metodologi_papers.index')->with('success', 'Metodologi Makalah berhasil dihapus.');
     }
 }

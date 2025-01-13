@@ -1,6 +1,6 @@
 <div class="card mt-3">
     <div class="card-header" style="background-color: #eb4a3a">
-        <h5 class="text-white">Total Potential Benefit per Perusahaan </h5>
+        <h5 class="text-white">Total Potensial Benefit per Perusahaan </h5>
     </div>
     <div class="card-body">
         <canvas id="total-potential-benefit-chart" style="height: 1500px;"></canvas>

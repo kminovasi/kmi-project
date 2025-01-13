@@ -95,14 +95,14 @@
         }
     </style>
 @endpush
-<div class="card team-card border-0 shadow-lg">
+<div class="card team-card border-0 shadow-lg mt-3">
     <div class="card-header bg-gradient-primary">
         <h5 class="card-title text-white">Total Benefit per Tahun</h5>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <h6 class="text-muted">Financial Benefit</h6>
+                <h6 class="text-muted">Finansial Benefit</h6>
                 <div class="financial-benefits">
                     @foreach ($financialBenefits as $benefit)
                         <div class="financial-benefit-item">
@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <h6 class="text-muted">Potential Benefit</h6>
+                <h6 class="text-muted">Potensial Benefit</h6>
                 <div class="financial-benefits">
                     @foreach ($potentialBenefits as $benefit)
                         <div class="financial-benefit-item">

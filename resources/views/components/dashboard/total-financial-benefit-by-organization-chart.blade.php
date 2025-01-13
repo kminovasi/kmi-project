@@ -28,9 +28,11 @@
     } from "{{ Vite::asset('resources/js/totalFinancialBenefitByOrganizationChart.js') }}";
 
     const chartData = @json($chartData); // Kirim data ke JavaScript
+    const company_name = @json($company_name);
     initializeTotalFinancialChart(chartData); // Panggil fungsi dari file JS
     window.chartData = chartData; // Store chart data globally
     window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
+    window.company_name = company_name; // Store company name globally
 </script>
 
 @vite(['resources/js/exportTotalFinancialBenefitByOrganizationChart.js'])

@@ -11,6 +11,7 @@ class TotalInnovatorByOrganizationCharts extends Component
 {
     public $organizationUnit;
     public $chartData;
+    public $company_name;
 
     /**
      * Create a new component instance.
@@ -40,6 +41,7 @@ class TotalInnovatorByOrganizationCharts extends Component
         $company = Company::findOrFail($companyId);
         $companyCode = $company->company_code;
         $currentYear = now()->year;
+        $this->company_name = $company->company_name;
 
         // Ambil data total inovator
         $this->chartData = Team::select(
@@ -82,6 +84,7 @@ class TotalInnovatorByOrganizationCharts extends Component
         return view('components.dashboard.total-innovator-by-organization-charts', [
             'chartData' => $this->chartData,
             'organizationUnit' => $this->organizationUnit,
+            'company_name' => $this->company_name
         ]);
     }
 }

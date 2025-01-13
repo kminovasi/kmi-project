@@ -3,12 +3,12 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 document.addEventListener("DOMContentLoaded", function () {
-    const exportExcelButton = document.querySelector('.export-excel-exportTotalInnovatorByOrganization');
-    const exportPdfButton = document.querySelector('.export-pdf-exportTotalInnovatorByOrganization');
+    const exportExcelButton = document.querySelector('.export-excel-totalPotentialBenefitByOrganizationChart');
+    const exportPdfButton = document.querySelector('.export-pdf-totalPotentialBenefitByOrganizationChart');
 
     if (exportExcelButton) {
         exportExcelButton.addEventListener('click', async function () {
-            const chartCanvas = document.getElementById('totalInnovatorChart');
+            const chartCanvas = document.getElementById('totalPotentialChart');
             const chartData = window.chartData;
             const organizationUnitLabel = window.organizationUnitLabel;
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `total_innovator_by_organization_${organizationUnitLabel}_${company_name}.xlsx`;
+                a.download = `total_potential_benefit_by_organization_${organizationUnitLabel}_${company_name}.xlsx`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             }
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (exportPdfButton) {
         exportPdfButton.addEventListener('click', async function () {
-            const chartCanvas = document.getElementById('totalInnovatorChart');
+            const chartCanvas = document.getElementById('totalPotentialChart');
             const chartData = window.chartData;
             const organizationUnitLabel = window.organizationUnitLabel;
 
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Add title
                 pdf.setFontSize(18);
-                pdf.text('Total Innovator per ' + organizationUnitLabel, 10, 10);
+                pdf.text('Total Potensial Benefit Per ' + organizationUnitLabel, 10, 10);
 
                 // Determine the range of years dynamically from the chartData
                 const years = new Set();
@@ -124,10 +124,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     pdf.addImage(imgData, 'PNG', 10, 30 + (labels.length * 10), 180, 100);
 
                     // Save the PDF
-                    pdf.save(`total_innovator_by_organization_${organizationUnitLabel}_${company_name}.pdf`);
+                    pdf.save(`total_potential_benefit_by_organization_${organizationUnitLabel}_${company_name}.pdf`);
                 });
             }
         });
     }
 });
-

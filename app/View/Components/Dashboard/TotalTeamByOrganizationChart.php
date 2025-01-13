@@ -13,6 +13,7 @@ class TotalTeamByOrganizationChart extends Component
 {
     public $organizationUnit;
     public $chartData;
+    public $company_name;
 
     /**
      * Create a new component instance.
@@ -41,6 +42,7 @@ class TotalTeamByOrganizationChart extends Component
         $company = Company::findOrFail($companyId);
         $companyCode = $company->company_code;
         $currentYear = now()->year;
+        $this->company_name = $company->company_name;
 
         // Ambil data 4 tahun terakhir
         $this->chartData = Team::select(
@@ -83,6 +85,7 @@ class TotalTeamByOrganizationChart extends Component
         return view('components.dashboard.total-team-by-organization-chart', [
             'chartData' => $this->chartData,
             'organizationUnit' => $this->organizationUnit,
+            'company_name' => $this->company_name
         ]);
     }
 }

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (exportExcelButton) {
         exportExcelButton.addEventListener('click', async function () {
-            const chartCanvas = document.getElementById('totalFinancialBenefitChart');
+            const chartCanvas = document.getElementById('totalFinancialChart');
             const chartData = window.chartData;
             const organizationUnitLabel = window.organizationUnitLabel;
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'total_financial_benefit_by_organization.xlsx';
+                a.download = `total_financial_benefit_by_organization_${organizationUnitLabel}_${company_name}.xlsx`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             }
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (exportPdfButton) {
         exportPdfButton.addEventListener('click', async function () {
-            const chartCanvas = document.getElementById('totalFinancialBenefitChart');
+            const chartCanvas = document.getElementById('totalFinancialChart');
             const chartData = window.chartData;
             const organizationUnitLabel = window.organizationUnitLabel;
 
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     pdf.addImage(imgData, 'PNG', 10, 30 + (labels.length * 10), 180, 100);
 
                     // Save the PDF
-                    pdf.save(`total_financial_benefit_by_organization ${organizationUnitLabel}.pdf`);
+                    pdf.save(`total_financial_benefit_by_organization ${organizationUnitLabel}_${company_name}.pdf`);
                 });
             }
         });

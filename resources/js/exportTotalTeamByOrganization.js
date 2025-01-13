@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'total_team_by_organization.xlsx';
+                a.download = `total_team_by_organization_${organizationUnitLabel}_${company_name}.xlsx`;
                 a.click();
                 window.URL.revokeObjectURL(url);
             }
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     pdf.addImage(imgData, 'PNG', 10, 30 + (labels.length * 10), 180, 100);
 
                     // Save the PDF
-                    pdf.save('total_team_by_organization.pdf');
+                    pdf.save(`total_team_by_organization_${organizationUnitLabel}_${company_name}.pdf`);
                 });
             }
         });

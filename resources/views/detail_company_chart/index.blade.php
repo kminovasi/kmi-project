@@ -5,7 +5,7 @@
 @section('content')
     @vite(['resources/css/detailCompanyChart.css'])
 
-    <x-header-content :title="'Chart Total Innovator per Kategori Tahun : ' . $selectedYear" >
+    <x-header-content :title="'Chart Total Innovator per Kategori Tahun : ' . $selectedYear">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#yearFilterModal">
             <i class="fas fa-filter me-2"></i>Filter Tahun
         </button>
@@ -23,29 +23,44 @@
                     <div class="accordion" id="accordionCompany{{ $company->id }}">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ $company->id }}">
-                                <button class="accordion-button {{ $index != 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $company->id }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}" aria-controls="collapse{{ $company->id }}">
+                                <button class="accordion-button {{ $index != 0 ? 'collapsed' : '' }}" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse{{ $company->id }}"
+                                    aria-expanded="{{ $index == 0 ? 'true' : 'false' }}"
+                                    aria-controls="collapse{{ $company->id }}">
                                     {{ $company->company_name }}
                                 </button>
                             </h2>
-                            <div id="collapse{{ $company->id }}" class="accordion-collapse collapse " aria-labelledby="heading{{ $company->id }}" data-bs-parent="#accordionCompany{{ $company->id }}">
+                            <div id="collapse{{ $company->id }}" class="accordion-collapse collapse "
+                                aria-labelledby="heading{{ $company->id }}"
+                                data-bs-parent="#accordionCompany{{ $company->id }}">
                                 <div class="accordion-body">
-                                    <div class="card shadow-sm company-card" data-company-id="{{ $company->id }}"
-                                        data-company-code="{{ $company->company_code }}">
-                                        <div class="card-header bg-light">
-                                            <h5 class="card-title mb-0 text-center">{{ $company->company_name }}</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="text-center mb-3">
-                                                <img src="{{ $company->logo_url }}" alt="Logo {{ $company->company_name }}"
-                                                    class="img-fluid company-logo">
+                                    <a href="{{ route('detail-company-chart-show', ['id' => $company->id]) }}" class="text-decoration-none">
+                                        <div class="card" >
+                                            <div class="company-card" data-company-id="{{ $company->id }}"
+                                                data-company-code="{{ $company->company_code }}">
+                                            <div class="card-header bg-light">
+                                                <h5 class="card-title mb-0 text-center">{{ $company->company_name }}</h5>
                                             </div>
-                                            <div class="chart-container">
-                                                <x-detail-company-chart.innovator-chart :selected-year="$selectedYear" :company-id="$company->id"
-                                                    :company-code="$company->company_code" />
+                                            <div class="card-body">
+                                                <div class="text-center mb-3">
+                                                    <img src="{{ $company->logo_url }}"
+                                                        alt="Logo {{ $company->company_name }}" class="img-fluid company-logo">
+                                                </div>
+                                                <div class="chart-container">
+                                                    <x-detail-company-chart.innovator-chart :selected-year="$selectedYear" :company-id="$company->id"
+                                                        :company-code="$company->company_code" />
+                                                </div>
                                             </div>
-                                            <button class="btn btn-primary">Lihat Detail</button>
                                         </div>
-                                    </div>
+                                            <div class="p-3">
+                                                <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['id' => $company->id])}}">Lihat Detail</a>
+                                                <button class="btn btn-success export-excel"
+                                                    data-company-id="{{ $company->id }}">Export to Excel</button>
+                                                <button class="btn btn-danger export-pdf"
+                                                    data-company-id="{{ $company->id }}">Export to PDF</button>
+                                            </div>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -78,7 +93,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </form>
@@ -101,7 +116,7 @@
 
         .company-card {
             height: 100%;
-            transition: transform 0.2s;
+            cursor: pointer;
         }
 
         .company-card:hover {
@@ -111,3 +126,5 @@
 @endpush
 
 @vite(['resources/js/company/detailCompanyChart.js'])
+@vite(['resources/js/company/exportExcel.js'])
+@vite(['resources/js/company/exportPdf.js'])

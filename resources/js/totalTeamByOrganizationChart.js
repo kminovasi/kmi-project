@@ -8,8 +8,16 @@ export function initializeTotalTeamChart(chartData) {
     const labels = Object.keys(chartData);
     const datasets = [];
 
-    const currentYear = new Date().getFullYear();
-    for (let year = currentYear - 3; year <= currentYear; year++) {
+    // Determine the range of years dynamically from the chartData
+    const years = new Set();
+    labels.forEach(unit => {
+        Object.keys(chartData[unit]).forEach(year => {
+            years.add(parseInt(year));
+        });
+    });
+    const sortedYears = Array.from(years).sort();
+
+    sortedYears.forEach(year => {
         datasets.push({
             label: year.toString(),
             data: labels.map((unit) => chartData[unit][year] || 0), // Data tahun tertentu
@@ -17,7 +25,7 @@ export function initializeTotalTeamChart(chartData) {
                 Math.random() * 255
             }, ${Math.random() * 255}, 0.6)`,
         });
-    }
+    });
 
     const ctx = document.getElementById("totalTeamChart").getContext("2d");
     new Chart(ctx, {

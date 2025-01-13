@@ -1,5 +1,5 @@
 <div class="card p-3">
-    <h2 class="chart-title text-center">Total Financial Benefit Per
+    <h2 class="chart-title text-center">Total Finansial Benefit Per
         @php
             $labels = [
                 'unit_name' => 'Unit',

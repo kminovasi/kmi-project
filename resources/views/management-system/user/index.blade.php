@@ -14,7 +14,7 @@
                 <h3 class="card-title">User Management</h3>
                 <div class="card-tools">
                     <a href="{{ route('management-system.user.create') }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus"></i> Add New User
+                        <i class="fas fa-plus"></i> Tambahkan Pengguna
                     </a>
                 </div>
                 @if (session('success'))

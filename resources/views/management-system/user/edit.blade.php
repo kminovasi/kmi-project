@@ -16,7 +16,7 @@
         @endif
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Edit User</h3>
+                <h3 class="card-title">Edit Pengguna</h3>
             </div>
             <form action="{{ route('management-system.user.update', $user->id) }}" method="POST">
                 @csrf
@@ -132,8 +132,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Update User</button>
-                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </form>
         </div>

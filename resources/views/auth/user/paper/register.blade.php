@@ -209,7 +209,12 @@
                                 <h6 class="small mb-1">Upload Foto Produk Inovasi</h6>
                                 <input type="file" name="innovation_photo" class="form-control" accept="image/*">
                             </div>
-
+                            @if (App::environment('stage'))
+                                <div class="mb-3">
+                                    <h6 class="small mb-1">Team dibuat tanggal</h6>
+                                    <input type="date" name="team_created_at" class="form-control" required>
+                                </div>
+                            @endif
                             <!-- Save changes button-->
                             <div class="d-grid">
                                 <button class="btn btn-secondary" type="submit" id="button_submit">

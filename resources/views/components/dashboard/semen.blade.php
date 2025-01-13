@@ -57,12 +57,19 @@
 
     <div class="dashboard-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">Persebaran inovasi setiap perusahaan (kategori)</h4>
-            <button type="button" class="btn btn-primary btn-sm btn-filter" data-bs-toggle="modal"
-                data-bs-target="#yearFilterInnovator">
+            <h4 class="mb-0">
+                Persebaran inovasi setiap perusahaan (kategori)
+            </h4>
+            <button
+                type="button"
+                class="btn btn-primary btn-sm btn-filter"
+                data-bs-toggle="modal"
+                data-bs-target="#yearFilterInnovator"
+            >
                 <i class="fas fa-filter me-1"></i> Filter
             </button>
         </div>
+
 
         <div class="chart-grid">
             @foreach ($charts as $index => $chart)
@@ -116,7 +123,7 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>

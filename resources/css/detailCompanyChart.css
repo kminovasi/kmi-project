@@ -66,16 +66,10 @@
     background-color: #ffffff;
     border: none;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
     overflow: hidden;
     cursor: pointer;
 }
 
-.company-card:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transform: translateY(-3px);
-}
 
 .company-card .card-header {
     background-color: #f8f9fa;

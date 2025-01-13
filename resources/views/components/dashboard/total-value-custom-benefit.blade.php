@@ -1,6 +1,6 @@
 <!-- resources/views/components/dashboard/total-value-custom-benefit.blade.php -->
 <div class="card">
-    <div class="card-header bg-primary text-white mt-2">
+    <div class="card-header bg-gradient-primary text-white mt-2">
         <h5 class="card-title mb-0 text-white">Total Non Finansial benefit</h5>
     </div>
     <div class="card-body">

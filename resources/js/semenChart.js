@@ -38,13 +38,17 @@ document.addEventListener("DOMContentLoaded", function() {
                         grid: {
                             color: 'rgba(0, 0, 0, 0.1)'
                         }
-                    }
+                    },
                 },
                 plugins: {
                     legend: {
                         labels: {
                             color: '#000'
                         }
+                    },
+                    tooltip: {
+                        position: 'nearest',
+                        intersect: true,
                     },
                     drawValue: true, // Enable custom plugin,
                     datalabels: {

@@ -1,5 +1,5 @@
 <div class="mt-3 card p-3">
-    <h3>Total Financial Benefit per tahun</h3>
+    <h3>Total Finansial Benefit per tahun</h3>
     <p>{{ $title }}</p>
     <canvas id="financialBenefitChart"></canvas>
 </div>

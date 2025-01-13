@@ -8,7 +8,7 @@
                 <th>Judul</th>
                 <th>Author</th>
                 <th>Tanggal</th>
-                <th>Action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
                             Aksi
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('post.show', $post->slug) }}">View</a></li>
+                            <li><a class="dropdown-item" href="{{ route('post.show', $post->slug) }}">Lihat</a></li>
                             <li><a class="dropdown-item" href="{{ route('post.edit', $post->id) }}">Edit</a></li>
                             <li>
                                 <hr class="dropdown-divider">

@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Str;
 
 class PostTable extends Component

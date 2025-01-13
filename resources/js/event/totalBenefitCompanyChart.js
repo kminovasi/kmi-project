@@ -112,7 +112,8 @@ export async function renderTotalBenefitChart(companies) {
                     display: true,
                     anchor: "center", // Posisi angka di tengah batang
                     align: "center", // Penyesuaian posisi angka
-                    formatter: (value) => value.toLocaleString("id-ID"), // Format angka dengan format Indonesia
+                    formatter: (value) =>
+                        formatRupiah(value), // Format angka
                     font: {
                         weight: "bold", // Tebalkan font
                         size: 14, // Ukuran font
@@ -143,3 +144,13 @@ export async function renderTotalBenefitChart(companies) {
         plugins: [imagePlugin], // Daftarkan plugin untuk menggambar logo
     });
 }
+
+
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+    }).format(value);
+};
+

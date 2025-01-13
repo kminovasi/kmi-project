@@ -9,11 +9,10 @@
 
 <script type="module">
     import { renderTotalInnovatorChart } from "{{ Vite::asset('resources/js/event/totalInnovatorCategories.js') }}";
-
-    const chartData = @json($chartData);
+    const chartDataTotalInnovatorCategories = @json($chartData);
     const event_name = @json($event_name);
-    window.chartData = chartData; // Store chart data globally
+    window.chartDataTotalInnovatorCategories = chartDataTotalInnovatorCategories; // Store chart data globally
     window.event_name = event_name; // Store event name globally
-    renderTotalInnovatorChart('totalInnovatorChart', chartData);
+    renderTotalInnovatorChart('totalInnovatorChart', chartDataTotalInnovatorCategories);
 </script>
 @vite(['resources/js/event/exportTotalInnovatorCategories.js'])

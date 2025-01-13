@@ -47,12 +47,12 @@
 <script type="module">
     import { initializeTotalInnovatorEventChart } from "{{ Vite::asset('resources/js/event/totalInnovatorEventChart.js') }}";
 
-    const chartData = @json($chartData);
+    const chartDataTotalInnovatorOrganization = @json($chartData);
     const organizationUnit = @json($organizationUnit);
     const event_name = @json($event_name);
-    window.chartData = chartData; // Store chart data globally
+    window.chartDataTotalInnovatorOrganization = chartDataTotalInnovatorOrganization; // Store chart data globally
     window.organizationUnit = organizationUnit; // Store organization unit globally
     window.event_name = event_name; // Store event name globally
-    initializeTotalInnovatorEventChart(chartData);
+    initializeTotalInnovatorEventChart(chartDataTotalInnovatorOrganization);
 </script>
 @vite(['resources/js/event/exportTotalInnovatorEventChart.js'])

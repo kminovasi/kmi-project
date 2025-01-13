@@ -20,11 +20,11 @@
     </div>
 
     <!-- Grafik & Visualisasi -->
-    <div class="row">
-        <div class="col-md-6 mb-4">
+    <div class="row justify-content-center text-center m-auto">
+        <div class="col-md-10 mb-4">
             <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" />
         </div>
-        <div class="col-md-6 mb-4">
+        <div class="col-md-10 mb-4">
             <x-dashboard.event.total-innovator-categories :eventId="$eventId" />
         </div>
         <div class="col-md-6 mb-4">

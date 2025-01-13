@@ -8,6 +8,7 @@ use App\Models\Event;
 class TotalBenefitCompanyChart extends Component
 {
     public $eventId;
+    public $event_name;
 
     /**
      * Create a new component instance.
@@ -17,6 +18,7 @@ class TotalBenefitCompanyChart extends Component
     public function __construct($eventId)
     {
         $this->eventId = $eventId;
+        $this->event_name = Event::where('id', $eventId)->value('event_name');
     }
 
     /**
@@ -56,7 +58,6 @@ class TotalBenefitCompanyChart extends Component
                     $logoPath = public_path("assets/logos/{$sanitizedCompanyName}.png");
 
                     // Debug: periksa nama yang diproses
-                    \Log::info('Sanitized company name: ' . $sanitizedCompanyName);
 
                     return [
                         'company_name' => $companyName,
@@ -88,6 +89,6 @@ class TotalBenefitCompanyChart extends Component
         }
 
         // Menampilkan card dan chart jika tipe event adalah 'group' atau 'AP'
-        return view('components.dashboard.event.total-benefit-company-chart', $data);
+        return view('components.dashboard.event.total-benefit-company-chart', $data, ['event_name' =>`$this->event_name`]);
     }
 }

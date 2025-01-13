@@ -8,7 +8,7 @@ use Illuminate\View\Component;
 class TotalInnovatorStages extends Component
 {
     public $chartData;
-
+    public $event_name;
     /**
      * Create a new component instance.
      *
@@ -28,6 +28,7 @@ class TotalInnovatorStages extends Component
             'Presentation BOD',
             'Juara'
         ];
+        $this->event_name = PvtEventTeam::where('event_id', $eventId)->first()->event->name;
 
         $data = PvtEventTeam::where('event_id', $eventId)
             ->selectRaw('status, COUNT(*) as total')
@@ -56,7 +57,8 @@ class TotalInnovatorStages extends Component
     public function render()
     {
         return view('components.dashboard.event.total-innovator-stages', [
-            'chartData' => $this->chartData
+            'chartData' => $this->chartData,
+            'event_name' => $this->event_name
         ]);
     }
 }

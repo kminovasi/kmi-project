@@ -10,11 +10,13 @@ class TotalInnovatorCategories extends Component
 {
     public $eventId;
     public $chartData;
+    public $event_name;
 
     public function __construct($eventId)
     {
         $this->eventId = $eventId;
         $this->chartData = $this->fetchChartData();
+        $this->event_name = Event::find($eventId)->event_name;
     }
 
     private function fetchChartData()
@@ -58,7 +60,8 @@ class TotalInnovatorCategories extends Component
     public function render()
     {
         return view('components.dashboard.event.total-innovator-categories', [
-            'chartData' => $this->chartData
+            'chartData' => $this->chartData,
+            'event_name' => $this->event_name
         ]);
     }
 }

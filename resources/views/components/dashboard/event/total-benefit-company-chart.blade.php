@@ -1,5 +1,9 @@
 <div class="container py-4">
-    @if ($event->type === 'group' || $event->type === 'internal' || $event->type === 'national' || $event->type === 'international')
+    @if (
+        $event->type === 'group' ||
+            $event->type === 'internal' ||
+            $event->type === 'national' ||
+            $event->type === 'international')
         <!-- Card and Chart for Group Event -->
         <div class="card p-3 mb-4">
             <div class="card-header">
@@ -22,6 +26,10 @@
 
                 <!-- Chart Container -->
                 <canvas id="totalBenefitChart" width="400" height="400"></canvas>
+                <div class="mt-3 text-center">
+                    <button class="btn btn-success export-excel-totalBenefitCompanyChart">Export to Excel</button>
+                    <button class="btn btn-danger export-pdf-totalBenefitCompanyChart">Export to PDF</button>
+                </div>
             </div>
         </div>
 
@@ -34,6 +42,9 @@
 
                 // Data untuk Chart.js
                 const chartData = @json($chartData);
+                const event_name = @json($event_name);
+                window.chartData = chartData; // Store chart data globally
+                window.event_name = event_name; // Store event name globally
 
                 // Render chart
                 renderTotalBenefitChart(chartData);
@@ -58,3 +69,4 @@
         </div>
     @endif
 </div>
+@vite(['resources/js/event/exportTotalBenefitCompanyChart.js'])

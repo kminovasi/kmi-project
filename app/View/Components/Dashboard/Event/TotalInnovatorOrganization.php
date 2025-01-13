@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Dashboard\Event;
 
+use App\Models\Event;
 use App\Models\PvtMember;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ class TotalInnovatorOrganization extends Component
     public $chartData;
     public $eventId;
     public $organizationUnit;
+    public $event_name;
 
     /**
      * Create a new component instance.
@@ -22,6 +24,7 @@ class TotalInnovatorOrganization extends Component
     {
         $this->eventId = $eventId;
         $this->organizationUnit = $organizationUnit;
+        $this->event_name = Event::findOrFail($eventId)->event_name;
 
         // Validasi kolom organisasi yang diperbolehkan
         $validOrganizationUnits = [
@@ -67,7 +70,9 @@ class TotalInnovatorOrganization extends Component
     {
         return view('components.dashboard.event.total-innovator-organization', [
             'chartData' => $this->chartData,
-            'eventId' => $this->eventId
+            'eventId' => $this->eventId,
+            'event_name' => $this->event_name,
+            'organizationUnit' => $this->organizationUnit,
         ]);
     }
 }

@@ -37,8 +37,8 @@
                 <div id="listBenefitNonFin">
 
                 </div>
-                <button type="button" class="btn btn-outline-primary" id="addBenefitNonFin"
-                    onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Add Non Financial</button>
+                <button type="button" class="btn btn-primary" id="addBenefitNonFin"
+                    onclick="add_custom_benefit()"><i class="fa-solid fa-plus btn-sm"></i>&nbsp;Tambahkan Non Financial</button>
             </div>
         </div>
     </div>
@@ -109,14 +109,14 @@
                         const newNonFin = `
                         <div class="row gx-3 mb-3" id="nonfin-${count}" data-id="${id_benefit}">
                             <div class="col-md-5">
-                                <input class="form-control" id="inputCustomBenefit-${count}" type="text" placeholder="Enter Benefit Name"  value="${name_benefit}" readonly/>
+                                <input class="form-control" id="inputCustomBenefit-${count}" type="text" placeholder="Masukkan Nama Benefit"  value="${name_benefit}" readonly/>
                             </div>
                             <div class="col-md-5">
                                 <input class="form-control" id="inputValue-${count}" type="text" value="" readonly />
                             </div>
                             <div class="col-md-2" id="button_place-${count}">
                                 <button type="button" class="btn btn-warning" onclick="edit_inputfield(${count}, \'${idEvent}\')">Edit</button>
-                                <button type="button" class="btn btn-danger" onclick="delete_data(${count}, \'${idEvent}\')">Delete</button>
+                                <button type="button" class="btn btn-danger" onclick="delete_data(${count}, \'${idEvent}\')">Hapus</button>
                             </div>
                         </div>
                         `;
@@ -138,14 +138,12 @@
             const newInputNonFin = `
                 <div class="row gx-3 mb-3" id="nonfin-${count}">
                     <div class="col-md-5">
-                        <input class="form-control" id="inputCustomBenefit-${count}" type="text" placeholder="Enter Benefit Name"  />
+                        <input class="form-control" id="inputCustomBenefit-${count}" type="text" placeholder="Masukkan Nama Benefit"  />
                     </div>
-                    <div class="col-md-5">
-                        <input class="form-control" id="inputValue-${count}" type="text" disabled />
-                    </div>
+
                     <div class="col-md-2" id="button_place-${count}">
-                        <button type="button" class="btn btn-primary" onclick="save_data(${count}, \'${idEvent}\')">Save</button>
-                        <button type="button" class="btn btn-secondary" onclick="delete_inputfield(${count})">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="save_data(${count}, \'${idEvent}\')">Simpan</button>
+                        <button type="button" class="btn btn-danger" onclick="delete_inputfield(${count})">Batal</button>
                     </div>
                 </div>
                 `;
@@ -178,7 +176,7 @@
                     const newBtnNonFin = `
                     <div class="col-md-2" id="button_place-${order}">
                         <button type="button" class="btn btn-warning" onclick="edit_inputfield(${order}, \'${idEvent}\')">Edit</button>
-                        <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Hapus</button>
                     </div>
                     `;
                     button_nonfin.insertAdjacentHTML('beforeend', newBtnNonFin);
@@ -206,8 +204,8 @@
 
             const newBtnNonFin = `
             <div class="col-md-2" id="button_place-${order}">
-                <button type="button" class="btn btn-primary" onclick="update_data(${order}, \'${idEvent}\')">Save Update</button>
-                <button type="button" class="btn btn-danger" onclick="cancel_edit_inputfield(${order}, \'${idEvent}\' , \'${old_value_benefit_nonfin}\')">Cancel Update</button>
+                <button type="button" class="btn btn-primary" onclick="update_data(${order}, \'${idEvent}\')">Simpan Perubahan</button>
+                <button type="button" class="btn btn-danger" onclick="cancel_edit_inputfield(${order}, \'${idEvent}\' , \'${old_value_benefit_nonfin}\')">Batal Perubahan</button>
             </div>
             `;
             button_nonfin.insertAdjacentHTML('beforeend', newBtnNonFin);
@@ -223,7 +221,7 @@
             const newBtnNonFin = `
             <div class="col-md-2" id="button_place-${order}">
                 <button type="button" class="btn btn-warning" onclick="edit_inputfield(${order}, \'${idEvent}\')">Edit</button>
-                <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Delete</button>
+                <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Hapus</button>
             </div>
             `;
             button_nonfin.insertAdjacentHTML('beforeend', newBtnNonFin);
@@ -252,7 +250,7 @@
                     const newBtnNonFin = `
                     <div class="col-md-2" id="button_place-${order}">
                         <button type="button" class="btn btn-warning" onclick="edit_inputfield(${order}, \'${idEvent}\')">Edit</button>
-                        <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick="delete_data(${order}, \'${idEvent}\')">Hapus</button>
                     </div>
                     `;
                     button_nonfin.insertAdjacentHTML('beforeend', newBtnNonFin);

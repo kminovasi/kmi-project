@@ -1,7 +1,8 @@
 import { Chart, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Daftarkan semua elemen yang dibutuhkan
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 export function initializeTotalFinancialChart(chartData) {
     const labels = Object.keys(chartData);
@@ -12,9 +13,7 @@ export function initializeTotalFinancialChart(chartData) {
         datasets.push({
             label: year.toString(),
             data: labels.map((unit) => chartData[unit][year] || 0), // Data tahun tertentu
-            backgroundColor: `rgba(${Math.random() * 255}, ${
-                Math.random() * 255
-            }, ${Math.random() * 255}, 0.6)`,
+            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.6)`,
         });
     }
 
@@ -33,18 +32,52 @@ export function initializeTotalFinancialChart(chartData) {
                 },
                 title: {
                     display: true,
-                    text: "Total Financial Benefit by Organization",
+                    text: "Total Benefit Finansial Berdasarkan Organisasi",
                 },
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "center",
-                    anchor: "center",
-                    color: 'black',
-                    formatter: (value) => formatRupiah(value.toLocaleString()), // Format angka (opsional)
+                    align: (context) =>
+                        context.dataset.data[context.dataIndex] < 10
+                            ? "end"
+                            : "center", // Jika kecil, posisikan di luar
+                    anchor: (context) =>
+                        context.dataset.data[context.dataIndex] < 10
+                            ? "end"
+                            : "center",
+                    color: (context) =>
+                        context.dataset.data[context.dataIndex] < 10
+                            ? "red"
+                            : "black", // Warna merah untuk angka kecil
+                    formatter: (value) =>
+                        formatRupiah(value.toLocaleString()), // Format angka
                     font: {
                         weight: "bold",
                         size: 12,
+                    },
+                    padding: 4, // Tambahkan padding agar teks tidak menempel
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Total Financial Benefit (IDR)",
+                        font: {
+                            size: 14,
+                            weight: "bold",
+                        },
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Unit Organisasi",
+                        font: {
+                            size: 14,
+                            weight: "bold",
+                        },
                     },
                 },
             },
@@ -53,9 +86,10 @@ export function initializeTotalFinancialChart(chartData) {
 }
 
 const formatRupiah = (value) => {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
     }).format(value);
 };
+

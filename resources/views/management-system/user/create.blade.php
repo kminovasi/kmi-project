@@ -16,7 +16,7 @@
         @endif
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Create New User</h3>
+                <h3 class="card-title">Tambah Pengguna Baru</h3>
             </div>
             <form action="{{ route('management-system.user.store') }}" method="POST">
                 @csrf
@@ -84,9 +84,9 @@
                             <div class="form-group">
                                 <label>Gender</label>
                                 <select name="gender" class="form-control">
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
+                                    <option value="">Pilih Gender</option>
+                                    <option value="Male">Laki-Laki</option>
+                                    <option value="Female">Perempuan</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -129,8 +129,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Create User</button>
-                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </form>
         </div>

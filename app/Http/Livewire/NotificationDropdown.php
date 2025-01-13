@@ -4,9 +4,13 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\Notifiable;
+
 
 class NotificationDropdown extends Component
 {
+    use Notifiable;
+
     public $notifications;
 
     public function mount()

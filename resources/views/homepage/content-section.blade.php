@@ -9,7 +9,7 @@
                     <blockquote>"Empowering Innovators Through Awards"</blockquote>
                 </h2>
                 <p class="lead">
-                    Innovation Award adalah ajang tahunan SIG untuk mengapresiasi inovator yang telah membawa inovasi baru
+                    Innovation Award adalah ajang tahunan SIG untuk mengapresiasi inovator yang membawa inovasi baru
                     bagi perusahaan. Kegiatan ini mewadahi kreativitas karyawan dalam menciptakan solusi inovatif.
                 </p>
             </div>

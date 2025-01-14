@@ -1,68 +1,45 @@
 <div class="container py-4">
-    @if ($event->type === 'group' || $event->type === 'internal' || $event->type === 'national' || $event->type === 'international')
-        <!-- Card and Chart for Group Event -->
-        <div class="card p-3 mb-4">
-            <div class="card-header">
-                <h5>Total Benefit Group Event</h5>
+    @if (
+        $event->type === 'group' ||
+        $event->type === 'internal' ||
+        $event->type === 'national' ||
+        $event->type === 'international')
+        <!-- Card for Total Benefit Group Event -->
+        <div class="card mb-4 p-5 shadow-lg rounded-3 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <i class="fas fa-coins text-success" style="font-size: 2.5rem;"></i>
+                <span class="badge bg-success text-white rounded-pill">Benefit</span>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">Akumulasi Total Potensial Benefit</h5>
-                <p class="card-text">
-                </p>
-
-                <!-- Logo and Benefits for each company -->
-                {{-- @foreach ($companies as $company)
-                    <div class="company-info mb-2">
-                        <img src="{{ $company['logo'] }}" alt="{{ $company['company_name'] }} logo" width="50"
-                            height="50">
-                        <strong>{{ $company['company_name'] }}</strong>: Rp
-                        {{ number_format($company['total_benefit'], 0, ',', '.') }}
-                    </div>
-                @endforeach --}}
-
-                <!-- Chart Container -->
-                <canvas id="totalPotentialBenefitChart" width="400" height="400"></canvas>
-                <div class="mt-3 text-center">
-                    <button class="btn btn-success export-excel-totalBenefitPotentialCompanyChart">Export to Excel</button>
-                    <button class="btn btn-danger export-pdf-totalBenefitPotentialCompanyChart">Export to PDF</button>
-                </div>
-            </div>
+            <h5 class="fw-bold mt-3 fs-2">
+                <strong class="text-success">
+                    Rp {{ number_format($companies->sum('total_benefit'), 0, ',', '.') }}
+                </strong>
+            </h5>
+            <p class="text-muted">Akumulasi Total Potensial Benefit</p>
         </div>
-
-        <!-- Push JS to load the chart -->
-        @push('js')
-            <script type="module">
-                import {
-                    renderTotalBenefitChart
-                } from "{{ Vite::asset('resources/js/event/totalPotentialBenefitCompanyChart.js') }}";
-
-                // Data untuk Chart.js
-                const chartData = @json($chartData);
-                const event_name = @json($event_name);
-                window.chartData = chartData; // Store chart data globally
-                window.event_name = event_name; // Store event name globally
-                // Render chart
-                renderTotalBenefitChart(chartData);
-            </script>
-        @endpush
     @elseif($event->type === 'AP')
         <!-- Card for AP Event -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Total Potensial Benefit AP Event</h5>
+        <div class="card mb-4 p-5 shadow-lg rounded-3 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <i class="fas fa-hand-holding-usd text-success" style="font-size: 2.5rem;"></i>
+                <span class="badge bg-success text-white rounded-pill">Benefit</span>
             </div>
-            <div class="card-body">
-                <p class="card-text">
-                    <strong>Rp {{ number_format($totalBenefit, 0, ',', '.') }}</strong>
-                </p>
-            </div>
+            <h5 class="fw-bold mt-3 fs-2">
+                <strong class="text-success">
+                    Rp {{ number_format($companies->sum('total_benefit'), 0, ',', '.') }}
+                </strong>
+            </h5>
+            <p class="text-muted">Akumulasi Total Potensial Benefit</p>
         </div>
     @else
-        <!-- Placeholder for other event types if needed -->
-        <div class="alert alert-warning" role="alert">
+        <!-- Placeholder for Other Event Types -->
+        <div class="alert alert-warning text-center fs-4" role="alert">
             Event type tidak dikenali. Tidak ada data yang tersedia.
         </div>
     @endif
 </div>
 
-@vite(['resources/js/event/exportTotalPotentialBenefitCompanyChart.js'])
+<script>
+    // Feather icons initialization
+    feather.replace();
+</script>

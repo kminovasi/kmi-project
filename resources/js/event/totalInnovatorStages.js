@@ -36,7 +36,7 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                     color: '#000',
                     font: {
                         weight: 'bold', // Membuat angka di dalam chart menjadi bold
-                        size: 14 // Ukuran font angka
+                        size: 20 // Ukuran font angka
                     },
                     anchor: 'center', // Tempatkan angka di bagian atas batang
                     align: 'center' // Penempatan angka di dalam batang

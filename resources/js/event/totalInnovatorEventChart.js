@@ -51,7 +51,7 @@ export function initializeTotalInnovatorEventChart(chartData) {
                     formatter: (value) => value, // Menampilkan nilai
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 20,
                     },
                     color: "#000", // Warna hitam untuk teks
                 },

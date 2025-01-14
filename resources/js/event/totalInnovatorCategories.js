@@ -2,11 +2,11 @@ import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import autocolors from 'chartjs-plugin-autocolors';
 
-/**
- * Render Total Innovator Chart
- * @param {string} canvasId - ID dari elemen canvas
- * @param {object} chartData - Data chart dari server
- */
+// /**
+//  * Render Total Innovator Chart
+//  * @param {string} canvasId - ID dari elemen canvas
+//  * @param {object} chartData - Data chart dari server
+//  */
 
 
 export function renderTotalInnovatorChart(canvasId, chartData) {

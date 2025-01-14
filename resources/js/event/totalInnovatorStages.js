@@ -1,27 +1,18 @@
 import Chart from 'chart.js/auto';
+import autocolors from 'chartjs-plugin-autocolors';
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 export function renderTotalInnovatorStagesChart(canvasId, chartData) {
     const ctx = document.getElementById(canvasId).getContext('2d');
 
     new Chart(ctx, {
+        plugins: [autocolors, ChartDataLabels],
         type: 'bar',
         data: {
             labels: chartData.labels,
             datasets: [{
                 label: 'Jumlah Team',
                 data: chartData.data,
-                backgroundColor: [
-                    '#AED6F1', // Pastel Blue
-                    '#A3E4D7', // Pastel Green
-                    '#F9E79F', // Pastel Yellow
-                    '#F5B7B1', // Pastel Pink
-                    '#ABEBC6', // Pastel Mint
-                    '#D7BDE2', // Pastel Purple
-                    '#D6DBDF', // Pastel Gray
-                    '#F7DC6F', // Pastel Orange
-                    '#FAD7A0'  // Pastel Peach
-                ],
-                borderColor: '#fff',
                 borderWidth: 1
             }]
         },
@@ -37,6 +28,9 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                             return `Jumlah: ${context.raw}`;
                         }
                     }
+                },
+                autocolors: {
+                    mode: 'data'
                 },
                 datalabels: {
                     color: '#000',

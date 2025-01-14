@@ -43,10 +43,17 @@
     </div>
 
     <!-- Grafik & Visualisasi -->
-    <div class="container py-2"> <!-- Kurangi padding -->
-        <div class="card mb-3 p-3 shadow-lg"> <!-- Kurangi margin dan padding -->
+    <div class="row justify-content-center text-center m-auto">
+        @if($event_type === 'group' || $event_type === 'internal' || $event_type === 'national' || $event_type === 'international')
+        <div class="col-md-12 mb-4">
+            <x-dashboard.event.total-team-company-chart :event-id="$eventId" />
+        </div>
+        @else
+        <div class="col-md-12 mb-4">
             <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" />
         </div>
+        @endif
+
     </div>
 
     <!-- Informasi Tambahan -->

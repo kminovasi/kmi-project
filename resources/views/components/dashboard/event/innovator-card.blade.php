@@ -1,6 +1,6 @@
 <div class="dashboard-card">
     <div class="card-header text-center">
-        <h5 class="fw-bold text-primary">Statistik Inovator & Akumulasi Benefit</h5>
+        <h5 class="fw-bold text-primary fs-header">Statistik Inovator & Akumulasi Benefit</h5>
     </div>
     <div class="card-body">
         <div class="row text-center">
@@ -10,8 +10,8 @@
                         <i class="fa-solid fa-rocket fa-3x text-info"></i>
                         <span class="badge bg-info text-white rounded-pill">Inovasi</span>
                     </div>
-                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovation'] }}</h5>
-                    <p class="text-muted">Total Inovasi</p>
+                    <h5 class="fw-bold mt-2" style="font-size: 2.5rem;">{{ $statistics['totalInnovation'] }}</h5>
+                    <p class="text-muted" style="font-size: 1.2rem;">Total Inovasi</p>
                 </div>
             </div>
             <div class="col-12 col-md-4 mb-3">
@@ -20,8 +20,8 @@
                         <i class="fa-solid fa-lightbulb fa-3x text-warning"></i>
                         <span class="badge bg-warning text-dark rounded-pill">Idea Box</span>
                     </div>
-                    <h5 class="fw-bold mt-2">{{ $statistics['ideaBox'] }}</h5>
-                    <p class="text-muted">Jumlah Idea Box</p>
+                    <h5 class="fw-bold mt-2" style="font-size: 2.5rem;">{{ $statistics['ideaBox'] }}</h5>
+                    <p class="text-muted" style="font-size: 1.2rem;">Jumlah Idea Box</p>
                 </div>
             </div>
             <div class="col-12 col-md-4 mb-3">
@@ -30,8 +30,8 @@
                         <i class="fa-solid fa-users fa-3x text-success"></i>
                         <span class="badge bg-success text-white rounded-pill">Total Inovator</span>
                     </div>
-                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovators'] }}</h5>
-                    <p class="text-muted">Total Inovator</p>
+                    <h5 class="fw-bold mt-2" style="font-size: 2.5rem;">{{ $statistics['totalInnovators'] }}</h5>
+                    <p class="text-muted" style="font-size: 1.2rem;">Total Inovator</p>
                 </div>
             </div>
         </div>
@@ -45,8 +45,8 @@
                         <i class="fas fa-male fa-3x text-primary"></i>
                         <span class="badge bg-primary text-white rounded-pill">Laki-Laki</span>
                     </div>
-                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovatorsMale'] }}</h5>
-                    <p class="text-muted">Total Inovator Laki-Laki</p>
+                    <h5 class="fw-bold mt-2" style="font-size: 2.5rem;">{{ $statistics['totalInnovatorsMale'] }}</h5>
+                    <p class="text-muted" style="font-size: 1.2rem;">Total Inovator Laki-Laki</p>
                 </div>
             </div>
             <div class="col-12 col-md-6 mb-3">
@@ -55,13 +55,14 @@
                         <i class="fas fa-female fa-3x text-danger"></i>
                         <span class="badge bg-danger text-white rounded-pill">Perempuan</span>
                     </div>
-                    <h5 class="fw-bold mt-2">{{ $statistics['totalInnovatorsFemale'] }}</h5>
-                    <p class="text-muted">Total Inovator Perempuan</p>
+                    <h5 class="fw-bold mt-2" style="font-size: 2.5rem;">{{ $statistics['totalInnovatorsFemale'] }}</h5>
+                    <p class="text-muted" style="font-size: 1.2rem;">Total Inovator Perempuan</p>
                 </div>
             </div>
 
         </div>
     </div>
+
 </div>
 
 

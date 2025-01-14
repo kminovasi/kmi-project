@@ -1,8 +1,9 @@
 <div class="card p-3">
     <h2 class="chart-title text-center">Total Inovator per Organisasi</h2>
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#filterModal">
-        Filter Berdasarkan Organisasi
+        <i class="fas fa-filter me-2"></i> Filter Berdasarkan Organisasi
     </button>
+
     <canvas id="totalInnovatorEventChart"></canvas>
     <div class="mt-3 text-center">
         <button class="btn btn-success export-excel-totalInnovatorEventChart">Export to Excel</button>

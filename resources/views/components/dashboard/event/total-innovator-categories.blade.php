@@ -13,8 +13,9 @@
 
     // Daftar warna yang akan dipakai untuk kategori secara dinamis
     const categoryColors = [
-        "bg-info",   // Biru
         "bg-success", // Hijau
+        "bg-secondary",
+        "bg-info",   // Biru
         "bg-warning", // Kuning
         "bg-primary", // Biru Tua
         "bg-danger",  // Merah
@@ -34,7 +35,7 @@
                     <div class="card mb-3 custom-card ${categoryColor}">
                         <div class="card-body">
                             <h6 class="card-title">${label}</h6>
-                            <p class="card-text">Jumlah : <strong>${chartDataTotalInnovatorCategories.data[index]}</strong></p>
+                            <p class="card-text"> <strong>${chartDataTotalInnovatorCategories.data[index]}</strong></p>
                         </div>
                     </div>
                 </div>
@@ -81,7 +82,9 @@
     }
 
     .custom-card .card-text strong {
-        color: #ffffff; /* Warna teks hitam untuk strong */
+        color: #ffffff;
+        font-size: 2.7rem;  /* Ukuran font yang lebih besar */
+        /* Warna teks hitam untuk strong */
     }
 
     /* Warna kategori */

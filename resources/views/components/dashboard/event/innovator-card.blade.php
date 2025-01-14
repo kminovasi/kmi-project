@@ -1,6 +1,6 @@
 <div class="dashboard-card">
     <div class="card-header text-center">
-        <h5 class="fw-bold text-primary">Statistik Inovator</h5>
+        <h5 class="fw-bold text-primary">Statistik Inovator & Akumulasi Benefit</h5>
     </div>
     <div class="card-body">
         <div class="row text-center">
@@ -59,9 +59,12 @@
                     <p class="text-muted">Total Inovator Perempuan</p>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
+
+
 
 
 

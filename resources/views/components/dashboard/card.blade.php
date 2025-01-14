@@ -331,43 +331,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('innovatorChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Laki-laki', 'Perempuan'],
-                    datasets: [{
-                        data: [
-                            {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }},
-                            {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}
-                        ],
-                        backgroundColor: ['#8F00FF', '#FF007F'],
-                        borderWidth: 0,
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'right',
-                            labels: {
-                                color: '#ffffff',
-                                font: {
-                                    size: 10
-                                }
-                            }
-                        },
-                    },
-                    maintainAspectRatio: false,
-                    responsive: true,
-                }
-            });
-        });
-    </script>
-
     <div class="col-12 mb-4"></div>
 
     <div class="col-lg-6 col-xl-5 mb-4">
@@ -412,3 +375,52 @@
 
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('innovatorChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Laki-laki', 'Perempuan'],
+                datasets: [{
+                    data: [
+                        {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }},
+                        {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}
+                    ],
+                    backgroundColor: ['#8F00FF', '#FF007F'],
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'center',
+                        labels: {
+                            color: '#fff',
+                            font: { size: 9 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: ({ chart, dataIndex }) => {
+                                const data = chart.data.datasets[0].data;
+                                const percentage = ((data[dataIndex] / data.reduce((a, b) => a + b)) * 100).toFixed(2);
+                                return `${chart.data.labels[dataIndex]}: ${percentage}%`;
+                            }
+                        },
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        displayColors: false,
+                        bodyFont: { size: 10 },
+                        padding: 10
+                    }
+                },
+                maintainAspectRatio: false,
+                responsive: true
+            }
+        });
+    });
+</script>

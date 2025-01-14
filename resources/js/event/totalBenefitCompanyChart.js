@@ -8,6 +8,7 @@ import {
     Legend,
     Title,
 } from "chart.js";
+import autocolors from "chartjs-plugin-autocolors";
 
 // Import chartjs-plugin-datalabels untuk menampilkan angka di dalam chart
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -20,7 +21,7 @@ Chart.register(
     Tooltip,
     Legend,
     Title,
-    ChartDataLabels // Daftarkan plugin datalabels
+    autocolors
 );
 
 // Array untuk menyimpan gambar logo
@@ -55,8 +56,8 @@ const imagePlugin = {
 
         // Menggambar logo di bawah setiap label
         chart.data.labels.forEach((label, index) => {
-            const x = scales.x.getPixelForTick(index); // Posisi X label
-            const y = scales.y.getPixelForValue(index) + 10; // Posisi Y, tambahkan jarak di bawah label
+            const x = chartArea.left + 10;
+            const y = scales.y.getPixelForValue(index) - 15; // Posisi Y, tambahkan jarak di bawah label
 
             if (logoImages[index]) {
                 const img = logoImages[index];
@@ -89,9 +90,8 @@ export async function renderTotalBenefitChart(companies) {
                 {
                     label: "Total Financial Benefit",
                     data: data,
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
                     borderWidth: 1,
+                    maxBarThickness: 40
                 },
             ],
         },
@@ -106,6 +106,9 @@ export async function renderTotalBenefitChart(companies) {
                             return `Benefit: Rp ${value}`;
                         },
                     },
+                },
+                autocolors: {
+                    mode: 'data'
                 },
                 // Plugin untuk menampilkan angka di tengah batang chart
                 datalabels: {
@@ -141,7 +144,7 @@ export async function renderTotalBenefitChart(companies) {
                 },
             },
         },
-        plugins: [imagePlugin], // Daftarkan plugin untuk menggambar logo
+        plugins: [imagePlugin, ChartDataLabels], // Daftarkan plugin untuk menggambar logo
     });
 }
 

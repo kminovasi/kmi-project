@@ -21,10 +21,16 @@
 
     <!-- Grafik & Visualisasi -->
     <div class="row justify-content-center text-center m-auto">
-        <div class="col-md-10 mb-4">
+        @if($event_type === 'group' || $event_type === 'internal' || $event_type === 'national' || $event_type === 'international')
+        <div class="col-md-12 mb-4">
+            <x-dashboard.event.total-team-company-chart :event-id="$eventId" />
+        </div>
+        @else
+        <div class="col-md-12 mb-4">
             <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" />
         </div>
-        <div class="col-md-10 mb-4">
+        @endif
+        <div class="col-md-12 mb-4">
             <x-dashboard.event.total-innovator-categories :eventId="$eventId" />
         </div>
         <div class="col-md-6 mb-4">

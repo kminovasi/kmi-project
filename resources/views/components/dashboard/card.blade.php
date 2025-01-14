@@ -323,8 +323,8 @@
                         </div>
                     </div>
                     <!-- Chart -->
-                    <div class="chart-container" style="width: 130px; height: 130px;">
-                        <canvas id="innovatorChart"></canvas>
+                    <div class="chart-container" style="width: 130px; height: 130px; background-color: transparent;">
+                        <canvas id="innovatorChart" style="background-color: transparent;"></canvas>
                     </div>
                 </div>
             </div>
@@ -410,12 +410,12 @@
                                 return `${chart.data.labels[dataIndex]}: ${percentage}%`;
                             }
                         },
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        backgroundColor: 'rgba(0, 0, 0, 10)',
                         titleColor: '#fff',
                         bodyColor: '#fff',
                         displayColors: false,
                         bodyFont: { size: 10 },
-                        padding: 10
+                        padding: 9
                     }
                 },
                 maintainAspectRatio: false,

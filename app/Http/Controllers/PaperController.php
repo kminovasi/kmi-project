@@ -255,6 +255,7 @@ class PaperController extends Controller
             $now = Carbon::now();
             // Memulai transaksi
             DB::beginTransaction();
+            $teamCreatedAt = $request->input('team_created_at') ? Carbon::parse($request->input('team_created_at')) : $now;
 
             $newTeam = Team::create([
                 'team_name' => $request->input('team_name'),
@@ -266,7 +267,7 @@ class PaperController extends Controller
                 'phone_number' => $request->input('phone_number'),
                 'status_lomba' => $request->input('status_lomba'),
                 'inovasi_lokasi' => $request->input('inovasi_lokasi'),
-
+                'created_at' => $teamCreatedAt,
             ]);
 
             History::create([
@@ -301,6 +302,7 @@ class PaperController extends Controller
                     ),
                     'metodologi_paper_id' => $request->input('metodologi_paper_id'),
                     'step_8' => '-',
+                    'created_at' => $teamCreatedAt,
                 ]);
             } else {
                 // dd($request->input('inovasi_lokasi'));
@@ -327,6 +329,7 @@ class PaperController extends Controller
                         'public'
                     ),
                     'metodologi_paper_id' => $request->input('metodologi_paper_id'),
+                    'created_at' => $teamCreatedAt,
                 ]);
             }
 

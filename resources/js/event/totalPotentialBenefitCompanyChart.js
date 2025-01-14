@@ -8,6 +8,8 @@ import {
     Legend,
     Title,
 } from "chart.js";
+import autocolors from "chartjs-plugin-autocolors";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(
     CategoryScale,
@@ -16,12 +18,11 @@ Chart.register(
     BarElement,
     Tooltip,
     Legend,
-    Title
+    autocolors // Daftarkan autocolors di sini
 );
 
 // Array untuk menyimpan gambar logo
 const logoImages = [];
-
 // Fungsi untuk memuat semua gambar logo
 const loadLogos = async (logos) => {
     try {
@@ -51,8 +52,8 @@ const imagePlugin = {
 
         // Menggambar logo di bawah setiap label
         chart.data.labels.forEach((label, index) => {
-            const x = scales.x.getPixelForTick(index); // Posisi X label
-            const y = scales.y.getPixelForValue(index) + 10; // Posisi Y, tambahkan jarak di bawah label
+            const x = chartArea.left + 10;
+            const y = scales.y.getPixelForValue(index) - 15; // Posisi Y, tambahkan jarak di bawah label
 
             if (logoImages[index]) {
                 const img = logoImages[index];
@@ -92,9 +93,8 @@ export async function renderTotalBenefitChart(companies) {
                 {
                     label: "Total Potential Benefit",
                     data: data,
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
                     borderWidth: 1,
+                    maxBarThickness: 40
                 },
             ],
         },
@@ -110,7 +110,9 @@ export async function renderTotalBenefitChart(companies) {
                         },
                     },
                 },
-                // Plugin untuk menampilkan angka di tengah batang chart dengan format titik dan bold
+                autocolors: {
+                    mode: 'data'
+                },
                 datalabels: {
                     display: true,
                     anchor: "center", // Posisi angka di tengah batang
@@ -143,7 +145,6 @@ export async function renderTotalBenefitChart(companies) {
                 },
             },
         },
-        plugins: [imagePlugin], // Daftarkan plugin untuk menggambar logo
+        plugins: [imagePlugin, autocolors, ChartDataLabels], // Gunakan plugin autocolors
     });
 }
-

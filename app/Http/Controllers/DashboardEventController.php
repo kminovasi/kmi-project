@@ -36,12 +36,13 @@ class DashboardEventController extends Controller
     {
         $event = Event::findOrFail($id);
         $organizationUnit = $request->input('organization-unit'); // Ambil filter dari request
-
+        $event_type = $event->type;
 
         return view('dashboard.event.statistics', [
             'eventId' => $event->id,
             'eventName' => $event->event_name,
             'organizationUnit' => $organizationUnit,
+            'event_type' => $event_type
         ]);
     }
 }

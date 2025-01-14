@@ -204,7 +204,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi dengan kategori IDEA BOX
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi Kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
@@ -299,7 +299,7 @@
                     <!-- Informasi Teks -->
                     <div class="me-3 flex-grow-1">
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
-                            Total Inovator
+                            Akumulasi Total Inovator
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovators }}
@@ -307,23 +307,24 @@
                         </div>
                         <!-- Persentase laki-laki dan perempuan -->
                         <div class="mt-3">
-                            <span style="font-weight: 600;">Persentase Inovator:</span>
+                            <span style="font-weight: 600;">Total Inovator:</span>
                             <div class="mt-3 d-flex justify-content-between">
                                 <span>Laki-laki:</span>
                                 <span class="fw-bold">
-                                    {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }}%
+                                    {{ $totalInnovatorsMale }} Orang
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span>Perempuan:</span>
                                 <span class="fw-bold">
-                                    {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}%
+                                    {{ $totalInnovatorsFemale }} Orang
                                 </span>
                             </div>
                         </div>
+
                     </div>
                     <!-- Chart -->
-                    <div class="chart-container" style="width: 130px; height: 130px; background-color: transparent;">
+                    <div class="chart-container" style="width: 155px; height: 155px; background-color: transparent;">
                         <canvas id="innovatorChart" style="background-color: transparent;"></canvas>
                     </div>
                 </div>
@@ -399,7 +400,7 @@
                         position: 'center',
                         labels: {
                             color: '#fff',
-                            font: { size: 9 }
+                            font: { size: 20 }
                         }
                     },
                     tooltip: {
@@ -414,7 +415,7 @@
                         titleColor: '#fff',
                         bodyColor: '#fff',
                         displayColors: false,
-                        bodyFont: { size: 10 },
+                        bodyFont: { size: 13 },
                         padding: 9
                     }
                 },

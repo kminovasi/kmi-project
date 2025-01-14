@@ -11,8 +11,15 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                 label: 'Jumlah Team',
                 data: chartData.data,
                 backgroundColor: [
-                    '#3498db', '#1abc9c', '#f39c12', '#e74c3c',
-                    '#2ecc71', '#9b59b6', '#34495e', '#95a5a6', '#e67e22'
+                    '#AED6F1', // Pastel Blue
+                    '#A3E4D7', // Pastel Green
+                    '#F9E79F', // Pastel Yellow
+                    '#F5B7B1', // Pastel Pink
+                    '#ABEBC6', // Pastel Mint
+                    '#D7BDE2', // Pastel Purple
+                    '#D6DBDF', // Pastel Gray
+                    '#F7DC6F', // Pastel Orange
+                    '#FAD7A0'  // Pastel Peach
                 ],
                 borderColor: '#fff',
                 borderWidth: 1
@@ -35,7 +42,7 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                     color: '#000',
                     font: {
                         weight: 'bold', // Membuat angka di dalam chart menjadi bold
-                        size: 14 // Ukuran font angka
+                        size: 20 // Ukuran font angka
                     },
                     anchor: 'center', // Tempatkan angka di bagian atas batang
                     align: 'center' // Penempatan angka di dalam batang

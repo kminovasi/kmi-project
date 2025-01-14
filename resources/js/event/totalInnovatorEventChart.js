@@ -17,9 +17,19 @@ export function initializeTotalInnovatorEventChart(chartData) {
                 {
                     label: "Total Inovator",
                     data: data,
-                    backgroundColor: "rgba(75, 192, 192, 0.6)",
+                    backgroundColor: [
+                         // Pastel Pink
+                        '#FFDAB9', // Peach Puff
+                        '#FFFACD', // Lemon Chiffon
+                        '#E0FFFF', // Light Cyan
+                        '#D8BFD8', // Thistle
+                        '#B0E0E6', // Powder Blue
+                        '#AFEEEE', // Pale Turquoise
+                        '#F5DEB3', // Wheat
+                        '#98FB98'  // Pale Green
+                    ],
                     borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 1,
+                    borderWidth: 0,
                 },
             ],
         },
@@ -47,7 +57,7 @@ export function initializeTotalInnovatorEventChart(chartData) {
                     formatter: (value) => value, // Menampilkan nilai
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 20,
                     },
                     color: "#000", // Warna hitam untuk teks
                 },

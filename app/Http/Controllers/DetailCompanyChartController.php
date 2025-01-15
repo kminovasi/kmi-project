@@ -60,8 +60,10 @@ class DetailCompanyChartController extends Controller
         // Hitung total inovator dan berdasarkan gender
         $innovatorData = PvtMember::join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
-            ->where('teams.company_code', $company->company_code)
+            ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->where('users.company_code', $company->company_code)
             ->whereIn('pvt_members.status', ['leader', 'member'])
+            ->where('papers.status', 'accepted by innovation admin')
             ->select('users.gender', \DB::raw('count(distinct pvt_members.employee_id) as total'))
             ->groupBy('users.gender')
             ->get();

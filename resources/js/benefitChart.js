@@ -143,10 +143,10 @@ const initChart = async () => {
                         formatter: (value) => toRupiah(value, {useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false}),
                         color: 'black',
                         anchor: 'center', // Center the label horizontally
-                        align: 'center', // Center the label vertically
+                        align: 'right', // Center the label vertically
                         font: {
                             weight: 'bold',
-                            size: 12,
+                            size: 17,
                         },
                     },
                     customImagePlugin: imagePlugin,

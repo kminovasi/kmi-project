@@ -16,9 +16,11 @@ class Benefit extends Component
     ];
     public $isSuperadmin;
     public $userCompanyCode;
+    public $availableYears;
 
     public function __construct($year = null, $isSuperadmin, $userCompanyCode)
     {
+        $this->year = $year ?? date('Y');
         $this->isSuperadmin = $isSuperadmin;
         $this->userCompanyCode = $userCompanyCode;
 
@@ -32,6 +34,7 @@ class Benefit extends Component
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
             ->whereIn('papers.status', $acceptedStatuses)
+            ->whereYear('papers.created_at', $this->year)
             ->groupBy('companies.company_name')
             ->orderBy('total_benefit', 'DESC');
 
@@ -67,6 +70,13 @@ class Benefit extends Component
             // Simpan path logo
             $this->charts['logos'][] = $logoPath;
         }
+
+        // Get available years for the dropdown
+        $this->availableYears = Paper::selectRaw('EXTRACT(YEAR FROM created_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
     }
 
     public function render()
@@ -74,6 +84,7 @@ class Benefit extends Component
         return view('components.dashboard.benefit', [
             'charts' => $this->charts,
             'year' => $this->year,
+            'availableYears' => $this->availableYears,
         ]);
     }
 }

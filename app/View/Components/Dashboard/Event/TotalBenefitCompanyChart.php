@@ -4,6 +4,7 @@ namespace App\View\Components\Dashboard\Event;
 
 use Illuminate\View\Component;
 use App\Models\Event;
+use Illuminate\Support\Facades\Log;
 
 class TotalBenefitCompanyChart extends Component
 {

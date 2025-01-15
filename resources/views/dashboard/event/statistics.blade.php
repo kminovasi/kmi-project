@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Event')
 
 @section('content')
-<div class="container mt-4">
+<div class="container mt-2">
     <!-- Header -->
     <div class="row mb-3">
         <div class="col-12 text-center">
@@ -15,7 +15,7 @@
     <!-- Ringkasan Statistik -->
     <div class="container py-2"> <!-- Kurangi padding -->
         <!-- Main Card for Innovator and Benefits -->
-        <div class="card mb-3 p-3 shadow-lg"> <!-- Kurangi margin dan padding -->
+        <div class=" mb-3 p-3 "> <!-- Kurangi margin dan padding -->
             <div class="card-body">
                 <!-- Innovator Card Section -->
                 <div class="row mb-2"> <!-- Kurangi margin -->
@@ -38,19 +38,37 @@
         </div>
     </div>
 
-    <div class="container py-1"> <!-- Kurangi padding -->
+    <div class="container py-1 mb-4"> <!-- Kurangi padding -->
         <x-dashboard.event.total-innovator-categories :eventId="$eventId" />
     </div>
 
     <!-- Grafik & Visualisasi -->
     <div class="row justify-content-center text-center m-auto">
-        @if($event_type === 'group' || $event_type === 'internal' || $event_type === 'national' || $event_type === 'international')
+        @if($event_type === 'group' || $event_type === 'national' || $event_type === 'international')
         <div class="col-md-12 mb-4">
             <x-dashboard.event.total-team-company-chart :event-id="$eventId" />
         </div>
+        @elseif($event_type === 'internal')
+        <div class="col-md-12 mb-4">
+            <x-dashboard.event.total-team-card-company :event-id="$eventId"  />
+        </div>
+        <div class="col-md-12 mb-4">
+            <div class="row">
+                @foreach ($companies as $companyName => $companyCode)
+                <div class="col-md-6">
+                <x-dashboard.event.total-innovator-organization
+                        :eventId="$eventId"
+                        :organizationUnit="$organizationUnit"
+                        :companyCode="$companyCode"
+                        :companyName="$companyName"
+                        :canvasId="'chart_' . $companyCode"
+                         />
+                </div>
+            @endforeach
+        </div>
         @else
         <div class="col-md-12 mb-4">
-            <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" />
+            <x-dashboard.event.total-innovator-organization :eventId="$eventId" :organizationUnit="$organizationUnit" :canvasId="'chart_default'" />
         </div>
         @endif
 

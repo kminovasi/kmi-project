@@ -4,8 +4,21 @@ import autocolors from 'chartjs-plugin-autocolors';
 
 Chart.register(...registerables, ChartDataLabels);
 
-export function initializeTotalInnovatorEventChart(chartData) {
-    const ctx = document.getElementById("totalInnovatorEventChart").getContext("2d");
+// Fungsi untuk memetakan organizationUnit ke format yang lebih deskriptif
+function formatOrganizationUnit(unit) {
+    const mapping = {
+        directorate_name: "Direktorat",
+        group_function_name: "Group Head",
+        department_name: "Departemen",
+        unit_name: "Unit",
+        section_name: "Seksi",
+        sub_section_of: "Sub Seksi",
+    };
+    return mapping[unit] || unit; // Kembalikan unit asli jika tidak ditemukan
+}
+
+export function initializeTotalInnovatorEventChart(chartData, canvasId, organizationUnit) {
+    const ctx = document.getElementById(canvasId).getContext("2d");
 
     const labels = Object.keys(chartData);
     const data = Object.values(chartData);
@@ -38,7 +51,7 @@ export function initializeTotalInnovatorEventChart(chartData) {
                 },
                 title: {
                     display: true,
-                    text: "Total Inovator Berdasarkan Organisasi",
+                    text: `Total Inovator Berdasarkan ${ organizationUnit !== null ? formatOrganizationUnit(organizationUnit) : 'Direktorat' }`,
                     font: {
                         size: 16,
                         weight: "bold",

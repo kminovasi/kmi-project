@@ -52,7 +52,7 @@ class TotalFinancialBenefitCard extends Component
 
             $benefits[] = [
                 'year' => $year,
-                'total' => number_format($totalBenefit, 0, ',', '.')
+                'total' => $totalBenefit
             ];
         }
 

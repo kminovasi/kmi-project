@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardEventController extends Controller
 {
@@ -37,12 +38,15 @@ class DashboardEventController extends Controller
         $event = Event::findOrFail($id);
         $organizationUnit = $request->input('organization-unit'); // Ambil filter dari request
         $event_type = $event->type;
+        $companies = $event->companies()->pluck('company_code', 'company_name');
+
 
         return view('dashboard.event.statistics', [
             'eventId' => $event->id,
             'eventName' => $event->event_name,
             'organizationUnit' => $organizationUnit,
-            'event_type' => $event_type
+            'event_type' => $event_type,
+            'companies' => $companies, // Kirim daftar perusahaan ke view,
         ]);
     }
 }

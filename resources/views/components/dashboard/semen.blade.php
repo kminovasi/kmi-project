@@ -58,7 +58,7 @@
     <div class="dashboard-section">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">
-                Persebaran inovasi setiap perusahaan (kategori)
+                Persebaran inovasi setiap perusahaan (SIG Grup - Kategori)
             </h4>
             <button
                 type="button"

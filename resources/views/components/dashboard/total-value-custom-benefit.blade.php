@@ -30,7 +30,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-                <tfoot class="table-primary">
+                <tfoot class="table-danger">
                     @if ($grandTotal !== 0)
                         <tr>
                             <th>Total</th>

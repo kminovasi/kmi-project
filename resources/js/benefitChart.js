@@ -7,6 +7,8 @@ import {
     Tooltip,
 } from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import autocolors from 'chartjs-plugin-autocolors'; // Import AutoColors
+import toRupiah from '@develoka/angka-rupiah-js';
 
 // Register necessary components
 Chart.register(
@@ -15,32 +17,9 @@ Chart.register(
     BarController,
     BarElement,
     Tooltip,
-    ChartDataLabels
+    ChartDataLabels,
+    autocolors // Register AutoColors plugin
 );
-
-// Define your colors for the chart
-const colors = [
-    "rgba(255, 99, 132)", // Red
-    "rgba(54, 162, 235)", // Blue
-    "rgba(255, 206, 86)", // Yellow
-    "rgba(75, 192, 192)", // Teal
-    "rgba(153, 102, 255)", // Purple
-    "rgba(255, 159, 64)", // Orange
-    "rgba(199, 199, 199)", // Grey
-    "rgba(255, 99, 71)", // Tomato
-    "rgba(60, 179, 113)", // MediumSeaGreen
-    "rgba(218, 112, 214)", // Orchid
-    "rgba(0, 206, 209)", // DarkTurquoise
-    "rgba(220, 20, 60)", // Crimson
-    "rgba(255, 215, 0)", // Gold
-    "rgba(138, 43, 226)", // BlueViolet
-    "rgba(0, 128, 128)", // Teal
-    "rgba(70, 130, 180)", // SteelBlue
-    "rgba(244, 164, 96)", // SandyBrown
-    "rgba(128, 0, 0)", // Maroon
-    "rgba(0, 255, 127)", // SpringGreen
-    "rgba(100, 149, 237)", // CornflowerBlue
-];
 
 // Get data from the data-attributes
 const labels = JSON.parse(document.getElementById("chartDataAkumulasiBenefit").dataset.labels);
@@ -115,7 +94,7 @@ const initChart = async () => {
                     {
                         label: "Benefit",
                         data: dataValues,
-                        backgroundColor: colors.slice(0, labels.length),
+                        // Removed backgroundColor for AutoColors plugin to work
                     },
                 ],
             },
@@ -134,11 +113,19 @@ const initChart = async () => {
                     },
                     x: {
                         beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return toRupiah(value, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false });
+                            },
+                        },
                     },
                 },
                 plugins: {
                     legend: {
                         display: false,
+                    },
+                    autocolors: {
+                        mode: 'data'
                     },
                     tooltip: {
                         callbacks: {
@@ -148,12 +135,12 @@ const initChart = async () => {
                             },
                             label: (tooltipItem) => {
                                 // Display the value of the hovered item
-                                return `Nilai: ${formatRupiah(dataValues[tooltipItem.dataIndex])}`;
+                                return `Nilai: ${toRupiah(dataValues[tooltipItem.dataIndex], {useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false})}`;
                             },
                         },
                     },
                     datalabels: {
-                        formatter: (value) => formatRupiah(value),
+                        formatter: (value) => toRupiah(value, {useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false}),
                         color: 'black',
                         anchor: 'center', // Center the label horizontally
                         align: 'center', // Center the label vertically
@@ -165,7 +152,7 @@ const initChart = async () => {
                     customImagePlugin: imagePlugin,
                 },
             },
-            plugins: [imagePlugin],
+            plugins: [imagePlugin], // Add plugins to Chart instance
         });
     } catch (error) {
         console.error("Error initializing chart:", error);
@@ -175,10 +162,44 @@ const initChart = async () => {
 // Initialize the chart
 initChart();
 
-const formatRupiah = (value) => {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-    }).format(value);
-};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Ambil elemen data dari DOM
+    const financialDataElement = document.getElementById('financialBenefitsData');
+
+    if (financialDataElement) {
+        // Ambil data benefits dari atribut data
+        const financialBenefits = JSON.parse(financialDataElement.dataset.benefits);
+        const potentialBenefits = JSON.parse(financialDataElement.dataset.potentialBenefits);
+
+        // Render financial benefits
+        const financialBenefitsContainer = document.getElementById('financialBenefits');
+        financialBenefits.forEach(benefit => {
+            const benefitItem = document.createElement('div');
+            benefitItem.className = 'financial-benefit-item';
+            benefitItem.innerHTML = `
+                <span class="financial-benefit-year">${benefit.year}</span>
+                <span class="financial-benefit-total">
+                ${toRupiah(benefit.total, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}
+
+                </span>
+            `;
+            financialBenefitsContainer.appendChild(benefitItem);
+        });
+
+        // Render potential benefits
+        const potentialBenefitsContainer = document.getElementById('potentialBenefits');
+        potentialBenefits.forEach(benefit => {
+            const benefitItem = document.createElement('div');
+            benefitItem.className = 'financial-benefit-item';
+            benefitItem.innerHTML = `
+                <span class="financial-benefit-year">${benefit.year}</span>
+                <span class="financial-benefit-total">
+                ${toRupiah(benefit.total, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}
+
+                </span>
+            `;
+            potentialBenefitsContainer.appendChild(benefitItem);
+        });
+    }
+});

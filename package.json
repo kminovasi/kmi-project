@@ -14,6 +14,7 @@
         "vite": "^4.5.5"
     },
     "dependencies": {
+        "@develoka/angka-rupiah-js": "^1.0.3",
         "apexcharts": "^3.41.0",
         "chart.js": "^4.4.5",
         "chartjs-plugin-autocolors": "^0.3.1",

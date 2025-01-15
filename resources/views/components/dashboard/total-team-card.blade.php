@@ -56,31 +56,9 @@
     </div>
 </div>
 
-
 <style>
     .bg-gradient-primary {
         background: linear-gradient(135deg, #eb4a3a 0%, #ff6b6b 100%);
-        /* Gradient dengan warna primer */
-    }
-
-    .team-card .bg-custom-red {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-        color: white;
-    }
-
-    .team-card .bg-custom-green {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-        color: white;
-    }
-
-    .team-card .bg-custom-blue {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        color: white;
-    }
-
-    .team-card .bg-custom-orange {
-        background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
-        color: white;
     }
 
     .team-card .card {
@@ -96,7 +74,6 @@
         display: inline-block;
         padding: 10px 15px;
         background-color: #eb4a3a;
-        /* Warna primer Anda */
         color: white;
         border-radius: 5px;
         text-decoration: none;
@@ -105,6 +82,5 @@
 
     .link-total-team-chart:hover {
         background-color: #c0392b;
-        /* Warna lebih gelap saat hover */
     }
 </style>

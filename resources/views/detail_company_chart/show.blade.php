@@ -78,6 +78,9 @@
             </div>
         </div>
         <div class="row mt-4">
+            <div class="col-md-12">
+                <x-dashboard.company.total-innovator-with-gender-chart :companyId="$company->id" />
+            </div>
             <div class="col-md-4 col-sm-4 col-xs-6">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
                     Filter bedasarkan unit organisasi

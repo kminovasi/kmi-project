@@ -14,7 +14,11 @@
                 </ul>
             </div>
         @endif
-        <div class="card shadow-sm">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tambah Pengguna Baru</h3>
+            </div>
             <form action="{{ route('management-system.user.store') }}" method="POST">
                 @csrf
                 <div class="card-body">
@@ -79,15 +83,12 @@
                                 <input type="date" name="date_of_birth" class="form-control" id="date_of_birth">
                             </div>
                             <div class="form-group">
-                                <label for="gender">Jenis Kelamin</label>
-                                <div class="dropdown">
-                                    <select name="gender" id="gender" class="form-control custom-select">
-                                        <option value="">Pilih Jenis Kelamin</option>
-                                        <option value="Male">Laki-laki</option>
-                                        <option value="Female">Perempuan</option>
-                                    </select>
-                                    <span class="dropdown-arrow"></span>
-                                </div>
+                                <label>Gender</label>
+                                <select name="gender" class="form-control">
+                                    <option value="">Pilih Gender</option>
+                                    <option value="Male">Laki-Laki</option>
+                                    <option value="Female">Perempuan</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="job_level">Tingkat Pekerjaan</label>
@@ -129,10 +130,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <div class="d-flex justify-content-start">
-                        <button type="submit" class="btn btn-primary mr-2">Tambahkan Pengguna</button>
-                        <a href="{{ route('management-system.user.index') }}" class="btn btn-danger">Batal</a>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Batal</a>
                 </div>
 
             </form>

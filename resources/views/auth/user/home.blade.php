@@ -85,14 +85,9 @@
                 <!-- Right Column - Benefits -->
                 <div class="col-12 col-lg-6 col-md-8 dashboard-section">
                     <!-- Benefit Section -->
-                    <div class="card m-auto">
-                        <div class="card-header bg-gradient-primary">
-                            <h4 style=" color: white;">Akumulasi Total Financial dan Potential Benefit</h4>
-                        </div>
-                    <div class="m-4">
-                        <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-                    </div>
-                </div>
+
+                    <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+
 
                     <div class="mb-3">
                         <x-dashboard.total-financial-benefit-card :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />

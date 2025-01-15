@@ -1,13 +1,13 @@
 @php
 $accordionItems = [
     [
-        'question' => 'Bagaimana cara mendaftar untuk acara?',
+        'question' => 'Bagaimana cara mendaftar tim?',
         'answer' =>
-            'Anda dapat mendaftar melalui situs web kami. Cukup pilih acara yang ingin Anda ikuti dan ikuti petunjuk pendaftaran yang tersedia.',
+            'Anda dapat mendaftar melalui situs web ini. Cukup masuk ke portal, pilih malakah inovasi dan tekan tombol register.',
     ],
     [
         'question' => 'Apa syarat untuk mengikuti acara?',
-        'answer' => 'Anda perlu memenuhi persyaratan acara yang tercantum pada halaman detail acara.',
+        'answer' => 'Mempunyai tim inovasi, fasilitator, dan inovasi',
     ],
 ];
 @endphp

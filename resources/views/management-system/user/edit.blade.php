@@ -117,10 +117,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <div class="d-flex justify-content-start">
-                        <button type="submit" class="btn btn-primary mr-2">Perbarui Pengguna</button>
-                        <a href="{{ route('management-system.user.index') }}" class="btn btn-danger">Batal</a>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <a href="{{ route('management-system.user.index') }}" class="btn btn-secondary">Batal</a>
                 </div>
             </form>
         </div>

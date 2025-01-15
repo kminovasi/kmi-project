@@ -10,10 +10,10 @@
                     SIG Innovation Award hadir untuk mengapresiasi solusi kreatif yang membawa perusahaan menuju keberlanjutan dan pertumbuhan.
                 </p>
                 <div>
-                    <a href="#register" class="btn btn-danger btn-lg me-3">
+                    <a href="{{ route('dashboard') }}" class="btn btn-danger btn-lg me-3">
                         Masuk Portal
                     </a>
-                    <a href="#categories" class="btn btn-outline-danger btn-lg">
+                    <a href="{{ route('evidence.index') }}" class="btn btn-outline-danger btn-lg">
                         Lihat Inovasi
                     </a>
                 </div>

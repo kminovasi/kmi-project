@@ -53,7 +53,7 @@ class ManagamentSystemController extends Controller
             $datas_company = Company::where('company_code', $company_code)->get();
         }
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear, $currentYear + 10);
+        $years = range($currentYear - 7, $currentYear + 3);
         return view('auth.admin.management_system.assign_event', [
             'datas_company' => $datas_company,
             'years' => $years

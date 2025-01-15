@@ -13,7 +13,7 @@
 
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
-    <canvas id="totalInnovatorChart"></canvas>
+    <canvas id="totalInnovatorChart" style="width: 100%; max-height: 400px;"></canvas>
     <div class="mt-3 text-center">
         <button class="btn btn-success export-excel-exportTotalInnovatorByOrganization">Export to Excel</button>
         <button class="btn btn-danger export-pdf-exportTotalInnovatorByOrganization">Export to PDF</button>

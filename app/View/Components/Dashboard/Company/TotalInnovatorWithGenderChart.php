@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 class TotalInnovatorWithGenderChart extends Component
 {
     public $chartData;
+    public $companyName;
 
     /**
      * Create a new component instance.
@@ -31,6 +32,7 @@ class TotalInnovatorWithGenderChart extends Component
     {
         $fourYearsAgo = now()->subYears(5)->startOfYear();
         $companyCode = Company::findOrFail($companyId)->company_code;
+        $companyName = Company::findOrFail($companyId)->company_name;
 
         return DB::table('users')
             ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')
@@ -71,6 +73,7 @@ class TotalInnovatorWithGenderChart extends Component
     {
         return view('components.dashboard.company.total-innovator-with-gender-chart', [
             'chartData' => $this->chartData,
+            'company_name' => $this->companyName,
         ]);
     }
 }

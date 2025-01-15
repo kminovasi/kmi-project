@@ -146,14 +146,14 @@
 @endpush
 <div class="card team-card border-0 shadow-lg mt-3">
     <div class="card-header bg-gradient-primary">
-        <h5 class="card-title text-white">Total Benefit per Tahun (SIG Group)</h5>
+        <h5 class="card-title text-white">Total Benefit Finansial (SIG Group)</h5>
     </div>
     <div class="card-body" id="financialBenefitsData"
          data-benefits='@json($financialBenefits)'
          data-potential-benefits='@json($potentialBenefits)'>
         <div class="row">
             <div class="col-md-12">
-                <h6 class="text-muted">Finansial Benefit</h6>
+                <h6 class="text-muted">Real Benefit Finansial</h6>
                 <div id="financialBenefits" class="financial-benefits"></div>
             </div>
             <div class="col-md-12">

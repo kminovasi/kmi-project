@@ -19,7 +19,7 @@
     }
 
     .financial-card h3 {
-        color: #eb4a3a;
+        color: #000;
         font-weight: 600;
         margin-bottom: 1rem;
         text-align: center;

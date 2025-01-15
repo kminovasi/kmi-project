@@ -65,7 +65,7 @@
             }
 
             .bg-gradient-green {
-                background: linear-gradient(45deg, #28a745, #218838);
+                background: linear-gradient(45deg, #09972a, #218838);
             }
 
 
@@ -263,7 +263,7 @@
 
     @if ($isSuperadmin || $isAdmin)
         <div class="col-lg-12 col-xl-10 mb-9">
-            <div class="card bg-gradient-green text-white h-100">
+            <div class="card bg-blue text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
@@ -293,7 +293,7 @@
     <div class="col-12 mb-4"></div>
 
     <div class="col-lg-14 col-xl-10 mb-8">
-        <div class="card bg-teal text-white h-100">
+        <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <!-- Informasi Teks -->
@@ -324,7 +324,7 @@
 
                     </div>
                     <!-- Chart -->
-                    <div class="chart-container" style="width: 155px; height: 155px; background-color: transparent;">
+                    <div class="chart-container" style="width: 230px; height: 230px; background-color: transparent;">
                         <canvas id="innovatorChart" style="background-color: transparent;"></canvas>
                     </div>
                 </div>
@@ -335,7 +335,7 @@
     <div class="col-12 mb-4"></div>
 
     <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-purple text-white h-100">
+        <div class="card bg-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -355,7 +355,7 @@
     </div>
 
     <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-pink text-white h-100">
+        <div class="card bg-teal text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -378,50 +378,50 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('innovatorChart').getContext('2d');
         new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['Laki-laki', 'Perempuan'],
+                labels: [],
                 datasets: [{
                     data: [
                         {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }},
                         {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}
                     ],
-                    backgroundColor: ['#8F00FF', '#FF007F'],
+                    backgroundColor: ['#198754', '#20c997'],
                 }]
             },
             options: {
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'center',
+                        position: 'bottom',
                         labels: {
                             color: '#fff',
-                            font: { size: 20 }
+                            font: { size: 15 }
                         }
                     },
+                    datalabels: {
+                        color: '#fff',
+                        font: { size: 20, weight: 'bold' },
+                        formatter: (value) => `${value}%`, // Menampilkan persentase di dalam chart
+                        anchor: 'bottom',
+                        align: 'bottom'
+                    },
                     tooltip: {
-                        callbacks: {
-                            label: ({ chart, dataIndex }) => {
-                                const data = chart.data.datasets[0].data;
-                                const percentage = ((data[dataIndex] / data.reduce((a, b) => a + b)) * 100).toFixed(2);
-                                return `${chart.data.labels[dataIndex]}: ${percentage}%`;
-                            }
-                        },
-                        backgroundColor: 'rgba(0, 0, 0, 10)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        displayColors: false,
-                        bodyFont: { size: 13 },
-                        padding: 9
+                        enabled: false
+                          // Nonaktifkan tooltip jika tidak dibutuhkan
                     }
                 },
                 maintainAspectRatio: false,
                 responsive: true
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     });
 </script>
+

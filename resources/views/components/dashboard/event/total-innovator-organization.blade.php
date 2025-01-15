@@ -1,10 +1,10 @@
 <div class="card p-3">
-    <h2 class="chart-title text-center">Total Inovator per Organisasi</h2>
+    <h5 class="chart-title text-center">Total Inovator per Organisasi {{$companyName}} </h5>
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#filterModal">
         <i class="fas fa-filter me-2"></i> Filter Berdasarkan Organisasi
     </button>
 
-    <canvas id="totalInnovatorEventChart"></canvas>
+    <canvas id="{{ $canvasId }}"></canvas>
     <div class="mt-3 text-center">
         <button class="btn btn-success export-excel-totalInnovatorEventChart">Export to Excel</button>
         <button class="btn btn-danger export-pdf-totalInnovatorEventChart">Export to PDF</button>
@@ -54,6 +54,6 @@
     window.chartDataTotalInnovatorOrganization = chartDataTotalInnovatorOrganization; // Store chart data globally
     window.organizationUnit = organizationUnit; // Store organization unit globally
     window.event_name = event_name; // Store event name globally
-    initializeTotalInnovatorEventChart(chartDataTotalInnovatorOrganization);
+    initializeTotalInnovatorEventChart(chartDataTotalInnovatorOrganization,  @json($canvasId), organizationUnit);
 </script>
 @vite(['resources/js/event/exportTotalInnovatorEventChart.js'])

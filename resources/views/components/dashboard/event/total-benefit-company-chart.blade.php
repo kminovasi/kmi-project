@@ -26,7 +26,7 @@
             </div>
             <h5 class="fw-bold mt-3 fs-2">
                 <strong class="text-success">
-                    Rp {{ number_format($companies->sum('total_benefit'), 0, ',', '.') }}
+                    Rp {{ number_format($totalBenefit , 0, ',', '.') }}
                 </strong>
             </h5>
             <p class="text-muted">Akumulasi Total Finansial Benefit</p>

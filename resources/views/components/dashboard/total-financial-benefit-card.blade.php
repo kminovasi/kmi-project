@@ -99,37 +99,17 @@
     <div class="card-header bg-gradient-primary">
         <h5 class="card-title text-white">Total Benefit per Tahun</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="financialBenefitsData"
+         data-benefits='@json($financialBenefits)'
+         data-potential-benefits='@json($potentialBenefits)'>
         <div class="row">
             <div class="col-md-12">
                 <h6 class="text-muted">Finansial Benefit</h6>
-                <div class="financial-benefits">
-                    @foreach ($financialBenefits as $benefit)
-                        <div class="financial-benefit-item">
-                            <span class="financial-benefit-year">
-                                {{ $benefit['year'] }}
-                            </span>
-                            <span class="financial-benefit-total">
-                                Rp {{ $benefit['total'] }}
-                            </span>
-                        </div>
-                    @endforeach
-                </div>
+                <div id="financialBenefits" class="financial-benefits"></div>
             </div>
             <div class="col-md-12">
                 <h6 class="text-muted">Potensial Benefit</h6>
-                <div class="financial-benefits">
-                    @foreach ($potentialBenefits as $benefit)
-                        <div class="financial-benefit-item">
-                            <span class="financial-benefit-year">
-                                {{ $benefit['year'] }}
-                            </span>
-                            <span class="financial-benefit-total">
-                                Rp {{ $benefit['total'] }}
-                            </span>
-                        </div>
-                    @endforeach
-                </div>
+                <div id="potentialBenefits" class="financial-benefits"></div>
             </div>
         </div>
         <div class="row">
@@ -139,3 +119,4 @@
         </div>
     </div>
 </div>
+

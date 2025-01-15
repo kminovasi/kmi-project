@@ -1,5 +1,6 @@
 import { Chart, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import autocolors from 'chartjs-plugin-autocolors';
 
 Chart.register(...registerables, ChartDataLabels);
 
@@ -10,6 +11,7 @@ export function initializeTotalInnovatorEventChart(chartData) {
     const data = Object.values(chartData);
 
     new Chart(ctx, {
+        plugins: [autocolors, ChartDataLabels],
         type: "bar",
         data: {
             labels: labels,
@@ -17,9 +19,8 @@ export function initializeTotalInnovatorEventChart(chartData) {
                 {
                     label: "Total Inovator",
                     data: data,
-                    backgroundColor: "rgba(75, 192, 192, 0.6)",
-                    borderColor: "rgba(75, 192, 192, 1)",
                     borderWidth: 1,
+                    maxBarThickness: 40
                 },
             ],
         },
@@ -31,6 +32,9 @@ export function initializeTotalInnovatorEventChart(chartData) {
                     labels: {
                         color: "#000", // Warna hitam untuk teks legenda
                     },
+                },
+                autocolors: {
+                    mode: 'data'
                 },
                 title: {
                     display: true,
@@ -47,7 +51,7 @@ export function initializeTotalInnovatorEventChart(chartData) {
                     formatter: (value) => value, // Menampilkan nilai
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 20,
                     },
                     color: "#000", // Warna hitam untuk teks
                 },

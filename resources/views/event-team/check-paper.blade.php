@@ -195,7 +195,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @if($eventType !== "AP" && $eventType !== "internal")
                         <div class="row mt-4">
                             <div class="col-12">
                                 <form id="updateStatusForm"
@@ -235,6 +235,7 @@
                                 </form>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>

@@ -1,8 +1,9 @@
 <div class="card p-3">
     <h2 class="chart-title text-center">Total Inovator per Organisasi</h2>
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#filterModal">
-        Filter Berdasarkan Organisasi
+        <i class="fas fa-filter me-2"></i> Filter Berdasarkan Organisasi
     </button>
+
     <canvas id="totalInnovatorEventChart"></canvas>
     <div class="mt-3 text-center">
         <button class="btn btn-success export-excel-totalInnovatorEventChart">Export to Excel</button>
@@ -47,12 +48,12 @@
 <script type="module">
     import { initializeTotalInnovatorEventChart } from "{{ Vite::asset('resources/js/event/totalInnovatorEventChart.js') }}";
 
-    const chartData = @json($chartData);
+    const chartDataTotalInnovatorOrganization = @json($chartData);
     const organizationUnit = @json($organizationUnit);
     const event_name = @json($event_name);
-    window.chartData = chartData; // Store chart data globally
+    window.chartDataTotalInnovatorOrganization = chartDataTotalInnovatorOrganization; // Store chart data globally
     window.organizationUnit = organizationUnit; // Store organization unit globally
     window.event_name = event_name; // Store event name globally
-    initializeTotalInnovatorEventChart(chartData);
+    initializeTotalInnovatorEventChart(chartDataTotalInnovatorOrganization);
 </script>
 @vite(['resources/js/event/exportTotalInnovatorEventChart.js'])

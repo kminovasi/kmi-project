@@ -270,13 +270,14 @@ public function getEvents(Request $request)
             'team',
             'team.pvtMembers.user' // Ambil data anggota tim beserta user terkait
         ])->findOrFail($id);
+        $eventType = Event::findOrFail($eventId)->type;
 
         // Pisahkan anggota berdasarkan status
         $facilitator = $paper->team->pvtMembers->firstWhere('status', 'facilitator');
         $leader = $paper->team->pvtMembers->firstWhere('status', 'leader');
         $members = $paper->team->pvtMembers->whereNotIn('status', ['facilitator', 'leader']);
 
-        return view('event-team.check-paper', compact('paper', 'eventId', 'facilitator', 'leader', 'members'));
+        return view('event-team.check-paper', compact('paper', 'eventId', 'facilitator', 'leader', 'members', 'eventType'));
     }
 
     public function updatePaperStatus(Request $request, $id, $eventId)

@@ -1,27 +1,28 @@
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import autocolors from 'chartjs-plugin-autocolors';
 
-
-/**
- * Render Total Innovator Chart
- * @param {string} canvasId - ID dari elemen canvas
- * @param {object} chartData - Data chart dari server
- */
+// /**
+//  * Render Total Innovator Chart
+//  * @param {string} canvasId - ID dari elemen canvas
+//  * @param {object} chartData - Data chart dari server
+//  */
 
 
 export function renderTotalInnovatorChart(canvasId, chartData) {
     const ctx = document.getElementById(canvasId).getContext('2d');
 
     new Chart(ctx, {
+
         type: 'bar',
         data: {
             labels: chartData.labels,
             datasets: [{
                 label: 'Total Inovator per Kategori', // Label dalam bahasa Indonesia
                 data: chartData.data,
-                backgroundColor: chartData.colors,
-                borderColor: chartData.colors.map(color => color.replace('1)', '0.8)')),
-                borderWidth: 1
+                borderWidth: 1,
+                maxBarThickness: 40,
+
             }]
         },
         options: {
@@ -29,6 +30,9 @@ export function renderTotalInnovatorChart(canvasId, chartData) {
             plugins: {
                 legend: {
                     display: false
+                },
+                autocolors: {
+                    mode: 'data',
                 },
                 tooltip: {
                     callbacks: {
@@ -59,7 +63,7 @@ export function renderTotalInnovatorChart(canvasId, chartData) {
                 }
             }
         },
-        plugins: [ChartDataLabels] // Aktifkan plugin DataLabels
+        plugins: [ChartDataLabels, autocolors] // Aktifkan plugin DataLabels
     });
 }
 

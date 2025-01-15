@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (exportExcelButton) {
         exportExcelButton.addEventListener('click', async function () {
             const chartCanvas = document.getElementById('totalInnovatorEventChart');
-            const chartData = window.chartData;
+            const chartData = window.chartDataTotalInnovatorOrganization;
 
             if (chartData && chartCanvas) {
                 // Create a new workbook
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (exportPdfButton) {
         exportPdfButton.addEventListener('click', async function () {
             const chartCanvas = document.getElementById('totalInnovatorEventChart');
-            const chartData = window.chartData;
+            const chartData = window.chartDataTotalInnovatorOrganization;
 
             if (chartData && chartCanvas) {
                 // Create a new jsPDF instance

@@ -2,6 +2,7 @@
 
 namespace App\View\Components\Dashboard\Event;
 
+use App\Models\Event;
 use App\Models\PvtEventTeam;
 use Illuminate\View\Component;
 
@@ -28,7 +29,7 @@ class TotalInnovatorStages extends Component
             'Presentation BOD',
             'Juara'
         ];
-        $this->event_name = PvtEventTeam::where('event_id', $eventId)->first()->event->name;
+        $this->event_name = Event::findOrFail($eventId)->first()->event_name;
 
         $data = PvtEventTeam::where('event_id', $eventId)
             ->selectRaw('status, COUNT(*) as total')

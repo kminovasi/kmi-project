@@ -65,7 +65,7 @@
             }
 
             .bg-gradient-green {
-                background: linear-gradient(45deg, #28a745, #218838);
+                background: linear-gradient(45deg, #09972a, #218838);
             }
 
 
@@ -204,7 +204,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi dengan kategori IDEA BOX
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi Kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
@@ -259,30 +259,11 @@
         </div>
     </div>
 
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-teal text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
-                            Inovator</div>
-                        <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $totalInnovators }}
-                            <small class="ms-2">(Orang)</small>
-                        </div>
-                    </div>
-                    <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fas fa-people-group"
-                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     @if ($isSuperadmin || $isAdmin)
-        <div class="col-lg-6 col-xl-5 mb-4">
-            <div class="card bg-gradient-green text-white h-100">
+        <div class="col-lg-12 col-xl-10 mb-9">
+            <div class="card bg-blue text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
@@ -309,13 +290,56 @@
         </div>
     @endif
 
+    <div class="col-12 mb-4"></div>
+
+    <div class="col-lg-14 col-xl-10 mb-8">
+        <div class="card bg-gradient-green text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- Informasi Teks -->
+                    <div class="me-3 flex-grow-1">
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
+                            Akumulasi Total Inovator
+                        </div>
+                        <div class="text-lg fw-bold d-flex align-items-center">
+                            {{ $totalInnovators }}
+                            <small class="ms-2">(Orang)</small>
+                        </div>
+                        <!-- Persentase laki-laki dan perempuan -->
+                        <div class="mt-3">
+                            <span style="font-weight: 600;">Total Inovator:</span>
+                            <div class="mt-3 d-flex justify-content-between">
+                                <span>Laki-laki:</span>
+                                <span class="fw-bold">
+                                    {{ $totalInnovatorsMale }} Orang
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Perempuan:</span>
+                                <span class="fw-bold">
+                                    {{ $totalInnovatorsFemale }} Orang
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Chart -->
+                    <div class="chart-container" style="width: 230px; height: 230px; background-color: transparent;">
+                        <canvas id="innovatorChart" style="background-color: transparent;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-4"></div>
+
     <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-purple text-white h-100">
+        <div class="card bg-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
-                            Inovator laki-laki</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Laki-laki</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsMale }}
                             <small class="ms-2">(Orang)</small>
@@ -325,19 +349,17 @@
                         <i class="fa-solid fa-mars fa-xl"
                             style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-pink text-white h-100">
+        <div class="card bg-teal text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
-                            Inovator Perempuan</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Perempuan</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsFemale }}
                             <small class="ms-2">(Orang)</small>
@@ -347,10 +369,59 @@
                         <i class="fa-solid fa-venus fa-xl"
                             style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('innovatorChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [
+                        {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }},
+                        {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}
+                    ],
+                    backgroundColor: ['#198754', '#20c997'],
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: '#fff',
+                            font: { size: 15 }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: { size: 20, weight: 'bold' },
+                        formatter: (value) => `${value}%`, // Menampilkan persentase di dalam chart
+                        anchor: 'bottom',
+                        align: 'bottom'
+                    },
+                    tooltip: {
+                        enabled: false
+                          // Nonaktifkan tooltip jika tidak dibutuhkan
+                    }
+                },
+                maintainAspectRatio: false,
+                responsive: true
+            },
+            plugins: [ChartDataLabels]
+        });
+    });
+</script>
+

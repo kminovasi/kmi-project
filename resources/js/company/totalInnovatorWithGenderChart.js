@@ -19,14 +19,17 @@ export function renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithG
                 {
                     label: 'Total Innovator',
                     data: totalData,
+                    maxBarThickness: 40
                 },
                 {
                     label: 'Laki-laki',
                     data: maleData,
+                    maxBarThickness: 40
                 },
                 {
                     label: 'Perempuan',
                     data: femaleData,
+                    maxBarThickness: 40
                 },
             ],
         },

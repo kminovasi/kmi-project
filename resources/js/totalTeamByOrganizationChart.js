@@ -1,8 +1,9 @@
 import { Chart, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
+import autocolorPlugin from "chartjs-plugin-autocolors";
 
 // Daftarkan semua elemen yang dibutuhkan
-Chart.register(...registerables, ChartDataLabels);
+Chart.register(...registerables);
 
 export function initializeTotalTeamChart(chartData) {
     const labels = Object.keys(chartData);
@@ -20,16 +21,28 @@ export function initializeTotalTeamChart(chartData) {
     sortedYears.forEach(year => {
         datasets.push({
             label: year.toString(),
-            data: labels.map((unit) => chartData[unit][year] || 0), // Data tahun tertentu
-            backgroundColor: `rgba(${Math.random() * 255}, ${
-                Math.random() * 255
-            }, ${Math.random() * 255}, 0.6)`,
+            data: labels.map((unit) => chartData[unit][year] || 0),
+            maxBarThickness: 40, // Maximum bar thickness
         });
     });
 
     const ctx = document.getElementById("totalTeamChart").getContext("2d");
+    const calculateFontSize = () => {
+        const screenWidth = window.innerWidth;
+        const baseFontSize = 10; // Default font size for large screens
+        const minFontSize = 1;  // Minimum font size
+        const dataFactor = Math.max(labels.length / 10, 1); // Adjust font size based on data count
+
+        let fontSize = baseFontSize / dataFactor;
+        fontSize = Math.max(fontSize, minFontSize); // Ensure font size does not go below minimum
+
+        if (screenWidth < 576) return Math.max(fontSize - 2, minFontSize); // Small screens
+        if (screenWidth < 768) return Math.max(fontSize - 1, minFontSize); // Medium screens
+        return fontSize; // Large screens
+    };
     new Chart(ctx, {
         type: "bar", // Tipe chart
+        plugins: [autocolorPlugin, ChartDataLabels],
         data: {
             labels: labels, // Nama unit
             datasets: datasets, // Data berdasarkan tahun
@@ -39,6 +52,9 @@ export function initializeTotalTeamChart(chartData) {
             plugins: {
                 legend: {
                     position: "top",
+                },
+                autocolorPlugin: {
+                    mode: 'data'
                 },
                 title: {
                     display: true,
@@ -57,6 +73,17 @@ export function initializeTotalTeamChart(chartData) {
                     },
                 },
             },
+            scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            size: calculateFontSize(), // Dynamic font size for x-axis labels
+                        },
+                        maxRotation: 0, // Rotate labels if needed
+                        minRotation: 0,
+                    },
+                },
+            }
         },
     });
 }

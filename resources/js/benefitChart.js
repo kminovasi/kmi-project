@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             benefitItem.innerHTML = `
                 <span class="financial-benefit-year">${benefit.year}</span>
                 <span class="financial-benefit-total">
-                ${toRupiah(benefit.total, {symbol: false, useUnit: true, longUnit: true, spaceBeforeUnit: true, floatingPoint: 0})}
+                ${toRupiah(benefit.total, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}
 
                 </span>
             `;
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             benefitItem.innerHTML = `
                 <span class="financial-benefit-year">${benefit.year}</span>
                 <span class="financial-benefit-total">
-                ${toRupiah(benefit.total, {symbol: false, useUnit: true, longUnit: true, spaceBeforeUnit: true, floatingPoint: 0})}
+                ${toRupiah(benefit.total, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}
 
                 </span>
             `;

@@ -60,7 +60,7 @@
                 </div>
                 <div class="text-center mt-4">
                     <hr>
-                    <small>&copy; Copyright 2023 All rights reserved. PT. Semen Indonesia (Persero) Tbk.</small>
+                    <small>&copy; Copyright 2025 All rights reserved. PT. Semen Indonesia (Persero) Tbk.</small>
                 </div>
             </div>
         </div>

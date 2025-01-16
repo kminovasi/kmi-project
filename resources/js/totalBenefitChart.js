@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 17,
                     },
                 },
                 tooltip: {
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
-                        text: "Financial Benefit",
+                        text: "Finansial Benefit",
                     },
                     beginAtZero: true,
                     ticks: {
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 17,
                     },
                 },
                 tooltip: {
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
-                        text: "Potential Benefit",
+                        text: "Potensial Benefit",
                     },
                     beginAtZero: true,
                     ticks: {

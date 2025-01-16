@@ -1,5 +1,6 @@
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import autocolors from 'chartjs-plugin-autocolors';
 
 // Register the custom plugin
 Chart.register(...registerables, ChartDataLabels);
@@ -14,12 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (chartData) {
             new Chart(ctx, {
+                plugins: [autocolors],
                 type: "bar",
                 data: {
                     ...chartData,
                     datasets: chartData.datasets.map(dataset => ({
                         ...dataset,
-                        label: 'Total Innovator per Kategori'
+                        label: 'Total Innovator per Kategori',
+                        maxBarThickness: 40
                     }))
                 },
                 options: {
@@ -31,6 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                     },
                     plugins: {
+                        autocolors: {
+                            mode: 'data'
+                        },
                         datalabels: {
                             color: 'black',
                             anchor: 'center', // Center the label horizontally

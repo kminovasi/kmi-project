@@ -71,17 +71,28 @@
                                             {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                             required {{ $is_owner ? '' : 'disabled' }}>
                                     </div>
-                                    @foreach ($benefit_custom as $bc)
-                                        <div class="mb-3">
-                                            <label class="mb-1"
-                                                for="bencus-{{ $bc['id'] }}">{{ $bc['name_benefit'] }}</label>
-                                            <textarea class="form-control" id="bencus-{{ $bc['id'] }}"
-                                                name="bencus[{{ $bc['id'] }}]" type="text"
-                                                value="{{ $bc['value'] }}"
-                                                {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                                required {{ $is_owner ? '' : 'disabled' }}>{{$bc['value']}} </textarea>
-                                        </div>
-                                    @endforeach
+                                    <div class="form-group">
+                                        <h5>Non-Financial Benefit</h5>
+                                        @foreach ($benefit_custom as $bc)
+                                            <div class="mb-3">
+                                                <label class="mb-1" for="bencus-{{ $bc['id'] }}">{{ $bc['name_benefit'] }}</label>
+                                                <textarea
+                                                    class="form-control"
+                                                    id="bencus-{{ $bc['id'] }}"
+                                                    name="bencus[{{ $bc['id'] }}]"
+                                                    type="text"
+                                                    minlength="75"
+                                                    required
+                                                    {{ $row->status_rollback == 'rollback benefit' ||
+                                                        $row->status == 'accepted paper by facilitator' ||
+                                                        $row->status == 'upload benefit' ||
+                                                        $row->status == 'rejected benefit by facilitator' ||
+                                                        $row->status == 'rejected benefit by general manager' ||
+                                                        $is_owner ? '' : 'readonly disabled' }}>{{ $bc['value'] }}</textarea>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
                                     <div class="mb-3">
                                         <label class="mb-1" for="potensiReplikasi{{ $row->paper_id }}">Potensial
                                             Replikasi</label>
@@ -106,7 +117,7 @@
                                     </div> --}}
 
                                     <div class="mb-3">
-                                        <h6 class="small mb-1">Pilih GM</h6>
+                                        <h6 class="small mb-1">Pilih Band 1</h6>
                                         <input type="hidden" name="team_id" value="{{ $row->team_id }}">
                                         <select class="form-select @error('gm_id') is-invalid @enderror"
                                             aria-label="Default select example" name="gm_id" id="id_gm"
@@ -119,7 +130,7 @@
                                     @if ($gmName !== null)
                                         <div class="mb-3">
                                             <input type="hidden" name="oldGm" value="{{ $gmName->employee_id }}">
-                                            <div class="h6">Nama General Manager yang di pilih sebelumnnya : </div>
+                                            <div class="h6">Nama Band 1 yang di pilih sebelumnnya : </div>
                                             <div class="h5">{{ $gmName->name }}</div>
                                             <hr>
                                         </div>

@@ -1,21 +1,14 @@
 <?php
 
 use App\Exports\JuriExport;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-//use Illuminate\Support\Facades\Mail;
-// use App\Mail\MailNotify;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\MakalahInovasiController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\BenefitController;
-//use App\Http\Controllers\EmailController;
 use App\Http\Controllers\AssessmentController;
-use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\BeritaAcaraController;
@@ -29,11 +22,7 @@ use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\TimelineController;
-use App\Models\Evidence;
-use App\Models\Flyer;
-use App\Models\Timeline;
 use Maatwebsite\Excel\Facades\Excel;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Exports\PaperExport;
 use App\Http\Controllers\AssessmentMatrixController;
 use App\Http\Controllers\BodEventController;
@@ -44,11 +33,9 @@ use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\JuriController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SummaryExecutiveController;
-use App\Http\Controllers\UserManagement;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MetodologiPaperController;
 
-use function PHPUnit\Framework\returnSelf;
 
 /*
 |--------------------------------------------------------------------------
@@ -345,7 +332,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [BenefitController::class, 'createBenefitAdmin'])->name('index');
             Route::get('/create/{id}', [BenefitController::class, 'createBenefitUser'])->name('create.user');
             Route::post('/store/{id}/', [BenefitController::class, 'storeBenefitUser'])->name('store.user');
+            Route::get('/getAllCustomBenefitFinancial', [BenefitController::class, 'getAllCustomBenefitFinancial'])->name('getAllCustomBenefitFinancial');
         });
+        Route::get('/dashboard/non-financial-benefit/{customBenefitPotentialId}', [BenefitController::class, 'showAllBenefit'])->name('dashboard.showAllBenefit');
 
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);

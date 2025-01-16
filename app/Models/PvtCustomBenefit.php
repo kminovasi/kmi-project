@@ -12,31 +12,18 @@ class PvtCustomBenefit extends Model
     protected $fillable = [
         'custom_benefit_financial_id',
         'paper_id',
-        'value'
+        'value',
     ];
 
-    public function setValueAttribute($value)
+
+    public function customBenefitFinancial()
     {
-        if($value != "")
-            $this->attributes['value'] = intval(str_replace('.', '', $value));
-        else
-            $this->attributes['value'] = null;
+        return $this->belongsTo(CustomBenefitFinancial::class, 'custom_benefit_financial_id');
     }
 
-    public function getValueFormattedAttribute()
+    // Tambahkan relasi ke model Paper (jika diperlukan)
+    public function paper()
     {
-        $value = $this->attributes['value'];
-        if($value !== null){
-            $nilai = floatval(preg_replace('/[^\d]/', '', $value));
-
-            if (!is_nan($nilai)) {
-                $formattedNumber = number_format($nilai, 0, ',', '.');
-                return $formattedNumber;
-            } else {
-                return '';
-            }
-        }else{
-            return '';
-        }
+        return $this->belongsTo(Paper::class, 'paper_id');
     }
 }

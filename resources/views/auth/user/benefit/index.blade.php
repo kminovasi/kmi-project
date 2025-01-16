@@ -79,7 +79,7 @@
                                                 name="bencus[{{ $bc['id'] }}]" type="text"
                                                 value="{{ $bc['value'] }}"
                                                 {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                                required {{ $is_owner ? '' : 'disabled' }}> </textarea>
+                                                required {{ $is_owner ? '' : 'disabled' }}>{{$bc['value']}} </textarea>
                                         </div>
                                     @endforeach
                                     <div class="mb-3">

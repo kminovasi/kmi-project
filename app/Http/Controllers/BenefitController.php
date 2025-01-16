@@ -96,7 +96,7 @@ class BenefitController extends Controller
                 ->where('paper_id', $id)
                 ->first();
             if ($pvt) {
-                $benefit_custom[$bencus['id']]['value'] = $pvt->getValueFormattedAttribute();
+                $benefit_custom[$bencus['id']]['value'] = $pvt->value;
             } else {
                 $benefit_custom[$bencus['id']]['value'] = null;
             }
@@ -132,9 +132,11 @@ class BenefitController extends Controller
         $validatedData = $request->validate([
             'oldGm' => 'required_without:gm_id', // gmOld harus ada jika gm_id tidak ada
             'gm_id' => 'required_without:oldGm', // gm_id harus ada jika gmOld tidak ada
+             'bencus.*' => 'required|min:75'
         ], [
             'oldGm.required_without' => 'GM harus di isi.',
             'gm_id.required_without' => 'GM harus di isi.',
+            'bencus.*.min' => 'Field benefit custom harus memiliki minimal 75 karakter.',
         ]);
 
         $record = Paper::with('team')->findOrFail($id);

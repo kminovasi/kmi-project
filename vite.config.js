@@ -11,6 +11,7 @@ export default defineConfig({
     optimizeDeps: {
         include: [
             "chartjs-plugin-trendline",
+            'chartjs-plugin-autocolors'
         ],
     },
 });

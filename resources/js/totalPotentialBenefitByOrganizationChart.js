@@ -1,24 +1,41 @@
 import { Chart, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import autocolors from 'chartjs-plugin-autocolors';
 
 // Daftarkan semua elemen yang dibutuhkan
-Chart.register(...registerables, ChartDataLabels);
+Chart.register(...registerables);
 
 export function initializeTotalPotentialChart(chartData) {
     const labels = Object.keys(chartData);
     const datasets = [];
+
+    const calculateFontSize = () => {
+        const screenWidth = window.innerWidth;
+        const baseFontSize = 10; // Default font size for large screens
+        const minFontSize = 6;  // Minimum font size
+        const dataFactor = Math.max(labels.length / 10, 1); // Adjust font size based on data count
+
+        let fontSize = baseFontSize / dataFactor;
+        fontSize = Math.max(fontSize, minFontSize); // Ensure font size does not go below minimum
+
+        if (screenWidth < 576) return Math.max(fontSize - 2, minFontSize); // Small screens
+        if (screenWidth < 768) return Math.max(fontSize - 1, minFontSize); // Medium screens
+        return fontSize; // Large screens
+    };
+
 
     const currentYear = new Date().getFullYear();
     for (let year = currentYear - 3; year <= currentYear; year++) {
         datasets.push({
             label: year.toString(),
             data: labels.map((unit) => chartData[unit][year] || 0), // Data tahun tertentu
-            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.6)`,
+            maxBarThickness: 40, // Ketebalan maksimum bar
         });
     }
 
     const ctx = document.getElementById("totalPotentialChart").getContext("2d");
     new Chart(ctx, {
+        plugins: [autocolors, ChartDataLabels],
         type: "bar", // Tipe chart
         data: {
             labels: labels, // Nama unit
@@ -29,6 +46,9 @@ export function initializeTotalPotentialChart(chartData) {
             plugins: {
                 legend: {
                     position: "top",
+                },
+                autocolors: {
+                    mode: 'data'
                 },
                 title: {
                     display: true,
@@ -79,6 +99,11 @@ export function initializeTotalPotentialChart(chartData) {
                             weight: "bold",
                         },
                     },
+                    ticks: {
+                        font: {
+                            size: calculateFontSize()
+                        }
+                    }
                 },
             },
         },

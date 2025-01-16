@@ -16,14 +16,19 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Yajra\DataTables\Facades\DataTables;
 
 class BenefitController extends Controller
 {
     //
+    public function getAllCustomBenefitFinancial(){
+        $data = CustomBenefitFinancial::all();
+        return response()->json($data);
+    }
     public function createBenefitAdmin()
     {
-        // dd(Auth::user());
         $data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->select(
                 'papers.id as paper_id',
@@ -81,8 +86,9 @@ class BenefitController extends Controller
             }
         }
 
-        $benefit_custom = CustomBenefitFinancial::where('company_code', $row->company_code)
-            ->get()->keyBy('id')->toArray();
+        $benefit_custom = CustomBenefitFinancial::query()->get()->keyBy('id')->toArray();
+
+
         // $benefit_custom = $benefit_custom_query;
 
         foreach ($benefit_custom as $bencus) {
@@ -284,4 +290,33 @@ class BenefitController extends Controller
         return redirect()->route('paper.approveBenefitFasil', [$id, 'status' => 'rejected benefit by facilitator']);
         //return redirect()->back()->with('success', 'Paper rejected successfully!');
     }
+
+    public function showAllBenefit(Request $request, $customBenefitPotentialId)
+    {
+        $customBenefitPotentialName = CustomBenefitFinancial::findOrFail($customBenefitPotentialId)->name_benefit;
+        if ($request->ajax()) {
+            // Ambil data papers dengan relasi ke customBenefitFinancial
+            $data = PvtCustomBenefit::where('custom_benefit_financial_id', $customBenefitPotentialId)
+                ->with(['customBenefitFinancial', 'paper']) // Sertakan relasi dengan Paper dan CustomBenefitFinancial
+                ->get();
+
+            return DataTables::of($data)
+                ->addColumn('name_benefit', function ($row) {
+                    return $row->customBenefitFinancial->name_benefit ?? '-';
+                })
+                ->addColumn('paper_title', function ($row) {
+                    return $row->paper->innovation_title ?? '-';
+                })
+                ->addColumn('description', function ($row) {
+                    return $row->value ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    return '<button class="btn btn-sm btn-primary"  type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember"  onclick="get_data_on_modal(' . $row->paper->team_id . ')">Detail Team</button>';
+                })
+                ->make(true);
+        }
+        return view('dashboard.non-financial-benefit-table', compact('customBenefitPotentialId', 'customBenefitPotentialName'));
+    }
+
+
 }

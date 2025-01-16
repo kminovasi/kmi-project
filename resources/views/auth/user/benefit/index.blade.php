@@ -75,11 +75,11 @@
                                         <div class="mb-3">
                                             <label class="mb-1"
                                                 for="bencus-{{ $bc['id'] }}">{{ $bc['name_benefit'] }}</label>
-                                            <input class="form-control" id="bencus-{{ $bc['id'] }}"
+                                            <textarea class="form-control" id="bencus-{{ $bc['id'] }}"
                                                 name="bencus[{{ $bc['id'] }}]" type="text"
-                                                value="{{ $bc['value'] }}" oninput="formatCurrency(this)"
+                                                value="{{ $bc['value'] }}"
                                                 {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                                required {{ $is_owner ? '' : 'disabled' }}>
+                                                required {{ $is_owner ? '' : 'disabled' }}> </textarea>
                                         </div>
                                     @endforeach
                                     <div class="mb-3">
@@ -95,18 +95,7 @@
                                         </select>
                                     </div>
 
-                                    {{-- div class="mb-4">
-                                                <h6 class="small mb-1">Status Inovasi</h6>
-                                                <select class="form-control" aria-label="Default select example"
-                                                    name="status_inovasi" id="chooseStatusInovasi" value="{{ old('status_inovasi') }}"
-                                                    placeholder="Pilih Status Inovasi Anda"
-                                                    required>
-                                                    <option value="Not Implemented">Not Implemented</option>
-                                                    <option value="Progress">Progress</option>
-                                                    <option value="Implemented">Implemented</option>
-                                                </select>
-                                                </div> --}}
-
+{{--
                                     <div class="mb-3">
                                         <label class="mb-1" for="dataBenefitNonFin{{ $row->paper_id }}">Benefit Non
                                             Financial</label>
@@ -114,7 +103,7 @@
                                             name="non_financial" value=""
                                             {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
                                             {{ $is_owner ? '' : 'disabled' }}>{{ $row->non_financial }}</textarea>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="mb-3">
                                         <h6 class="small mb-1">Pilih GM</h6>

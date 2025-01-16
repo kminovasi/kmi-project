@@ -673,7 +673,6 @@ class QueryController extends Controller
 
             $benefit_custom = CustomBenefitFinancial::create([
                 'name_benefit' => $request->name_benefit,
-                'company_code' => $request->company_code
             ]);
 
             return response()->json([
@@ -704,21 +703,32 @@ class QueryController extends Controller
             ], 422);
         }
     }
-
     public function delete_benefit(Request $request)
     {
         try {
-            $benefit_custom = CustomBenefitFinancial::where('id', $request->id)->delete();
+            // Cari data berdasarkan ID
+            $benefit_custom = CustomBenefitFinancial::where('id', $request->id)->first();
+
+            if (!$benefit_custom) {
+                return response()->json([
+                    'error' => 'Data not found',
+                ], 404);
+            }
+
+            // Perbarui kolom is_deleted menjadi true
+            $benefit_custom->is_deleted = true;
+            $benefit_custom->save();
 
             return response()->json([
-                'success' => "success",
+                'success' => 'Data marked as deleted',
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 422);
         }
     }
+
     public function get_berita_acara(Request $request)
     {
         try {

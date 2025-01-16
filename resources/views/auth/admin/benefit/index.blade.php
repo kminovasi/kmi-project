@@ -17,6 +17,7 @@
     </header>
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
+        <div id="alertContainer"></div>
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row gx-1 mb-3" id="benefitFinancial">
@@ -42,12 +43,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Penghapusan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Apakah Anda yakin ingin menghapus data ini?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteButton">Hapus</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 @endsection
 
 @push('js')
     <script>
         let count = 0
         let idEvent;
+        let deleteId;
+        let deleteOrder; // Menyimpan order yang akan dihapus
+        let deleteEventId; // Menyimpan event ID
 
         function get_single_data_from_ajax(table, data_where) {
             let result_data
@@ -84,18 +111,14 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: 'GET',
-                url: "{{ route('query.custom') }}",
+                url: "{{ route('benefit.getAllCustomBenefitFinancial') }}",
                 dataType: 'json',
                 data: {
                     table: "custom_benefit_financials",
-                    where: {
-                        'company_code': idEvent
-                    },
                     limit: 100
                 },
                 success: function(data) {
                     // Menampilkan data yang diterima dari server
-                    console.log(data);
 
                     // document.getElementById('dataFinancial').value = data.data_benefit_financial.financial;
                     // document.getElementById('dataBenefitPotential').value = data.data_benefit_financial.potential_benefit;
@@ -275,31 +298,74 @@
             count--;
         }
 
-        function delete_data(order, idEvent) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "{{ route('query.delete_benefit') }}",
-                type: "DELETE",
-                data: {
-                    id: document.getElementById('nonfin-' + order).getAttribute('data-id'),
-                },
-                success: function(data) {
 
-                    delete_inputfield(order)
+function delete_data(order, idEvent) {
+    // Menyimpan id benefit yang akan dihapus dan order yang akan dihapus
+    deleteOrder = order;
+    deleteEventId = idEvent;
+    deleteId = document.getElementById('nonfin-' + order).getAttribute('data-id');
 
-                    setTimeout(function() {
-                        alert("berhasil");
-                    }, 100);
-                },
-                error: function(error) {
-                    // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
-                    alert(error.responseJSON.error);
-                    // console.error(error.responseJSON.message)
-                }
-            });
+    // Tampilkan modal konfirmasi
+    $('#confirmDeleteModal').modal('show');
+}
+
+// Menangani klik pada tombol konfirmasi di dalam modal
+$('#confirmDeleteButton').on('click', function() {
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: "{{ route('query.delete_benefit') }}",
+        type: "DELETE",
+        data: {
+            id: deleteId,
+        },
+        success: function(data) {
+            // Menutup modal konfirmasi
+            $('#confirmDeleteModal').modal('hide');
+
+            // Menghapus input field yang terkait dengan order yang dihapus
+            delete_inputfield(deleteOrder);
+
+            // Menampilkan alert berhasil
+            showAlert('success', 'Data berhasil dihapus.');
+        },
+        error: function(error) {
+            // Menutup modal konfirmasi
+            $('#confirmDeleteModal').modal('hide');
+
+            // Menampilkan error alert
+            showAlert('danger', error.responseJSON.error);
         }
+    });
+});
+
+function delete_inputfield(order) {
+    nonfin = document.getElementById("nonfin-" + order);
+    nonfin.remove(); // Menghapus elemen berdasarkan order
+    count--; // Mengurangi jumlah benefit jika perlu
+}
+
+
+// Fungsi untuk menampilkan alert menggunakan Bootstrap
+function showAlert(type, message) {
+    let alertHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+    // Menampilkan alert di dalam container
+    document.getElementById('alertContainer').innerHTML = alertHTML;
+
+    // Menghilangkan alert setelah beberapa detik
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 5000); // 5 detik
+}
+
 
         $(document).ready(function() {
             idEvent = "{{ Auth::user()->company_code }}"

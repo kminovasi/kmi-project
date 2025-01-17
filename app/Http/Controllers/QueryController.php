@@ -439,9 +439,28 @@ class QueryController extends Controller
             $rawColumns[] = 'full_paper';
             $dataTable->addColumn('full_paper', function ($data_row) {
                 $html = '';
-
                 if ($data_row->full_paper != null) {
-                    $html .= "<a class=\"btn btn-info btn-sm\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'full']) . " \" target=\"_blank\">Detail</a>";
+                     $html .= "
+                            <a class=\"btn btn-info btn-sm mb-2\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'full']) . " \" target=\"_blank\">Detail</a>
+                            ";
+                    $maxStep = MetodologiPaper::findOrFail($data_row->metodologi_paper_id)->step;
+                    $allStepsCompleted = true; // Asumsi semua langkah terisi
+
+                    for ($i = 1; $i <= $maxStep; $i++) {
+                        $stepField = "step_$i";
+
+                        // Jika ada langkah yang masih null atau bernilai '-', maka tidak selesai
+                        if ($data_row->$stepField === null || $data_row->$stepField === '-') {
+                            $allStepsCompleted = false;
+                            break;
+                        }
+                    }
+
+                    if ($allStepsCompleted && $data_row->status === 'not finish') {
+                        $html .= "
+                            <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\">Fiksasi Makalah</button>
+                        ";
+                    }
                     if ($data_row->status_rollback == 'rollback paper') {
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                     }
@@ -584,7 +603,7 @@ class QueryController extends Controller
                         $html .= "<a class=\"btn btn-primary btn-xs\" href=\" " . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . "\">Add</a>";
                         $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'step_' . $i . '\' )" >Upload</button>';
                     } else {
-                        if ($data_row->status == "not finish" || $data_row->status == 'upload full paper' || $data_row->status_rollback == 'rollback paper') {
+                        if ($data_row->status == "not finish" || $data_row->status_rollback == 'rollback paper') {
                             if ($data_row->{"step_" . $i} == 2)
                                 $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'step_' . $i . '\' )" >Upload</button>';
                             elseif ($data_row->{"step_" . $i} == 3 || $data_row->{"step_" . $i} == 1)

@@ -209,7 +209,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -230,7 +230,7 @@
                     <form id="filterForm">
                         <!-- Role Filter -->
                         <div class="mb-3">
-                            <label for="filter-role" class="form-label fw-semibold">Role</label>
+                            <label for="filter-role" class="form-label fw-semibold">Peran</label>
                             <select id="filter-role" name="filter-role" class="form-select">
                                 <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
                                 <option value="admin" selected>Admin</option>
@@ -239,7 +239,7 @@
                         </div>
                         <!-- Company Filter -->
                         <div class="mb-3">
-                            <label for="filter-company" class="form-label fw-semibold">Company</label>
+                            <label for="filter-company" class="form-label fw-semibold">Perusahaan</label>
                             <select id="filter-company" name="filter-company" class="form-select">
                                 @foreach ($data_company as $company)
                                     <option value="{{ $company->company_code }}"
@@ -263,8 +263,8 @@
                 </div>
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="submit" form="filterForm">Apply Filter</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                    <button class="btn btn-primary" type="submit" form="filterForm">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -289,8 +289,8 @@
                             <select class="form-select" aria-label="Default select example" name="status"
                                 id="status_by_fasil" require>
                                 <option selected>-</option>
-                                <option value="accepted paper by facilitator">accept</option>
-                                <option value="rejected paper by facilitator">reject</option>
+                                <option value="accepted paper by facilitator">Accept</option>
+                                <option value="rejected paper by facilitator">Reject</option>
                             </select>
                         </div>
                         <div class="mb">
@@ -300,8 +300,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal"> Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Approval</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </form>
             </div>
@@ -323,8 +323,8 @@
                     <select class="form-select" aria-label="Default select example" name="status"
                         id="change_benefit_by_fasil" require>
                         <option selected>-</option>
-                        <option value="accepted benefit by facilitator">accept</option>
-                        <option value="rejected benefit by facilitator">reject</option>
+                        <option value="accepted benefit by facilitator">Accept</option>
+                        <option value="rejected benefit by facilitator">Reject</option>
                     </select>
                     <div class="modal-body">
                         <div class="mb">
@@ -334,8 +334,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal"> Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Approval</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </form>
             </div>
@@ -357,8 +357,8 @@
                     <select class="form-select" aria-label="Default select example" name="status"
                         id="change_benefit_by_gm" require>
                         <option selected>-</option>
-                        <option value="accepted benefit by general manager">accept</option>
-                        <option value="rejected benefit by general manager">reject</option>
+                        <option value="accepted benefit by general manager">Accept</option>
+                        <option value="rejected benefit by general manager">Reject</option>
                     </select>
                     <div class="modal-body">
                         <div class="mb">
@@ -369,7 +369,7 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-primary" type="submit" data-bs-dismiss="modal"> Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </form>
             </div>
@@ -396,10 +396,10 @@
                             <select class="form-select" aria-label="Default select example" name="status"
                                 id="status_by_admin" require>
                                 <option selected>-</option>
-                                <option value="accept">accept</option>
-                                <option value="reject">reject</option>
-                                <option value="replicate">replicate</option>
-                                <option value="not complete">not complete</option>
+                                <option value="accept">Accept</option>
+                                <option value="reject">Reject</option>
+                                <option value="replicate">Replicate</option>
+                                <option value="not complete">Not Complete</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -412,13 +412,13 @@
                         <!-- <input type="text" name="status" value="accept" hidden> -->
 
                         <div class="mb">
-                            <label class="mb-1" for="commentFacilitator">Comment</label>
+                            <label class="mb-1" for="commentFacilitator">Komentar</label>
                             <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"></textarea>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                         <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton"
                             disabled> Approval</button>
 
@@ -457,10 +457,10 @@
                     <!-- Footer -->
                     <div class="modal-footer d-flex justify-content-end">
                         <button class="btn btn-danger" type="button" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle"></i> Close
+                            <i class="bi bi-x-circle"></i> Tutup
                         </button>
                         <button class="btn btn-primary" type="submit">
-                            <i class="bi bi-upload"></i> Submit
+                            <i class="bi bi-upload"></i> Kirim
                         </button>
                     </div>
                 </form>
@@ -494,14 +494,14 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header " style="background-color: #eb4a3a">
-                    <h5 class="modal-title text-white fw-bold" id="commentTitle">Comments</h5>
+                    <h5 class="modal-title text-white fw-bold" id="commentTitle">Komentar</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="fw-bold mb-2" for="commentList">All Comments</label>
+                        <label class="fw-bold mb-2" for="commentList">Semua Komentar</label>
                         <div id="commentList" class="bg-light p-3 rounded border overflow-auto"
                             style="max-height: 400px;">
                             <!-- List komentar akan dimasukkan di sini melalui JavaScript -->
@@ -540,21 +540,21 @@
                     <div class="modal-body px-4 py-3">
                         <!-- Innovation Title -->
                         <div class="mb-3">
-                            <label for="inputInnovationTitle" class="form-label fw-semibold">Innovation Title</label>
+                            <label for="inputInnovationTitle" class="form-label fw-semibold">Judul Inovasi</label>
                             <input type="text" class="form-control shadow-sm" id="inputInnovationTitle"
                                 name="innovation_title" value="" placeholder="Enter Innovation Title">
                         </div>
 
                         <!-- Team Name -->
                         <div class="mb-3">
-                            <label for="inputTeamName" class="form-label fw-semibold">Team Name</label>
+                            <label for="inputTeamName" class="form-label fw-semibold">Nama Team</label>
                             <input type="text" class="form-control shadow-sm" id="inputTeamName" name="team_name"
                                 value="" placeholder="Enter Team Name">
                         </div>
 
                         <!-- Category -->
                         <div class="mb-3">
-                            <label for="inputCategory" class="form-label fw-semibold">Category</label>
+                            <label for="inputCategory" class="form-label fw-semibold">Kategori</label>
                             <select class="form-select shadow-sm" id="inputCategory" name="category">
                                 @foreach ($data_category as $category)
                                     <option value="{{ $category->id }}">{{ $category->category_name }}</option>
@@ -564,7 +564,7 @@
 
                         <!-- Theme -->
                         <div class="mb-3">
-                            <label for="inputTheme" class="form-label fw-semibold">Theme</label>
+                            <label for="inputTheme" class="form-label fw-semibold">Tema</label>
                             <select class="form-select shadow-sm" id="inputTheme" name="theme">
                                 @foreach ($data_theme as $theme)
                                     <option value="{{ $theme->id }}">{{ $theme->theme_name }}</option>
@@ -586,7 +586,7 @@
                     <!-- Modal Footer -->
                     <div class="modal-footer bg-light border-top-0 d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary px-4">Submit</button>
+                        <button type="submit" class="btn btn-primary px-4">Kirim</button>
                     </div>
                 </form>
             </div>
@@ -601,7 +601,7 @@
             <div class="modal-content">
                 <!-- Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="infoHistoryTitle">History Activity</h5>
+                    <h5 class="modal-title fw-bold text-white" id="infoHistoryTitle">Aktivitas Riwayat</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -622,7 +622,7 @@
                 </div>
                 <!-- Footer -->
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -653,7 +653,7 @@
                         </div>
                         <!-- Comment -->
                         <div class="mb-4">
-                            <label for="inputCommentRollback" class="form-label fw-semibold">Comment</label>
+                            <label for="inputCommentRollback" class="form-label fw-semibold">Komentar</label>
                             <textarea name="comment" id="inputCommentRollback" rows="5" class="form-control shadow-sm"
                                 placeholder="Add your comments here..."></textarea>
                         </div>
@@ -661,7 +661,7 @@
                     <!-- Footer -->
                     <div class="modal-footer">
                         <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button class="btn btn-primary" type="submit">Kirim</button>
                     </div>
                 </form>
             </div>
@@ -674,7 +674,7 @@
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="uploadDocumentTitle">Upload Step Document</h5>
+                    <h5 class="modal-title fw-bold text-white" id="uploadDocumentTitle">Unggah Dokumen</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -688,9 +688,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                         <button class="btn btn-primary btn-upload-step" type="submit"
-                            data-bs-dismiss="modal">Submit</button>
+                            data-bs-dismiss="modal">Kirim</button>
 
                     </div>
                 </form>

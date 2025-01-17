@@ -117,7 +117,7 @@
                                     </div> --}}
 
                                     <div class="mb-3">
-                                        <h6 class="small mb-1">Pilih Band 1</h6>
+                                        <h6 class="small mb-1">Pilih Band 1 (General Manager)</h6>
                                         <input type="hidden" name="team_id" value="{{ $row->team_id }}">
                                         <select class="form-select @error('gm_id') is-invalid @enderror"
                                             aria-label="Default select example" name="gm_id" id="id_gm"
@@ -130,7 +130,7 @@
                                     @if ($gmName !== null)
                                         <div class="mb-3">
                                             <input type="hidden" name="oldGm" value="{{ $gmName->employee_id }}">
-                                            <div class="h6">Nama Band 1 yang di pilih sebelumnnya : </div>
+                                            <div class="h6">Nama General Manager yang di Pilih Sebelumnnya : </div>
                                             <div class="h5">{{ $gmName->name }}</div>
                                             <hr>
                                         </div>
@@ -161,9 +161,9 @@
                                 </div>
                                 <div class="card-footer">
                                     <div class="mb-0">
-                                        <a href="{{ route('paper.index') }}" class="btn btn-purple">Close</a>
+                                        <a href="{{ route('paper.index') }}" class="btn btn-red">Tutup</a>
                                         <button class="btn btn-primary btn-end" type="submit"
-                                            id="submit_benefit_{{ $row->paper_id }}">Save</button>
+                                            id="submit_benefit_{{ $row->paper_id }}">Simpan</button>
                                     </div>
                                 </div>
                             </form>

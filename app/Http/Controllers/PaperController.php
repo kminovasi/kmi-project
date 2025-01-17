@@ -506,12 +506,9 @@ class PaperController extends Controller
     // Jika input sendiri
     public function storeStages(Request $request, $id, $stage)
     {
-
         try {
-            $paper = Paper::findOrFail($id);
+            $paper = Paper::with('metodologiPaper')->findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
-            $category = Category::where('id', $team->category_id)->select('category_name')->first();
-            $categoryName = $category->category_name;
 
             $tcpdf = new TCPDF();
             $tcpdf->AddPage();
@@ -520,53 +517,9 @@ class PaperController extends Controller
             $paper->updateAndHistory([
                 $stage => "w: " . $request->step
             ]);
-
-            if ($categoryName === "GKM PLANT" || $categoryName === "GKM OFFICE") {
-                if ($stage == 'step_8' && $this->isAllStepComplete($id)) {
-                    $team = Team::findOrFail($paper->team_id);
-
-                    // / Pastikan relasi Team sudah dimuat dengan benar
-                    if ($paper->team) {
-                        $fasilId = PvtMember::where('team_id', $paper->team->id)
-                            ->where('status', 'facilitator')
-                            ->pluck('employee_id')
-                            ->first();
-
-                        $fasilData = User::where('employee_id', $fasilId)
-                            ->select('name', 'email')
-                            ->first();
-
-                        $leaderId = PvtMember::where('team_id', $paper->team->id)
-                            ->where('status', 'leader')
-                            ->pluck('employee_id')
-                            ->first();
-
-                        $leaderData = User::where('employee_id', $leaderId)
-                            ->select('name', 'email')
-                            ->first();
-
-                        $inovasi_lokasi = Paper::where('id', $id)
-                            ->select('inovasi_lokasi')
-                            ->first();
-
-                        // Membuat objek
-                        $mail = new EmailNotificationPaperFasil(
-                            $paper,
-                            'full_paper',
-                            $paper->innovation_title,
-                            $paper->team->team_name,
-                            $leaderData,
-                            $fasilData,
-                            $inovasi_lokasi
-                        );
-
-                        // Mengirim email ke fasilitator
-                        Mail::to($fasilData->email)->send($mail);
-                    } else {
-                        throw new \Exception('Paper tidak memiliki relasi dengan Team.');
-                    }
-                }
-            } else if ($stage == 'step_7' && $this->isAllStepComplete($id)) {
+            $stageNumber = preg_replace('/\D/', '', $stage);
+            $stageNumberToInteger = (int) $stageNumber;
+            if($stageNumberToInteger === $paper->metodologiPaper->step && $this->isAllStepComplete($id)){
                 $team = Team::findOrFail($paper->team_id);
 
                 // / Pastikan relasi Team sudah dimuat dengan benar
@@ -606,11 +559,8 @@ class PaperController extends Controller
 
                     // Mengirim email ke fasilitator
                     Mail::to($fasilData->email)->send($mail);
-                } else {
-                    throw new \Exception('Paper tidak memiliki relasi dengan Team.');
                 }
             }
-
             //  Kode di bawwah ini mengirimkan notifikasi ke user saat ini menggunakan class PaperNotification
             //  PaperNotification berfungsi untuk membuat notifikasi ketika user mengupdate data
             $user = Auth::user();

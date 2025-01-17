@@ -684,7 +684,7 @@
                         <div class="mb-3">
                             {{-- <p id="paper_id_input"></p> --}}
                             <input type="hidden" name="paper_id" id="paper_id_input" value="">
-                            <input type="file" name="file_stage" class="form-control" multiple>
+                            <input type="file" name="file_stage" class="form-control" multiple accept=".pdf">
                         </div>
                     </div>
                     <div class="modal-footer">

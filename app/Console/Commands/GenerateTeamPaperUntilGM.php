@@ -20,9 +20,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Log;
 
-class GenerateTeamWithPaper extends Command
+class GenerateTeamPaperUntilGM extends Command
 {
-    protected $signature = 'generate:team-paper';
+    protected $signature = 'generate:team-paper-gm';
     protected $description = 'Generate a team and associated paper with specified data';
 
     public function __construct()
@@ -209,55 +209,13 @@ class GenerateTeamWithPaper extends Command
             'solution' => 'Solusi inovasi yang diterapkan',
             'potensi_replikasi' => 'Bisa Direplikasi',
             'inovasi_lokasi' => 'Lokasi',
-            'status' => 'accepted by innovation admin',
+            'status' => 'accepted benefit by general manager',
             'created_at' => $createdAt, // Tambahkan ini
             'metodologi_paper_id' => $randomMetodologi->id
         ]);
 
         $this->info('Tim dan paper berhasil di-generate!');
-        $eventTeam = PvtEventTeam::create([
-            'event_id' => $eventId,
-            'team_id' => $team->id,
-            'status' => 'On Desk', // atau status lain yang sesuai
-            'total_score_on_desk' => null,
-            'total_score_presentation' => null,
-            'total_score_caucus' => null,
-            'final_score' => null,
-            'is_best_of_the_best' => false,
-            'created_at' => $createdAt,
-        ]);
-        $this->info('Tim dan paper berhasil di-generate dengan event yang terdaftar!');
-
-        // Mendapatkan nilai stage dari PvtAssessmentEvent
-        $assessmentEvents = PvtAssessmentEvent::where('event_id', $eventId)->get();
-        // $stage = $assessmentEvent ? $assessmentEvent->stage : null;
-        $randomJudges = Judge::where('event_id', $eventId)
-            ->inRandomOrder()
-            ->limit(3)
-            ->get();
-
-        foreach ($assessmentEvents as $assessmentEvent) {
-            // Ambil juri yang terdaftar untuk event ini
-
-            foreach ($randomJudges as $judge) {
-                PvtAssesmentTeamJudge::create([
-                    'judge_id' => $judge->id,
-                    'score' => null, // Nilai default `null`
-                    'event_team_id' => $eventTeam->id,
-                    'assessment_event_id' => $assessmentEvent->id, // Menyimpan ID event penilaian
-                    'stage' => $assessmentEvent->stage, // Menyimpan nilai stage dari assessment event
-                    'created_at' => $createdAt
-                ]);
-            }
-        }
-
-        // Set default juri dengan nilai stage dari assessment event yang ditemukan
-
-        // Langkah lainnya: simpan file, data paper, dll.
-
-        $this->info('Tim, paper, dan juri berhasil di-generate dengan data penilaian default!');
     }
-
     /**
      * Prompt for input with date validation.
      *

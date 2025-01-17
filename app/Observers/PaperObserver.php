@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\MetodologiPaper;
 use App\Models\Paper;
 use App\Models\Team;
 use Mpdf\Mpdf;
@@ -15,41 +16,39 @@ class PaperObserver
 
     public function updating(Paper $paper)
     {
-        $category_name = Team::join('categories', 'categories.id', '=', 'teams.category_id')
-            ->join('papers', 'papers.team_id', '=', 'teams.id')
-            ->where('papers.id', $paper->id)
-            ->pluck('categories.category_name')
-            ->toArray()[0];
-        if (
-            $paper->step_1 != null && $paper->step_2 != null && $paper->step_3 != null &&
-            $paper->step_4 != null && $paper->step_5 != null && $paper->step_6 != null &&
-            $paper->step_7 != null && ($paper->full_paper != null ? $paper->full_paper[0] == 'w' : true) &&
-            (($paper->step_8 == '-' && (strpos($category_name, "GKM") === false)) || ($paper->step_8 != null && (strpos($category_name, "GKM") !== false)))
-        ) {
-            if ($paper->step_8 == '-' && (strpos($category_name, "GKM") === false))
-                $stage = ['step_1', 'step_2', 'step_3', 'step_4', 'step_5', 'step_6', 'step_7'];
-            else
-                $stage = ['step_1', 'step_2', 'step_3', 'step_4', 'step_5', 'step_6', 'step_7', 'step_8'];
-            $item = $paper->only($stage);
+        $metodologiPaper = MetodologiPaper::findOrFail($paper->metodologi_paper_id);
+        $maxStep = $metodologiPaper->step;
 
+        $isComplete = true;
 
-            $mpdf = new Mpdf();
+        for ($i = 1; $i <= $maxStep; $i++) {
+            $stepField = "step_$i";
+            if ($paper->$stepField === '-' || is_null($paper->$stepField)) {
+                $isComplete = false;
+                break;
+            }
+        }
 
+        if ($isComplete) {
             $team = Team::findOrFail($paper->team_id);
+            $pdfMerger = PdfMerger::init();
 
-            $pdfMerger = PDFMerger::init();
+            for ($i = 1; $i <= $maxStep; $i++) {
+                $stepField = "step_$i";
+                $pdfPath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $stepField . '.pdf');
 
-            foreach ($item as $name_column => $column) {
-                if ($column == null) {
-                    continue;
+                // Cek apakah file PDF ada sebelum menambahkannya
+                if (file_exists($pdfPath)) {
+                    $pdfMerger->addPDF($pdfPath, 'all');
                 }
-
-                $pdfMerger->addPDF(public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf'), 'all');
             }
 
-            $filepath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . "/full_paper.pdf");
+            // Tentukan lokasi penyimpanan file gabungan
+            $mergedPdfPath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . "/full_paper.pdf");
             $pdfMerger->merge();
-            $pdfMerger->save($filepath);
+            $pdfMerger->save($mergedPdfPath);
+
+            // Simpan path gabungan ke kolom `full_paper`
             $paper->full_paper = 'w: internal/' . $team->status_lomba . '/' . $team->team_name . "/full_paper.pdf";
         }
 

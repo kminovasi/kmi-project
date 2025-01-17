@@ -698,6 +698,9 @@
         </div>
     </div>
 
+    <x-paper.paper-confirmation-modal />
+
+
 @endsection
 
 

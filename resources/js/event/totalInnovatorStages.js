@@ -57,7 +57,7 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                 x: {
                     title: {
                         display: true,
-                        text: 'Tahapan',
+                        text: 'Tahapan Penilaian',
                         font: {
                             size: 14, // Ukuran font
                             weight: 'bold' // Membuat teks X axis menjadi bold

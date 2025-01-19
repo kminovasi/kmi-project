@@ -3,6 +3,7 @@
 use App\Exports\JuriExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaperController;
@@ -98,7 +99,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/show-stages/{id}/{stage}', [PaperController::class, 'showStep'])->name('show.stages');
         Route::post('/store-file-stages/{id}/{stage}', [PaperController::class, 'storeFileStages'])->name('store.file.stages');
 
-        // Route::post('image/{stage}', [PaperController::class, 'imageStages'])->name('image.stages');
+        Route::get('/checkStepNotEmptyOrNullOnPaper/{paperId}', [ApprovalController::class, 'checkStepNotEmptyOrNullOnPaper'])->name('checkStepNotEmptyOrNullOnPaper');
 
         //benefit
         Route::post('/store-benefit/{id}/', [PaperController::class, 'storeBenefit'])->name('store.benefit');

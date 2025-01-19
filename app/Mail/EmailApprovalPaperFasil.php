@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Paper;
@@ -27,15 +26,27 @@ class EmailApprovalPaperFasil extends Mailable
         $this->innovation_title = $innovation_title;
         $this->team_name = $team_name;
         $this->leaderName = $leaderData->name;
-        $this->inovasi_lokasi = $inovasi_lokasi;
+        $this->inovasi_lokasi = $paper->inovasi_lokasi;
     }
 
     public function build()
     {
-        $attachmentPath = mb_substr(Paper::where('id', '=', $this->paper->id)->pluck('full_paper')[0], 3);
-        $attachment = Storage::disk('public')->path($attachmentPath);
 
         if ($this->status == 'accepted paper by facilitator') {
+            $fullPaper = Paper::where('id', '=', $this->paper->id)->value('full_paper');
+            if (!$fullPaper) {
+                throw new \Exception("File path for 'full_paper' is missing or invalid in database.");
+            }
+
+            // Hapus awalan jalur jika perlu
+            $attachmentPath = mb_substr($fullPaper, 3);
+
+            // Pastikan file ada di disk
+            if (!Storage::disk('public')->exists($attachmentPath)) {
+                throw new \Exception("Attachment file not found in storage path: {$attachmentPath}");
+            }
+
+            $attachment = Storage::disk('public')->path($attachmentPath);
             return $this->view('emails.email_paper_approval')
                 ->subject('Notification: Paper Accepted')
                 ->attach($attachment, [
@@ -44,11 +55,10 @@ class EmailApprovalPaperFasil extends Mailable
                 ]);
         } elseif ($this->status == 'rejected paper by facilitator') {
             return $this->view('emails.email_paper_approval')
-                ->subject('Notification: Paper Rejected')
-                ->attach($attachment, [
-                    'as' => 'Makalah Full Paper.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+                ->subject('Notification: Paper Rejected');
+        } elseif ($this->status == 'revision paper by facilitator') {
+            return $this->view('emails.email_paper_approval')
+                ->subject('Notification: Paper Rejected');
         }
     }
 }

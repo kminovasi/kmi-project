@@ -103,23 +103,23 @@ class QueryController extends Controller
         ]);
     }
     public function get_fasilitator(Request $request)
-{
-    $unit = $request->input('unit');
-    $department = $request->input('department');
-    $directorate = $request->input('directorate');
-    $query = $request->input('query');
-    $results = User::with('company')
-        ->where(function($q) use ($query) {
-            $q->where('name', 'ilike', "%$query%")
-              ->orWhere('email', 'ilike', "%$query%");
-        })
-        ->whereIn('job_level', ["Band 2", "Band 1"])
-        ->select('employee_id', 'name', 'company_name', 'job_level')
-        ->limit(10)
-        ->get();
+    {
+        $unit = $request->input('unit');
+        $department = $request->input('department');
+        $directorate = $request->input('directorate');
+        $query = $request->input('query');
+        $results = User::with('company')
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'ilike', "%$query%")
+                    ->orWhere('email', 'ilike', "%$query%");
+            })
+            ->whereIn('job_level', ["Band 2", "Band 1"])
+            ->select('employee_id', 'name', 'company_name', 'job_level')
+            ->limit(10)
+            ->get();
 
-    return response()->json($results);
-}
+        return response()->json($results);
+    }
 
     public function get_GM(Request $request)
     {
@@ -340,6 +340,7 @@ class QueryController extends Controller
                 'potential_benefit',
                 'papers.status',
                 'papers.metodologi_paper_id',
+                'papers.created_at',
                 'papers.status_rollback',
                 'metodologi_papers.name as metodologi_makalah', // Select metodologi makalah
                 DB::raw("CASE
@@ -408,12 +409,33 @@ class QueryController extends Controller
 
             ];
             if ($request->filterRole == 'admin') {
-                $query_data->where('companies.company_code', $request->filterCompany);
+                // Gabungkan tabel pvt_members untuk memeriksa keikutsertaan admin sebagai member
+                $query_data->leftJoin('pvt_members', function ($join) use ($request) {
+                    $join->on('teams.id', '=', 'pvt_members.team_id')
+                        ->where('pvt_members.employee_id', Auth::user()->employee_id);
+                });
+
+                // Filter berdasarkan company_code kecuali admin adalah peserta/member dengan status tertentu
+                $query_data->where(function ($query) use ($request) {
+                    $query->where('companies.company_code', $request->filterCompany) // Berdasarkan company_code
+                        ->orWhere(function ($query) {
+                            $query->whereNotNull('pvt_members.id') // Admin adalah member
+                                ->whereIn('pvt_members.status', ['leader', 'member', 'facilitator', 'gm']); // Status tertentu
+                        });
+                });
+
+                // Tambahkan informasi status member
+                $select[] = DB::raw("COALESCE(pvt_members.status, 'not_member') as member_status");
+
+                // Hindari duplikasi dengan DISTINCT atau GROUP BY
+                $query_data->distinct();
             } else {
+                // Untuk role lainnya, langsung filter berdasarkan membership
                 $query_data->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
-                    ->where("employee_id", Auth::user()->employee_id);
+                    ->where('pvt_members.employee_id', Auth::user()->employee_id);
                 $select[] = 'pvt_members.status as member_status';
             }
+
 
             //filter untuk status inovasi
             if ($request->has('status_inovasi') && $request->status_inovasi != '') {
@@ -423,6 +445,10 @@ class QueryController extends Controller
             $data_row = $query_data->select($select)->get();
 
             $dataTable = DataTables::of($data_row);
+            $ownerCache = [];
+            $currentUserId = Auth::user()->employee_id;
+            $isSuperadmin = Auth::user()->role === 'Superadmin';
+            $isAdmin = Auth::user()->role === 'Admin';
 
             $rawColumns = ['detail_team'];
             $dataTable->addColumn('detail_team', function ($data_row) {
@@ -437,10 +463,20 @@ class QueryController extends Controller
 
             //button untuk full paper
             $rawColumns[] = 'full_paper';
-            $dataTable->addColumn('full_paper', function ($data_row) {
+            $dataTable->addColumn('full_paper', function ($data_row) use ($currentUserId, &$ownerCache, $isSuperadmin, $isAdmin) {
+                if (!isset($ownerCache[$data_row->paper_id])) {
+                    $ownerCache[$data_row->paper_id] = Paper::where('id', $data_row->paper_id)
+                        ->whereHas('team.pvtMembers', function ($query) use ($currentUserId) {
+                            $query->where('employee_id', $currentUserId)
+                                ->whereIn('status', ['leader', 'member']);
+                        })
+                        ->exists();
+                }
+
+                $isOwner = $ownerCache[$data_row->paper_id];
                 $html = '';
                 if ($data_row->full_paper != null) {
-                     $html .= "
+                    $html .= "
                             <a class=\"btn btn-info btn-sm mb-2\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'full']) . " \" target=\"_blank\">Detail</a>
                             ";
                     $maxStep = MetodologiPaper::findOrFail($data_row->metodologi_paper_id)->step;
@@ -456,16 +492,24 @@ class QueryController extends Controller
                         }
                     }
 
-                    if ($allStepsCompleted && $data_row->status === 'not finish') {
-                        $html .= "
-                            <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\">Fiksasi Makalah</button>
-                        ";
+                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator')) {
+                        if ($isOwner || $isSuperadmin || $isAdmin) {
+                            $html .= "
+                                <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Fiksasi Makalah</button>
+                            ";
+                            // $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
+                        } else {
+                            $html .= "
+                                <button class=\"btn btn-warning btn-sm\" disabled >Makalah belum fix</button>
+                            ";
+                        }
                     }
                     if ($data_row->status_rollback == 'rollback paper') {
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                     }
                 } else {
-                    $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
+                    if ($isOwner || $isSuperadmin || $isAdmin)
+                        $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                 }
                 return $html;
             });
@@ -482,10 +526,9 @@ class QueryController extends Controller
                     }
                 } else {
                     if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        Log::debug($data_row->status);
-                        if($data_row->status === "not finish"){
+                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper") {
                             return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
-                        }else{
+                        } else {
                             return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
                         }
                     } else {
@@ -550,6 +593,8 @@ class QueryController extends Controller
                     $html .=  '<div class="badge bg-yellow">Menunggu Benefit Disetujui Oleh Fasilitator</div>';
                 } elseif ($data_row->status == 'accepted paper by facilitator') {
                     $html .= '<button class="btn btn-success btn-xs" type="button" data-bs-toggle="modal" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Paper Disetujui Oleh Fasilitator, Silahkan Upload Benefit</i></button>';
+                } elseif ($data_row->status == 'revision paper by facilitator') {
+                    $html .= '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Paper terdapat revisi dari Fasilitator, Silahkan buat ulang</i></button>';
                 } elseif ($data_row->status == 'rejected paper by facilitator') {
                     $html .=  '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Paper tidak disetujui oleh Fasilitator</i></button>';
                 } elseif ($data_row->status == 'accepted benefit by facilitator') {
@@ -596,8 +641,18 @@ class QueryController extends Controller
 
             $jumlah_step = 8;
             for ($i = 1; $i <= $jumlah_step; $i++) {
-                $dataTable->addColumn('step_' . $i, function ($data_row) use ($i) {
+                $dataTable->addColumn('step_' . $i, function ($data_row) use ($i, &$ownerCache, $currentUserId) {
                     $html = '';
+                    if (!isset($ownerCache[$data_row->paper_id])) {
+                        $ownerCache[$data_row->paper_id] = Paper::where('id', $data_row->paper_id)
+                            ->whereHas('team.pvtMembers', function ($query) use ($currentUserId) {
+                                $query->where('employee_id', $currentUserId)
+                                    ->whereIn('status', ['leader', 'member']);
+                            })
+                            ->exists();
+                    }
+
+                    $isOwner = $ownerCache[$data_row->paper_id];
 
                     if ($data_row->{"step_" . $i} == 0) {
                         $html .= "<a class=\"btn btn-primary btn-xs\" href=\" " . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . "\">Add</a>";
@@ -606,14 +661,15 @@ class QueryController extends Controller
                         if ($data_row->status == "not finish" || $data_row->status_rollback == 'rollback paper') {
                             if ($data_row->{"step_" . $i} == 2)
                                 $html .= '<button class="btn btn-purple btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'step_' . $i . '\' )" >Upload</button>';
-                            elseif ($data_row->{"step_" . $i} == 3 || $data_row->{"step_" . $i} == 1)
+                            elseif (($data_row->{"step_" . $i} == 3 || $data_row->{"step_" . $i} == 1) && $isOwner) {
                                 $html .= "<a class=\"btn btn-warning btn-xs\" href=\"" . route('paper.create.stages', ['id' => $data_row->paper_id, 'stage' => 'stage_' . $i]) . " \">Edit</a>";
+                            }
                         }
                         $metodologiPaper = MetodologiPaper::findOrFail($data_row->metodologi_paper_id);
                         $metodologiPaperStep = $metodologiPaper->step;
-                        if($metodologiPaperStep === 7 && $i === 8){
-                              $html .= "-";
-                        }else{
+                        if ($metodologiPaperStep === 7 && $i === 8) {
+                            $html .= "-";
+                        } else {
                             $html .= "<a class=\"btn btn-info btn-xs\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'step_' . $i]) . " \" target=\"_blank\">Detail</a>";
                         }
                     }
@@ -2734,17 +2790,16 @@ class QueryController extends Controller
     }
 
     public function getMetodologiPapers(Request $request)
-{
-    $search = $request->input('search');
-    $query = MetodologiPaper::query();
+    {
+        $search = $request->input('search');
+        $query = MetodologiPaper::query();
 
-    if (!empty($search)) {
-        $query->where('name', 'LIKE', "%{$search}%");
+        if (!empty($search)) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+
+        $results = $query->select('id', 'name', 'max_user')->limit(100)->get();
+
+        return response()->json($results);
     }
-
-    $results = $query->select('id', 'name', 'max_user')->limit(100)->get();
-
-    return response()->json($results);
-}
-
 }

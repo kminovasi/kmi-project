@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name_benefit', 255)->nullable();
             $table->unsignedBigInteger('event_id');
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
     }

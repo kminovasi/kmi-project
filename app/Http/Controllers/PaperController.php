@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\CRUDNotification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -16,11 +15,9 @@ use App\Models\Event;
 use App\Models\User;
 use App\Models\Paper;
 use App\Models\PvtMember;
-use App\Models\BenefitNonFin;
 use App\Models\ph2Member;
 use App\Models\Company;
 use App\Models\Comment;
-use App\Models\PvtAssessmentEvent;
 // use App\Models\PvtAssessmentTeam;
 use App\Models\pvtAssesmentTeamJudge;
 use App\Models\PvtEventTeam;
@@ -35,21 +32,18 @@ use App\Mail\EmailApprovalPaperFasil;
 use App\Mail\EmailApprovalBenefit;
 use App\Mail\EmailApprovalFinal;
 use App\Http\Requests\registerRequests;
-use Illuminate\Validation\Rules\File;
 use App\Http\Requests\updateTeamPaperRequests;
 use App\Models\History;
 use App\Models\Judge;
 use App\Models\MetodologiPaper;
 use App\Notifications\PaperNotification;
-use App\Notifications\EmailNotification;
-use Mpdf\Mpdf;
 use TCPDF;
 
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
-use setasign\Fpdi\PdfParser\PdfParser;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class PaperController extends Controller
 {
@@ -519,7 +513,7 @@ class PaperController extends Controller
             ]);
             $stageNumber = preg_replace('/\D/', '', $stage);
             $stageNumberToInteger = (int) $stageNumber;
-            if($stageNumberToInteger === $paper->metodologiPaper->step && $this->isAllStepComplete($id)){
+            if ($stageNumberToInteger === $paper->metodologiPaper->step && $this->isAllStepComplete($id)) {
                 $team = Team::findOrFail($paper->team_id);
 
                 // / Pastikan relasi Team sudah dimuat dengan benar
@@ -589,8 +583,6 @@ class PaperController extends Controller
     // Untuk upload file
     public function storeFileStages(Request $request, $id, $stage)
     {
-        // dd($stage);
-        // dd($request->file_stage);
         try {
             if ($this->checkIsCompressed($request)) {
                 return redirect()->back()->withErrors('File Terkompres');
@@ -611,65 +603,24 @@ class PaperController extends Controller
                 ),
             ]);
 
-            // if ($stage == 'full_paper' || $stage == 'step_7' || $stage == 'step_8') {
-            //     $paper->step_1 = '-';
-            //     $paper->step_2 = '-';
-            //     $paper->step_3 = '-';
-            //     $paper->step_4 = '-';
-            //     $paper->step_5 = '-';
-            //     $paper->step_6 = '-';
-            //     $paper->step_7 = '-';
-            //     $paper->step_8 = '-';
-            //     $paper->save();
+            if ($stage === 'full_paper') {
+                $steps = [
+                    'step_1',
+                    'step_2',
+                    'step_3',
+                    'step_4',
+                    'step_5',
+                    'step_6',
+                    'step_7',
+                    'step_8',
+                ];
 
-            //     // Cek jika step upload file ini adalah step 7 atau step_8 dan semua step sudah terupload
-            //     if ($stage != 'step_7' && $this->isAllStepComplete($id)) {
-            //         $stage = 'full_paper';
-            //     } else if ($stage != 'step_8' && $this->isAllStepComplete($id)) {
-            //         $stage = 'full_paper';
-            //     }
+                foreach ($steps as $step) {
+                    $paper->$step = '-';
+                }
 
-            //     // Pastikan relasi Team sudah dimuat dengan benar
-            //     if ($paper->team) {
-            //         $fasilId = PvtMember::where('team_id', $paper->team->id)
-            //             ->where('status', 'facilitator')
-            //             ->pluck('employee_id')
-            //             ->first();
-
-            //         $fasilData = User::where('employee_id', $fasilId)
-            //             ->select('name', 'email')
-            //             ->first();
-
-            //         $leaderId = PvtMember::where('team_id', $paper->team->id)
-            //             ->where('status', 'leader')
-            //             ->pluck('employee_id')
-            //             ->first();
-
-            //         $leaderData = User::where('employee_id', $leaderId)
-            //             ->select('name', 'email')
-            //             ->first();
-
-            //         $inovasi_lokasi = Paper::where('id', $id)
-            //             ->select('inovasi_lokasi')
-            //             ->first();
-
-            //         // Membuat objek
-            //         $mail = new EmailNotificationPaperFasil(
-            //             $paper,
-            //             $stage,
-            //             $paper->innovation_title,
-            //             $paper->team->team_name,
-            //             $leaderData,
-            //             $fasilData,
-            //             $inovasi_lokasi
-            //         );
-
-            //         // Mengirim email ke fasilitator
-            //         Mail::to($fasilData->email)->send($mail);
-            //     } else {
-            //         throw new \Exception('Paper tidak memiliki relasi dengan Team.');
-            //     }
-            // }
+                $paper->save();
+            }
 
             $user = Auth::user();
             $user->notify(new PaperNotification(
@@ -870,20 +821,42 @@ class PaperController extends Controller
 
     public function approvePaperFasil(Request $request, $id)
     {
-        // dd($request->all());
         try {
             $paper = Paper::with('team')->findOrFail($id);
+
+            // Jika status adalah revisi
+            if ($request->status === 'revision paper by facilitator') {
+                if ($request->has('revision_steps')) {
+                    // Revisi langkah: kosongkan langkah yang dipilih
+                    foreach ($request->revision_steps as $step) {
+                        $stepColumn = 'step_' . $step;
+                        $paper->$stepColumn = null; // Set langkah ke null
+                        $paper->full_paper = null;
+                    }
+                } elseif ($request->has('full_paper')) {
+                    // Revisi full_paper: kosongkan full_paper
+                    $paper->full_paper = null;
+                }
+            }
+
+            // Set status paper
             $paper->status = $request->status;
+
+            // Update paper dan tambahkan riwayat
             $paper->updateAndHistory([], $request->status);
 
-            Comment::UpdateOrCreate([
-                'paper_id' => $id,
-                'writer' => "facilitator on Paper",
-            ], [
-                'comment' => $request->comment
-            ]);
+            // Update atau buat komentar
+            Comment::updateOrCreate(
+                [
+                    'paper_id' => $id,
+                    'writer' => "facilitator on Paper",
+                ],
+                [
+                    'comment' => $request->comment,
+                ]
+            );
 
-            // Pastikan relasi Team sudah dimuat dengan benar
+            // Proses pengiriman email jika paper memiliki tim
             if ($paper->team) {
                 $leaderId = PvtMember::where('team_id', $paper->team->id)
                     ->where('status', 'leader')
@@ -894,13 +867,8 @@ class PaperController extends Controller
                     ->select('name', 'email')
                     ->first();
 
-                $inovasi_lokasi = Paper::where('id', $id)
-                    ->select('inovasi_lokasi')
-                    ->first();
+                $inovasi_lokasi = $paper->inovasi_lokasi;
 
-                //dd($inovasi_lokasi);
-
-                // Membuat objek EmailApprovalPaperFasil
                 $mail = new EmailApprovalPaperFasil(
                     $paper,
                     $request->status,
@@ -910,9 +878,6 @@ class PaperController extends Controller
                     $inovasi_lokasi
                 );
 
-                //dd($leaderData);
-
-                // Mengirim email ke inovator (ketua tim)
                 Mail::to($leaderData->email)->send($mail);
             } else {
                 throw new \Exception('Paper tidak memiliki relasi dengan Team.');
@@ -920,10 +885,11 @@ class PaperController extends Controller
 
             return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
         } catch (\Exception $e) {
-            // Tangkap dan tangani pengecualian jika terjadi
+            Log::debug($e);
             return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
     }
+
 
     public function approveBenefit(Request $request, $id)
     {
@@ -1658,85 +1624,84 @@ class PaperController extends Controller
     }
 
     public function getEventsByCompanyCode($companyCode)
-{
-    try {
-        // Cari perusahaan berdasarkan company_code
-        $company = Company::where('company_code', $companyCode)->first();
+    {
+        try {
+            // Cari perusahaan berdasarkan company_code
+            $company = Company::where('company_code', $companyCode)->first();
 
-        // Jika perusahaan tidak ditemukan, lempar error
-        if (!$company) {
-            return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);
+            // Jika perusahaan tidak ditemukan, lempar error
+            if (!$company) {
+                return response()->json(['error' => 'Perusahaan tidak ditemukan'], 404);
+            }
+
+            // Ambil daftar event terkait perusahaan
+            $events = $company->events()->get();
+
+            // Kembalikan response dengan data event
+            return response()->json([
+                'success' => true,
+                'company' => $company->company_name,
+                'events' => $events,
+            ]);
+        } catch (\Exception $e) {
+            // Tangani error
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function fixatePaper($id)
+    {
+        $paper = Paper::findOrFail($id);
+
+        // Update status fiksasi
+        $paper->status = 'upload full paper'; // Atur status sesuai kebutuhan
+        $paper->save();
+
+        if ($paper->team) {
+            $fasilId = PvtMember::where('team_id', $paper->team->id)
+                ->where('status', 'facilitator')
+                ->pluck('employee_id')
+                ->first();
+
+            $fasilData = User::where('employee_id', $fasilId)
+                ->select('name', 'email')
+                ->first();
+
+            $leaderId = PvtMember::where('team_id', $paper->team->id)
+                ->where('status', 'leader')
+                ->pluck('employee_id')
+                ->first();
+
+            $leaderData = User::where('employee_id', $leaderId)
+                ->select('name', 'email')
+                ->first();
+
+            $inovasi_lokasi = Paper::where('id', $id)
+                ->select('inovasi_lokasi')
+                ->first();
+
+            $stage = 'full_paper';
+
+            // Membuat objek
+            $mail = new EmailNotificationPaperFasil(
+                $paper,
+                $stage,
+                $paper->innovation_title,
+                $paper->team->team_name,
+                $leaderData,
+                $fasilData,
+                $inovasi_lokasi
+            );
+
+            // Mengirim email ke fasilitator
+            Mail::to($fasilData->email)->send($mail);
+        } else {
+            throw new \Exception('Paper tidak memiliki relasi dengan Team.');
         }
 
-        // Ambil daftar event terkait perusahaan
-        $events = $company->events()->get();
-
-        // Kembalikan response dengan data event
-        return response()->json([
-            'success' => true,
-            'company' => $company->company_name,
-            'events' => $events,
-        ]);
-    } catch (\Exception $e) {
-        // Tangani error
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-        ], 500);
+        return response()->json(['success' => true, 'message' => 'Makalah berhasil difiksasi']);
     }
-}
-
-public function fixatePaper($id)
-{
-    $paper = Paper::findOrFail($id);
-
-    // Update status fiksasi
-    $paper->status = 'upload full paper'; // Atur status sesuai kebutuhan
-    $paper->save();
-
-    if ($paper->team) {
-        $fasilId = PvtMember::where('team_id', $paper->team->id)
-            ->where('status', 'facilitator')
-            ->pluck('employee_id')
-            ->first();
-
-        $fasilData = User::where('employee_id', $fasilId)
-            ->select('name', 'email')
-            ->first();
-
-        $leaderId = PvtMember::where('team_id', $paper->team->id)
-            ->where('status', 'leader')
-            ->pluck('employee_id')
-            ->first();
-
-        $leaderData = User::where('employee_id', $leaderId)
-            ->select('name', 'email')
-            ->first();
-
-        $inovasi_lokasi = Paper::where('id', $id)
-            ->select('inovasi_lokasi')
-            ->first();
-
-        $stage = 'full_paper';
-
-        // Membuat objek
-        $mail = new EmailNotificationPaperFasil(
-            $paper,
-            $stage,
-            $paper->innovation_title,
-            $paper->team->team_name,
-            $leaderData,
-            $fasilData,
-            $inovasi_lokasi
-        );
-
-        // Mengirim email ke fasilitator
-        Mail::to($fasilData->email)->send($mail);
-    } else {
-        throw new \Exception('Paper tidak memiliki relasi dengan Team.');
-    }
-
-    return response()->json(['success' => true, 'message' => 'Makalah berhasil difiksasi']);
-}
-
 }

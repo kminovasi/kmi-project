@@ -269,44 +269,9 @@
             </div>
         </div>
     </div>
+    <x-paper.approve-fasil-modal />
 
 
-    {{-- modal untuk approval makalah fasilitator --}}
-    <div class="modal fade" id="accFasilitator" tabindex="-1" role="dialog" aria-labelledby="accFasilitatorTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accFasilitatorTitle">Approval Makalah oleh Fasilitator</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="accFasilPaperForm" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="modal-body">
-                        <div class="mb">
-                            <select class="form-select" aria-label="Default select example" name="status"
-                                id="status_by_fasil" require>
-                                <option selected>-</option>
-                                <option value="accepted paper by facilitator">Accept</option>
-                                <option value="rejected paper by facilitator">Reject</option>
-                            </select>
-                        </div>
-                        <div class="mb">
-                            <label class="mb-1" for="commentFacilitator">Berikan Komentar</label>
-                            <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     {{-- modal untuk approval benefit fasilitator --}}
     <div class="modal fade" id="accFasilitatorBnefit" tabindex="-1" role="dialog"
@@ -729,74 +694,75 @@
                 }
             },
             "columns": [{
-                "data": "DT_RowIndex",
-                "title": "No"
-            }, {
-                "data": "innovation_title",
-                "title": "Innovation Title"
-            }, {
-                "data": "team_name",
-                "title": "Team Name"
-            }, {
-                "data": "detail_team",
-                "title": "Detail Team"
-            }, {
-                "data": "company_name",
-                "title": "Company"
-            }, {
-                "data": "category_name",
-                "title": "Category"
-            }, {
-                "data": "theme_name",
-                "title": "Theme"
-            },
-            {
-                "data": "metodologi_makalah",
-                "title": "Metodologi Makalah"
-            },
-             {
-                "data": "step_1",
-                "title": "Step 1"
-            }, {
-                "data": "step_2",
-                "title": "Step 2"
-            }, {
-                "data": "step_3",
-                "title": "Step 3"
-            }, {
-                "data": "step_4",
-                "title": "Step 4"
-            }, {
-                "data": "step_5",
-                "title": "Step 5"
-            }, {
-                "data": "step_6",
-                "title": "Step 6"
-            }, {
-                "data": "step_7",
-                "title": "Step 7"
-            }, {
-                "data": "step_8",
-                "title": "Step 8"
-            }, {
-                "data": "full_paper",
-                "title": "Full Paper"
-            }, {
-                "data": "benefit",
-                "title": "Benefit"
-            }, {
-                "data": "approval",
-                "title": "Approval"
-            }, {
-                "data": "Dokumen",
-                "title": "Dokumen"
-            }, {
-                "data": "status",
-                "title": "Status"
-            }, {
-                "data": "action",
-                "title": "Action"
-            }, ],
+                    "data": "DT_RowIndex",
+                    "title": "No"
+                }, {
+                    "data": "innovation_title",
+                    "title": "Innovation Title"
+                }, {
+                    "data": "team_name",
+                    "title": "Team Name"
+                }, {
+                    "data": "detail_team",
+                    "title": "Detail Team"
+                }, {
+                    "data": "company_name",
+                    "title": "Company"
+                }, {
+                    "data": "category_name",
+                    "title": "Category"
+                }, {
+                    "data": "theme_name",
+                    "title": "Theme"
+                },
+                {
+                    "data": "metodologi_makalah",
+                    "title": "Metodologi Makalah"
+                },
+                {
+                    "data": "step_1",
+                    "title": "Step 1"
+                }, {
+                    "data": "step_2",
+                    "title": "Step 2"
+                }, {
+                    "data": "step_3",
+                    "title": "Step 3"
+                }, {
+                    "data": "step_4",
+                    "title": "Step 4"
+                }, {
+                    "data": "step_5",
+                    "title": "Step 5"
+                }, {
+                    "data": "step_6",
+                    "title": "Step 6"
+                }, {
+                    "data": "step_7",
+                    "title": "Step 7"
+                }, {
+                    "data": "step_8",
+                    "title": "Step 8"
+                }, {
+                    "data": "full_paper",
+                    "title": "Full Paper"
+                }, {
+                    "data": "benefit",
+                    "title": "Benefit"
+                }, {
+                    "data": "approval",
+                    "title": "Approval"
+                }, {
+                    "data": "Dokumen",
+                    "title": "Dokumen"
+                }, {
+                    "data": "status",
+                    "title": "Status"
+                }, {
+                    "data": "action",
+                    "title": "Action"
+                },
+            ],
             "scrollX": true,
             "scrollY": true,
             "stateSave": true,
@@ -814,6 +780,14 @@
 
     <script type="">
     $(document).ready(function() {
+       $('#accFasilitator').on('hidden.bs.modal', function() {
+            const form = $('#accFasilPaperForm');
+            form.removeAttr('action'); // Hapus atribut action dari form
+            $(this).find('#stepsContainer').remove(); // Cari dan hapus stepsContainer dalam modal
+                $('#status_by_fasil').val('-'); // Set kembali nilai default dropdown
+            currentPaperId = null; // Reset currentPaperId
+        });
+
         var dataTable = $('#datatable-makalah').DataTable({
             "processing": true,
             "serverSide": true,
@@ -1050,19 +1024,6 @@
         }
     }
 
-    function approve_paper_fasil_modal(idPaper){
-        // alert(idPapern)
-        var form = document.getElementById('accFasilPaperForm');
-
-        var url = `{{ route('paper.approvePaperFasil', ['id' => ':idPaper']) }}`;
-        url = url.replace(':idPaper', idPaper);
-        form.action = url;
-    }
-    $('#accFasilitator').on('hidden.bs.modal', function () {
-        var form = document.getElementById('accFasilPaperForm');
-
-        form.removeAttribute('action');
-    });
 
     function approve_benefit_fasil_modal(idPaper){
         // alert(idPapern)

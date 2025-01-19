@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('custom_benefit_financial_id')->references('id')->on('custom_benefit_financials')->onDelete('cascade');
             $table->unsignedBigInteger('paper_id');
             $table->foreign('paper_id')->references('id')->on('papers')->onDelete('cascade');
-            $table->integer('value')->nullable();
+            $table->text('value')->nullable()->change();
             $table->timestamps();
         });
     }

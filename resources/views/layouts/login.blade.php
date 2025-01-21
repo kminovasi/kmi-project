@@ -15,7 +15,7 @@
             background-repeat: no-repeat;
         }
         .bg-custom {
-            background-image: url('{{ asset('assets/login-frame.png') }}');
+            background-image: url('{{ asset('assets/login-frame.jpg') }}');
             background-size: cover;
             background-position: center;
         }

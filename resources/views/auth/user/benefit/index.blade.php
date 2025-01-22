@@ -3,6 +3,20 @@
 @section('title', 'Form Benefit')
 @push('css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .status-text.good {
+            color: green;
+        }
+
+        .status-text.bad {
+            color: red;
+        }
+
+        .counter-text {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
 @endpush
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white ">
@@ -54,12 +68,11 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label class="mb-1" for="dataFinancial{{ $row->paper_id }}">Financial
-                                            (Real) {{$row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager'}} {{$is_owner}} </label>
+                                            (Real) </label>
+
                                         <input class="form-control" id="dataFinancial{{ $row->paper_id }}" type="text"
                                             name="financial" value="{{ $row->getFinancialFormattedAttribute() }}"
-                                            oninput="formatCurrency(this)"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                            required>
+                                            oninput="formatCurrency(this)" required {{ $is_disabled ? 'disabled' : '' }}>
                                     </div>
                                     <div class="mb-3">
                                         <label class="mb-1" for="dataBenefitPtential{{ $row->paper_id }}">Benefit
@@ -67,28 +80,22 @@
                                         <input class="form-control" id="dataBenefitPtential{{ $row->paper_id }}"
                                             type="text" name="potential_benefit"
                                             value="{{ $row->getPotentialBenefitFormattedAttribute() }}"
-                                            oninput="formatCurrency(this)"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                            required {{ $is_owner ? '' : 'disabled' }}>
+                                            oninput="formatCurrency(this)" {{ $is_disabled ? 'disabled' : '' }} required>
                                     </div>
                                     <div class="form-group">
                                         <h5>Non-Financial Benefit</h5>
                                         @foreach ($benefit_custom as $bc)
                                             <div class="mb-3">
-                                                <label class="mb-1" for="bencus-{{ $bc['id'] }}">{{ $bc['name_benefit'] }}</label>
-                                                <textarea
-                                                    class="form-control"
-                                                    id="bencus-{{ $bc['id'] }}"
-                                                    name="bencus[{{ $bc['id'] }}]"
-                                                    type="text"
-                                                    minlength="75"
-                                                    required
-                                                    {{ $row->status_rollback == 'rollback benefit' ||
-                                                        $row->status == 'accepted paper by facilitator' ||
-                                                        $row->status == 'upload benefit' ||
-                                                        $row->status == 'rejected benefit by facilitator' ||
-                                                        $row->status == 'rejected benefit by general manager' ||
-                                                        $is_owner ? '' : 'readonly disabled' }}>{{ $bc['value'] }}</textarea>
+                                                <label class="mb-1"
+                                                    for="bencus-{{ $bc['id'] }}">{{ $bc['name_benefit'] }}</label>
+                                                <textarea class="form-control character-counter" id="bencus-{{ $bc['id'] }}" name="bencus[{{ $bc['id'] }}]"
+                                                    type="text" required {{ $is_disabled ? 'disabled' : '' }}>{{ $bc['value'] }}</textarea>
+                                                <div class="mt-2 d-flex justify-content-between">
+                                                    <span class="status-text"
+                                                        id="status-bencus-{{ $bc['id'] }}"></span>
+                                                    <span class="counter-text" id="counter-bencus-{{ $bc['id'] }}">0
+                                                        karakter</span>
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -98,23 +105,13 @@
                                             Replikasi</label>
                                         <select class="form-select" aria-label="Default select example"
                                             name="potensi_replikasi" id="choosePotensiReplikasi"
-                                            value="{{ old('potensi_replikasi') }}"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
+                                            value="{{ old('potensi_replikasi') }}" {{ $is_disabled ? 'disabled' : '' }}
                                             required {{ $is_owner ? '' : 'disabled' }}>
                                             <option value="Bisa Direplikasi">Bisa Direplikasi</option>
                                             <option value="Tidak Bisa Direplikasi">Tidak Bisa Direplikasi</option>
                                         </select>
                                     </div>
 
-{{--
-                                    <div class="mb-3">
-                                        <label class="mb-1" for="dataBenefitNonFin{{ $row->paper_id }}">Benefit Non
-                                            Financial</label>
-                                        <textarea class="form-control" id="dataBenefitNonFin{{ $row->paper_id }}" type="text" rows="5"
-                                            name="non_financial" value=""
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}
-                                            {{ $is_owner ? '' : 'disabled' }}>{{ $row->non_financial }}</textarea>
-                                    </div> --}}
 
                                     <div class="mb-3">
                                         <h6 class="small mb-1">Pilih Band 1 (General Manager)</h6>
@@ -122,7 +119,7 @@
                                         <select class="form-select @error('gm_id') is-invalid @enderror"
                                             aria-label="Default select example" name="gm_id" id="id_gm"
                                             value="{{ old('gm_id') }}" placeholder="Pilih GM"
-                                            {{ $is_owner ? '' : 'disabled' }}></select>
+                                            {{ $is_disabled ? 'disabled' : '' }}></select>
                                         @error('gm_id')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -139,9 +136,8 @@
                                         <label class="mb-1" for="dataFileReview{{ $row->paper_id }}">Berita Acara
                                             Benefit (Pdf)</label>
                                         <input class="form-control" id="file_review_{{ $row->paper_id }}" type="file"
-                                            name="file_review" accept=".pdf"
-                                            oninput="check_file('{{ $row->paper_id }}')"
-                                            {{ $row->status_rollback == 'rollback benefit' || $row->status == 'accepted paper by facilitator' || $row->status == 'upload benefit' || $row->status == 'rejected benefit by facilitator' || $row->status == 'rejected benefit by general manager' || $is_owner ? '' : 'readonly disabled' }}>
+                                            name="file_review" accept=".pdf" oninput="check_file('{{ $row->paper_id }}')"
+                                            {{ $is_disabled ? 'disabled' : '' }}>
                                         <!-- <input type="text" id="file_path_{{ $row->paper_id }}" value="{{ $row->file_review }}" hidden> -->
                                         <div class="is-invalid" id="invalid_file_{{ $row->paper_id }}"></div>
                                         <div class="invalid-feedback" id="feedback_file_{{ $row->paper_id }}"></div>
@@ -185,6 +181,40 @@
 
             });
             search_select2('id_gm')
+
+            // Ambil semua textarea dengan class character-counter
+    const textareas = document.querySelectorAll('.character-counter');
+
+    textareas.forEach(textarea => {
+        const id = textarea.id;
+        const statusElement = document.getElementById('status-' + id);
+        const counterElement = document.getElementById('counter-' + id);
+
+        // Fungsi untuk update counter dan status
+        function updateCount() {
+            const length = textarea.value.length;
+            counterElement.textContent = `${length} / 75 karakter`;
+
+            if (length >= 75 && length !== 0) {
+                statusElement.textContent = 'Isi Baik';
+                statusElement.classList.remove('bad');
+                statusElement.classList.add('good');
+            } else {
+                if(length !== 0){
+                    statusElement.textContent = 'Isi Kurang Baik';
+                    statusElement.classList.remove('good');
+                    statusElement.classList.add('bad');
+                }
+            }
+        }
+
+        // Event listeners
+        textarea.addEventListener('input', updateCount);
+        textarea.addEventListener('change', updateCount);
+
+        // Initial count
+        updateCount();
+    });
         });
 
         document.getElementById('choosePotensiReplikasi').addEventListener('change', function() {

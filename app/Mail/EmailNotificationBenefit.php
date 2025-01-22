@@ -43,7 +43,7 @@ class EmailNotificationBenefit extends Mailable
     public function build()
     {
         // $attachment = Storage::path('public/' . $this->record->file_review);
-        $attachment = public_path('storage' . $this->record->file_review);
+        $attachment = public_path('storage/' . $this->record->file_review);
 
         if ($this->status == 'upload benefit') {
             return $this->view('emails.email_benefit_notification')

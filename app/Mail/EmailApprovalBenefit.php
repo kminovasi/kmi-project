@@ -72,6 +72,20 @@ class EmailApprovalBenefit extends Mailable
                     'as' => 'Berita Acara Benefit.pdf',
                     'mime' => 'application/pdf',
                 ]);
+        } elseif ($this->status == 'revision benefit by facilitator') {
+            return $this->view('emails.email_benefit_approval')
+                ->subject('Notification: Benefit Revision')
+                ->attach($attachment, [
+                    'as' => 'Berita Acara Benefit.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+        } elseif ($this->status == 'revision benefit by facilitator') {
+            return $this->view('emails.email_benefit_approval')
+                ->subject('Notification: Revision Benefit')
+                ->attach($attachment, [
+                    'as' => 'Berita Acara Benefit.pdf',
+                    'mime' => 'application/pdf',
+                ]);
         } elseif ($this->status == 'accepted benefit by general manager') {
             return $this->view('emails.email_benefit_approval')
                 ->subject('Notification: Benefit Accepted')
@@ -82,6 +96,27 @@ class EmailApprovalBenefit extends Mailable
         } elseif ($this->status == 'rejected benefit by general manager') {
             return $this->view('emails.email_benefit_approval')
                 ->subject('Notification: Benefit Rejected')
+                ->attach($attachment, [
+                    'as' => 'Berita Acara Benefit.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+        } elseif ($this->status == 'revision benefit by general manager') {
+            return $this->view('emails.email_benefit_approval')
+                ->subject('Notification: Benefit Revision')
+                ->attach($attachment, [
+                    'as' => 'Berita Acara Benefit.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+        } elseif ($this->status == 'revision paper by general manager') {
+            return $this->view('emails.email_benefit_approval')
+                ->subject('Notification: Paper Revision')
+                ->attach($attachment, [
+                    'as' => 'Berita Acara Benefit.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+        } elseif ($this->status == 'revision paper and benefit by general manager') {
+            return $this->view('emails.email_benefit_approval')
+                ->subject('Notification: Paper & Benefit Revision')
                 ->attach($attachment, [
                     'as' => 'Berita Acara Benefit.pdf',
                     'mime' => 'application/pdf',
@@ -97,20 +132,9 @@ class EmailApprovalBenefit extends Mailable
             $pdf->SetFont('helvetica', '', 12);
             $pdf->AddPage();
 
-            // $qr_code_data_array= $this->generateQrCode();
-            // $qr_code_data = $qr_code_data_array['qr_code'];
-            // $name = $qr_code_data_array['name'];
-            // $description = $this->status == 'accepted benefit by facilitator' ? 'Fasilitator' : 'General Manager';
-            // Generate PDF content for both Facilitator and General Manager
-            // Determine which rows to include based on status
-
             $facilitatorRow = $this->generatePdfContentForRole('facilitator');
             $gmRow = '';
             $adminRow = '';
-
-            // if ($this->status == 'accepted benefit by facilitator' || $this->status == 'accepted benefit by general manager') {
-            //     $facilitatorRow = $this->generatePdfContentForRole('facilitator');
-            // }
 
             if ($this->status == 'accepted benefit by general manager' || $this->status == 'reject') {
                 $gmRow = $this->generatePdfContentForRole('gm');

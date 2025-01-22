@@ -47,12 +47,10 @@ class EmailApprovalPaperFasil extends Mailable
             }
 
             $attachment = Storage::disk('public')->path($attachmentPath);
+            $fileUrl = Storage::disk('public')->url($attachmentPath);
             return $this->view('emails.email_paper_approval')
                 ->subject('Notification: Paper Accepted')
-                ->attach($attachment, [
-                    'as' => 'Makalah Full Paper.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+                ->with(['fileUrl' => $fileUrl]);
         } elseif ($this->status == 'rejected paper by facilitator') {
             return $this->view('emails.email_paper_approval')
                 ->subject('Notification: Paper Rejected');

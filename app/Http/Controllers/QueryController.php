@@ -492,12 +492,11 @@ class QueryController extends Controller
                         }
                     }
 
-                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator')) {
-                        if ($isOwner || $isSuperadmin || $isAdmin) {
+                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator' || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager')) {
+                        if ($isOwner || $isSuperadmin) {
                             $html .= "
                                 <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Fiksasi Makalah</button>
                             ";
-                            // $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                         } else {
                             $html .= "
                                 <button class=\"btn btn-warning btn-sm\" disabled >Makalah belum fix</button>
@@ -508,7 +507,7 @@ class QueryController extends Controller
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                     }
                 } else {
-                    if ($isOwner || $isSuperadmin || $isAdmin)
+                    if ($isOwner || $isSuperadmin)
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                 }
                 return $html;
@@ -526,7 +525,7 @@ class QueryController extends Controller
                     }
                 } else {
                     if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper") {
+                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper" || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager') {
                             return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
                         } else {
                             return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
@@ -588,41 +587,49 @@ class QueryController extends Controller
                 if ($data_row->status == "not finish") {
                     $html .=  '<div class="badge bg-yellow">Belum Lengkap</div>';
                 } elseif ($data_row->status == 'upload full paper') {
-                    $html .=  '<div class="badge bg-yellow">Menunggu Paper Disetujui Oleh Fasilitator</div>';
+                    $html .=  '<div class="badge bg-yellow">Menunggu Makalah Disetujui Oleh Fasilitator</div>';
                 } elseif ($data_row->status == 'upload benefit') {
                     $html .=  '<div class="badge bg-yellow">Menunggu Benefit Disetujui Oleh Fasilitator</div>';
                 } elseif ($data_row->status == 'accepted paper by facilitator') {
-                    $html .= '<button class="btn btn-success btn-xs" type="button" data-bs-toggle="modal" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Paper Disetujui Oleh Fasilitator, Silahkan Upload Benefit</i></button>';
+                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Makalah Disetujui Oleh Fasilitator, Silahkan Upload Benefit</i></button>';
                 } elseif ($data_row->status == 'revision paper by facilitator') {
-                    $html .= '<button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Paper terdapat revisi dari Fasilitator, Silahkan buat ulang</i></button>';
+                    $html .= '<button class="btn bg-pink text-white btn-xs" type="button" title="Revisi Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Makalah terdapat revisi dari Fasilitator</i></button>';
                 } elseif ($data_row->status == 'rejected paper by facilitator') {
-                    $html .=  '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Paper tidak disetujui oleh Fasilitator</i></button>';
+                    $html .=  '<button class="btn btn-danger btn-xs" type="button" title="Reject Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Makalah tidak disetujui oleh Fasilitator</i></button>';
                 } elseif ($data_row->status == 'accepted benefit by facilitator') {
-                    $html .= '<button class="btn btn-success btn-xs" type="button" data-bs-toggle="modal" title="Acc Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit Disetujui Oleh Fasilitator</i></button>';
+                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc Fasilitator"><i >Benefit Disetujui Oleh Fasilitator</i></button>';
                 } elseif ($data_row->status == 'rejected benefit by facilitator') {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject Fasilitator" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit tidak Disetujui Oleh Fasilitator</i></button>';
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Fasilitator"><i >Benefit tidak Disetujui Oleh Fasilitator</i></button>';
+                } elseif ($data_row->status == 'revision benefit by facilitator') {
+                    $html .= '<button class="btn bg-pink text-white btn-xs" type="button" title="Reject Fasilitator"><i >Benefit mendapatkan revisi dari Fasilitator</i></button>';
                 } elseif ($data_row->status == 'accepted benefit by general manager') {
-                    $html .= '<button class="btn btn-success btn-xs" type="button" data-bs-toggle="modal" title="Acc GM" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit Disetujui Oleh General Manager</i></button>';
+                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc GM"><i >Benefit Disetujui Oleh General Manager</i></button>';
                 } elseif ($data_row->status == 'rejected benefit by general manager') {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject GM" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit tidak Disetujui Oleh General Manager</i></button>';
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject GM"><i >Benefit tidak Disetujui Oleh General Manager</i></button>';
+                } elseif ($data_row->status == 'revision benefit by general manager') {
+                    $html .= '<button class="btn btn-pink btn-xs" type="button" title="Reject GM"><i >Benefit mendapatkan revisi dari General Manager</i></button>';
+                } elseif ($data_row->status == 'revision paper by general manager') {
+                    $html .= '<button class="btn btn-pink btn-xs" type="button" title="Reject GM"><i >Makalah mendapatkan revisi dari General Manager</i></button>';
+                } elseif ($data_row->status == 'revision paper and benefit by general manager') {
+                    $html .= '<button class="btn btn-pink btn-xs" type="button" title="Reject GM"><i >Makalah dan Benefit mendapatkan revisi dari General Manager</i></button>';
                 } elseif ($data_row->status == 'accepted by innovation admin') {
-                    $html .= '<button class="btn btn-success btn-xs" type="button" data-bs-toggle="modal" title="Acc Admin" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit Disetujui Oleh  Admin, lanjut ikuti event</i></button>';
+                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc Admin"><i >Benefit Disetujui Oleh  Admin, lanjut ikuti event</i></button>';
                 } elseif ($data_row->status == 'rejected by innovation admin') {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject Admin" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Benefit tidak Disetujui Oleh Admin</i></button>';
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Benefit tidak Disetujui Oleh Admin</i></button>';
                 } elseif ($data_row->status == 'rejected by innovation admin') {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Reject Admin" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'facilitator\')"><i >Tidak Disetujui oleh Admin</i></button>';
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Tidak Disetujui oleh Admin</i></button>';
                 } elseif ($data_row->status == "replicate") {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" data-bs-toggle="modal" title="Replicate" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Replicate</i></button>';
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Replicate" <i >Replicate</i></button>';
                 } elseif ($data_row->status == "not complete") {
-                    $html .= '<button class="btn btn-default btn-xs" type="button" data-bs-toggle="modal" title="Not Complete" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Not Complete</i></button>';
+                    $html .= '<button class="btn btn-default btn-xs" type="button" title="Not Complete" <i >Not Complete</i></button>';
                 } elseif ($data_row->status == "rollback paper") {
-                    $html .= '<button class="btn btn-default btn-xs" type="button" data-bs-toggle="modal" title="Rollback Paper" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Rollback Paper</i></button>';
+                    $html .= '<button class="btn btn-default btn-xs" type="button" title="Rollback Paper" <i >Rollback Paper</i></button>';
                 } elseif ($data_row->status == "rollback benefit") {
-                    $html .= '<button class="btn btn-default btn-xs" type="button" data-bs-toggle="modal" title="Rollback Benefit" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Rollback Benefit</i></button>';
+                    $html .= '<button class="btn btn-default btn-xs" type="button" title="Rollback Benefit" <i >Rollback Benefit</i></button>';
                 }
 
 
-
+                $html .=  '<button class="btn btn-secondary text-white btn-sm m-2" type="button" data-bs-toggle="modal" title="Lihat Komentar" data-bs-target="#commentModal" onclick="get_comment(' . $data_row->paper_id . ', \'innovation admin\')"><i >Lihat Komentar</i></button>';
                 return $html . '<button class="btn btn-info btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#infoHistory" onclick="get_data_modal_history(' . $data_row->team_id . ')">History</button>';
             });
             $rawColumns[] = 'action';

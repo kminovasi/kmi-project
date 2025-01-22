@@ -42,8 +42,9 @@
 
     <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
     <p>Terimakasih</p>
+    <p>Anda bisa download makalah full paper <a href="{{ $fileUrl }}">disini</a>.</p>
 
-    <p></p>
+
     <p>Hormat kami,<br>Unit KMI</p>
 </body>
 

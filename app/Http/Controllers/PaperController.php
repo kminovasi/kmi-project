@@ -1055,20 +1055,85 @@ class PaperController extends Controller
 
     public function approveBenefitGM(Request $request, $id)
     {
-        // dd($request->all());
         $paper = Paper::with('team')->findOrFail($id);
-        $paper->status = $request->status;
-        $paper->updateAndHistory([], $request->status);
+        $revisionType = $request->input('revision_type');
 
-        Comment::updateOrCreate(
-            [
-                'paper_id' => $id,
-                'writer' => "General Manager on Benefit",
-            ],
-            [
-                'comment' => $request->comment
-            ]
-        );
+        if (is_array($revisionType)) {
+            // Cek jika array mengandung nilai "benefit"
+            if (in_array('benefit', $revisionType)) {
+                $paper->status = 'revision benefit by general manager';
+                $paper->updateAndHistory([], 'revision benefit by general manager');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "General Manager Revisi Benefit",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+            }
+
+            // Cek jika array mengandung nilai "paper"
+            if (in_array('paper', $revisionType)) {
+                // Lakukan sesuatu jika ada "paper"
+                $paper->status = 'revision paper by general manager';
+                $paper->updateAndHistory([], 'revision paper by general manager');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "General Manager Revisi Makalah",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+                if ($request->has('revision_steps')) {
+                    // Revisi langkah: kosongkan langkah yang dipilih
+                    foreach ($request->revision_steps as $step) {
+                        $stepColumn = 'step_' . $step;
+                        $paper->$stepColumn = null; // Set langkah ke null
+                        $paper->full_paper = null;
+                    }
+                } elseif ($request->has('full_paper')) {
+                    // Revisi full_paper: kosongkan full_paper
+                    $paper->full_paper = null;
+                }
+            }
+
+            // Cek jika array hanya memiliki 2 elemen tertentu
+            if ($revisionType === ['benefit', 'paper']) {
+                $paper->status = 'revision paper and benefit by general manager';
+                $paper->updateAndHistory([], 'revision paper and benefit by general manager');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "General Manager Revisi Makalah dan Benefit",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+
+                if ($request->has('revision_steps')) {
+                    // Revisi langkah: kosongkan langkah yang dipilih
+                    foreach ($request->revision_steps as $step) {
+                        $stepColumn = 'step_' . $step;
+                        $paper->$stepColumn = null; // Set langkah ke null
+                        $paper->full_paper = null;
+                    }
+                } elseif ($request->has('full_paper')) {
+                    // Revisi full_paper: kosongkan full_paper
+                    $paper->full_paper = null;
+                }
+            }
+        } else {
+            $paper->status = $request->status;
+            $paper->updateAndHistory([], $request->status);
+        }
 
         $benefitFinancial = $paper->financial;
         $benefitPotential = $paper->potential_benefit;
@@ -1102,7 +1167,7 @@ class PaperController extends Controller
             // Membuat objek EmailApproval
             $mail = new EmailApprovalBenefit(
                 $paper,
-                $request->status,
+                $paper->status,
                 $paper->innovation_title,
                 $paper->team->team_name,
                 $gmData,

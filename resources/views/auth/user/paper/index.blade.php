@@ -271,75 +271,9 @@
     </div>
     <x-paper.approve-fasil-modal />
 
+    <x-paper.approve-benefit-modal-by-fasil />
+    <x-paper.approve-benefit-by-general-manager />
 
-
-    {{-- modal untuk approval benefit fasilitator --}}
-    <div class="modal fade" id="accFasilitatorBnefit" tabindex="-1" role="dialog"
-        aria-labelledby="accFasilitatorBnefit" aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accFasilitatorBnefitTitle">Approval Benefit oleh Fasilitator</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="accFasilBenefitForm" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <select class="form-select" aria-label="Default select example" name="status"
-                        id="change_benefit_by_fasil" require>
-                        <option selected>-</option>
-                        <option value="accepted benefit by facilitator">Accept</option>
-                        <option value="rejected benefit by facilitator">Reject</option>
-                    </select>
-                    <div class="modal-body">
-                        <div class="mb">
-                            <label class="mb-1" for="commentFacilitator">Berikan Komentar</label>
-                            <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- modal untuk approval benefit GM --}}
-    <div class="modal fade" id="accGM" tabindex="-1" role="dialog" aria-labelledby="accGMTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="accGMTitle">Approval Benefit oleh General Manager</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="accGmBenefitForm" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <select class="form-select" aria-label="Default select example" name="status"
-                        id="change_benefit_by_gm" require>
-                        <option selected>-</option>
-                        <option value="accepted benefit by general manager">Accept</option>
-                        <option value="rejected benefit by general manager">Reject</option>
-                    </select>
-                    <div class="modal-body">
-                        <div class="mb">
-                            <label class="mb-1" for="commentGM">Berikan Komentar</label>
-                            <textarea name="comment" class="form-control" id="commentGMr" cols="30" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal"> Approval</button>
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     {{-- modal untuk approval admin --}}
     <div class="modal fade" id="accAdmin" tabindex="-1" role="dialog" aria-labelledby="accAdminTitle"
@@ -453,36 +387,7 @@
         </div>
     </div>
 
-    <!-- Modal untuk Melihat Komentar -->
-    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header " style="background-color: #eb4a3a">
-                    <h5 class="modal-title text-white fw-bold" id="commentTitle">Komentar</h5>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="fw-bold mb-2" for="commentList">Semua Komentar</label>
-                        <div id="commentList" class="bg-light p-3 rounded border overflow-auto"
-                            style="max-height: 400px;">
-                            <!-- List komentar akan dimasukkan di sini melalui JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer d-flex justify-content-end">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <x-paper.comment-modal />
 
     {{-- modal untuk info update --}}
     <div class="modal fade" id="updateData" tabindex="-1" role="dialog" aria-labelledby="updateDataTitle"
@@ -557,6 +462,8 @@
             </div>
         </div>
     </div>
+
+
 
 
     {{-- modal untuk info history --}}
@@ -1024,35 +931,6 @@
         }
     }
 
-
-    function approve_benefit_fasil_modal(idPaper){
-        // alert(idPapern)
-        var form = document.getElementById('accFasilBenefitForm');
-
-        var url = `{{ route('paper.approveBenefitFasil', ['id' => ':idPaper']) }}`;
-        url = url.replace(':idPaper', idPaper);
-        form.action = url;
-    }
-    $('#accFasilitatorBnefit').on('hidden.bs.modal', function () {
-        var form = document.getElementById('accFasilBenefitForm');
-
-        form.removeAttribute('action');
-    });
-
-    function approve_benefit_gm_modal(idPaper){
-        // alert(idPapern)
-        var form = document.getElementById('accGmBenefitForm');
-
-        var url = `{{ route('paper.approveBenefitGM', ['id' => ':idPaper']) }}`;
-        url = url.replace(':idPaper', idPaper);
-        form.action = url;
-    }
-    $('#accGM').on('hidden.bs.modal', function () {
-        var form = document.getElementById('accGmBenefitForm');
-
-        form.removeAttribute('action');
-    });
-
     function approve_admin_modal(idPaper, idTeam){
         // alert(idPapern)
         var form = document.getElementById('accAdminForm');
@@ -1305,70 +1183,6 @@
         })
         return result_data
     }
-
-function get_comment(idPaper, writer) {
-    $.ajax({
-        url: '/api/comments/by-paper',
-        type: 'GET',
-        data: {
-            paper_id: idPaper
-        },
-        success: function (data) {
-            let commentList = document.getElementById('commentList');
-            let commentTitle = document.getElementById('commentTitle');
-
-            // Kosongkan konten sebelumnya
-            commentList.innerHTML = "";
-
-            if (data.length > 0) {
-                // Buat elemen untuk setiap komentar
-                data.forEach(comment => {
-                    let commentItem = document.createElement('div');
-                    commentItem.className = 'mb-3 p-2 rounded border bg-white';
-                    commentItem.innerHTML = `
-                        <strong>${comment.writer}</strong>
-                        <p class="mb-0 text-muted">${comment.comment}</p>
-                    `;
-                    commentList.appendChild(commentItem);
-                });
-            } else {
-                // Tampilkan pesan jika tidak ada komentar
-                commentList.innerHTML = `
-                    <div class="text-muted text-center">
-                        <em>No comments found for this paper.</em>
-                    </div>
-                `;
-            }
-
-            commentTitle.innerHTML = `List Komentar`;
-        },
-        error: function (xhr) {
-            console.error('Failed to fetch comments:', xhr);
-            document.getElementById('commentList').innerHTML = `
-                <div class="text-danger text-center">
-                    <em>Failed to load comments.</em>
-                </div>
-            `;
-        }
-    });
-}
-
-$('#commentModal').on('hidden.bs.modal', function () {
-    document.getElementById('commentList').innerHTML = "";
-    document.getElementById('commentTitle').innerHTML = "";
-});
-
-
-$('#commentModal').on('hidden.bs.modal', function () {
-    document.getElementById('comment').value = "";
-    document.getElementById('commentTitle').innerHTML = "";
-});
-
-
-    $('#commentModal').on('hidden.bs.modal', function () {
-        document.getElementById('comment').value = ""
-        document.getElementById('commentTitle').innerHTML = ""
-    });
 
     function get_data_modal_update(team_id){
 

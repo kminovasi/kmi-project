@@ -23,7 +23,8 @@ use Yajra\DataTables\Facades\DataTables;
 class BenefitController extends Controller
 {
     //
-    public function getAllCustomBenefitFinancial(){
+    public function getAllCustomBenefitFinancial()
+    {
         $data = CustomBenefitFinancial::all();
         return response()->json($data);
     }
@@ -123,8 +124,24 @@ class BenefitController extends Controller
                     ->exists() && !$isWinnerStatusTeam; // Tambahkan pengecekan NOT isWinnerStatusTeam
             }
         }
+        $is_disabled = true;
 
-        return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName'));
+        if (($row->status_rollback == 'rollback benefit' ||
+                $row->status == 'accepted paper by facilitator' ||
+                $row->status == 'upload benefit' ||
+                $row->status == 'rejected benefit by facilitator' ||
+                $row->status == 'revision benefit by facilitator' ||
+                $row->status == 'rejected benefit by general manager' ||
+                $row->status == 'revision benefit by general manager' ||
+                $row->status == 'revision paper and benefit by general manager') &&
+            $is_owner
+        ) {
+            $is_disabled = false;
+        } else {
+            $is_disabled = true;
+        }
+
+        return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName', 'is_disabled'));
     }
 
     public function storeBenefitUser(Request $request, $id)
@@ -132,11 +149,10 @@ class BenefitController extends Controller
         $validatedData = $request->validate([
             'oldGm' => 'required_without:gm_id', // gmOld harus ada jika gm_id tidak ada
             'gm_id' => 'required_without:oldGm', // gm_id harus ada jika gmOld tidak ada
-             'bencus.*' => 'required|min:75'
+            'bencus.*' => 'nullable'
         ], [
             'oldGm.required_without' => 'GM harus di isi.',
             'gm_id.required_without' => 'GM harus di isi.',
-            'bencus.*.min' => 'Field benefit custom harus memiliki minimal 75 karakter.',
         ]);
 
         $record = Paper::with('team')->findOrFail($id);
@@ -319,6 +335,4 @@ class BenefitController extends Controller
         }
         return view('dashboard.non-financial-benefit-table', compact('customBenefitPotentialId', 'customBenefitPotentialName'));
     }
-
-
 }

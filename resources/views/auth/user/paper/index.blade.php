@@ -273,59 +273,7 @@
 
     <x-paper.approve-benefit-modal-by-fasil />
     <x-paper.approve-benefit-by-general-manager />
-
-
-    {{-- modal untuk approval admin --}}
-    <div class="modal fade" id="accAdmin" tabindex="-1" role="dialog" aria-labelledby="accAdminTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addBenefitTitle">Approval oleh Admin</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="accAdminForm" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <input type="text" name="evaluatedBy" value="innovation admin" hidden>
-
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="mb-1" for="status_by_admin">Status</label>
-                            <select class="form-select" aria-label="Default select example" name="status"
-                                id="status_by_admin" require>
-                                <option selected>-</option>
-                                <option value="accept">Accept</option>
-                                <option value="reject">Reject</option>
-                                <option value="replicate">Replicate</option>
-                                <option value="not complete">Not Complete</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <div id="registEvent">
-
-                            </div>
-                        </div>
-
-
-                        <!-- <input type="text" name="status" value="accept" hidden> -->
-
-                        <div class="mb">
-                            <label class="mb-1" for="commentFacilitator">Komentar</label>
-                            <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton"
-                            disabled> Approval</button>
-
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <x-paper.approve-admin-modal />
 
     {{-- Modal untuk upload beberapa dokumen --}}
     <div class="modal fade" id="uploadDocument" tabindex="-1" role="dialog" aria-labelledby="uploadDocumentTitle"
@@ -918,32 +866,6 @@
         remove_detail()
     });
 
-    async function check_admin_approve(idTeam){
-        statusSelectField = document.getElementById('status_by_admin')
-        adminButton = document.getElementById('accAdminButton')
-
-        data_event = await check_if_accept(idTeam)
-
-        if(statusSelectField.value != "-" && data_event[0].status != 'not active' && data_event[0].event_name != undefined){
-            adminButton.removeAttribute("disabled");
-        }else{
-            adminButton.setAttribute("disabled", true);
-        }
-    }
-
-    function approve_admin_modal(idPaper, idTeam){
-        // alert(idPapern)
-        var form = document.getElementById('accAdminForm');
-        statusSelectField = document.getElementById('status_by_admin')
-
-        var url = `{{ route('paper.approveadmin', ['id' => ':idPaper']) }}`;
-        url = url.replace(':idPaper', idPaper);
-        form.action = url;
-
-        // check_admin_approve()
-        statusSelectField.setAttribute('onchange', `check_admin_approve(${idTeam})`)
-    }
-
     function upload_document_modal(idPaper){
 
         document.getElementById("paper_id_input").value = idPaper;
@@ -1070,92 +992,6 @@
             }
         });
     }
-    function check_if_accept(idTeam) {
-    return new Promise((resolve, reject) => {
-        const registEventDiv = $('#registEvent'); // Gunakan jQuery untuk memilih elemen
-        const statusSelectField = $('#status_by_admin'); // Gunakan jQuery untuk memilih elemen
-
-        if (statusSelectField.val() === 'accept') {
-            // Ambil data tim menggunakan fungsi AJAX yang sudah ada
-            const data_team = get_single_data_from_ajax('teams', { id: idTeam });
-
-            if (!data_team || !data_team.company_code) {
-                registEventDiv.html(`
-                    <div class="mb-3">
-                        <p>Data tim tidak valid atau tidak terhubung ke perusahaan.</p>
-                    </div>
-                `);
-                reject('Data tim tidak valid atau tidak terhubung ke perusahaan.');
-                return;
-            }
-
-            // Bangun URL secara dinamis dengan company_code dari data tim
-            const url = `/user/events/${data_team.company_code}`;
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Tambahkan CSRF token jika diperlukan
-                },
-                type: 'GET',
-                url: url,
-                dataType: 'json',
-                success: function (data) {
-                    if (data.success && data.events.length > 0) {
-                        const options = data.events.map(event =>
-                            `<option value="${event.id}">${event.event_name} - ${event.year}</option>`
-                        ).join('');
-
-                        // Tambahkan elemen dropdown baru ke dalam DOM
-                        const newInput = `
-                            <div class="mb-3">
-                                <label class="mb-1" for="id_eventID">Event - Year</label>
-                                <select class="form-select" aria-label="Default select example"
-                                    name="event_id" id="id_eventID" required>
-                                    <option value="">Pilih Event</option>
-                                    ${options}
-                                </select>
-                            </div>
-                        `;
-
-                        registEventDiv.html(newInput); // Ganti konten div dengan elemen baru
-                        resolve(data.events); // Kembalikan data events
-                    } else {
-                        registEventDiv.html(`
-                            <div class="mb-3">
-                                <p>Tidak ada event yang tersedia untuk perusahaan Anda.</p>
-                            </div>
-                        `);
-                        resolve([]); // Kembalikan array kosong jika tidak ada event
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching events:', xhr.responseText);
-                    registEventDiv.html(`
-                        <div class="mb-3">
-                            <p>Terjadi kesalahan saat memuat event.</p>
-                        </div>
-                    `);
-                    reject('Terjadi kesalahan saat memuat event.');
-                }
-            });
-        } else {
-            registEventDiv.html(""); // Kosongkan konten jika status bukan "accept"
-            resolve(null); // Kembalikan null jika status bukan "accept"
-        }
-    });
-}
-
-
-
-
-    $('#accAdmin').on('hidden.bs.modal', function () {
-        var form = document.getElementById('accAdminForm');
-
-        form.removeAttribute('action');
-
-        document.getElementById('registEvent').innerHTML = ""
-        document.getElementById('status_by_admin').value = '-'
-    });
 
     function get_single_data_from_ajax(table, data_where, limit_page=1) {
         let result_data

@@ -492,7 +492,7 @@ class QueryController extends Controller
                         }
                     }
 
-                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator' || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager')) {
+                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator' || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision paper by innovation admin')) {
                         if ($isOwner || $isSuperadmin) {
                             $html .= "
                                 <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Fiksasi Makalah</button>
@@ -525,7 +525,7 @@ class QueryController extends Controller
                     }
                 } else {
                     if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper" || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager') {
+                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper" || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision benefit by innovation admin') {
                             return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
                         } else {
                             return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
@@ -613,9 +613,13 @@ class QueryController extends Controller
                 } elseif ($data_row->status == 'revision paper and benefit by general manager') {
                     $html .= '<button class="btn btn-pink btn-xs" type="button" title="Reject GM"><i >Makalah dan Benefit mendapatkan revisi dari General Manager</i></button>';
                 } elseif ($data_row->status == 'accepted by innovation admin') {
-                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc Admin"><i >Benefit Disetujui Oleh  Admin, lanjut ikuti event</i></button>';
-                } elseif ($data_row->status == 'rejected by innovation admin') {
-                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Benefit tidak Disetujui Oleh Admin</i></button>';
+                    $html .= '<button class="btn btn-success btn-xs" type="button" title="Acc Admin"><i >Disetujui Oleh  Admin, lanjut ikuti event</i></button>';
+                } elseif ($data_row->status == 'revision benefit by innovation admin') {
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Makalah tidak Disetujui Oleh Admin</i></button>';
+                } elseif ($data_row->status == 'revision paper and benefit by innovation admin') {
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Makalah dan benefit mendapatkan revisi dari Admin</i></button>';
+                } elseif ($data_row->status == 'revision paper by innovation admin') {
+                    $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Makalah mendapatkan revisi dari Admin</i></button>';
                 } elseif ($data_row->status == 'rejected by innovation admin') {
                     $html .= '<button class="btn btn-danger btn-xs" type="button" title="Reject Admin"><i >Tidak Disetujui oleh Admin</i></button>';
                 } elseif ($data_row->status == "replicate") {

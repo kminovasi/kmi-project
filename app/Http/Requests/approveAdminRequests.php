@@ -25,7 +25,7 @@ class approveAdminRequests extends FormRequest
     {
         return [
             "evaluatedBy" => "required|in:innovation admin",
-            "status"    => "required|in:accept,reject,replicate,not complete",
+            "status"    => "required|in:accept,reject,revision",
         ];
     }
 }

@@ -1256,15 +1256,89 @@ class PaperController extends Controller
     public function approvePaperAdmin(Request $request, $id)
     {
         $paper = Paper::with('team')->findOrFail($id);
-        $status_paper_before = $paper->status;
-        if ($request->status == "accept" || $request->status == "reject") {
-            $paper->status = $request->status . "ed by " . $request->evaluatedBy;
-            $msg = "change to " . $request->status . "ed by " . $request->evaluatedBy;
+        $revisionType = $request->input('revision_type');
+
+        if (is_array($revisionType)) {
+            // Cek jika array mengandung nilai "benefit"
+            if (in_array('benefit', $revisionType)) {
+                $paper->status = 'revision benefit by innovation admin';
+                $paper->updateAndHistory([], 'revision benefit by innovation admin');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "Admin  Revisi Benefit",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+            }
+
+            // Cek jika array mengandung nilai "paper"
+            if (in_array('paper', $revisionType)) {
+                // Lakukan sesuatu jika ada "paper"
+                $paper->status = 'revision paper by innovation admin';
+                $paper->updateAndHistory([], 'revision paper by innovation admin');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "Admin Revisi Makalah",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+                if ($request->has('revision_steps')) {
+                    // Revisi langkah: kosongkan langkah yang dipilih
+                    foreach ($request->revision_steps as $step) {
+                        $stepColumn = 'step_' . $step;
+                        $paper->$stepColumn = null; // Set langkah ke null
+                        $paper->full_paper = null;
+                    }
+                } elseif ($request->has('full_paper')) {
+                    // Revisi full_paper: kosongkan full_paper
+                    $paper->full_paper = null;
+                }
+            }
+
+            // Cek jika array hanya memiliki 2 elemen tertentu
+            if ($revisionType === ['benefit', 'paper']) {
+                $paper->status = 'revision paper and benefit by innovation admin';
+                $paper->updateAndHistory([], 'revision paper and benefit by innovation admin');
+
+                Comment::updateOrCreate(
+                    [
+                        'paper_id' => $id,
+                        'writer' => "Admin Revisi Makalah dan Benefit",
+                    ],
+                    [
+                        'comment' => $request->comment
+                    ]
+                );
+
+                if ($request->has('revision_steps')) {
+                    // Revisi langkah: kosongkan langkah yang dipilih
+                    foreach ($request->revision_steps as $step) {
+                        $stepColumn = 'step_' . $step;
+                        $paper->$stepColumn = null; // Set langkah ke null
+                        $paper->full_paper = null;
+                    }
+                } elseif ($request->has('full_paper')) {
+                    // Revisi full_paper: kosongkan full_paper
+                    $paper->full_paper = null;
+                }
+            }
         } else {
-            $paper->status = $request->status;
-            $msg = "change to " . $request->status . " by " . $request->evaluatedBy;
+            if ($request->status == "accept" || $request->status == "reject") {
+                $paper->status = $request->status . "ed by " . $request->evaluatedBy;
+                $msg = "change to " . $request->status . "ed by " . $request->evaluatedBy;
+                $paper->updateAndHistory([], $msg);
+            }
         }
-        $paper->updateAndHistory([], $msg);
+
+
 
         Comment::UpdateOrCreate([
             'paper_id' => $id,
@@ -1273,7 +1347,7 @@ class PaperController extends Controller
             'comment' => $request->comment
         ]);
 
-        if ($request->status == "accept" && $status_paper_before != 'rollback') {
+        if ($request->status == "accept") {
             $team_id = Paper::where('id', $id)->pluck('team_id')[0];
             $team = Team::findOrFail($team_id);
             $event_id = Event::where('id', $request->event_id)->pluck('id')[0];
@@ -1318,10 +1392,6 @@ class PaperController extends Controller
                     'stage' => 'on desk'
                 ]);
             }
-
-            // Team::where('id', $team_id)->update([
-            //     'status_lomba' => "AP"
-            // ]);
         }
 
         $benefitFinancial = $paper->financial;
@@ -1331,17 +1401,6 @@ class PaperController extends Controller
 
         // Pastikan relasi Team sudah dimuat dengan benar
         if ($paper->team) { //email terkirim ke admin yg terassign di event yg sedang berlangsung
-            //$event_id = Event::where('id', $request->event_id)->pluck('id')[0];
-            // $eventId = $paper->event_id; // assume you have the event ID
-            // $companyCode = Event::find($eventId)->company_code; // get the company code of the event
-
-            // $admins = User::where('role', 'Admin')
-            //               ->whereHas('events', function ($query) use ($eventId, $companyCode) {
-            //                   $query->where('event_id', $eventId)
-            //                         ->where('company_code', $companyCode);
-            //               })
-            //               ->select('name', 'email')
-            //               ->get();
 
             $gmId = PvtMember::where('team_id', $paper->team->id)
                 ->where('status', 'gm')
@@ -1368,7 +1427,7 @@ class PaperController extends Controller
             // Membuat objek EmailApproval
             $mail = new EmailApprovalFinal(
                 $paper,
-                $request->status,
+                $paper->status,
                 $paper->innovation_title,
                 $paper->team->team_name,
                 $gmData,

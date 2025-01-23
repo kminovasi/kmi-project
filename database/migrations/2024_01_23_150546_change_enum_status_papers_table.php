@@ -34,12 +34,10 @@ return new class extends Migration
                 'revision benefit by general manager',
                 'revision paper and benefit by general manager',
                 'accepted by innovation admin',
-                'revision by innovation admin',
+                'revision paper by innovation admin',
+                'revision benefit by innovation admin',
+                'revision paper and benefit by innovation admin',
                 'rejected by innovation admin',
-                'replicate',
-                'not complete',
-                'rollback paper',
-                'rollback benefit',
             ])->default('not finish');
         });
     }

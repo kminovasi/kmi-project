@@ -133,7 +133,8 @@ class BenefitController extends Controller
                 $row->status == 'revision benefit by facilitator' ||
                 $row->status == 'rejected benefit by general manager' ||
                 $row->status == 'revision benefit by general manager' ||
-                $row->status == 'revision paper and benefit by general manager') &&
+                $row->status == 'revision paper and benefit by general manager' ||
+                $row->status == 'revision paper and benefit by innovation admin' || $row->status == 'revision benefit by innovation admin') &&
             $is_owner
         ) {
             $is_disabled = false;

@@ -12,9 +12,8 @@ use Illuminate\Support\Facades\DB;
 class CvController extends Controller
 {
     public function index()
-{
-    // get current user employee_id
-    $employee = Auth::user();
+    {
+        $employee = Auth::user();
 
     $innovations = DB::table('pvt_members')
         ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
@@ -50,6 +49,7 @@ class CvController extends Controller
     return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
 }
 
+       
     public function generateCertificate(Request $request)
     {
 

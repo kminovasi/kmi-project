@@ -621,6 +621,10 @@
             "scrollX": true,
             "scrollY": true,
             "stateSave": true,
+            "fixedHeader": {
+                header: true,
+                headerOffset: 60
+            }
         });
     });
 </script>
@@ -692,6 +696,10 @@
             "scrollX": true,
             "scrollY": true,
             "stateSave": true,
+            "fixedHeader": {
+                header: true,
+                headerOffset: 60
+            }
         });
 
         $('#filter-company').on('change', function () {

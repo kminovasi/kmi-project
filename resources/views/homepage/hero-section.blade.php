@@ -1,5 +1,5 @@
-<section class="hero-section d-flex align-items-center bg-light" style="height: 80vh;">
-    <div class="container">
+<section class="hero-section d-flex align-items-center bg-light " >
+    <div class="container mt-5 py-5">
         <div class="row align-items-center">
             <!-- Left Content -->
             <div class="col-lg-6 text-center text-lg-start">

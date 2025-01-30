@@ -1,8 +1,9 @@
 <section class=" py-5 bg-light">
     <div class="container">
-        <div class="row g-0">
-            <div class="col-md-6">
-                <img class="img-fluid rounded-start" src="{{ asset('assets/login-frame.png') }}" alt="content_1">
+        <div class="row g-0 h-100">
+            <div class="col-md-6 h-100" >
+                <img class="img-fluid rounded-start" src="{{ asset('assets/content.jpg') }}"
+                alt="content_1">
             </div>
             <div class="col-md-6 p-5 text-white rounded-end" style="background-color: #a00000">
                 <h2 class="display-5 fw-bold text-white mb-3 fst-italic">

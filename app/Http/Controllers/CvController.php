@@ -16,7 +16,7 @@ class CvController extends Controller
     // get current user employee_id
     $employee = Auth::user();
 
-    $innovations = \DB::table('pvt_members')
+    $innovations = DB::table('pvt_members')
         ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
         ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
         ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -81,7 +81,7 @@ class CvController extends Controller
         $team = Team::findOrFail($id);
 
         // Ambil tim berdasarkan team_id
-        $papers = \DB::table('teams')
+        $papers = DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')

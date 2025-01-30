@@ -73,7 +73,8 @@
                                     <p class="form-control-plaintext">{{ $paper->team->team_name }}</p>
                                 </div>
                                 <div class="mb-3">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailTeamMember">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#detailTeamMember">
                                         Detail Team Member
                                     </button>
 
@@ -146,7 +147,7 @@
                                     <label class="form-label fw-bold">Full Paper</label>
                                     @if ($paper->full_paper && !str_contains($paper->full_paper, '/AP/'))
                                         <div>
-                                            <a href="{{ asset('storage/' . $paper->full_paper) }}"
+                                            <a href="{{ asset(Storage::url(mb_substr($paper->full_paper, 3))) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
                                                 <i class="fas fa-file-pdf"></i> View Full Paper
                                             </a>
@@ -195,46 +196,50 @@
                                 </div>
                             </div>
                         </div>
-                        @if($eventType !== "AP" && $eventType !== "internal")
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <form id="updateStatusForm"
-                                    action="{{ route('event-team.updatePaperStatus', ['id' => $paper->id, 'eventId' => $eventId]) }}"
-                                    method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Update Status</label>
-                                        <select name="status_event" id="statusSelect" class="form-select">
-                                            <option value="accept_group"
-                                                {{ $paper->status_event == 'accept_group' ? 'selected' : '' }}>Accept Group
-                                            </option>
-                                            <option value="reject_group"
-                                                {{ $paper->status_event == 'reject_group' ? 'selected' : '' }}>Reject Group
-                                            </option>
-                                            <option value="accept_national"
-                                                {{ $paper->status_event == 'accept_national' ? 'selected' : '' }}>Accept
-                                                National</option>
-                                            <option value="reject_national"
-                                                {{ $paper->status_event == 'reject_national' ? 'selected' : '' }}>Reject
-                                                National</option>
-                                            <option value="accept_international"
-                                                {{ $paper->status_event == 'accept_international' ? 'selected' : '' }}>
-                                                Accept International</option>
-                                            <option value="reject_international"
-                                                {{ $paper->status_event == 'reject_international' ? 'selected' : '' }}>
-                                                Reject International</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" id="updateStatusBtn" class="btn btn-primary">Update
-                                        Status</button>
-                                    <div class="spinner-border text-primary" id="loadingSpinner" style="display: none;"
-                                        role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </form>
+                        @if ($eventType !== 'AP' && $eventType !== 'internal')
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <form id="updateStatusForm"
+                                        action="{{ route('event-team.updatePaperStatus', ['id' => $paper->id, 'eventId' => $eventId]) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Update Status</label>
+                                            <select name="status_event" id="statusSelect" class="form-select">
+                                                <option value="accept_group"
+                                                    {{ $paper->status_event == 'accept_group' ? 'selected' : '' }}>Accept
+                                                    Group
+                                                </option>
+                                                <option value="reject_group"
+                                                    {{ $paper->status_event == 'reject_group' ? 'selected' : '' }}>Reject
+                                                    Group
+                                                </option>
+                                                <option value="accept_national"
+                                                    {{ $paper->status_event == 'accept_national' ? 'selected' : '' }}>
+                                                    Accept
+                                                    National</option>
+                                                <option value="reject_national"
+                                                    {{ $paper->status_event == 'reject_national' ? 'selected' : '' }}>
+                                                    Reject
+                                                    National</option>
+                                                <option value="accept_international"
+                                                    {{ $paper->status_event == 'accept_international' ? 'selected' : '' }}>
+                                                    Accept International</option>
+                                                <option value="reject_international"
+                                                    {{ $paper->status_event == 'reject_international' ? 'selected' : '' }}>
+                                                    Reject International</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" id="updateStatusBtn" class="btn btn-primary">Update
+                                            Status</button>
+                                        <div class="spinner-border text-primary" id="loadingSpinner"
+                                            style="display: none;" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                 </div>
@@ -242,7 +247,7 @@
         </div>
     </div>
     <div class="modal fade" id="detailTeamMember" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle"
-    aria-hidden="true">
+        aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -279,8 +284,8 @@
                                     <h5 class="m-0">Foto Tim</h5>
                                 </div>
                                 <div class="card-body text-center">
-                                    <img src="{{ asset('storage/'.$paper->proof_idea) ?? '' }}" id="idFotoTim" alt="Foto Tim"
-                                        class="img-fluid rounded-3 shadow-sm" />
+                                    <img src="{{ asset('storage/' . $paper->proof_idea) ?? '' }}" id="idFotoTim"
+                                        alt="Foto Tim" class="img-fluid rounded-3 shadow-sm" />
                                 </div>
                             </div>
                         </div>

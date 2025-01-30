@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/detail_paper/{team_id}', [PaperController::class, 'detail_paper'])->name('detailpaper');
     });
 
+
     route::prefix('approveadminuery')->name('query.')->group(function () {
         Route::post('/search', [QueryController::class, 'search'])->name('search');
         Route::post('/autocomplete', [QueryController::class, 'autocomplete'])->name('autocomplete');
@@ -188,6 +189,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/get_GM', [QueryController::class, 'get_GM'])->name('get_GM');
         Route::post('/get_BOD', [QueryController::class, 'get_BOD'])->name('get_BOD');
     });
+    Route::get('/query/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
 
     Route::prefix('assessment')->name('assessment.')->group(function () {
         Route::get('/', [AssessmentController::class, 'index'])->name('index.juri');

@@ -129,14 +129,21 @@
                     <h5 class="modal-title fw-bold d-flex align-items-center" id="exampleModalLabel">
                         <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Detail Inovasi</span>
                     </h5>
-                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body bg-light">
                     <div class="row">
                         @foreach ($categories as $category)
                             @php
-                                $colors = ['text-success', 'text-warning', 'text-info', 'text-primary', 'text-secondary'];
+                                $colors = [
+                                    'text-success',
+                                    'text-warning',
+                                    'text-info',
+                                    'text-primary',
+                                    'text-secondary',
+                                ];
                                 $icons = ['zap', 'layers', 'box', 'shield', 'star'];
                                 $color = $colors[$loop->index % count($colors)];
                                 $icon = $icons[$loop->index % count($icons)];
@@ -204,7 +211,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi Kategori IDEA BOX
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi
+                            Kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $ideaBox }}
@@ -227,14 +235,16 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="ideaBoxModal" tabindex="-1" aria-labelledby="ideaBoxModalLabel" aria-hidden="true">
+    <div class="modal fade" id="ideaBoxModal" tabindex="-1" aria-labelledby="ideaBoxModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
                 <div class="modal-header text-white">
                     <h5 class="modal-title fw-bold d-flex align-items-center" id="ideaBoxModalLabel">
                         <i class="fa-solid fa-lightbulb me-2"></i> <span class="fw-bold">Detail Idea Box</span>
                     </h5>
-                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body bg-light">
@@ -339,7 +349,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Laki-laki</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            Inovator Laki-laki</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsMale }}
                             <small class="ms-2">(Orang)</small>
@@ -359,7 +370,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovator Perempuan</div>
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            Inovator Perempuan</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsFemale }}
                             <small class="ms-2">(Orang)</small>
@@ -389,8 +401,8 @@
                 labels: [],
                 datasets: [{
                     data: [
-                        {{ round(($totalInnovatorsMale / $totalInnovators) * 100, 2) }},
-                        {{ round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) }}
+                        {{ $totalInnovators > 0 ? round(($totalInnovatorsMale / $totalInnovators) * 100, 2) : 0 }},
+                        {{ $totalInnovators > 0 ? round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) : 0 }}
                     ],
                     backgroundColor: ['#198754', '#20c997'],
                 }]
@@ -402,19 +414,24 @@
                         position: 'bottom',
                         labels: {
                             color: '#fff',
-                            font: { size: 15 }
+                            font: {
+                                size: 15
+                            }
                         }
                     },
                     datalabels: {
                         color: '#fff',
-                        font: { size: 20, weight: 'bold' },
+                        font: {
+                            size: 20,
+                            weight: 'bold'
+                        },
                         formatter: (value) => `${value}%`, // Menampilkan persentase di dalam chart
                         anchor: 'bottom',
                         align: 'bottom'
                     },
                     tooltip: {
                         enabled: false
-                          // Nonaktifkan tooltip jika tidak dibutuhkan
+                        // Nonaktifkan tooltip jika tidak dibutuhkan
                     }
                 },
                 maintainAspectRatio: false,
@@ -424,4 +441,3 @@
         });
     });
 </script>
-

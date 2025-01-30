@@ -1,5 +1,5 @@
-<section class="hero-section d-flex align-items-center bg-light" style="height: 80vh;">
-    <div class="container">
+<section class="hero-section d-flex align-items-center bg-light " >
+    <div class="container mt-5 py-5">
         <div class="row align-items-center">
             <!-- Left Content -->
             <div class="col-lg-6 text-center text-lg-start">
@@ -20,7 +20,7 @@
             </div>
             <!-- Right Image -->
             <div class="col-lg-6 text-center">
-                <img src="" alt="Innovation" class="img-fluid">
+                <img src="{{ asset('assets/hero.png') }}" alt="Innovation" class="img-fluid">
             </div>
         </div>
     </div>

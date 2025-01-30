@@ -15,42 +15,41 @@ class CvController extends Controller
     {
         $employee = Auth::user();
 
-        $innovations = \DB::table('pvt_members')
-            ->select(
-                'papers.id',
-                'papers.innovation_title',
-                'papers.inovasi_lokasi',
-                'papers.potensi_replikasi',
-                'teams.id as team_id',
-                'teams.team_name',
-                'teams.status_lomba',
-                'categories.category_name as category',
-                'events.event_name',
-                'events.year',
-                \DB::raw('(SELECT company_name FROM companies
-                      JOIN company_event ON companies.id = company_event.company_id
-                      WHERE company_event.event_id = events.id
-                      LIMIT 1) as company_name'),
-                'certificates.template_path as certificate',
-                'pvt_event_teams.status as status',
-                'themes.theme_name',
-                'pvt_event_teams.is_best_of_the_best'
-            )
-            ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
-            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
-            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
-            ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
-            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
-            ->where('pvt_members.employee_id', $employee->employee_id)
-            ->where('pvt_event_teams.status', '=', 'Juara')
-            ->distinct('papers.id');
+    $innovations = DB::table('pvt_members')
+        ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
+        ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
+        ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+        ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
+        ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
+        ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')
+        ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
+        ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
+        ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
+        ->where('pvt_members.employee_id', $employee->employee_id)
+        ->where('pvt_event_teams.status', '=', 'Juara')
+        ->select(
+            'papers.*',
+            'teams.id as team_id',
+            'teams.team_name',
+            'teams.status_lomba',
+            'categories.category_name as category',
+            'events.event_name',
+            'events.year',
+            'companies.company_name',
+            'certificates.template_path as certificate',
+            'pvt_event_teams.status as event_status',
+            'themes.id',
+            'themes.theme_name',
+            'pvt_event_teams.status',
+            'pvt_event_teams.is_best_of_the_best',
+        );
 
-        $innovations = $innovations->paginate(10);
+    $innovations = $innovations->paginate(10);
 
-        return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
-    }
+    return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
+}
+
+       
     public function generateCertificate(Request $request)
     {
 
@@ -82,7 +81,7 @@ class CvController extends Controller
         $team = Team::findOrFail($id);
 
         // Ambil tim berdasarkan team_id
-        $papers = \DB::table('teams')
+        $papers = DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')

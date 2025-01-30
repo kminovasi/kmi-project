@@ -26,3 +26,8 @@ footer {
     border: none !important;
     background-color: transparent;
 }
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #eb4a3a 0%, #ff6b6b 100%);
+    /* Gradient dengan warna primer */
+}

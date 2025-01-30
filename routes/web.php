@@ -83,6 +83,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::get('/my-paper/{teamId}', [ProfileController::class, 'showPaperDetail'])->name('showPaperDetail');
+        Route::post('/my-paper/paper-revision/{teamId}', [ProfileController::class, 'revision'])->name('showPaperDetail.paper-revision');
     });
 
     Route::prefix('paper')->name('paper.')->group(function () {
@@ -138,7 +140,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/detail_paper/{team_id}', [PaperController::class, 'detail_paper'])->name('detailpaper');
     });
 
-    route::prefix('query')->name('query.')->group(function () {
+    route::prefix('approveadminuery')->name('query.')->group(function () {
         Route::post('/search', [QueryController::class, 'search'])->name('search');
         Route::post('/autocomplete', [QueryController::class, 'autocomplete'])->name('autocomplete');
         Route::get('/custom-get', [QueryController::class, 'custom_get'])->name('custom');
@@ -395,8 +397,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/realisasiKaryawanChart', [ChartDashboardController::class, 'realisasiKaryawanChart'])->name('realisasiKaryawanChart');
         Route::get('/benefitTeamChart', [ChartDashboardController::class, 'benefitTeamChart'])->name('benefitTeamChart');
     });
-
-
 });
 
 Route::middleware('auth')->prefix('group-event')->name('group-event.')->group(function () {

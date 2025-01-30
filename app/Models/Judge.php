@@ -21,6 +21,10 @@ class Judge extends Model
     {
         return $this->belongsTo(User::class, 'employee_id');
     }
+    public function userEmployeeId()
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'employee_id');
+    }
 
     // Relasi ke model Event
     public function event()

@@ -38,4 +38,9 @@ class PvtEventTeam extends Model
     {
         return $this->hasMany(SummaryExecutive::class, 'pvt_event_teams_id');
     }
+
+    public function sofi()
+    {
+        return $this->hasOne(NewSofi::class, 'event_team_id', 'id');
+    }
 }

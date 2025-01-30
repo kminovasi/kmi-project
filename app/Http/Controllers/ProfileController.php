@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RevisionNotification;
 use App\Models\Event;
+use App\Models\Paper;
+use App\Models\pvtAssesmentTeamJudge;
+use App\Models\PvtEventTeam;
 use App\Models\PvtMember;
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -10,6 +14,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class ProfileController extends Controller
 {
@@ -24,18 +29,17 @@ class ProfileController extends Controller
 
         // Memuat tim beserta paper dan event
         $teamIds = PvtMember::where('employee_id', $user->employee_id)->pluck('team_id');
-        $teams = Team::with(['paper', 'pvtEventTeams.event'])->whereIn('id', $teamIds)->get();
 
         // Memuat event aktif yang sedang diikuti
         $activeEvents = Event::whereHas('pvtEventTeams', function ($query) use ($teamIds) {
             $query->whereIn('team_id', $teamIds);
         })->where('status', 'active')->get();
 
-        if(Session::get('data_query') != NULL){
+        if (Session::get('data_query') != NULL) {
             $data_query = Session::get('data_query');
             Session::forget('data_query');
             // var_dump(Session('data_query'));
-            $manager = User::where('employee_id',$data_query[0]->manager_id)->first();
+            $manager = User::where('employee_id', $data_query[0]->manager_id)->first();
 
             $_arr = [
                 'name' => $data_query[0]->name,
@@ -49,10 +53,8 @@ class ProfileController extends Controller
                 'section' => $data_query[0]->section_name,
                 'jobLevel' => $data_query[0]->job_level,
             ];
-
-
-        }else{
-            $manager = User::where('employee_id',auth()->user()->manager_id)->first();
+        } else {
+            $manager = User::where('employee_id', auth()->user()->manager_id)->first();
 
             $_arr = [
                 'name' => auth()->user()->name,
@@ -67,72 +69,57 @@ class ProfileController extends Controller
                 'jobLevel' => auth()->user()->job_level,
             ];
         }
-        return view('auth.user.profile.index', compact('user', 'teams', 'activeEvents'))->with($_arr);
+        return view('auth.user.profile.index', compact('user', 'activeEvents', 'teamIds'))->with($_arr);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function showPaperDetail($teamId)
     {
-        //
+        $team = Team::with(['paper', 'pvtEventTeams'])->find($teamId);
+        return view('auth.user.profile.paper-detail', compact('team'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function revision($teamId, Request $request)
     {
-        //
-    }
+        $team = Team::with(['paper', 'pvtEventTeams'])->find($teamId);
+        $event_team_id = $request->pvt_event_team_id;
+        $eventTeam = PvtEventTeam::find($event_team_id);
+        $paper = Paper::find($team->paper->id);
+        $eventType = Event::whereHas('pvtEventTeams', function ($query) use ($teamId) {
+            $query->where('team_id', $teamId);
+        })->first()->type;
+        $stage = "full_paper";
+        $paper->updateAndHistory([
+            $stage => "f: " . $request->file('file_stage')->storeAs(
+                'internal/' . $eventType . '/' . $team->team_name,
+                $stage . "." . $request->file('file_stage')->getClientOriginalExtension(),
+                'public'
+            ),
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        // **Mengambil email admin berdasarkan company_code**
+        $adminEmails = User::where('role', 'Admin')
+            ->where('company_code', $team->company_code)
+            ->pluck('email')
+            ->toArray();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+        // **Mengambil email juri terkait tim ini**
+        $pvtAssememtTeamJudges = pvtAssesmentTeamJudge::where('event_team_id', $event_team_id)
+            ->where('stage', $eventTeam->sofi->last_stage)
+            ->with(['judge' => function ($query) {
+                $query->with(['userEmployeeId' => function ($query) {
+                    $query->select('employee_id', 'email'); // Select only employee_id and email
+                }]);
+            }])
+            ->get();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        // Extract emails and remove duplicates
+        $judgeEmails = $pvtAssememtTeamJudges->pluck('judge.userEmployeeId.email')->filter()->unique()->toArray();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        // **Menggabungkan email admin dan juri**
+        $recipients = array_merge($adminEmails, $judgeEmails);
+
+        // **Mengirim email ke semua penerima**
+        Mail::to($recipients)->send(new RevisionNotification($team));
+        return redirect()->route('profile.showPaperDetail', ['teamId' => $teamId])->with('success', 'Makalah berhasil diperbarui.');
     }
 }

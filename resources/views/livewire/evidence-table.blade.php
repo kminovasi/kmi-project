@@ -82,7 +82,7 @@
                                                 class="dropdown-item" download="{{ $paper->innovation_title }}.pdf">
                                                 <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
                                             </a> --}}
-                                            <a href="{{ route('evidence.download-paper', $paper->id) }}"
+                                            <a href="{{ route('evidence.download-paper', $paper->team_id) }}"
                                                 class="dropdown-item">
                                                 <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
                                             </a>

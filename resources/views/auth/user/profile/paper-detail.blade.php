@@ -69,6 +69,11 @@
                                     <p><strong>Strength:</strong> {{ $eventTeam->sofi->strength }}</p>
                                     <p><strong>Opportunity for Improvement:</strong>
                                         {{ $eventTeam->sofi->opportunity_for_improvement }}</p>
+                                    <a class="btn btn-sm btn-primary text-white"
+                                        href="{{ route('assessment.download.sofi.oda', $eventTeam->id) }}" target="_blank">
+                                        <i class="me-1" data-feather="download"></i>
+                                        Download SOFI
+                                    </a>
                                     <button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal"
                                         data-bs-target="#uploadStep"
                                         onclick="change_url_step({{ $team->paper->id }}, {{ $eventTeam->id }})">Revisi

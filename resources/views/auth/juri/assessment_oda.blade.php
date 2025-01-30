@@ -109,8 +109,13 @@
                     </div>
                     <div class="col-md-5 mb-3">
                         <label class="small mb-1" for="fotoTim">Foto Tim</label>
-                        <img src="{{ route('query.getFile') }}?directory={{ urlencode($datas->proof_idea) }}" id="fotoTim">
+                        <img src="{{ route('query.getFile') }}?directory={{ urlencode($datas->proof_idea) }}"
+                            id="fotoTim">
                     </div>
+                </div>
+                <div class="row mb-3">
+                    <x-assessment.show-full-paper-button :fullPaperPath="$datas->full_paper"
+                        :fullPaperUpdatedAt="$datas->full_paper_updated_at" />
                 </div>
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-6">

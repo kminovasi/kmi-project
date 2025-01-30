@@ -23,4 +23,23 @@ if (!function_exists('getStatusBadgeClass')) {
 
         return $statusColors[$status] ?? 'bg-secondary';
     }
+
+    if (!function_exists('getAssessmentStatusBadgeClass')) {
+        function getAssessmentStatusBadgeClass($status)
+        {
+            $statusColors = [
+                'On Desk' => 'bg-primary',
+                'Presentation' => 'bg-info',
+                'tidak lolos On Desk' => 'bg-danger',
+                'tidak lolos Presentation' => 'bg-danger',
+                'Lolos Presentation' => 'bg-success',
+                'Tidak lolos Caucus' => 'bg-danger',
+                'Caucus' => 'bg-warning',
+                'Presentation BOD' => 'bg-dark',
+                'Juara' => 'bg-success',
+            ];
+
+            return $statusColors[$status] ?? 'bg-secondary';
+        }
+    }
 }

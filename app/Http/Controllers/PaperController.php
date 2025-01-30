@@ -1294,12 +1294,16 @@ class PaperController extends Controller
                     // Revisi langkah: kosongkan langkah yang dipilih
                     foreach ($request->revision_steps as $step) {
                         $stepColumn = 'step_' . $step;
-                        $paper->$stepColumn = null; // Set langkah ke null
-                        $paper->full_paper = null;
+                        $paper->update([
+                            'full_paper' => null,
+                            $stepColumn => null
+                        ]);
                     }
-                } elseif ($request->has('full_paper')) {
+                } elseif ($revisionType === ['paper']) {
                     // Revisi full_paper: kosongkan full_paper
-                    $paper->full_paper = null;
+                    $paper->update([
+                        'full_paper' => null
+                    ]);
                 }
             }
 

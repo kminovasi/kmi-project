@@ -42,22 +42,22 @@ class AssessmentController extends Controller
     //     return view('auth.juri.assessment');
     // }
     public function showTemplate()
-{
-    $checkStatus = Auth::user()->role;
-    $userCompanyCode = Auth::user()->company_code;
+    {
+        $checkStatus = Auth::user()->role;
+        $userCompanyCode = Auth::user()->company_code;
 
-    if ($checkStatus == 'Superadmin') {
-        $events = Event::where('status', '!=', 'finish')->get();
-    } else {
-        $events = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
-            $query->where('company_code', $userCompanyCode);
-        })->where('status', '!=', 'finish')
-          ->where('type', 'AP')
-          ->get();
+        if ($checkStatus == 'Superadmin') {
+            $events = Event::where('status', '!=', 'finish')->get();
+        } else {
+            $events = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
+                $query->where('company_code', $userCompanyCode);
+            })->where('status', '!=', 'finish')
+                ->where('type', 'AP')
+                ->get();
+        }
+
+        return view('auth.admin.assessment.template.index', compact('events'));
     }
-
-    return view('auth.admin.assessment.template.index', compact('events'));
-}
     public function createTemplate()
     {
         // $rows = TemplateAssessmentPoint::get();
@@ -287,7 +287,7 @@ class AssessmentController extends Controller
             ->join('papers', 'papers.team_id', '=', 'teams.id')
             ->join('categories', 'categories.id', '=', 'teams.category_id')
             ->where('pvt_event_teams.id', $id)
-            ->select('team_name', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea')
+            ->select('team_name', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea', 'full_paper', 'full_paper_updated_at')
             ->first();
         // dd($datas);
 
@@ -409,31 +409,43 @@ class AssessmentController extends Controller
                 $previousFullUrl
             );
             $value = $segments[4];
+            $sofi = NewSofi::where('event_team_id', $event_team_id)->first();
+            $sofi->update([
+                'strength' => $request->sofi_strength,
+                'opportunity_for_improvement' => $request->sofi_opportunity,
+                'recommend_category' => $request->recommendation,
+                'suggestion_for_benefit' => $request->suggestion_for_benefit
+            ]);
 
             $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
             if ($value === "assessment-ondesk-value") {
                 $pvtEventTeam->update([
                     'total_score_on_desk' => $this->calculateAverageTotalScore($event_team_id, "on desk")
                 ]);
+                if ($sofi) {
+                    $sofi->update([
+                        'last_stage' => 'on desk'
+                    ]);
+                }
             } elseif ($value === "assessment-presentation-value") {
                 $pvtEventTeam->update([
                     'total_score_presentation' => $this->calculateAverageTotalScore($event_team_id, "presentation")
                 ]);
+                if ($sofi) {
+                    $sofi->update([
+                        'last_stage' => 'presentation'
+                    ]);
+                }
             } elseif ($value === "assessment-caucus-value") {
                 $pvtEventTeam->update([
                     'total_score_caucus' => $this->calculateAverageTotalScore($event_team_id, "presentation")
                 ]);
+                if ($sofi) {
+                    $sofi->update([
+                        'last_stage' => 'caucus'
+                    ]);
+                }
             }
-
-
-            NewSofi::where('event_team_id', $event_team_id)
-                ->update([
-                    'strength' => $request->sofi_strength,
-                    'opportunity_for_improvement' => $request->sofi_opportunity,
-                    'recommend_category' => $request->recommendation,
-                    'suggestion_for_benefit' => $request->suggestion_for_benefit
-                ]);
-
             return redirect()->back()->with('success', 'Submit assessment successfully');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors('Error: ' . $e->getMessage());

@@ -44,6 +44,17 @@ class Paper extends Model
         'created_at'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updating(function ($paper) {
+            if ($paper->isDirty('full_paper')) {
+                $paper->full_paper_updated_at = now();
+            }
+        });
+    }
+
     public function updateAndHistory(array $datas = [], $activity = null)
     {
 

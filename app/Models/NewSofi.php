@@ -14,6 +14,12 @@ class NewSofi extends Model
         'recommend_category',
         'strength',
         'opportunity_for_improvement',
-        'suggestion_for_benefit'
+        'suggestion_for_benefit',
+        'last_stage',
     ];
+
+    public function eventTeam()
+    {
+        return $this->belongsTo(PvtEventTeam::class, 'event_team_id', 'id');
+    }
 }

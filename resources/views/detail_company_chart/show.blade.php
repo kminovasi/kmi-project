@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <x-detail-company-chart.total-custom-benefit :company-id="$company->id" />
+                {{-- <x-detail-company-chart.total-custom-benefit :company-id="$company->id" /> --}}
             </div>
         </div>
         <div class="row mt-4">

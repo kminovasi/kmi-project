@@ -2552,8 +2552,9 @@ class QueryController extends Controller
             $rawColumns[] = 'Total';
             $dataTable->addColumn('Total', function ($data_row) {
                 $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
+                $description = 'Nilai akhir dari keputusan BOD';
                 if ($pvtEventTeam->final_score !== null) {
-                    return '<input style="border: none;" class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
+                    return '<input style="border: none;" class="form-control small-input text-center" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
                 } else {
                     return '<input style="border: none;" class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->total_score_caucus . '" readonly>';
                 }

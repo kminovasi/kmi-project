@@ -63,14 +63,14 @@ class AssessmentController extends Controller
         // $rows = TemplateAssessmentPoint::get();
         return view('auth.admin.assessment.template.create');
     }
-    public function storeTemplate(TemplateAssessmentPoint $newTemplate, assessmentTemplateRequests $request)
+    public function storeTemplate(assessmentTemplateRequests $request)
     {
         // dd($request->all());
         try {
             // Memulai transaksi
             DB::beginTransaction();
 
-            $newTemplate = TemplateAssessmentPoint::UpdateOrCreate([
+            TemplateAssessmentPoint::UpdateOrCreate([
                 'point' => $request->input('point'),
                 'detail_point' => $request->input('detail_point'),
                 'pdca' => $request->input('pdca'),
@@ -1787,9 +1787,9 @@ class AssessmentController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             // dd($e->getMessage());
-            return redirect()->route('assessment.presentasiBOD')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('assessment.presentasiBOD')->withErrors('Belum ada Tim Yang Dipilih');
         }
-        return redirect()->route('assessment.presentasiBOD')->with('success', 'Data has been recorded'); // masih belom tau
+        return redirect()->route('assessment.presentasiBOD')->with('success', 'Tim Telah Berhasil Menyelesaikan Makalah'); // masih belom tau
     }
     public function pdfSummary($team_id)
     {

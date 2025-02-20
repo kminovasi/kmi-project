@@ -61,22 +61,22 @@ class DokumentasiController extends Controller
     }
 
     public function delete($id)
-{
-    try {
-        $beritaAcara = BeritaAcara::findOrFail($id);
-        if ($beritaAcara->signed_file) {
-            // Hapus file dari storage
-            Storage::disk('public')->delete($beritaAcara->signed_file);
+    {
+        try {
+            $beritaAcara = BeritaAcara::findOrFail($id);
+            if ($beritaAcara->signed_file) {
+                // Hapus file dari storage
+                Storage::disk('public')->delete($beritaAcara->signed_file);
 
-            // Set kolom signed_file menjadi null
-            $beritaAcara->signed_file = null;
-            $beritaAcara->save();
+                // Set kolom signed_file menjadi null
+                $beritaAcara->signed_file = null;
+                $beritaAcara->save();
+            }
+
+            return redirect()->back()->with('success', 'File berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'File berhasil dihapus');
-    } catch (\Exception $e) {
-        return redirect()->back()->withErrors('Error: ' . $e->getMessage());
     }
-}
 
 }

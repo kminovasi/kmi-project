@@ -32,6 +32,9 @@
                         <p class="card-text"><strong>Posisi:</strong> {{ $user->position_title }}</p>
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
                     </div>
+                    @if (Auth::user()->role == 'Juri')
+                        <a href="" class="btn btn-sm btn-success mb-3 mx-5">Download Srtifikat Juri</a>
+                    @endif
                 </div>
                 <x-profile.list-paper :teamIds="$teamIds" />
             </div>

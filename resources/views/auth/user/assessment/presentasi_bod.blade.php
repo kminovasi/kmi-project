@@ -36,6 +36,11 @@
             font-size: 12px;
             /* Sesuaikan ukuran font sesuai kebutuhan */
         }
+
+        th {
+            text-align: center !important;
+            text-transform: capitalize;
+        }
     </style>
 @endpush
 @section('content')
@@ -60,7 +65,7 @@
         <div class="p-2">
 
             <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
 
             <a href="{{ route('paper.index') }}"
                 class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
@@ -72,7 +77,7 @@
                     Auth::user()->role == 'Superadmin' ||
                     $is_judge)
                 <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
             @endif
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
@@ -285,7 +290,7 @@
             "ajax": {
                 "url": "{{ route('query.get_presentasi_bod') }}",
                 "type": "GET",
-                "async": false,
+                "async": true,
                 "dataSrc": function (data) {
                     return data.data;
                 },
@@ -354,8 +359,6 @@
                 console.error('Gagal mengambil kolom: ' + error);
             }
         });
-        console.log("ini yang di fungsi update");
-        console.log(newColumn);
         return newColumn
     }
 

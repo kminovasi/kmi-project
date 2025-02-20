@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\EventAssignmentNotification;
-use App\Models\Paper;
-use App\Models\Event;
-use App\Models\PvtEventTeam;
-use App\Models\Team;
-use Illuminate\Http\Request;
 use DataTables;
+use App\Models\Team;
+use App\Models\Event;
+use App\Models\Paper;
+use App\Models\History;
+use App\Models\PvtEventTeam;
+use Illuminate\Http\Request;
+use App\Mail\EventAssignmentNotification;
 use Illuminate\Support\Facades\{Auth, Mail, Log};
 
 class GroupEventController extends Controller
@@ -230,6 +231,12 @@ class GroupEventController extends Controller
             'status_lomba' => 'group'
         ]);
 
+        History::create([
+            'team_id' => $paper->team_id,
+            'activity' => "Accepted to Event Group",
+            'status' => 'Accepted'
+        ]);
+
         $this->sendNotifications($paper->team, $event);
     }
 
@@ -254,5 +261,3 @@ class GroupEventController extends Controller
         }
     }
 }
-
-

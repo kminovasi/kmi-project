@@ -1,41 +1,42 @@
 <?php
 
 use App\Exports\JuriExport;
+use App\Exports\PaperExport;
+use App\Exports\DetailPaperExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SessionController;
-use App\Http\Controllers\ApprovalController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CvController;
+use App\Http\Controllers\JuriController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\BenefitController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\BodEventController;
+use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\InnovatorDashboard;
+use App\Http\Controllers\TimelineController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventTeamController;
 use App\Http\Controllers\AssessmentController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\ManagamentSystemController;
+use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\ChartDashboardController;
-use App\Http\Controllers\CvController;
-use App\Http\Controllers\DetailCompanyChartController;
 use App\Http\Controllers\DokumentasiController;
-use App\Http\Controllers\EvidenceController;
-use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
-use App\Http\Controllers\TimelineController;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\PaperExport;
-use App\Http\Controllers\AssessmentMatrixController;
-use App\Http\Controllers\BodEventController;
+use App\Http\Controllers\ChartDashboardController;
 use App\Http\Controllers\DashboardEventController;
-use App\Http\Controllers\EventTeamController;
-use App\Http\Controllers\GroupEventController;
-use App\Http\Controllers\InnovatorDashboard;
-use App\Http\Controllers\JuriController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MetodologiPaperController;
+use App\Http\Controllers\AssessmentMatrixController;
+use App\Http\Controllers\ManagamentSystemController;
+use App\Http\Controllers\SummaryExecutiveController;
+use App\Http\Controllers\DetailCompanyChartController;
 
 
 /*
@@ -367,11 +368,14 @@ Route::middleware('auth')->group(function () {
     // Evidence
     Route::prefix('/evidence')->name('evidence.')->group(function () {
         Route::get('/', [EvidenceController::class, 'index'])->name('index');
-        Route::get('/category/{id}', [EvidenceController::class, 'List_paper'])->name('category');
+        Route::get('/category/{categoryId}', [EvidenceController::class, 'List_paper'])->name('category');
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
         Route::get('/export/{categoryId}', function ($categoryId) {
             return Excel::download(new PaperExport($categoryId), 'papers_category_' . $categoryId . '.xlsx');
         })->name('excel');
+        Route::get('/export-detail/{teamId}', function ($teamId) {
+            return Excel::download(new DetailPaperExport($teamId), 'papers_detail_' . $teamId . '.xlsx');
+        })->name('export-detail');
         Route::get('/download/{id}', [EvidenceController::class, 'download'])->name('download-paper');
     });
 

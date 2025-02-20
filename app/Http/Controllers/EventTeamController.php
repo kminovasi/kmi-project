@@ -202,17 +202,29 @@ public function getEvents(Request $request)
             return back()->with('error', 'An error occurred while updating the paper: ' . $e->getMessage());
         }
     }
+    
     public function editBenefit($id, $eventId)
     {
+        // Ambil paper beserta relasi team dan company
         $paper = Paper::with(['team.company'])->findOrFail($id);
 
-        // Ambil custom benefit yang tersedia untuk perusahaan ini
-        $customBenefits = CustomBenefitFinancial::where('company_code', $paper->team->company->company_code)->get();
+        // Ambil company_code dari tabel companies melalui relasi
+        $companyCode = $paper->team->company->company_code;
+
+        // Ambil semua custom benefits
+        $customBenefits = CustomBenefitFinancial::all();
+
+        // Filter custom benefits berdasarkan company code
+        $filteredCustomBenefits = $customBenefits->filter(function ($benefit) use ($companyCode) {
+            return $benefit->papers->some(function ($pvtCustomBenefit) use ($companyCode) {
+                return $pvtCustomBenefit->paper->team->company->company_code === $companyCode;
+            });
+        });
 
         // Ambil nilai custom benefit yang sudah ada
         $existingCustomBenefits = PvtCustomBenefit::where('paper_id', $paper->id)->pluck('value', 'custom_benefit_financial_id');
 
-        return view('event-team.edit-benefit', compact('paper', 'customBenefits', 'existingCustomBenefits', 'eventId'));
+        return view('event-team.edit-benefit', compact('paper', 'filteredCustomBenefits', 'existingCustomBenefits', 'eventId'));
     }
 
     public function updateBenefit(Request $request, $id, $eventId)

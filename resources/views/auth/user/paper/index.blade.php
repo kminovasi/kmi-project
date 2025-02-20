@@ -429,6 +429,7 @@
                 <div class="modal-body">
                     <div class="timeline" id="history">
                         <!-- Example timeline item -->
+                        <h4>Header</h4>
                         <div class="timeline-item mb-4">
                             <div class="timeline-dot bg-primary"></div>
                             <div class="timeline-content shadow-sm rounded p-3">
@@ -1124,30 +1125,37 @@
             dataType: 'json',
             success: function(data) {
 
-                var history = $('#history'); // Dapatkan elemen dengan ID "history"
+                const history = $('#history'); // Dapatkan elemen dengan ID "history"
                 history.empty(); // Membersihkan elemen history sebelum menambahkan data baru
-
+                
                 data.forEach(function(item) {
-                    var createdAt = item.created_at;
-                    var date = new Date(createdAt);
-                    var day = date.getDate();
-                    var month = date.getMonth() + 1; // Perhatikan bahwa bulan dimulai dari 0, jadi tambahkan 1
-                    var year = date.getFullYear();
-                    var formattedDate = ('0' + day).slice(-2) + '/' + ('0' + month).slice(-2) + '/' + year;
+                    let createdAt = item.created_at;
+                    let date = new Date(createdAt);
+                    let day = date.getDate();
+                    let month = date.getMonth() + 1; // Perhatikan bahwa bulan dimulai dari 0, jadi tambahkan 1
+                    let year = date.getFullYear();
+                    let formattedDate = ('0' + day).slice(-2) + '/' + ('0' + month).slice(-2) + '/' + year;
+                    
+                    if(item.activity === 'Accepted to Event Group' || item.activity === 'Accepted to Event Internal'){
+                        let header = $('<h5>' + item.activity + '</h5>')
+                        history.append(header);
+                    }
+                    if(item.activity !== 'Accepted to Event Group' || item.activity !== 'Accepted to Event Internal'){
 
+                        let timelineItem = $('<div class="timeline-item">');
+                        let header = $('<h4>Halo Semuanya</h4>')
 
-                    var timelineItem = $('<div class="timeline-item">');
+                        let marker = $('<div class="timeline-item-marker">');
+                        marker.append('<div class="timeline-item-marker-text">' + formattedDate + '</div>');
+                        marker.append('<div class="timeline-item-marker-indicator"><i data-feather="check"></i></div>');
 
-                    var marker = $('<div class="timeline-item-marker">');
-                    marker.append('<div class="timeline-item-marker-text">' + formattedDate + '</div>');
-                    marker.append('<div class="timeline-item-marker-indicator"><i data-feather="check"></i></div>');
+                        let content = $('<div class="timeline-item-content">' + item.activity + '</div>');
 
-                    var content = $('<div class="timeline-item-content">' + item.activity + '</div>');
+                        timelineItem.append(marker);
+                        timelineItem.append(content);
 
-                    timelineItem.append(marker);
-                    timelineItem.append(content);
-
-                    history.append(timelineItem);
+                        history.append(timelineItem);
+                    }
                 });
 
                 // Jika Anda ingin memanggil Feather Icons, Anda perlu menginisialisasi mereka setelah menambahkan elemen baru

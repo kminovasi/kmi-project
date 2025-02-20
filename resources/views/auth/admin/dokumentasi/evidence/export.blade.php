@@ -23,7 +23,7 @@
             <td>{{ $paper->year }}</td>
             <td>Rp.{{ number_format($paper->financial, 0, ',', '.') }}</td>
             <td>{{ $paper->potensi_replikasi }}</td>
-            <td>{{ $paper->is_best_of_the_best ? 'Best of The Best' : $paper->status }}</td>
+            <td>{{ $paper->is_best_of_the_best ? 'Best of The Best' : 'Juara ' . $index + 1}}</td>
         </tr>
         @endforeach
     </tbody>

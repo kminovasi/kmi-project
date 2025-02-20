@@ -8,11 +8,14 @@
         @else
             <div class="list-group">
                 @foreach ($teams as $team)
-                    <a href="{{ route('profile.showPaperDetail', ['teamId' => $team->id]) }}"
-                        class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
+                <a href="{{ route('profile.showPaperDetail', ['teamId' => $team->id]) }}"
+                    class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
                             <h5 class="mb-1">{{ $team->team_name }}</h5>
-                            <span class="badge bg-info text-dark">{{ $team->status_lomba }}</span>
+                            <div class="d-flex flex-column justify-center">
+                                <p class="fw-600 my-1" style="font-size: 0.7rem">Type Event</p>
+                                <span class="badge bg-info text-dark text-capitalize">{{ $team->status_lomba }}</span>
+                            </div>
                         </div>
                         <small>Perusahaan: {{ $team->company_code }}</small>
                         @if ($team->paper)
@@ -28,9 +31,6 @@
                                         Status Penilaian : {{ $team->pvtEventTeams->first()->status }}
                                     </span>
                                 @endif
-
-
-
                             </div>
                         @else
                             <p class="text-muted mt-2">Tidak ada paper yang diajukan untuk tim ini.</p>

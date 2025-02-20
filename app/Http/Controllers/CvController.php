@@ -46,6 +46,8 @@ class CvController extends Controller
             ->where('pvt_members.employee_id', $employee->employee_id)
             ->where('pvt_event_teams.status', '=', 'Juara')
             ->distinct('papers.id');
+        
+        $isActiveJudge = true;
 
         $innovations = $innovations->paginate(10);
 
@@ -103,6 +105,7 @@ class CvController extends Controller
                 'events.event_name',
                 'document_supportings.path'
             )
+            ->limit(1)
             ->get();
 
         // dd($papers);

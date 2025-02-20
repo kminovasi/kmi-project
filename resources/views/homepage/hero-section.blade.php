@@ -9,7 +9,7 @@
                 <p class="lead text-muted mb-4">
                     SIG Innovation Award hadir untuk mengapresiasi solusi kreatif yang membawa perusahaan menuju keberlanjutan dan pertumbuhan.
                 </p>
-                <div>
+                <div class="mb-3 mb-lg-0">
                     <a href="{{ route('dashboard') }}" class="btn btn-danger btn-lg me-3">
                         Masuk Portal
                     </a>

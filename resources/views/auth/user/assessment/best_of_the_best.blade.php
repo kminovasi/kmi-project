@@ -53,7 +53,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Assessment - Presentasi BOD
+                            Assessment - Penetapan Best Of The Best
                         </h1>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
         <div class="p-2">
 
             <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
 
             <a href="{{ route('paper.index') }}"
                 class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
@@ -78,7 +78,7 @@
                     Auth::user()->role == 'Superadmin' ||
                     $is_judge)
                 <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
             @endif
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
@@ -306,23 +306,23 @@
         });
     });
 
-function toggleRadio(selectedRadio) {
-   $('input[type="radio"][name="pvt_event_team_id"]').click(function() {
-        // Jika radio button yang dipilih sudah terpilih, uncheck
-        if ($(this).is(':checked')) {
-            // Cek apakah radio button yang sama diklik lagi
-            if ($(this).data('clicked')) {
-                $(this).prop('checked', false); // Uncheck jika diklik lagi
-                $(this).data('clicked', false); // Reset data clicked
+    function toggleRadio(selectedRadio) {
+    $('input[type="radio"][name="pvt_event_team_id"]').click(function() {
+            // Jika radio button yang dipilih sudah terpilih, uncheck
+            if ($(this).is(':checked')) {
+                // Cek apakah radio button yang sama diklik lagi
+                if ($(this).data('clicked')) {
+                    $(this).prop('checked', false); // Uncheck jika diklik lagi
+                    $(this).data('clicked', false); // Reset data clicked
+                } else {
+                    $(this).data('clicked', true); // Tandai sebagai diklik
+                }
             } else {
-                $(this).data('clicked', true); // Tandai sebagai diklik
+                // Jika radio button tidak terpilih, reset data clicked
+                $(this).data('clicked', false);
             }
-        } else {
-            // Jika radio button tidak terpilih, reset data clicked
-            $(this).data('clicked', false);
-        }
-    });
-}
+        });
+    }
 
-        </script>
-    @endpush
+</script>
+@endpush

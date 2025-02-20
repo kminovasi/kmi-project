@@ -4,13 +4,13 @@
             <div class="nav accordion" id="accordionSidenav">
                 <!-- Sidenav Menu Heading (Account)-->
                 <!-- * * Note: * * Visible only on and above the sm breakpoint-->
-                <div class="sidenav-menu-heading d-sm-none">Account</div>
+                <div class="sidenav-menu-heading d-sm-none">Akun</div>
                 <!-- Sidenav Link (Alerts)-->
                 <!-- * * Note: * * Visible only on and above the sm breakpoint-->
                 <a class="nav-link d-sm-none" href="#!">
                     <div class="nav-link-icon"><i data-feather="bell"></i></div>
-                    Alerts
-                    <span class="badge bg-warning-soft text-warning ms-auto">4 New!</span>
+                    Notifikasi
+                    <span class="badge bg-warning-soft text-warning ms-auto">4 Baru!</span>
                 </a>
                 <!-- Sidenav Link (Messages)-->
                 <!-- * * Note: * * Visible only on and above the sm breakpoint-->
@@ -20,11 +20,11 @@
                     <span class="badge bg-success-soft text-success ms-auto">2 New!</span>
                 </a>
                 <!-- Sidenav Menu Heading (Core)-->
-                <div class="sidenav-menu-heading text-white">activity</div>
+                <div class="sidenav-menu-heading text-white">Kegiatan</div>
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                         href="{{ route('dashboard') }}" aria-expanded="false">
                         <div class="nav-link-icon"><i data-feather="sliders"></i></div>
-                        Dashboards
+                        Halaman Utama
                     </a>
                 <!-- Sidenav Accordion (Dashboard)-->
                 <a class="nav-link {{ request()->routeIs('paper.index') ? 'active' : '' }}"
@@ -35,7 +35,7 @@
                 <a class="nav-link {{ request()->routeIs('event-team.index') ? 'active' : '' }}"
                     href="{{ route('event-team.index') }}">
                     <div class="nav-link-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                    Event
+                    Acara
                 </a>
                 <a class="nav-link {{ request()->routeIs('dokumentasi.index') ? 'active' : '' }}"
                     href="{{ route('dokumentasi.index') }}">
@@ -50,7 +50,7 @@
                 <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}"
                     href="{{ route('profile.index') }}">
                     <div class="nav-link-icon"><i data-feather="user-check"></i></div>
-                    Profile
+                    Profil
                 </a>
                 @if (Auth::user()->role == 'BOD')
                     {{-- Menu untuk BOD --}}
@@ -67,24 +67,24 @@
                     <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse"
                         data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                         <div class="nav-link-icon"><i data-feather="sliders"></i></div>
-                        Management System
+                        Manajemen Sistem
                         <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
                     <div class="collapse" id="collapsePages" data-bs-parent="#accordionSidenav">
                         <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesMenu">
                             <a class="nav-link {{ request()->routeIs('management-system.assign.event') ? 'active' : '' }}"
-                                href="{{ route('management-system.assign.event') }}">Event</a>
+                                href="{{ route('management-system.assign.event') }}">Kegiatan</a>
                             @if (Auth::user()->role == 'Admin')
                                 <a class="nav-link {{ request()->routeIs('assessment.show.point') ? 'active' : '' }}"
-                                    href="{{ route('assessment.show.point') }}">Assessment</a>
+                                    href="{{ route('assessment.show.point') }}">Penilaian</a>
                             @elseif(Auth::user()->role == 'Superadmin')
                                 <a class="nav-link {{ request()->routeIs('assessment.show.template') ? 'active' : '' }}"
-                                    href="{{ route('assessment.show.template') }}">Assessment</a>
+                                    href="{{ route('assessment.show.template') }}">Penilaian</a>
                             @endif
                             <a class="nav-link {{ request()->routeIs('management-system.role.index') ? 'active' : '' }}"
-                                href="{{ route('management-system.role.index') }}">Assign Role</a>
+                                href="{{ route('management-system.role.index') }}">Atur Peran</a>
                             <a class="nav-link {{ request()->routeIs('management-system.team.category.index') ? 'active' : '' }}"
-                                href="{{ route('management-system.team.category.index') }}">Category Role</a>
+                                href="{{ route('management-system.team.category.index') }}">Kategori Peran</a>
                             @if (Auth::user()->role == 'Superadmin')
                                 <a class="nav-link {{ request()->routeIs('management-system.metodologi_papers.index') ? 'active' : '' }}"
                                     href="{{ route('management-system.metodologi_papers.index') }}">
@@ -96,11 +96,11 @@
                                     Penilaian</a>
                             @endif
                             <a class="nav-link {{ request()->routeIs('management-system.user.index') ? 'active' : '' }}"
-                                href="{{ route('management-system.user.index') }}">User</a>
+                                href="{{ route('management-system.user.index') }}">Pengguna</a>
                             <!-- Nested Sidenav Accordion (Pages -> Account)-->
                         </nav>
                     </div>
-                    <div class="sidenav-menu-heading text-white">Manajement Event</div>
+                    <div class="sidenav-menu-heading text-white">Pengelolaan Acara</div>
                     <a class="nav-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}"
                         href="{{ route('certificates.index') }}">
                         <div class="nav-link-icon"><i data-feather="award"></i></div>
@@ -114,7 +114,7 @@
                     <a class="nav-link {{ request()->routeIs('timeline.index') ? 'active' : '' }}"
                         href="{{ route('timeline.index') }}">
                         <div class="nav-link-icon"><i data-feather="clock"></i></div>
-                        <span class="text-white">Timeline</span>
+                        <span class="text-white">Linimasa</span>
                     </a>
                     <a class="nav-link {{ request()->routeIs('post.index') ? 'active' : '' }}"
                         href="{{ route('post.index') }}">
@@ -127,7 +127,7 @@
         <!-- Sidenav Footer-->
         <div class="sidenav-footer">
             <div class="sidenav-footer-content">
-                <div class="sidenav-footer-subtitle text-white">Logged in as:</div>
+                <div class="sidenav-footer-subtitle text-white">Masuk Sebagai:</div>
                 <div class="sidenav-footer-title text-white">{{ Auth::user()->name }}</div>
             </div>
         </div>

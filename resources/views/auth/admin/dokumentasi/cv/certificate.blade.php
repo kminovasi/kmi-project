@@ -79,6 +79,7 @@
 
 <body>
     <div class="certificate-container">
+        @if (Auth::user()->role == 'User')
         <div class="content">
             <div class="user-name">{{ $user_name }}</div>
         </div>
@@ -88,6 +89,7 @@
         <div class="footer">
             <div class="category">{{ $category }}</div>
         </div>
+        @endif
     </div>
 </body>
 

@@ -20,10 +20,10 @@ class EvidenceController extends Controller
     }
 
 
-    function List_paper($id, Request $request)
+    function List_paper($categoryId, Request $request)
     {
 
-        $category = Category::find($id);
+        $category = Category::find($categoryId);
 
         // mendapatkan semua data paper dengan kategori dan event yang status finish
 
@@ -53,15 +53,23 @@ class EvidenceController extends Controller
                 'pvt_event_teams.is_best_of_the_best',
                 'themes.theme_name',
                 'events.event_name',
-                'document_supportings.path'
+                'document_supportings.path',
+                'teams.id as team_id',
+                'papers.id as paper_id'
             )
+            ->limit(1)
             ->get();
+        
+        // Mengambil elemen pertama dari koleksi
+        $paper = $papers->first();
+
+        // Mengakses properti team_id
+        $teamId = $paper->team_id;
 
         // mendapatkan data member berdasarkan id team
         $teamMember = $team->pvtMembers()->with('user')->get();
 
-
-        return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers'));
+        return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers', 'teamId'));
     }
 
     public function download($id)

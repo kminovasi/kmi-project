@@ -30,7 +30,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                        Lihat Template Assessment
+                        Lihat Template Penilaian
                     </h1>
 
                 </div>
@@ -44,9 +44,8 @@
     @if (auth()->check() && auth()->user()->role == 'Superadmin' ||  auth()->user()->role == 'Admin')
     <div class="p-2 border-bottom">
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
-            Assessment</a>
-        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
-            Point Setting</a>
+            Penilaian</a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturab Poin Penilaian</a>
     </div>
     @endif
     <div class="mb-3">
@@ -74,7 +73,7 @@
                     <div class="ms-2">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="small">Event</div>
+                                <div class="small">Acara</div>
                                 <div class="text-md text-muted" id="event_name"></div>
                             </div>
                             <div class="col-md-4">
@@ -109,7 +108,7 @@
                     <div class="card-body">
                         <h6 class="card-title text-primary mb-3 d-flex align-items-center">
                             <i class="me-2" data-feather="info"></i>
-                            <span>Information</span>
+                            <span>Informasi</span>
                         </h6>
                         <div id="konfirmasiScore" class="bg-light p-3 rounded border">
                             <!-- Content for the information will go here -->
@@ -150,7 +149,7 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateTemplatePoint">Update Point Assessment</h5>
+                <h5 class="modal-title" id="updateTemplatePoint">Perbarui Poin Penilaian</h5>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="updatePointAssessment" method="POST" enctype="multipart/form-data">

@@ -27,7 +27,7 @@
         {{-- table --}}
         <table class="table table-borderless table-hover text-sm rounded bg-white">
             <thead>
-                <tr>
+                <tr class="text-center">
                     <th scope="col">No</th>
                     <th scope="col">Team</th>
                     <th scope="col">Judul</th>
@@ -50,7 +50,7 @@
                             <td>{{ $paper->event_name }} {{ $paper->year }}</td>
                             <td>Rp.{{ number_format($paper->financial, 0, ',', '.') }}</td>
                             <td>>Rp.{{ number_format($paper->potential_benefit, 0, ',', '.') }}</td>
-                            <td>
+                            <td class="text-center">
                                 @if ($paper->is_best_of_the_best == false)
                                     Juara {{ $paper->rank }}
                                 @else
@@ -82,8 +82,10 @@
                                                 class="dropdown-item" download="{{ $paper->innovation_title }}.pdf">
                                                 <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
                                             </a> --}}
-                                            <a href="{{ route('evidence.download-paper', $paper->team_id) }}"
-                                                class="dropdown-item">
+                                            <a href="{{ route('evidence.download-paper', $paper->paper_id) }}"
+                                                class="dropdown-item" download="{{ $paper->innovation_title }}.pdf"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                                data-bs-title="Download Makalah">
                                                 <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
                                             </a>
                                         </li>

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use DB;
+use Log;
+use Auth;
+use Exception;
+use DataTables;
+use App\Models\Team;
 use App\Models\Event;
 use App\Models\Judge;
-use App\Models\PvtAssessmentEvent;
+use App\Models\History;
+use App\Models\Category;
 use App\Models\PvtEventTeam;
-use App\Models\SummaryExecutive;
-use App\Models\Team;
-use Auth;
-use DataTables;
-use DB;
-use Exception;
 use Illuminate\Http\Request;
-use Log;
+use App\Models\SummaryExecutive;
+use App\Models\PvtAssessmentEvent;
 
 class PvtEventTeamController extends Controller
 {
@@ -193,13 +194,13 @@ class PvtEventTeamController extends Controller
 
                     if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
                         return '
-            <div class="form-check">
-                <input class="form-check-input" type="radio" id="radio-' . $eventTeamId . '" name="pvt_event_team_id[]" value="' . $eventTeamId . '" ' . $checked . '>
-                <label class="form-check-label" for="radio-' . $eventTeamId . '">
-                    Pilih
-                </label>
-            </div>
-            ';
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="radio-' . $eventTeamId . '" name="pvt_event_team_id[]" value="' . $eventTeamId . '" ' . $checked . '>
+                                    <label class="form-check-label" for="radio-' . $eventTeamId . '">
+                                        Pilih
+                                    </label>
+                                </div>
+                                ';
                     } else {
                         return '-';
                     }

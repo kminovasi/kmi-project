@@ -1,9 +1,9 @@
 @extends('layouts.guest')
-@section('title', 'home')
+@section('title', 'SIG Innovations')
 
 @section('content')
 
-    {{-- Hero Section --}}
+{{-- Hero Section --}}
     @include('homepage.hero-section')
 
     {{-- Info Section --}}
@@ -34,7 +34,7 @@
 
         window.addEventListener("scroll", function () {
             const heroHeight = heroSection.offsetHeight;
-            if (window.scrollY > heroHeight) {
+            if (window.scrollY > 0) {
                 navbar.classList.remove("bg-transparent");
                 navbar.classList.add("bg-white", "shadow-sm");
             } else {

@@ -37,9 +37,8 @@ use App\Models\History;
 use App\Models\Judge;
 use App\Models\MetodologiPaper;
 use App\Notifications\PaperNotification;
+use setasign\Fpdi\Tcpdf\Fpdi;
 use TCPDF;
-
-use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
 use Carbon\Carbon;
 use Exception;
@@ -269,6 +268,12 @@ class PaperController extends Controller
                 'activity' => "Team " . $newTeam->team_name . " created",
                 'status' => 'created'
             ]);
+            History::create([
+                'team_id' => $newTeam->id,
+                'activity' => "Accepted to Event Internal",
+                'status' => 'Accepted'
+            ]);
+            
             $step = MetodologiPaper::where('id', $request->input('metodologi_paper_id'))->pluck('step')[0];
             if ($step < 8) {
 
@@ -649,12 +654,39 @@ class PaperController extends Controller
                     throw new Exception("Error, file tidak ada");
                 }
 
-                return response()->file($filePath);
+                // Ambil Data User Saat Ini
+                $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+                $userEmail = auth()->user()->email;
+                $userIp = request()->ip();
+
+                $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
+                $pageCount = $fpdi->setSourceFile($filePath);
+                for($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+                    $tplIdx = $fpdi->importPage($pageNum);
+                    $fpdi->AddPage();
+                    $fpdi->useTemplate($tplIdx, 0, 0);
+
+                    // Tambahkan watermark
+                    $fpdi->SetAlpha(0.1); // Transparansi watermark
+                    $fpdi->SetFont('helvetica', 'B', 40);
+                    $fpdi->SetTextColor(255, 0, 0);
+
+                    // Memulai transformasi untuk rotasi
+                    $fpdi->StartTransform();
+                    $fpdi->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+                    $fpdi->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
+                    $fpdi->StopTransform(); // Akhiri transformasi
+
+                    $fpdi->SetAlpha(1); // Reset transparansi
+                }
+
+                return response($fpdi->Output($paper->innovation_title, 'I'), 200)->header('Content-Type', 'application/pdf');
             }
 
             $t = $paper->full_paper;
             if ($t) {
-                return redirect()->route('paper.show.stages', [$id, 'full']);
+                return redirect()->route('paper.show.stages', [$id, $paper->innovation_title]);
             }
 
             $item = Paper::where('id', '=', $id)->select($stage)->get()[0];
@@ -1726,7 +1758,7 @@ class PaperController extends Controller
         try {
             // Validate the file input
             $request->validate([
-                'file_stage' => 'required|file|mimes:pdf|max:10240', // Adjust the max size as needed
+                'file_stage' => 'required|file|mimes:pdf|max:72020', // Adjust the max size as needed
             ]);
 
             // Get the uploaded file

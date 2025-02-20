@@ -53,7 +53,7 @@
         <div class="p-2">
 
             <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
+                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
 
             <a href="{{ route('paper.index') }}"
                 class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
@@ -65,7 +65,7 @@
                     Auth::user()->role == 'Superadmin' ||
                     $is_judge)
                 <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
             @endif
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
@@ -140,11 +140,45 @@
                             <div id="datatable-card">
                                 <table id="datatable-penetapan-juara" class="table"></table>
                             </div>
+                            <div id="pengumuman-berita-acara" class="card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <table id="datatablesSimple" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Event</th>
+                                                <th>Tahun</th>
+                                                <th>No. Surat</th>
+                                                <th>Opsi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $no = 1; ?>
+                                            @foreach ($data as $d)
+                                                <tr>
+                                                    <td>{{ $no++ }}</td>
+                                                    <td>{{ $d->event_name }}</td>
+                                                    <td>{{ $d->year }}</td>
+                                                    <td>{{ $d->no_surat }}</td>
+                                                    <td>
+                                                        <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
+                                                        <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
+                                                        <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -314,219 +348,223 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script type="">
-function initializeDataTable() {
-    $('#datatable-penetapan-juara').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "{{ route('query.get_penetapan_juara') }}",
-            "type": "GET",
-            "dataSrc": function (data) {
-                return data.data;
-            },
-            "data": function (d) {
-                d.filterEvent = $('#filter-event').val();
-                d.filterCategory = $('#filter-category').val();
-            }
-        },
-        "columns": [
-            { title: "No", data: null, orderable: false },
-            { title: "Tim", data: 'Tim', orderable: true }, // Adjust the column to match the modified DataTable
-            { title: "Judul", data: 'judul' },
-            { title: "Kategori", data: 'kategori' },
-            { title: "Ranking", data: 'Ranking' }
-        ],
-        "createdRow": function (row, data, dataIndex) {
-            $('td:eq(0)', row).html(dataIndex + 1); // Populate "No" column
-        },
-        "scrollY": true,
-        "scrollX": false,
-        "stateSave": true,
-        "destroy": true
-    });
-}
+        function initializeDataTable() {
+            $('#datatable-penetapan-juara').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ route('query.get_penetapan_juara') }}",
+                    "type": "GET",
+                    "dataSrc": function (data) {
+                        return data.data;
+                    },
+                    "data": function (d) {
+                        d.filterEvent = $('#filter-event').val();
+                        d.filterCategory = $('#filter-category').val();
+                    }
+                },
+                "columns": [
+                    { title: "No", data: null, orderable: false },
+                    { title: "Tim", data: 'Tim', orderable: true }, // Adjust the column to match the modified DataTable
+                    { title: "Judul", data: 'judul' },
+                    { title: "Kategori", data: 'kategori' },
+                    { title: "Ranking", data: 'Ranking' }
+                ],
+                "createdRow": function (row, data, dataIndex) {
+                    $('td:eq(0)', row).html(dataIndex + 1); // Populate "No" column
+                },
+                "scrollY": true,
+                "scrollX": false,
+                "stateSave": true,
+                "destroy": true
+            });
+        }
 
+        function updateColumnDataTable() {
 
-
-
-    function updateColumnDataTable() {
-
-        newColumn = []
-        $.ajax({
-            url: "{{ route('query.get_penetapan_juara') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
-            method: 'GET',
-            // dataType: 'json',
-            data:{
-                filterEvent: $('#filter-event').val(),
-                // filterYear: $('#filter-year').val(),
-                filterCategory: $('#filter-category').val()
-            },
-            async: false,
-            success: function (data) {
-                // newColumn = []
-                console.log(data.data)
-                // console.log(count(data.data));
-                if(data.data.length){
-                    for( var key in data.data[0]){
+            newColumn = []
+            $.ajax({
+                url: "{{ route('query.get_penetapan_juara') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
+                method: 'GET',
+                // dataType: 'json',
+                data:{
+                    filterEvent: $('#filter-event').val(),
+                    // filterYear: $('#filter-year').val(),
+                    filterCategory: $('#filter-category').val()
+                },
+                async: false,
+                success: function (data) {
+                    // newColumn = []
+                    // console.log(data.data)
+                    // console.log(count(data.data));
+                    if(data.data.length){
+                        for( var key in data.data[0]){
+                            let row_column = {};
+                            row_column['data'] = key
+                            row_column['title'] = key
+                            row_column['mData'] = key
+                            row_column['sTitle'] = key
+                            newColumn.push(row_column)
+                        }
+                    }else{
                         let row_column = {};
-                        row_column['data'] = key
-                        row_column['title'] = key
-                        row_column['mData'] = key
-                        row_column['sTitle'] = key
+                        row_column['data'] = ''
+                        row_column['title'] = ''
+                        row_column['mData'] = ''
+                        row_column['sTitle'] = ''
                         newColumn.push(row_column)
                     }
-                }else{
-                    let row_column = {};
-                    row_column['data'] = ''
-                    row_column['title'] = ''
-                    row_column['mData'] = ''
-                    row_column['sTitle'] = ''
-                    newColumn.push(row_column)
+                },
+                error: function (xhr, status, error) {
+                    console.error('Gagal mengambil kolom: ' + error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('Gagal mengambil kolom: ' + error);
-            }
-        });
-        console.log("ini yang di fungsi update");
-        console.log(newColumn);
-        return newColumn
-    }
-
-   $(document).ready(function() {
-    // Definisikan dataTable sebagai variabel global
-    let dataTable;
-     const selectElement = document.getElementById('filter-event');
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const eventName = selectedOption.text;
-        document.getElementById('event-title').innerHTML = eventName;
-
-    // Inisialisasi pertama kali
-    function initTable() {
-        if ($.fn.DataTable.isDataTable('#datatable-penetapan-juara')) {
-            dataTable.destroy();
+            });
+            // console.log("ini yang di fungsi update");
+            // console.log(newColumn);
+            return newColumn
         }
 
-        dataTable = $('#datatable-penetapan-juara').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "{{ route('query.get_penetapan_juara') }}",
-                "type": "GET",
-                "dataSrc": function(data) {
-                    return data.data;
-                },
-                "data": function(d) {
-                    d.filterEvent = $('#filter-event').val();
-                    d.filterCategory = $('#filter-category').val();
+        $(document).ready(function() {
+            // Definisikan dataTable sebagai variabel global
+            let dataTable;
+            const selectElement = document.getElementById('filter-event');
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const eventName = selectedOption.text;
+                document.getElementById('event-title').innerHTML = eventName;
+
+            // Inisialisasi pertama kali
+            function initTable() {
+                if ($.fn.DataTable.isDataTable('#datatable-penetapan-juara')) {
+                    dataTable.destroy();
                 }
-            },
-            "columns": [
-                { title: "No", data: null, orderable: false },
-                { title: "Tim", data: 'Tim', orderable: true },
-                { title: "Judul", data: 'judul' },
-                { title: "Kategori", data: 'kategori' },
-                { title: "Final Score", data: 'final_score' },
-                { title: "Ranking", data: 'Ranking' }
-            ],
-            "createdRow": function(row, data, dataIndex) {
-                $('td:eq(0)', row).html(dataIndex + 1);
-            },
-            "scrollY": true,
-            "scrollX": false,
-            "stateSave": true
-        });
-    }
 
-    // Inisialisasi awal
-    initTable();
-
-    // Event handlers untuk filter
-    $('#filter-event, #filter-category').on('change', function() {
-        if ($.fn.DataTable.isDataTable('#datatable-penetapan-juara')) {
-            dataTable.destroy();
-        }
-
-        // Hapus dan buat ulang tabel
-        $('#datatable-penetapan-juara').remove();
-        $('#datatable-card').append('<table id="datatable-penetapan-juara" class="table"></table>');
-
-        // Inisialisasi ulang tabel
-        initTable();
-    });
-});
-
-
-    function seePPT(team_id){
-        console.log(team_id);
-        var pptUrl;
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '{{ route('query.custom') }}',
-            dataType: 'json',
-            async: false,
-            data: {
-                table: "teams",
-                where: {
-                    "teams.id": team_id
-                },
-                limit: 1,
-                join: {
-                        'pvt_event_teams':{
-                            'pvt_event_teams.team_id' : 'teams.id'
+                dataTable = $('#datatable-penetapan-juara').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": {
+                        "url": "{{ route('query.get_penetapan_juara') }}",
+                        "type": "GET",
+                        "dataSrc": function(data) {
+                            return data.data;
                         },
-                        'summary_executives':{
-                            'summary_executives.pvt_event_teams_id' : 'pvt_event_teams.id'
+                        "data": function(d) {
+                            d.filterEvent = $('#filter-event').val();
+                            d.filterCategory = $('#filter-category').val();
                         }
                     },
-                select:[
-                        'teams.id as team_id',
-                        'benefit',
-                        'summary_executives.file_ppt as file_ppt'
-                    ]
-            },
-            // dataType: 'json',
-            success: function(response) {
-                console.log(response)
-                document.getElementById("idBenefit").value = response[0].benefit;
-                pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
+                    "columns": [
+                        { title: "No", data: null, orderable: false },
+                        { title: "Tim", data: 'Tim', orderable: true },
+                        { title: "Judul", data: 'judul' },
+                        { title: "Kategori", data: 'kategori' },
+                        { title: "Final Score", data: 'final_score' },
+                        { title: "Ranking", data: 'Ranking' }
+                    ],
+                    "createdRow": function(row, data, dataIndex) {
+                        $('td:eq(0)', row).html(dataIndex + 1);
+                    },
+                    "scrollY": true,
+                    "scrollX": false,
+                    "stateSave": true
+                });
+            }
 
-                // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+            // Inisialisasi awal
+            initTable();
+
+            // Event handlers untuk filter
+            $('#filter-event, #filter-category').on('change', function() {
+                if ($.fn.DataTable.isDataTable('#datatable-penetapan-juara')) {
+                    dataTable.destroy();
+                }
+
+                // Hapus dan buat ulang tabel
+                $('#datatable-penetapan-juara').remove();
+                $('#datatable-card').append('<table id="datatable-penetapan-juara" class="table"></table>');
+
+                // Inisialisasi ulang tabel
+                initTable();
+            });
+
+            // Pengecekan Tabel Pengumuman Juara
+            if($('#datatable-penetapan-juara').length && $('#datatable-penetapan-juara').is(':visible')) {
+                $('#pengumuman-berita-acara').hide();
+            } else {
+                $('#pengumuman-berita-acara').show();
             }
         });
 
-        console.log(pptUrl);
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '{{ route('query.getFile') }}',
-            dataType: 'json',
-            async: false,
-            data: {
-                directory: pptUrl,
-            },
-            // dataType: 'json',
-            success: function(response) {
-                console.log(response)
-                // document.getElementById("idBenefit").value = response[0].benefit;
-                // var pptUrl = '{{ asset("storage/") }}' + '/' + response[0].file_ppt;
 
-                // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-    }
-</script>
+        function seePPT(team_id){
+            console.log(team_id);
+            var pptUrl;
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'GET',
+                url: '{{ route('query.custom') }}',
+                dataType: 'json',
+                async: false,
+                data: {
+                    table: "teams",
+                    where: {
+                        "teams.id": team_id
+                    },
+                    limit: 1,
+                    join: {
+                            'pvt_event_teams':{
+                                'pvt_event_teams.team_id' : 'teams.id'
+                            },
+                            'summary_executives':{
+                                'summary_executives.pvt_event_teams_id' : 'pvt_event_teams.id'
+                            }
+                        },
+                    select:[
+                            'teams.id as team_id',
+                            'benefit',
+                            'summary_executives.file_ppt as file_ppt'
+                        ]
+                },
+                // dataType: 'json',
+                success: function(response) {
+                    console.log(response)
+                    document.getElementById("idBenefit").value = response[0].benefit;
+                    pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
+
+                    // Set the URL as the source for the iframe
+                    document.getElementById("pptViewer").src = pptUrl;
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+
+            console.log(pptUrl);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'GET',
+                url: '{{ route('query.getFile') }}',
+                dataType: 'json',
+                async: false,
+                data: {
+                    directory: pptUrl,
+                },
+                // dataType: 'json',
+                success: function(response) {
+                    console.log(response)
+                    // document.getElementById("idBenefit").value = response[0].benefit;
+                    // var pptUrl = '{{ asset("storage/") }}' + '/' + response[0].file_ppt;
+
+                    // Set the URL as the source for the iframe
+                    document.getElementById("pptViewer").src = pptUrl;
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    </script>
 @endpush

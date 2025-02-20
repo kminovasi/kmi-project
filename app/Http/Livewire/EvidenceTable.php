@@ -67,7 +67,8 @@ class EvidenceTable extends Component
                 'pvt_event_teams.*',
                 'events.event_name',
                 'events.year',
-                'themes.theme_name'
+                'themes.theme_name',
+                'papers.id as paper_id'
             );
 
         // Filter berdasarkan judul paper (pencarian)

@@ -18,7 +18,7 @@ class JuriExport implements FromView
     public function view(): View
     {
 
-        $user = Auth::user();
+        $user = \Illuminate\Support\Facades\Auth::user();
         $companyCode = $user->company_code;
 
         if ($user->role == 'Admin') {

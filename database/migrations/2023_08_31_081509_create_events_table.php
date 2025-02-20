@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('event_name');
             $table->text('description')->nullable();
+            $table->text('company_code');
             $table->timestamps();
         });
     }

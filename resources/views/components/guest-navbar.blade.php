@@ -13,15 +13,19 @@
             aria-labelledby="navbarOffcanvasLgLabel">
 
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
+                <a class="navbar-brand" href="#">
+                    <div class="d-flex align-items-center text-color-main">
+                        <img class="me-3" src="{{ asset('assets/landingpage/logo.png') }}" alt="logo">
+                    </div>
+                </a>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 gap-3">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('homepage') ? 'active' : '' }}" href="{{ route('homepage') }}">Home</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item mb-3">
                         <a class="nav-link {{ request()->routeIs('post.list') ? 'active' : '' }}" href="{{ route('post.list') }}">Berita</a>
                     </li>
                     @if (Auth::user())

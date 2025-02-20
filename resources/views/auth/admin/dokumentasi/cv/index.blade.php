@@ -192,7 +192,9 @@
     </header>
 
     <div class="container-xl p-2">
-
+        @dump($employee)
+        @dump($innovations)
+        @dump($teamRanks)
         <div class="table-responsive min-vh-100">
             <table class="table table-borderless table-hover text-sm rounded bg-white">
                 <thead>
@@ -225,7 +227,7 @@
                                 <td>{{ $inovasi->potensi_replikasi }}</td>
                                 <td>
                                     @if ($inovasi->is_best_of_the_best == false)
-                                        {{ $inovasi->status }}
+                                        {{ 'Juara ' . $teamRanks->rank }}
                                     @else
                                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
                                             data-bs-placement="top" data-bs-custom-class="custom-tooltip"
@@ -250,24 +252,44 @@
                                                     <i class="fas fa-info-circle dropdown-item-icon"></i>Detail Inovasi
                                                 </a>
                                             </li>
+                                            {{-- Button Download Certificate Individual --}}
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
                                                     @csrf
 
-                                                    <input type="hidden" name="user_name" value="{{ $employee->name }}">
-                                                    <input type="hidden" name="team_name"
-                                                        value="{{ $inovasi->team_name }}">
-                                                    <input type="hidden" name="category" value="{{ $inovasi->category }}">
-                                                    <input type="hidden" name="template_path"
-                                                        value="{{ $inovasi->certificate }}">
+                                                    {{-- Input for Certificate Auto Create --}}
+                                                    <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
+                                                    <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
+                                                    <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
+                                                    <input type="hidden" name="certificate_type" value="participant">
 
                                                     <button type="submit" class="btn btn-sm btn-warning dropdown-item">
                                                         <i class="dropdown-item-icon" data-feather="download"></i>
-                                                        Download Sertifikat
+                                                        Sertifikat Peserta
                                                     </button>
                                                 </form>
                                             </li>
+                                            {{-- Button Downlod Certificate Team --}}
+                                            @if($teamRanks->rank <= 3)
+                                            <hr class="dropdown-divider">
+                                            <li>
+                                                <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                                    @csrf
+
+                                                    {{-- Input for Certificate Auto Create --}}
+                                                    <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
+                                                    <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
+                                                    <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
+                                                    <input type="hidden" name="certificate_type" value="team">
+
+                                                    <button type="submit" class="btn btn-sm btn-warning dropdown-item">
+                                                        <i class="dropdown-item-icon" data-feather="download"></i>
+                                                        Sertifikat Tim
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            @endif
                                         </ul>
 
                                     </div>
@@ -280,6 +302,7 @@
             </table>
 
 
+            {{-- Pagination Handler --}}
             @if ($innovations->hasPages())
                 <div class="d-flex justify-content-end mt-2">
                     <ul class="pagination">

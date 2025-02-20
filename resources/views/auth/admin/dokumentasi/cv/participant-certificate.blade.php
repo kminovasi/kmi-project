@@ -37,9 +37,25 @@
             text-align: center;
         }
 
-        .team {
+        .team, .judge-company {
             position: absolute;
             top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .company {
+            position: absolute;
+            top: 51%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .result {
+            position: absolute;
+            top: 56.5%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -53,43 +69,58 @@
             text-align: center;
         }
 
+        .user-name, .team-name, .category, .event-result, .company-name {
+            color: rgb(95, 70, 64);
+        }
+
         .user-name {
             font-size: 30px;
             font-weight: bold;
-            color: rgb(95, 70, 64);
-
         }
 
         .team-name {
             font-size: 20px;
             font-weight: bold;
             margin-top: 5px;
-            color: rgb(95, 70, 64);
         }
 
+        .event-result {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
 
         .category {
             font-size: 18px;
             font-weight: lighter;
             font-style: italic;
-            color: rgb(95, 70, 64);
         }
     </style>
 </head>
 
 <body>
     <div class="certificate-container">
-        @if (Auth::user()->role == 'User')
         <div class="content">
             <div class="user-name">{{ $user_name }}</div>
         </div>
         <div class="team">
             <div class="team-name">{{ $team_name }}</div>
         </div>
-        <div class="footer">
-            <div class="category">{{ $category }}</div>
+        <div class="company">
+            <div class="company-name fw-400 text-capitalize">{{ $company_name }}</div> {{-- Tambahkan Variable Company Name --}}
         </div>
-        @endif
+        <div class="result">
+            @if($member_status == 'facilitator')
+            <div class="event-result text-uppercase">facilitator</div>
+            @elseif($team_rank <= 3)
+            <div class="event-result text-uppercase">{{ 'Juara ' . $team_rank }}</div>
+            @else
+            <div class="event-result text-uppercase">Peserta</div>
+            @endif
+        </div>
+        <div class="footer">
+            <div class="category">{{ $category_name }}</div>
+        </div>
     </div>
 </body>
 

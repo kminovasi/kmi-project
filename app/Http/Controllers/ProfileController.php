@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\RevisionNotification;
+use App\Models\Team;
+use App\Models\User;
 use App\Models\Event;
 use App\Models\Paper;
-use App\Models\pvtAssesmentTeamJudge;
-use App\Models\PvtEventTeam;
 use App\Models\PvtMember;
-use App\Models\Team;
+use App\Models\PvtEventTeam;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Http;
+use App\Mail\RevisionNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use App\Models\pvtAssesmentTeamJudge;
+use Illuminate\Support\Facades\Session;
 
 class ProfileController extends Controller
 {
@@ -34,6 +35,13 @@ class ProfileController extends Controller
         $activeEvents = Event::whereHas('pvtEventTeams', function ($query) use ($teamIds) {
             $query->whereIn('team_id', $teamIds);
         })->where('status', 'active')->get();
+
+        $isActiveJudge = DB::table('judges')
+            ->join('events', 'judges.event_id', '=', 'events.id')
+            ->where('judges.employee_id', $user->employee_id)
+            ->where('judges.status', 'active')
+            ->where('events.status', 'finish')
+            ->exists();
 
         if (Session::get('data_query') != NULL) {
             $data_query = Session::get('data_query');
@@ -69,7 +77,7 @@ class ProfileController extends Controller
                 'jobLevel' => auth()->user()->job_level,
             ];
         }
-        return view('auth.user.profile.index', compact('user', 'activeEvents', 'teamIds'))->with($_arr);
+        return view('auth.user.profile.index', compact('user', 'activeEvents', 'teamIds', 'isActiveJudge'))->with($_arr);
     }
 
     public function showPaperDetail($teamId)

@@ -130,12 +130,7 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <div class="d-grid">
-
-
-
-
                             <button type="submit" class="btn btn-primary" id="btnAssign" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
-
                         </div>
                     </div>
                 </div>
@@ -159,7 +154,7 @@
                 <div class="modal-body px-4 py-3">
                     <!-- Point Assessment -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Point Assessment</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Poin Penilaian</label>
                         <input type="text" class="form-control shadow-sm" name="point" id="inputPoint" value="" readonly>
                     </div>
 
@@ -171,7 +166,7 @@
 
                     <!-- Max Score -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Max Score</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Poin Maksimal</label>
                         <input type="number" class="form-control shadow-sm" name="score_max" id="inputScoreMax" value="" min="0" step="1" required>
                     </div>
                 </div>

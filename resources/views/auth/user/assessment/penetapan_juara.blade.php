@@ -70,8 +70,7 @@
 
             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                 <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event
-                    Group</a>
+                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Acara Grup</a>
             @endif
         </div>
 

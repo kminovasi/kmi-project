@@ -34,7 +34,8 @@ class CvController extends Controller
                 'certificates.template_path as certificate',
                 'pvt_event_teams.status as status',
                 'themes.theme_name',
-                'pvt_event_teams.is_best_of_the_best'
+                'pvt_event_teams.is_best_of_the_best',
+                'pvt_members.status as member_status',
             )
             ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
@@ -46,12 +47,24 @@ class CvController extends Controller
             ->where('pvt_members.employee_id', $employee->employee_id)
             ->where('pvt_event_teams.status', '=', 'Juara')
             ->distinct('papers.id');
-        
-        $isActiveJudge = true;
 
         $innovations = $innovations->paginate(10);
 
-        return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee'));
+        $teamRanks = DB::table('teams')
+            ->select('teams.id', 'categories.category_name', 'events.event_name', 
+                    DB::raw('(SELECT COUNT(*) + 1 FROM teams AS t
+                            JOIN pvt_event_teams AS pet ON t.id = pet.team_id
+                            WHERE t.category_id = teams.category_id AND pet.event_id = events.id
+                            AND pet.status = pvt_event_teams.status AND t.id < teams.id) as rank'))
+            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
+            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
+            ->where('pvt_members.employee_id', $employee->employee_id)
+            ->first();
+
+        return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee', 'teamRanks'));
     }
 
 
@@ -59,25 +72,55 @@ class CvController extends Controller
     {
 
         // Ambil data dari request
-        $userName = $request->input('user_name');
-        $teamName = $request->input('team_name');
-        $category = $request->input('category');
-        $templatePath = $request->input('template_path');
+        $inovasi = json_decode($request->input('inovasi'), true);
+        $employee = json_decode($request->input('employee'), true);
+        $teamRanks = json_decode($request->input('team_rank'), true);
+        $certificateType = $request->input('certificate_type');
 
-        // Data yang akan ditampilkan pada view sertifikat
-        $data = [
-            'user_name' => $userName,
-            'team_name' => $teamName,
-            'category' => $category,
-            'template_path' => $templatePath,
-        ];
+        if(Auth::user()->role == 'Juri'){
+            // View Digunakan
+            $view = 'auth.admin.dokumentasi.cv.judge-certificate';
+            // Data yang akan ditampilkan pada view sertifikat
+            $data = [
+                'user_name' => $employee['name'],
+                'team_name' => $inovasi['team_name'],
+                'company_name' => $employee['company_name'],
+                'event' => $inovasi['event_name'],
+                'template_path' => $inovasi['certificate'],
+                'team_rank' => $teamRanks['rank'],
+            ];
+        } else {
+            if($certificateType == 'participant') {
+                $view = 'auth.admin.dokumentasi.cv.participant-certificate';
+                $data = [
+                    'user_name' => $employee['name'],
+                    'team_name' => $inovasi['team_name'],
+                    'company_name' => $employee['company_name'],
+                    'category_name' => $inovasi['theme_name'],
+                    'template_path' => $inovasi['certificate'],
+                    'team_rank' => $teamRanks['rank'],             
+                    'member_status' => $inovasi['member_status'], 
+                ];
+            } else if ($certificateType == 'team') {
+                $view = 'auth.admin.dokumentasi.cv.team-certificate';
+                $data = [
+                    'innovation_title' => $inovasi['innovation_title'],
+                    'team_name' => $inovasi['team_name'],
+                    'company_name' => $employee['company_name'],
+                    'category_name' => $inovasi['theme_name'],
+                    'template_path' => $inovasi['certificate'],
+                    'team_rank' => $teamRanks['rank'],
+                ];
+            }
+        }
+
 
         // Generate PDF menggunakan dompdf dan view certificate, dengan ukuran A4
-        $pdf = Pdf::loadView('auth.admin.dokumentasi.cv.certificate', $data)
+        $pdf = Pdf::loadView($view, $data)
             ->setPaper('A4', 'landscape');  // Atur ukuran kertas A4, mode portrait
 
         // Return PDF ke browser untuk di-download
-        return $pdf->download('Sertifikat - ' . $userName . '.pdf');
+        return $pdf->download('Sertifikat - ' . $employee['name'] . '.pdf');
     }
 
     function detail($id)

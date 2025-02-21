@@ -305,7 +305,14 @@
             "scrollY": true,
             "scrollX": false,
             "stateSave": true,
-            "destroy": true
+            "destroy": true,
+            "headerCallback": function(thead, data, start, end, display) {
+                $(thead).find('th').each(function(index) {
+                    if ($(this).text() === 'Total') {
+                        $(this).html('<span class="d-block">Total</span><span class="fw-400" style="font-size: 0.6rem;">Nilai Akhir BOD</span>');
+                    }
+                });
+            }
         });
         return dataTable;
     }

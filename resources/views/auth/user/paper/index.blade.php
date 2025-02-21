@@ -1135,15 +1135,15 @@
                     let month = date.getMonth() + 1; // Perhatikan bahwa bulan dimulai dari 0, jadi tambahkan 1
                     let year = date.getFullYear();
                     let formattedDate = ('0' + day).slice(-2) + '/' + ('0' + month).slice(-2) + '/' + year;
+
+                    const headerContent = '<div class="py-3"><h5>' + item.activity + '</h5></div>'
                     
                     if(item.activity === 'Accepted to Event Group' || item.activity === 'Accepted to Event Internal'){
-                        let header = $('<h5>' + item.activity + '</h5>')
+                        let header = $(headerContent)
                         history.append(header);
-                    }
-                    if(item.activity !== 'Accepted to Event Group' || item.activity !== 'Accepted to Event Internal'){
+                    } else {
 
                         let timelineItem = $('<div class="timeline-item">');
-                        let header = $('<h4>Halo Semuanya</h4>')
 
                         let marker = $('<div class="timeline-item-marker">');
                         marker.append('<div class="timeline-item-marker-text">' + formattedDate + '</div>');

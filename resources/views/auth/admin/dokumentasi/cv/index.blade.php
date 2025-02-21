@@ -192,9 +192,6 @@
     </header>
 
     <div class="container-xl p-2">
-        @dump($employee)
-        @dump($innovations)
-        @dump($teamRanks)
         <div class="table-responsive min-vh-100">
             <table class="table table-borderless table-hover text-sm rounded bg-white">
                 <thead>

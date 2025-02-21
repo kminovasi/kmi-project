@@ -1,3 +1,13 @@
+<style>
+    .btn-download {
+        width: 75%;
+    }
+
+    .btn-form {
+        border-top: 1px dotted #ccc;
+    }
+</style>
+
 @extends('layouts.app')
 @section('title', 'Profile')
 @section('content')
@@ -9,7 +19,7 @@
                     <div class="col-auto mb-3 ">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="user"></i></div>
-                            Profile
+                            Profil
                         </h1>
                     </div>
                 </div>
@@ -33,7 +43,19 @@
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
                     </div>
                     @if (Auth::user()->role == 'Juri' && $isActiveJudge)
-                        <a href="" class="btn btn-sm btn-success mb-3 mx-5">Download Srtifikat Juri</a>
+                        <form class="p-3 text-center btn-form" action="{{ route('cv.generateCertificate') }}" method="POST" style="width: 100%; text-align: right;">
+                            @csrf
+                            {{-- Input for Certificate Auto Create --}}
+                            <input type="hidden" name="inovasi" value="{{ json_encode($judgeEvents) }}">
+                            <input type="hidden" name="employee" value="{{ json_encode($user) }}">
+                            <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
+                            <input type="hidden" name="certificate_type" value="team">
+
+                            <button type="submit" class="btn btn-sm btn-success btn-download">
+                                <i class="dropdown-item-icon me-1 fs-1 mb-1" data-feather="download"></i>
+                                Download Srtifikat Juri
+                            </button>
+                        </form>
                     @endif
                 </div>
                 <x-profile.list-paper :teamIds="$teamIds" />
@@ -56,18 +78,18 @@
             <div class="col-xl-12">
                 <!-- Account details card-->
                 <div class="card mb-4">
-                    <div class="card-header">Profile Details</div>
+                    <div class="card-header">Detail Pengguna</div>
                     <div class="card-body">
                         <form>
                             <!-- Form Group (email address)-->
                             <div class="mb-3">
-                                <label class="small mb-1" for="dataName">Name</label>
+                                <label class="small mb-1" for="dataName">Nama lengkap</label>
                                 <input class="form-control" id="dataName" type="email"
                                     placeholder="Enter your email address" value="{{ $name }}" disabled />
                             </div>
                             <!-- Form Group (email address)-->
                             <div class="mb-3">
-                                <label class="small mb-1" for="dataEmail">Email address</label>
+                                <label class="small mb-1" for="dataEmail">Alamat email</label>
                                 <input class="form-control" id="dataEmail" type="email"
                                     placeholder="Enter your email address" value="{{ $email }}" disabled />
                             </div>
@@ -75,13 +97,13 @@
                             <div class="row gx-3 mb-3">
                                 <!-- Form Group (conmpany name)-->
                                 <div class="col-md-6">
-                                    <label class="small mb-1" for="dataCompany">Company name</label>
+                                    <label class="small mb-1" for="dataCompany">Nama perusahaan</label>
                                     <input class="form-control" id="dataCompany" type="text"
                                         placeholder="Enter your organization name" value="{{ $company }}" disabled />
                                 </div>
                                 <!-- Form Group (position)-->
                                 <div class="col-md-6">
-                                    <label class="small mb-1" for="dataPosition">Position</label>
+                                    <label class="small mb-1" for="dataPosition">Posisi</label>
                                     <input class="form-control" id="dataPosition" type="text"
                                         placeholder="Enter your location" value="{{ $position }}" disabled />
                                 </div>
@@ -90,13 +112,13 @@
                             <div class="row gx-3 mb-3">
                                 <!-- Form Group (diroktorate name)-->
                                 <div class="col-md-6">
-                                    <label class="small mb-1" for="dataDirectorate">Directorate name</label>
+                                    <label class="small mb-1" for="dataDirectorate">Nama irektorat</label>
                                     <input class="form-control" id="dataDirectorate" type="text"
                                         placeholder="Enter your organization name" value="{{ $directorate }}" disabled />
                                 </div>
                                 <!-- Form Group (department)-->
                                 <div class="col-md-6">
-                                    <label class="small mb-1" for="dataDepartment">Department</label>
+                                    <label class="small mb-1" for="dataDepartment">Departemen</label>
                                     <input class="form-control" id="dataDepartment" type="text"
                                         placeholder="Enter your location" value="{{ $department }}" disabled />
                                 </div>

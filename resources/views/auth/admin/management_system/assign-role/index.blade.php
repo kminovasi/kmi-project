@@ -24,7 +24,7 @@
                     <div class="col-12 col-xl-auto mb-3">
                         <a class="btn btn-sm btn-primary" href="{{ route('management-system.role.assign.add') }}">
                             <i class="me-1" data-feather="plus"></i>
-                            Assign Role
+                            Tambahkan Role
                         </a>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="me-3">
                                             <i class="feather-xl text-warning mb-3" data-feather="user"></i>
-                                            <h5 class="text-warning">Superadmin</h5>
+                                            <h5 class="text-warning">Super Admin</h5>
                                             <div class="text-muted small">Pengelola Inovasi Holding</div>
                                         </div>
                                     </div>

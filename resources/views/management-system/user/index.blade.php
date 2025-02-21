@@ -36,12 +36,12 @@
                 <table id="userTable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Employee ID</th>
-                            <th>Name</th>
+                            <th>No</th>
+                            <th>ID Karyawan</th>
+                            <th>Nama</th>
                             <th>Email</th>
-                            <th>Position</th>
-                            <th>Manager</th>
+                            <th>Posisi</th>
+                            <th>Manajer</th>
                             <th>Role</th>
                             <th>Actions</th>
                         </tr>

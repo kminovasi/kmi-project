@@ -31,45 +31,37 @@
 
         .content {
             position: absolute;
-            top: 43%;
+            top: 44%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .team, .judge-company {
+        .judge-company {
             position: absolute;
-            top: 48%;
+            top: 48.5%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .company {
+        .event {
             position: absolute;
-            top: 51%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .result {
+        .event-role {
             position: absolute;
-            top: 56.5%;
+            top: 63%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .footer {
-            position: absolute;
-            top: 64%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .user-name, .team-name, .category, .event-result, .company-name {
+        .user-name, .company-name, .judge {
             color: rgb(95, 70, 64);
         }
 
@@ -84,14 +76,14 @@
             margin-top: 5px;
         }
 
-        .event-result {
+        .event-name {
             font-size: 20px;
             font-weight: bold;
             text-transform: uppercase;
         }
 
-        .category {
-            font-size: 18px;
+        .judge {
+            font-size: 2rem;
             font-weight: lighter;
             font-style: italic;
         }
@@ -106,11 +98,11 @@
         <div class="judge-company">
             <div class="company-name fw-400 text-capitalize">{{ $company_name }}</div>
         </div>
+        <div class="event">
+            <div class="event-name">{{ $event_name }}</div>
+        </div>
         <div class="event-role">
             <div class="judge">Tim Juri</div> {{-- Sudah Benar Untuk Tim Juri --}}
-        </div>
-        <div class="footer">
-            <div class="event">{{ $event_name }}</div>
         </div>
     </div>
 </body>

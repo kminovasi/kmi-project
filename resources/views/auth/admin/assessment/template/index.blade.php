@@ -30,14 +30,14 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                        Show Template Assessment
+                        Halaman Template Penilaian
                     </h1>
 
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
                     <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
                         <i class="me-1" data-feather="plus"></i>
-                        Create Point
+                        Buat Poin
                     </a>
                 </div>
             </div>
@@ -49,9 +49,9 @@
     <div class="p-2 border-bottom">
         @if (auth()->user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
-            Assessment</a>
-        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
-            Point Setting</a>
+            Penilaian</a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
+            Poin Penilaian</a>
         @endif
 
     </div>
@@ -75,7 +75,7 @@
         <div class="card-body">
             <div class="mb-3">
                 <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
-                <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
+                <button id="select-all-button" class="btn btn-outline-primary btn-sm">Pilih Semua</button>
             </div>
             <form action="{{ route('assessment.store.assign.point') }}" method="POST">
                 @csrf
@@ -87,7 +87,7 @@
                     <div class="card-body">
                         <h6 class="card-title text-primary mb-3 d-flex align-items-center">
                             <i class="me-2" data-feather="info"></i>
-                            <span>Information</span>
+                            <span>Informasi</span>
                         </h6>
                         <div id="konfirmasiScore" class="bg-light p-3 rounded border">
                             <!-- Content for the information will go here -->
@@ -128,7 +128,7 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateTemplateTitle">Update Template</h5>
+                <h5 class="modal-title" id="updateTemplateTitle">Perbarui Template</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="updateTemplateAssessment" method="POST" enctype="multipart/form-data">
@@ -136,7 +136,7 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" for="inputPoint">Point Assessment</label>
+                        <label class="form-label" for="inputPoint">Poin Penilaian</label>
                         <input type="text" class="form-control" name="point" id="inputPoint" value="" placeholder="Enter the point value">
                     </div>
                     <div class="mb-3">
@@ -160,7 +160,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="inputScoreMax">Max Score</label>
+                        <label class="form-label" for="inputScoreMax">Skor Maksimal</label>
                         <input type="number" class="form-control" name="score_max" id="inputScoreMax" value="" placeholder="Enter max score">
                     </div>
                 </div>
@@ -205,7 +205,7 @@
             <!-- Header -->
             <div class="modal-header">
                 <h5 class="modal-title d-flex align-items-center" id="filterModalTitle">
-                    <i class="me-2" data-feather="filter"></i> Filter Options
+                    <i class="me-2" data-feather="filter"></i> Pilihan Filter
                 </h5>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -214,7 +214,7 @@
             <div class="modal-body px-4 py-3">
                 <!-- Category Filter -->
                 <div class="mb-4">
-                    <label class="mb-1 fw-bold text-muted" for="filter-category">Category</label>
+                    <label class="mb-1 fw-bold text-muted" for="filter-category">Kategori</label>
                     <select id="filter-category" class="form-select shadow-sm" name="filter-category">
                         <option value="BI/II">Implemented</option>
                         <option value="IDEA">IDEA Box</option>
@@ -225,7 +225,7 @@
             <!-- Footer -->
             <div class="modal-footer bg-light d-flex justify-content-end">
                 <button class="btn btn-danger" type="button" data-bs-dismiss="modal">
-                    Close
+                    Tutup
                 </button>
             </div>
         </div>
@@ -264,11 +264,11 @@
             },
             "columns": [
                 {"data": "DT_RowIndex", "title": "No"},
-                {"data": "point", "title": "Point Assessment"},
-                {"data": "detail_point", "title": "Detail Assessment"},
-                {"data": "pdca", "title": "Category"},
-                {"data": "score_max", "title": "Max Score"},
-                {"data": "assign","title": "Assign"
+                {"data": "point", "title": "Poin Penilaian"},
+                {"data": "detail_point", "title": "Detail Penilian"},
+                {"data": "pdca", "title": "Kategori"},
+                {"data": "score_max", "title": "Skor Maksimal"},
+                {"data": "assign","title": "Tambahkan"
                 //     "render": function (data, type, row) {
                 //     // Check if checkbox is already checked on initial load
                 //     let isChecked = data ? 'checked' : '';
@@ -421,18 +421,18 @@
 
         if(totalMaxScore == nilai){
             if(atLeastOneChecked && totalMaxScore == nilai){
-                document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan submit`;
+                document.getElementById("konfirmasiScore").innerHTML = `Total skor Maksimal <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan submit`;
                 document.getElementById('btnAssign').removeAttribute('disabled');
             }else{
-                document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan pilih <b>Event</b> terlebih dahulu`;
+                document.getElementById("konfirmasiScore").innerHTML = `Total skor Maksimal <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan pilih <b>Event</b> terlebih dahulu`;
                 document.getElementById('btnAssign').setAttribute('disabled', true);
             }
         }else if(totalMaxScore > nilai){
             document.getElementById('btnAssign').setAttribute('disabled', true);
-            document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kelebihan <b class="text-red" id="totalScore"> ${Math.abs(sisaMaxScore)} </b>`;
+            document.getElementById("konfirmasiScore").innerHTML = `Total skor Maksimal <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kelebihan <b class="text-red" id="totalScore"> ${Math.abs(sisaMaxScore)} </b>`;
         }else{
             document.getElementById('btnAssign').setAttribute('disabled', true);
-            document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kurang <b class="text-red" id="totalScore"> ${sisaMaxScore} </b>`;
+            document.getElementById("konfirmasiScore").innerHTML = `Total skor Maksimal <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kurang <b class="text-red" id="totalScore"> ${sisaMaxScore} </b>`;
         }
 
 

@@ -21,7 +21,7 @@
                             <th>No</th>
                             <th>Nama</th>
                             <th>Langkah</th>
-                            <th>Maksimal Pengguna</th>
+                            <th>Maksimal Angota</th>
                             <th width="280px">Aksi</th>
                         </tr>
                         @foreach ($metodologiPapers as $metodologiPaper)

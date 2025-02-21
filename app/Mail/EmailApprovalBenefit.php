@@ -178,7 +178,6 @@ class EmailApprovalBenefit extends Mailable
 
             $pdf->writeHTML($html, true, false, true, false, '');
             $pdf_file_name = 'Berita Acara Benefit_' . $this->paper->id . '.pdf';
-            //$pdf_folder = 'public/benefit-approvals/';
             Storage::put($pdfFolder . $pdf_file_name, $pdf->Output($pdf_file_name, 'S'));
 
             $attachment = Storage::path($pdfFolder . $pdf_file_name);

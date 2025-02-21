@@ -31,7 +31,7 @@
                                         <td>{{ $user->email ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Peran</th>
+                                        <th>Role</th>
                                         <td>{{ $user->role ?? '-' }}</td>
                                     </tr>
                                 </table>

@@ -77,17 +77,27 @@ class CvController extends Controller
         $teamRanks = json_decode($request->input('team_rank'), true);
         $certificateType = $request->input('certificate_type');
 
-        if(Auth::user()->role == 'Juri'){
+        $judgeEvents = DB::table('judges')
+        ->join('events', 'judges.event_id', '=', 'events.id')
+        ->join('pvt_event_teams', 'events.id', '=', 'pvt_event_teams.event_id')
+        ->join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+        ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id') // Join with certificates table
+        ->select('events.event_name', 'teams.team_name', 'certificates.template_path') // Include template_path in the select statement
+        ->where('judges.employee_id', $employee['employee_id'])
+        ->where('judges.status', 'active')
+        ->where('events.status', 'finish')
+        ->first();
+
+        if(Auth::user()->role == 'Juri' && $judgeEvents){
             // View Digunakan
-            $view = 'auth.admin.dokumentasi.cv.judge-certificate';
+            $view = 'auth.user.profile.judge-certificate';
             // Data yang akan ditampilkan pada view sertifikat
             $data = [
                 'user_name' => $employee['name'],
                 'team_name' => $inovasi['team_name'],
                 'company_name' => $employee['company_name'],
-                'event' => $inovasi['event_name'],
-                'template_path' => $inovasi['certificate'],
-                'team_rank' => $teamRanks['rank'],
+                'event_name' => $inovasi['event_name'],
+                'template_path' => $inovasi['template_path'],
             ];
         } else {
             if($certificateType == 'participant') {

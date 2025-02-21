@@ -158,6 +158,9 @@ class BenefitController extends Controller
 
         $record = Paper::with('team')->findOrFail($id);
 
+        // Mendapatkan nama tim
+        $teamName = $record->team ? $record->team->team_name : 'Team tidak ditemukan';
+
         // Assign fields from request
         $record->financial = $request->financial;
         $record->potential_benefit = $request->potential_benefit;
@@ -174,11 +177,9 @@ class BenefitController extends Controller
             // Simpan file baru
             $record->file_review = $request->file('file_review')->storeAs(
                 '/file_review',
-                $record->innovation_title . "." . $request->file('file_review')->extension(),
+                $teamName . "." . $request->file('file_review')->extension(),
                 'public'
             );
-            // Tambahkan awalan '/'
-            $record->file_review = $record->file_review;
         } else {
             if ($record->file_review === null) {
                 return redirect()->route('benefit.create.user', ['id' => $id])->withErrors("Error: File Review harus di upload");

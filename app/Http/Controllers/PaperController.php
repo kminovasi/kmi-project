@@ -595,8 +595,6 @@ class PaperController extends Controller
 
             $paper = Paper::findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
-            //$paper = Paper::with('team')->findOrFail($id);
-            // $paper->$stage = $request->step;
             $paper->$stage = '';
             $paper->save();
 
@@ -1436,7 +1434,7 @@ class PaperController extends Controller
         $benefitNonFinancial = $paper->non_financial;
 
         // Pastikan relasi Team sudah dimuat dengan benar
-        if ($paper->team) { //email terkirim ke admin yg terassign di event yg sedang berlangsung
+        if ($paper->team) { //email terkirim ke yg terassign di event yg sedang berlangsung
 
             $gmId = PvtMember::where('team_id', $paper->team->id)
                 ->where('status', 'gm')
@@ -1758,7 +1756,7 @@ class PaperController extends Controller
         try {
             // Validate the file input
             $request->validate([
-                'file_stage' => 'required|file|mimes:pdf|max:72020', // Adjust the max size as needed
+                'file_stage' => 'required|file|mimes:pdf|max:10240', // Adjust the max size as needed
             ]);
 
             // Get the uploaded file

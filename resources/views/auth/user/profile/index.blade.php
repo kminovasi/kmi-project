@@ -43,7 +43,7 @@
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
                     </div>
                     @if (Auth::user()->role == 'Juri' && $isActiveJudge)
-                        <form class="p-3 text-center btn-form" action="{{ route('cv.generateCertificate') }}" method="POST" style="width: 100%; text-align: right;">
+                        <form action="{{ route('cv.generateCertificate') }}" method="POST">
                             @csrf
                             {{-- Input for Certificate Auto Create --}}
                             <input type="hidden" name="inovasi" value="{{ json_encode($judgeEvents) }}">
@@ -51,8 +51,7 @@
                             <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
                             <input type="hidden" name="certificate_type" value="team">
 
-                            <button type="submit" class="btn btn-sm btn-success btn-download">
-                                <i class="dropdown-item-icon me-1 fs-1 mb-1" data-feather="download"></i>
+                            <button type="submit" class="btn btn-sm btn-success mb-3 mx-5">
                                 Download Srtifikat Juri
                             </button>
                         </form>
@@ -60,9 +59,6 @@
                 </div>
                 <x-profile.list-paper :teamIds="$teamIds" />
             </div>
-
-
-
             <!-- Bagian Tim dan Paper -->
             <div class="col-lg-6 col-md-6 col-sm-10 col-xs-12">
                 <x-dashboard.innovator.schedule-event :activeEvents="$activeEvents" />

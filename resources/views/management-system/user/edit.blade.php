@@ -1,3 +1,10 @@
+<style>
+
+    .form-group {
+        margin-top: .7rem;
+    } 
+</style>
+
 @extends('layouts.app')
 @section('title', 'Edit User | User Management')
 
@@ -77,7 +84,7 @@
                                 <input type="text" name="sub_section_of" class="form-control" value="{{ $user->sub_section_of }}">
                             </div>
                             <div class="form-group">
-                                <label>Tingkat Pekerjaan</label>
+                                <label>Job Level</label>
                                 <input type="text" name="job_level" class="form-control" value="{{ $user->job_level }}">
                             </div>
                         </div>
@@ -91,7 +98,7 @@
                                 <input type="password" name="password_confirmation" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label>Peran</label>
+                                <label>Role</label>
                                 <select name="role" class="form-control" required>
                                     <option value="">Pilih Peran</option>
                                     <option value="Superadmin" {{ $user->role == 'Superadmin' ? 'selected' : '' }}>Superadmin</option>

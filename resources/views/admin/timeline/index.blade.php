@@ -26,7 +26,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <a href="{{ route('timeline.create') }}" class="btn btn-primary mb-3">Buat Timeline</a>
+            <a href="{{ route('timeline.create') }}" class="btn btn-primary mb-3">Buat Linimasa</a>
             <table id="timeline-table" class="table table-striped table-bordered">
                 <thead>
                     <tr>

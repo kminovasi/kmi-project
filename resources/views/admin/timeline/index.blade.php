@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Timeline Management')
+@section('title', 'Manajemen Linimasa')
 @section('content')
 @push('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -8,7 +8,7 @@
     rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
-<x-header-content title="Timeline Management" />
+<x-header-content title="Manajemen Linimasa" />
 <div class="container">
     @if (session('success'))
         <div class="alert alert-success">

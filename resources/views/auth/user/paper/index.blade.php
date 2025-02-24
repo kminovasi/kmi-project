@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Makalah - Portal Inovasi')
+@section('title', 'Data Makalah')
 
 @push('css')
     <link
@@ -50,7 +50,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Data Paper - Innovation Paper
+                            Data Makalah Inovasi
                         </h1>
                     </div>
                 </div>
@@ -554,22 +554,22 @@
                     "title": "No"
                 }, {
                     "data": "innovation_title",
-                    "title": "Innovation Title"
+                    "title": "Judul Inovasi"
                 }, {
                     "data": "team_name",
-                    "title": "Team Name"
+                    "title": "Nama Tim"
                 }, {
                     "data": "detail_team",
-                    "title": "Detail Team"
+                    "title": "Detail Tim"
                 }, {
                     "data": "company_name",
-                    "title": "Company"
+                    "title": "Perusahaan"
                 }, {
                     "data": "category_name",
-                    "title": "Category"
+                    "title": "Kategori"
                 }, {
                     "data": "theme_name",
-                    "title": "Theme"
+                    "title": "Tema"
                 },
                 {
                     "data": "metodologi_makalah",
@@ -577,28 +577,28 @@
                 },
                 {
                     "data": "step_1",
-                    "title": "Step 1"
+                    "title": "Langkah 1"
                 }, {
                     "data": "step_2",
-                    "title": "Step 2"
+                    "title": "Langkah 2"
                 }, {
                     "data": "step_3",
-                    "title": "Step 3"
+                    "title": "Langkah 3"
                 }, {
                     "data": "step_4",
-                    "title": "Step 4"
+                    "title": "Langkah 4"
                 }, {
                     "data": "step_5",
-                    "title": "Step 5"
+                    "title": "Langkah 5"
                 }, {
                     "data": "step_6",
-                    "title": "Step 6"
+                    "title": "Langkah 6"
                 }, {
                     "data": "step_7",
-                    "title": "Step 7"
+                    "title": "Langkah 7"
                 }, {
                     "data": "step_8",
-                    "title": "Step 8"
+                    "title": "Langkah 8"
                 }, {
                     "data": "full_paper",
                     "title": "Full Paper"
@@ -671,22 +671,22 @@
             },
             "columns": [
                 {"data": "DT_RowIndex", "title": "No"},
-                {"data": "innovation_title", "title": "Innovation Title"},
+                {"data": "innovation_title", "title": "Judul Inovasi"},
                 // {"data": "inovasi_lokasi", "tittle": "Lokasi Inovasi"},
-                {"data": "team_name", "title": "Team Name"},
-                {"data": "detail_team","title": "Detail Team"},
-                {"data": "company_name","title": "Company"},
-                {"data": "category_name","title": "Category"},
-                {"data": "theme_name","title": "Theme"},
+                {"data": "team_name", "title": "Nama Tim"},
+                {"data": "detail_team","title": "Detail Timm"},
+                {"data": "company_name","title": "Perusahaan"},
+                {"data": "category_name","title": "Kategori"},
+                {"data": "theme_name","title": "Tema"},
                 {"data": "metodologi_makalah","title": "Metodologi Makalah"},
-                {"data": "step_1","title": "Step 1"},
-                {"data": "step_2","title": "Step 2"},
-                {"data": "step_3","title": "Step 3"},
-                {"data": "step_4","title": "Step 4"},
-                {"data": "step_5","title": "Step 5"},
-                {"data": "step_6","title": "Step 6"},
-                {"data": "step_7","title": "Step 7"},
-                {"data": "step_8","title": "Step 8"},
+                {"data": "step_1","title": "Langkah 1"},
+                {"data": "step_2","title": "Langkah 2"},
+                {"data": "step_3","title": "Langkah 3"},
+                {"data": "step_4","title": "Langkah 4"},
+                {"data": "step_5","title": "Langkah 5"},
+                {"data": "step_6","title": "Langkah 6"},
+                {"data": "step_7","title": "Langkah 7"},
+                {"data": "step_8","title": "Langkah 8"},
                 {"data": "full_paper","title": "Full Paper"},
                 {"data": "benefit","title": "Benefit"},
                 {"data": "approval","title": "Approval"},

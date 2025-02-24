@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Data Paper')
+@section('title', 'Manajemen Sistem | Kelola Event')
 @push('css')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -76,7 +76,7 @@
                     <a class="btn btn-sm btn-primary text-white"
                         href="{{ route('management-system.assign.event.create') }}">
                         <i class="me-1" data-feather="plus"></i>
-                        Assign Event
+                        Tambah Event
                     </a>
                 @endif
             </div>
@@ -239,13 +239,13 @@
                     }
 
                 },
-                {"data": "event_name", "title": "Event Name"},
-                {"data": "company", "title": "Company Name"},
-                {"data": "year", "title": "Year"},
-                {"data": "date_start", "title": "Date Start"},
-                {"data": "date_end", "title": "Date End"},
+                {"data": "event_name", "title": "Nama Event"},
+                {"data": "company", "title": "Nama Perusahaan"},
+                {"data": "year", "title": "Tahun"},
+                {"data": "date_start", "title": "Tanggal Mulai"},
+                {"data": "date_end", "title": "Tanggal Selesai"},
                 {"data": "status", "title": "Status"},
-                {"data": "type", "title": "Type"},
+                {"data": "type", "title": "Tipe"},
                 {"data": "action", "title": "Action"},
             ],
 

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Data Assessment Template')
+@section('title', 'Manajmen Sistem | Template Penilaian')
 @push('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css" rel="stylesheet">
@@ -30,14 +30,14 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                        Show Template Assessment
+                        Halaman Template Penilaian
                     </h1>
 
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
                     <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
                         <i class="me-1" data-feather="plus"></i>
-                        Create Point
+                        Buat poin
                     </a>
                 </div>
             </div>
@@ -49,9 +49,9 @@
     <div class="p-2 border-bottom">
         @if (auth()->user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
-            Assessment</a>
-        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Assessment
-            Point Setting</a>
+            Penilaian </a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
+            Poin Penilian</a>
         @endif
 
     </div>
@@ -75,7 +75,7 @@
         <div class="card-body">
             <div class="mb-3">
                 <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
-                <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
+                <button id="select-all-button" class="btn btn-outline-primary btn-sm">Pilih Semua</button>
             </div>
             <form action="{{ route('assessment.store.assign.point') }}" method="POST">
                 @csrf
@@ -87,7 +87,7 @@
                     <div class="card-body">
                         <h6 class="card-title text-primary mb-3 d-flex align-items-center">
                             <i class="me-2" data-feather="info"></i>
-                            <span>Information</span>
+                            <span>Informasi</span>
                         </h6>
                         <div id="konfirmasiScore" class="bg-light p-3 rounded border">
                             <!-- Content for the information will go here -->
@@ -128,7 +128,7 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateTemplateTitle">Update Template</h5>
+                <h5 class="modal-title" id="updateTemplateTitle">Perbarui Template</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="updateTemplateAssessment" method="POST" enctype="multipart/form-data">
@@ -136,7 +136,7 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" for="inputPoint">Point Assessment</label>
+                        <label class="form-label" for="inputPoint">Poin Penilaian</label>
                         <input type="text" class="form-control" name="point" id="inputPoint" value="" placeholder="Enter the point value">
                     </div>
                     <div class="mb-3">

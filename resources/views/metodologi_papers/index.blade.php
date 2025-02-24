@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Makalah Metodologi')
+@section('title', 'Manajemen Sistem | Makalah Metodologi')
 
 @section('content')
 <x-header-content title="Makalah Metodologi" />

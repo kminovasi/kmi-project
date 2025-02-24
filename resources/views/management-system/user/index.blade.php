@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'User Management')
+@section('title', 'Manajemen Sistem | Pengguna')
 
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -36,12 +36,12 @@
                 <table id="userTable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Employee ID</th>
-                            <th>Name</th>
+                            <th>No</th>
+                            <th>ID Karyawan</th>
+                            <th>Nama</th>
                             <th>Email</th>
-                            <th>Position</th>
-                            <th>Manager</th>
+                            <th>Posisi</th>
+                            <th>Manajer</th>
                             <th>Role</th>
                             <th>Actions</th>
                         </tr>

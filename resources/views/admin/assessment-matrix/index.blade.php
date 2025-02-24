@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Management Penilaian Matriks')
+@section('title', 'Manajemen Sistem | Matriks Penilaian')
 
 @push('css')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
@@ -86,9 +86,6 @@
                 </div>
                 @endforeach
             </div>
-
-
-
             {{ $images->links() }}
         </div>
     </div>
@@ -123,7 +120,6 @@
             </div>
         </div>
     </div>
-
 </div>
 @endsection
 
@@ -139,25 +135,24 @@
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script>
-                function confirmDelete(button) {
-                    Swal.fire({
-                        title: 'Apakah Anda yakin?'
-                        , text: "Tindakan ini tidak dapat dibatalkan!"
-                        , icon: 'warning'
-                        , showCancelButton: true
-                        , confirmButtonColor: '#d33'
-                        , cancelButtonColor: '#6c757d'
-                        , confirmButtonText: 'Ya, hapus!'
-                        , cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Akses form terkait tombol yang ditekan dan submit
-                            const form = button.closest('form');
-                            form.submit();
-                        }
-                    });
-                }
-
-            </script>
+<script>
+    function confirmDelete(button) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?'
+            , text: "Tindakan ini tidak dapat dibatalkan!"
+            , icon: 'warning'
+            , showCancelButton: true
+            , confirmButtonColor: '#d33'
+            , cancelButtonColor: '#6c757d'
+            , confirmButtonText: 'Ya, hapus!'
+            , cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Akses form terkait tombol yang ditekan dan submit
+                const form = button.closest('form');
+                form.submit();
+            }
+        });
+    }
+</script>
 @endpush

@@ -99,6 +99,7 @@ class CvController extends Controller
                 'event_name' => $inovasi['event_name'],
                 'template_path' => $inovasi['template_path'],
             ];
+            $certificateName = $employee['name'];
         } else {
             if($certificateType == 'participant') {
                 $view = 'auth.admin.dokumentasi.cv.participant-certificate';
@@ -111,6 +112,7 @@ class CvController extends Controller
                     'team_rank' => $teamRanks['rank'],             
                     'member_status' => $inovasi['member_status'], 
                 ];
+                $certificateName = $employee['name'];
             } else if ($certificateType == 'team') {
                 $view = 'auth.admin.dokumentasi.cv.team-certificate';
                 $data = [
@@ -121,6 +123,7 @@ class CvController extends Controller
                     'template_path' => $inovasi['certificate'],
                     'team_rank' => $teamRanks['rank'],
                 ];
+                $certificateName = $inovasi['team_name'];
             }
         }
 
@@ -130,7 +133,7 @@ class CvController extends Controller
             ->setPaper('A4', 'landscape');  // Atur ukuran kertas A4, mode portrait
 
         // Return PDF ke browser untuk di-download
-        return $pdf->download('Sertifikat - ' . $employee['name'] . '.pdf');
+        return $pdf->download('Sertifikat - ' . $certificateName . '.pdf');
     }
 
     function detail($id)

@@ -31,13 +31,13 @@
 
         .content {
             position: absolute;
-            top: 43%;
+            top: 44%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .team, .judge-company {
+        .team {
             position: absolute;
             top: 48%;
             left: 50%;
@@ -47,7 +47,7 @@
 
         .company {
             position: absolute;
-            top: 51%;
+            top: 52%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -73,13 +73,18 @@
             color: rgb(95, 70, 64);
         }
 
+        .company-name {
+            font-size: .75rem;
+            font-weight: bold
+        }
+
         .user-name {
             font-size: 30px;
             font-weight: bold;
         }
 
         .team-name {
-            font-size: 20px;
+            font-size: 1.2rem;
             font-weight: bold;
             margin-top: 5px;
         }
@@ -107,7 +112,7 @@
             <div class="team-name">{{ $team_name }}</div>
         </div>
         <div class="company">
-            <div class="company-name fw-400 text-capitalize">{{ $company_name }}</div> {{-- Tambahkan Variable Company Name --}}
+            <div class="company-name text-capitalize">{{ $company_name }}</div> {{-- Tambahkan Variable Company Name --}}
         </div>
         <div class="result">
             @if($member_status == 'facilitator')

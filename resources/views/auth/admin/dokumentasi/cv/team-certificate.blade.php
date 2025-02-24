@@ -31,15 +31,15 @@
 
         .content {
             position: absolute;
-            top: 43%;
+            top: 44%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
-        .title, .judge-company {
+        .title {
             position: absolute;
-            top: 48%;
+            top: 49%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -47,7 +47,7 @@
 
         .company {
             position: absolute;
-            top: 52%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -55,7 +55,7 @@
 
         .rank {
             position: absolute;
-            top: 80%;
+            top: 25%;
             left: 80%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -80,7 +80,7 @@
 
         .innovation-title {
             font-size: .7rem;
-            font-weight: bold;
+            font-weight: 400;
             margin-top: 5px;
         }
 
@@ -92,7 +92,7 @@
 
         .category {
             font-size: 18px;
-            font-weight: lighter;
+            font-weight: bold;
             font-style: italic;
         }
     </style>
@@ -107,7 +107,7 @@
             <div class="innovation-title">{{ $innovation_title }}</div>
         </div>
         <div class="company">
-            <div class="company-name fw-400 text-capitalize">{{ $company_name }}</div>
+            <div class="company-name fw-600 text-capitalize">{{ $company_name }}</div>
         </div>
         <div class="footer">
             <div class="category text-capitalize">{{ $category_name }}</div>

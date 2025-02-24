@@ -5,6 +5,7 @@
 
     .btn-form {
         border-top: 1px dotted #ccc;
+        text-align: center;
     }
 </style>
 
@@ -43,7 +44,7 @@
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
                     </div>
                     @if (Auth::user()->role == 'Juri' && $isActiveJudge)
-                        <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                        <form class="btn-form p-3" action="{{ route('cv.generateCertificate') }}" method="POST">
                             @csrf
                             {{-- Input for Certificate Auto Create --}}
                             <input type="hidden" name="inovasi" value="{{ json_encode($judgeEvents) }}">
@@ -51,8 +52,9 @@
                             <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
                             <input type="hidden" name="certificate_type" value="team">
 
-                            <button type="submit" class="btn btn-sm btn-success mb-3 mx-5">
-                                Download Srtifikat Juri
+                            <button type="submit" class="btn btn-sm btn-download btn-success mx-5">
+                                <i class="dropdown-item-icon mb-1 me-2 fs-2" data-feather="download"></i>
+                                Download Sertifikat Juri
                             </button>
                         </form>
                     @endif

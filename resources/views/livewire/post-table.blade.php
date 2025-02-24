@@ -6,7 +6,7 @@
             <tr>
                 <th>#</th>
                 <th>Judul</th>
-                <th>Author</th>
+                <th>Penulis</th>
                 <th>Tanggal</th>
                 <th></th>
             </tr>

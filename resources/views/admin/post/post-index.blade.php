@@ -29,7 +29,7 @@
     <x-toast-alert type="danger" message="{{ $errors->first('error') }}" />
 
     <div>
-        <a class="btn btn-primary mb-3" href="{{ route('post.create') }}">Buat Post</a>
+        <a class="btn btn-primary mb-3" href="{{ route('post.create') }}">Buat Postingan</a>
     </div>
 
     @livewire('post-table')

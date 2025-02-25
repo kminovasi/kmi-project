@@ -1067,7 +1067,7 @@
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
+                // console.log(response)
                 document.getElementById("inputInnovationTitle").value = response[0].innovation_title;
                 document.getElementById("inputTeamName").value = response[0].team_name;
 

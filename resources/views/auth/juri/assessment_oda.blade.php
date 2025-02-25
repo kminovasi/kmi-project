@@ -114,8 +114,29 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <x-assessment.show-full-paper-button :fullPaperPath="$datas->full_paper"
-                        :fullPaperUpdatedAt="$datas->full_paper_updated_at" />
+                    <div class="d-flex flex-column align-items-start">
+                        @if ($datas->full_paper)
+                            <a href="{{ route('assessment.watermarks', ['paper_id' => $datas->paper_id]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
+                                Lihat Makalah
+                            </a>
+
+                            @if ($datas->full_paper_updated_at)
+                                <small class="text-muted mt-2">
+                                    <small class="text-muted mt-2">
+                                        Makalah Terakhir diubah pada:
+                                        {{ \Carbon\Carbon::parse($datas->full_paper_updated_at)->translatedFormat('d F Y H:i') }}
+                                    </small>
+
+                                </small>
+                            @else
+                                <small class="text-muted mt-2">
+                                    Terakhir diubah pada: Tidak tersedia
+                                </small>
+                            @endif
+                        @else
+                            <p class="text-muted">File paper belum tersedia.</p>
+                        @endif
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-6">

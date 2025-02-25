@@ -41,6 +41,7 @@ class BenefitController extends Controller
             ->get();
         return view('auth.admin.benefit.index', ['data' => $data]);
     }
+    
     public function createBenefitUser($id)
     {
 
@@ -79,11 +80,9 @@ class BenefitController extends Controller
 
         $file_content = null;
         if ($row->file_review) {
-
-            // Cek apakah file benar-benar ada sebelum mencoba mengambilnya
-            if (Storage::disk('public')->exists($row->file_review)) {
-                // Ambil konten file
-                $file_content = Storage::disk('public')->get($row->file_review);
+            $filePath = storage_path('app/public/' . $row->file_review);
+            if (file_exists($filePath)) {
+                $file_content = file_get_contents($filePath);
             }
         }
 
@@ -174,11 +173,9 @@ class BenefitController extends Controller
             // Simpan file baru
             $record->file_review = $request->file('file_review')->storeAs(
                 '/file_review',
-                $record->innovation_title . "." . $request->file('file_review')->extension(),
+                $record->team_name . "." . $request->file('file_review')->extension(),
                 'public'
             );
-            // Tambahkan awalan '/'
-            $record->file_review = $record->file_review;
         } else {
             if ($record->file_review === null) {
                 return redirect()->route('benefit.create.user', ['id' => $id])->withErrors("Error: File Review harus di upload");

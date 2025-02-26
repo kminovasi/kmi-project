@@ -1,9 +1,9 @@
 <div class="d-flex flex-column align-items-start">
-    @if ($fullPaperPath)
-        <a href="{{ asset($fullPaperPath) }}" class="btn btn-sm text-white" style="background-color: #e84637"
-            target="_blank">
+    @if ($paperId != null)
+        <a href="{{ route('assessment.watermarks', ['paperId' => $paperId != null]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
             Lihat Makalah
         </a>
+
         @if ($fullPaperUpdatedAt)
             <small class="text-muted mt-2">
                 <small class="text-muted mt-2">

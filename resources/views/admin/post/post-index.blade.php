@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'post')
+@section('title', 'Manajemen Posting')
 @section('content')
 @push('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
@@ -13,7 +13,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="image"></i></div>
-                        Manajement Post
+                        Manajemen Post
                     </h1>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Makalah - Portal Inovasi')
+@section('title', 'Data Makalah')
 
 @push('css')
     <link
@@ -50,7 +50,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Data Paper - Innovation Paper
+                            Data Makalah Inovasi
                         </h1>
                     </div>
                 </div>
@@ -577,28 +577,28 @@
                 },
                 {
                     "data": "step_1",
-                    "title": "Step 1"
+                    "title": "Langkah 1"
                 }, {
                     "data": "step_2",
-                    "title": "Step 2"
+                    "title": "Langkah 2"
                 }, {
                     "data": "step_3",
-                    "title": "Step 3"
+                    "title": "Langkah 3"
                 }, {
                     "data": "step_4",
-                    "title": "Step 4"
+                    "title": "Langkah 4"
                 }, {
                     "data": "step_5",
-                    "title": "Step 5"
+                    "title": "Langkah 5"
                 }, {
                     "data": "step_6",
-                    "title": "Step 6"
+                    "title": "Langkah 6"
                 }, {
                     "data": "step_7",
-                    "title": "Step 7"
+                    "title": "Langkah 7"
                 }, {
                     "data": "step_8",
-                    "title": "Step 8"
+                    "title": "Langkah 8"
                 }, {
                     "data": "full_paper",
                     "title": "Full Paper"
@@ -674,7 +674,11 @@
                 {"data": "innovation_title", "title": "Judul Inovasi"},
                 // {"data": "inovasi_lokasi", "tittle": "Lokasi Inovasi"},
                 {"data": "team_name", "title": "Nama Tim"},
+<<<<<<< HEAD
                 {"data": "detail_team","title": "Detail Tim"},
+=======
+                {"data": "detail_team","title": "Detail Timm"},
+>>>>>>> fix-system-bug
                 {"data": "company_name","title": "Perusahaan"},
                 {"data": "category_name","title": "Kategori"},
                 {"data": "theme_name","title": "Tema"},
@@ -1067,7 +1071,7 @@
             },
             // dataType: 'json',
             success: function(response) {
-                console.log(response)
+                // console.log(response)
                 document.getElementById("inputInnovationTitle").value = response[0].innovation_title;
                 document.getElementById("inputTeamName").value = response[0].team_name;
 

@@ -2,38 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TemplateAssessmentPoint;
-use App\Models\Event;
-use Illuminate\Support\Facades\Session;
-use App\Models\Company;
+use Route;
 use Exception;
-use App\Models\AssessmentPoint;
-use App\Models\PvtAssessmentEvent;
-use App\Models\pvtAssesmentTeamJudge;
-use App\Models\PvtEventTeam;
+use Mpdf\Mpdf;
+use Carbon\Carbon;
 use App\Models\Team;
+use App\Models\Event;
+use App\Models\Judge;
+use App\Models\Paper;
+use App\Models\Company;
 use App\Models\NewSofi;
-use App\Models\Category;
-use App\Models\SummaryExecutive;
-use App\Models\MinimumscoreEvent;
-use App\Models\BodEventValue;
 use App\Models\BodEvent;
+use App\Models\Category;
 use App\Models\SummaryPPT;
 use App\Models\BeritaAcara;
-use App\Models\Judge;
-use App\Models\keputusanBOD;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Mpdf\Mpdf;
-use App\Http\Requests\assessmentTemplateRequests;
-use App\Http\Requests\assessmentPointRequests;
-use App\Services\JudgeService;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
+use App\Models\keputusanBOD;
+use App\Models\PvtEventTeam;
+use Illuminate\Http\Request;
+use App\Models\BodEventValue;
+use setasign\Fpdi\Tcpdf\Fpdi;
+use App\Services\JudgeService;
+use App\Models\AssessmentPoint;
+use App\Models\SummaryExecutive;
+use App\Models\MinimumscoreEvent;
+use App\Models\PvtAssessmentEvent;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Models\pvtAssesmentTeamJudge;
+use App\Models\TemplateAssessmentPoint;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Route;
+use App\Http\Requests\assessmentPointRequests;
+use App\Http\Requests\assessmentTemplateRequests;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class AssessmentController extends Controller
 {
@@ -287,7 +290,7 @@ class AssessmentController extends Controller
             ->join('papers', 'papers.team_id', '=', 'teams.id')
             ->join('categories', 'categories.id', '=', 'teams.category_id')
             ->where('pvt_event_teams.id', $id)
-            ->select('team_name', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea', 'full_paper', 'full_paper_updated_at')
+            ->select('team_name', 'papers.id as paper_id', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea', 'full_paper', 'full_paper_updated_at')
             ->first();
         // dd($datas);
 
@@ -553,6 +556,10 @@ class AssessmentController extends Controller
             $data_event = Event::where('status', '=', 'active')->get();
         }
         $data_category = Category::all();
+
+        // dd($data_event);
+        // dd($data_category);
+        // dd($is_judge);
 
         return view('auth.user.assessment.ondesk', [
             "data_event" => $data_event,
@@ -1843,4 +1850,51 @@ class AssessmentController extends Controller
 
         return $totalAverageScore;
     }
+
+    public function addWatermarks($paperId) {
+    try {
+        // Ensure the filepath is correctly formatted by removing "f: " and trimming any leading/trailing slashes
+        $filePath = storage_path('app/public/' . mb_substr(Paper::where('id', '=', $paperId)->pluck('full_paper')[0], 3));
+
+        if (!file_exists($filePath)) {
+                dump($filePath);
+            return response()->json(['error' => 'File tidak ditemukan.'], 404);
+        }
+
+        $fpdi = new Fpdi();
+
+        // Ambil Data User Saat Ini
+        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+        $userEmail = Auth::user()->email;
+        $userIp = request()->ip();
+
+        $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
+        $pageCount = $fpdi->setSourceFile($filePath);
+        for ($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+            $tplIdx = $fpdi->importPage($pageNum);
+            $fpdi->AddPage();
+            $fpdi->useTemplate($tplIdx, 0, 0);
+
+            // Tambahkan watermark
+            $fpdi->SetAlpha(0.1); // Transparansi watermark
+            $fpdi->SetFont('helvetica', 'B', 40);
+            $fpdi->SetTextColor(255, 0, 0);
+
+            // Memulai transformasi untuk rotasi
+            $fpdi->StartTransform();
+            $fpdi->Rotate(45, 150, 100); // Adjusted rotation and position
+            $fpdi->MultiCell(180, 280, $watermarkText, 0, 'C'); // Adjusted size and position
+            $fpdi->StopTransform(); // Akhiri transformasi
+
+            $fpdi->SetAlpha(1); // Reset transparansi
+        }
+
+        return response($fpdi->Output($filePath, 'I'), 200)->header('Content-Type', 'application/pdf');
+    } catch (FileNotFoundException $e) {
+        return response()->json(['error' => 'File tidak ditemukan.'], 404);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 }

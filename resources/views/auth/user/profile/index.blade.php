@@ -10,7 +10,7 @@
 </style>
 
 @extends('layouts.app')
-@section('title', 'Profile')
+@section('title', 'Profil')
 @section('content')
     <!-- Your content for the home page here -->
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Management System | Kategori')
+@section('title', 'Manajemen Sistem | Kategori Role')
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link
@@ -25,7 +25,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="grid"></i></div>
-                            MANAGEMENT SYSTEM
+                            Kategori Role
                         </h1>
                     </div>
                 </div>

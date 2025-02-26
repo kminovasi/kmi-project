@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Assign Role')
+@section('title', 'Dokumentasi')
 @push('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <style type="text/css">
@@ -18,7 +18,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            DOKUMENTASI
+                            Dokumentasi Makalah Inovasi
                         </h1>
                     </div>
 

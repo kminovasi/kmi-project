@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Data Assessment Template')
+@section('title', 'Manajmen Sistem | Template Penilaian')
 @push('css')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css" rel="stylesheet">
@@ -37,7 +37,11 @@
                 <div class="col-12 col-xl-auto mb-3">
                     <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
                         <i class="me-1" data-feather="plus"></i>
+<<<<<<< HEAD
                         Buat Poin
+=======
+                        Buat poin
+>>>>>>> fix-system-bug
                     </a>
                 </div>
             </div>
@@ -49,9 +53,15 @@
     <div class="p-2 border-bottom">
         @if (auth()->user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
+<<<<<<< HEAD
             Penilaian</a>
         <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
             Poin Penilaian</a>
+=======
+            Penilaian </a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
+            Poin Penilian</a>
+>>>>>>> fix-system-bug
         @endif
 
     </div>

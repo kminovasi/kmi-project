@@ -11,7 +11,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i data-feather="book"></i></div>
-                        Assign Event
+                        Tambah Event
                     </h1>
                 </div>
                 <div class="col-12 col-xl-auto mb-3">
@@ -44,13 +44,13 @@
         <div class="col-xl-7 col-lg-8 col-md-9 col-sm-11">
             <div class="card border-0 shadow-sm mb-5">
                 <div class="card-header text-center" style="background-color: rgba(0, 123, 255, 0.1);">
-                    <h4 class="mb-0">Form Add Event</h4>
+                    <h4 class="mb-0">Form Tambah Event</h4>
                 </div>
                 <div class="card-body p-4">
                     <form action="{{ route('management-system.assign.event.store') }}" method="POST" id="assign-juri-form">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label" for="type">Event Type</label>
+                            <label class="form-label" for="type">Tipe Event</label>
                             <select class="form-select" id="type" name="type" required onchange="handleEventTypeChange()">
                                 <option value="" selected disabled>Pilih Tipe Event</option>
                                 <option value="AP">Anak Perusahaan</option>

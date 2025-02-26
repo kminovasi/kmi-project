@@ -557,6 +557,10 @@ class AssessmentController extends Controller
         }
         $data_category = Category::all();
 
+        // dd($data_event);
+        // dd($data_category);
+        // dd($is_judge);
+
         return view('auth.user.assessment.ondesk', [
             "data_event" => $data_event,
             'data_category' => $data_category,

@@ -301,6 +301,7 @@ class QueryController extends Controller
             //     ->whereRaw($where_column. '='. $where_data)
             //     ->limit($limit)
             //     ->get();
+            Log::debug(response()->json($result));
 
             if ($result->isEmpty()) {
                 return response()->json([
@@ -315,6 +316,41 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
+  public function getCompanyByEventId(Request $request)
+{
+    try {
+        $eventId = $request->input('event_id');
+        
+        $event = Event::with(['companies' => function($query) {
+            $query->select('companies.id', 'companies.company_name', 'companies.company_code');
+        }])->find($eventId);
+
+        if (!$event) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event not found'
+            ], 404);
+        }
+
+        $response = $event->companies->map(function($company) use ($event) {
+            return [
+                'company_name' => $company->company_name,
+                'company_code' => $company->company_code,
+                'event_name' => $event->event_name,
+                'year' => $event->year
+            ];
+        });
+
+        return response()->json($response);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 
     public function get_data_makalah(Request $request)
     {

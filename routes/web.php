@@ -147,6 +147,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/autocomplete', [QueryController::class, 'autocomplete'])->name('autocomplete');
         Route::get('/custom-get', [QueryController::class, 'custom_get'])->name('custom');
         Route::get('/custom-getassesment', [QueryController::class, 'custom_getAssesment'])->name('customassesment');
+        Route::get('/getCompanyByEventId', [QueryController::class, 'getCompanyByEventId'])->name('getCompanyByEventId');
         Route::get('/get_role', [QueryController::class, 'get_role'])->name('get_role');
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');

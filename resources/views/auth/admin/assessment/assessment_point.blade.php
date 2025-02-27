@@ -130,7 +130,12 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <div class="d-grid">
+
+
+
+
                             <button type="submit" class="btn btn-primary" id="btnAssign" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
+
                         </div>
                     </div>
                 </div>
@@ -154,7 +159,7 @@
                 <div class="modal-body px-4 py-3">
                     <!-- Point Assessment -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Poin Penilaian</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Point Assessment</label>
                         <input type="text" class="form-control shadow-sm" name="point" id="inputPoint" value="" readonly>
                     </div>
 
@@ -166,7 +171,7 @@
 
                     <!-- Max Score -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Poin Maksimal</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Max Score</label>
                         <input type="number" class="form-control shadow-sm" name="score_max" id="inputScoreMax" value="" min="0" step="1" required>
                     </div>
                 </div>
@@ -533,30 +538,17 @@
     }
 
     function get_data_event(event_id){
+        console.log(event_id)
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             async: false,
             type: 'GET',
-            url: '{{ route('query.customassesment') }}',
+            url: '{{ route('query.getCompanyByEventId') }}',
             dataType: 'json',
             data: {
-                table: `events`,
-                where: {
-                    'events.id': event_id
-                },
-                join: {
-                    'companies':{
-                        'companies.company_code': 'events.company_code'
-                    },
-                },
-                select:[
-                    'event_name',
-                    'year',
-                    'company_name'
-                ],
-                limit: 5
+                eventId: event_id
             },
             success: function(response) {
                 $('#event_name').text(`${response[0].event_name}`)

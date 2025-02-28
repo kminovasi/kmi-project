@@ -40,7 +40,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Assessment - Penetapan Juara
+                            Penetapan Juara - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>
@@ -162,7 +162,7 @@
                                                     <td>
                                                         <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
                                                         <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
-                                                        <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                                        <form class="mt-2" action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -255,7 +255,7 @@
                                         <td>
                                             <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
                                             <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
-                                            <form action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
+                                            <form class="mt-2" action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
@@ -315,8 +315,8 @@
                 </div>
                 <!-- Modal Footer -->
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply Filter</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary">Gunakan Filter</button>
                 </div>
             </div>
         </div>
@@ -328,7 +328,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="pptTitle">PPT Summary</h5>
+                    <h5 class="modal-title" id="pptTitle">Rangkuman PPT</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -456,7 +456,7 @@
                         { title: "Tim", data: 'Tim', orderable: true },
                         { title: "Judul", data: 'judul' },
                         { title: "Kategori", data: 'kategori' },
-                        { title: "Final Score", data: 'final_score' },
+                        { title: "Skor Akhir", data: 'final_score' },
                         { title: "Ranking", data: 'Ranking' }
                     ],
                     "createdRow": function(row, data, dataIndex) {

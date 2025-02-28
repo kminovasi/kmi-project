@@ -59,7 +59,7 @@
         @if ($errors->any())
             <div class="container-xl px-4">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> List Error:
+                    <strong>Terjadi Kesalahan</strong> List Error:
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -119,7 +119,7 @@
                         <div class="col-md-4 mb-3">
                             <div class="card shadow-sm mb-3">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Detail Team</h5>
+                                    <h5 class="m-0">Detail Tim</h5>
                                 </div>
                                 <div class="card-body">
                                     <form id="modal-card-form">
@@ -129,7 +129,7 @@
                                                 value="" readonly />
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="leader">Leader</label>
+                                            <label class="form-label" for="leader">Ketua</label>
                                             <input class="form-control form-control-lg" id="leader" type="text"
                                                 value="" readonly />
                                         </div>
@@ -230,7 +230,7 @@
                     <form id="filterForm">
                         <!-- Role Filter -->
                         <div class="mb-3">
-                            <label for="filter-role" class="form-label fw-semibold">Peran</label>
+                            <label for="filter-role" class="form-label fw-semibold">Role</label>
                             <select id="filter-role" name="filter-role" class="form-select">
                                 <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
                                 <option value="admin" selected>Admin</option>
@@ -344,7 +344,7 @@
             <div class="modal-content shadow-sm border-0">
                 <!-- Modal Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="updateDataTitle">Update Data</h5>
+                    <h5 class="modal-title fw-bold text-white" id="updateDataTitle">Perbarui Data</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -365,7 +365,7 @@
 
                         <!-- Team Name -->
                         <div class="mb-3">
-                            <label for="inputTeamName" class="form-label fw-semibold">Nama Team</label>
+                            <label for="inputTeamName" class="form-label fw-semibold">Nama Tim</label>
                             <input type="text" class="form-control shadow-sm" id="inputTeamName" name="team_name"
                                 value="" placeholder="Enter Team Name">
                         </div>
@@ -403,7 +403,7 @@
 
                     <!-- Modal Footer -->
                     <div class="modal-footer bg-light border-top-0 d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary px-4">Kirim</button>
                     </div>
                 </form>

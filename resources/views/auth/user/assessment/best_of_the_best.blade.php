@@ -53,7 +53,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Assessment - Penetapan Best Of The Best
+                            Penetapan Best Of The Best - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>

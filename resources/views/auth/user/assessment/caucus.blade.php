@@ -64,7 +64,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Assessment - Caucus
+                            Caucus - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>
@@ -75,15 +75,6 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         <div class="p2">
-            <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                                                                                                                                                                                                            <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                                                                                                                                                                                                            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-    <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a> -->
-            <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
-            <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
-@elseif(Auth::user()->role == 'Juri')
-    <a href="{{ route('assessment.caucus.data') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.caucus.data') ? 'active-link' : '' }}">Assessment</a>
-    @endif -->
 
             <a href="{{ route('paper.register.team') }}"
                 class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
@@ -107,7 +98,7 @@
                     Group</a>
             @endif
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
                     {{ session('success') }}
@@ -124,8 +115,8 @@
 
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+            @endif
         </div>
-        @endif
         @include('auth.user.assessment.bar')
         <div class="row">
             <div class="col-md-12">
@@ -156,11 +147,11 @@
                             </div>
                             <input type="text" class="form-control" name="category" id="category-pa" hidden>
                             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                                <div class="d-flex">
-                                    <button type="submit" class="btn btn-primary next shadow-sm">Submit</button>
-                                    <button type="button" class="btn btn-outline-primary next shadow-sm"
-                                        data-bs-toggle="modal" data-bs-target="#fixModalPA">Submit All</button>
-                                </div>
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
+                                <button type="button" class="btn btn-outline-primary next shadow-sm"
+                                    data-bs-toggle="modal" data-bs-target="#fixModalPA">Kirim Semua</button>
+                            </div>
                             @endif
                         </form>
                     </div>
@@ -192,8 +183,7 @@
 
                         <!-- Filter Event -->
                         <div class="form-floating mb-4">
-                            <select id="filter-event" name="filter-event" class="form-select"
-                                {{ Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role === 'Juri' ? '' : 'disabled' }}>
+                            <select id="filter-event" name="filter-event" class="form-select" {{ Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role === 'Juri' ? '' : 'disabled' }}>
                                 @foreach ($data_event as $event)
                                     <option name="event_id" value="{{ $event->id }}"
                                         {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>

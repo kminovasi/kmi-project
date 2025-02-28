@@ -52,7 +52,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Assessment - Presentasi BOD
+                            Presentasi BOD  - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                                 @csrf
                                 @method('POST')
                                 <table id="datatable-presentasi-bod" class="display"></table>
-                                <button type="submit" class="btn btn-primary submit">Submit</button>
+                                <button type="submit" class="btn btn-primary submit">Kirim</button>
                             </form>
                         </div>
                     </div>

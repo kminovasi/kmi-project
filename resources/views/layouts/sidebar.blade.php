@@ -34,7 +34,7 @@
                 </a>
                 <a class="nav-link {{ request()->routeIs('event-team.index') ? 'active' : '' }}"
                     href="{{ route('event-team.index') }}">
-                    <div class="nav-link-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="nav-link-icon"><i class="fa-solid fa-calendar-days me-1"></i></div>
                     Event
                 </a>
                 <a class="nav-link {{ request()->routeIs('dokumentasi.index') ? 'active' : '' }}"

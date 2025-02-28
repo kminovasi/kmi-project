@@ -64,7 +64,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Data Paper - Innovation Paper
+                            Event Group - Makalah Inovasi
                         </h1>
                     </div>
                 </div>
@@ -86,18 +86,18 @@
             <div class="card-body">
                 <div class="mb-3">
                     <select id="event-select" class="form-select" style="width: 200px; display: inline-block;">
-                        <option value="">Select Event</option>
+                        <option value="">Pilih Event</option>
                         @foreach ($data_event as $event)
                             <option value="{{ $event->id }}">{{ $event->event_name }}</option>
                         @endforeach
                     </select>
-                    <button id="assign-to-event" class="btn btn-primary">Assign to Event</button>
-                    <span id="selected-count" class="ms-3">0 team(s) selected</span>
+                    <button id="assign-to-event" class="btn btn-primary">Tambahkan ke Event</button>
+                    <span id="selected-count" class="ms-3">0 tim Dipilih</span>
                 </div>
                 <div class="mb-3 d-flex align-items-center">
                     <button id="openFilterModal" class="btn btn-outline-secondary me-2" data-bs-toggle="modal"
                         data-bs-target="#filterModal">
-                        <i class="fas fa-filter"></i> Filter Data
+                        <i class="fas fa-filter me-1 mb-1"></i> Filter Data
                     </button>
 
                     <span id="selectedFilterDisplay" class="text-muted"></span>
@@ -203,7 +203,7 @@
                         width: '5%'
                     },
                     {
-                        title: 'Team',
+                        title: 'Tim',
                         data: 'team_name',
                         name: 'teams.team_name'
                     },

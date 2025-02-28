@@ -83,7 +83,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Data Paper - Innovation Paper
+                            Presentation - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>
@@ -142,6 +142,17 @@
         </div>
         @include('auth.user.assessment.bar')
         <div class="card mb-4">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-4 col-sm-8 col-xs-12">
+                        Tabel Presentasi
+                    </div>
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <div id="event-title">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="card-body">
                 <div class="mb-3">
                     <div class="row">
@@ -165,9 +176,9 @@
                     <input type="text" class="form-control" name="category" id="category-pa" hidden>
                     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                         <div class="d-flex">
-                            <button type="submit" class="btn btn-primary next shadow-sm">Submit</button>
+                            <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
                             <button type="button" class="btn btn-outline-primary next shadow-sm" data-bs-toggle="modal"
-                                data-bs-target="#fixModalPA">Submit All</button>
+                                data-bs-target="#fixModalPA">Kirim Semua</button>
                         </div>
                     @endif
                 </form>

@@ -83,7 +83,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Data Paper - Innovation Paper
+                            On Desk - Penilaian Inovasi
                         </h1>
                     </div>
                 </div>
@@ -160,9 +160,9 @@
                     <input type="text" class="form-control" name="category" id="category-oda" hidden>
                     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
                         <div class="d-flex">
-                            <button type="submit" class="btn btn-primary next shadow-sm">Submit</button>
+                            <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
                             <button type="button" class="btn btn-outline-primary next shadow-sm" data-bs-toggle="modal"
-                                data-bs-target="#fixModalODA">Submit All</button>
+                                data-bs-target="#fixModalODA">Kirim Semua</button>
                         </div>
                     @endif
 

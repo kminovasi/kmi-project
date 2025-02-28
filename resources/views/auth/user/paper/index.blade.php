@@ -674,11 +674,7 @@
                 {"data": "innovation_title", "title": "Judul Inovasi"},
                 // {"data": "inovasi_lokasi", "tittle": "Lokasi Inovasi"},
                 {"data": "team_name", "title": "Nama Tim"},
-<<<<<<< HEAD
                 {"data": "detail_team","title": "Detail Tim"},
-=======
-                {"data": "detail_team","title": "Detail Timm"},
->>>>>>> fix-system-bug
                 {"data": "company_name","title": "Perusahaan"},
                 {"data": "category_name","title": "Kategori"},
                 {"data": "theme_name","title": "Tema"},

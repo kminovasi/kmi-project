@@ -37,11 +37,7 @@
                 <div class="col-12 col-xl-auto mb-3">
                     <a class="btn btn-sm btn-light text-primary" href="{{ route('assessment.create.template') }}">
                         <i class="me-1" data-feather="plus"></i>
-<<<<<<< HEAD
                         Buat Poin
-=======
-                        Buat poin
->>>>>>> fix-system-bug
                     </a>
                 </div>
             </div>
@@ -53,15 +49,9 @@
     <div class="p-2 border-bottom">
         @if (auth()->user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
-<<<<<<< HEAD
             Penilaian</a>
         <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
             Poin Penilaian</a>
-=======
-            Penilaian </a>
-        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan
-            Poin Penilian</a>
->>>>>>> fix-system-bug
         @endif
 
     </div>

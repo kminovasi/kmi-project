@@ -73,7 +73,7 @@
                     <div class="ms-2">
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="small">Acara</div>
+                                <div class="small">Event</div>
                                 <div class="text-md text-muted" id="event_name"></div>
                             </div>
                             <div class="col-md-4">
@@ -225,7 +225,7 @@
             <div class="modal-body px-4 py-3">
                 <!-- Company Filter -->
                 <div class="mb-4">
-                    <label class="mb-1 fw-bold text-muted" for="filter-category">Company</label>
+                    <label class="mb-1 fw-bold text-muted" for="filter-category">Ketegori</label>
                     <select id="filter-category" name="filter-category" class="form-select shadow-sm">
                         <option value="BI/II">Implemented</option>
                         <option value="IDEA">IDEA Box</option>
@@ -551,12 +551,14 @@
                 eventId: event_id
             },
             success: function(response) {
-                $('#event_name').text(`${response[0].event_name}`)
-                $('#event_year').text(`${response[0].year}`)
-                if(response.length > 1){
-                    $('#event_company').text(`${response[0].company_name} ${response[1].company_name}`)
+                const data = response.data_event;
+                console.log(response);
+                $('#event_name').text(`${data[0].event_name}`)
+                $('#event_year').text(`${data[0].year}`)
+                if(data.length > 1){
+                    $('#event_company').text(`${data[0].company_name} ${data[1].company_name}`)
                 }else{
-                    $('#event_company').text(`${response[0].company_name}`)
+                    $('#event_company').text(`${data[0].company_name}`)
                 }
 
             },

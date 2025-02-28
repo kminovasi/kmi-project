@@ -320,12 +320,21 @@ class QueryController extends Controller
   public function getCompanyByEventId(Request $request)
 {
     try {
-        $eventId = $request->input('event_id');
-        
+        $eventId = $request->input('eventId');
+
+        // Ensure event_id is provided
+        if (!$eventId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event ID is required'
+            ], 400);
+        }
+
         $event = Event::with(['companies' => function($query) {
             $query->select('companies.id', 'companies.company_name', 'companies.company_code');
         }])->find($eventId);
 
+        // Check if event exists
         if (!$event) {
             return response()->json([
                 'success' => false,
@@ -342,7 +351,10 @@ class QueryController extends Controller
             ];
         });
 
-        return response()->json($response);
+        return response()->json([
+            'success' => true,
+            'data_event' => $response
+        ], 200);
 
     } catch (\Exception $e) {
         return response()->json([

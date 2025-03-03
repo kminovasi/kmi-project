@@ -53,17 +53,18 @@
     .financial-benefits {
         display: flex;
         gap: 15px;
-        margin-top: 20px;
+        margin-top: .7rem;
     }
 
     .financial-benefit-item {
         flex: 1;
         background-color: #f8f9fa;
         border-radius: 8px;
-        padding: 15px;
+        padding: .7rem;
         text-align: center;
         transition: all 0.3s ease;
         border: 1px solid transparent;
+        cursor: pointer;
     }
 
     .financial-benefit-item:hover {
@@ -83,9 +84,10 @@
     }
 
     .financial-benefit-total {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         font-weight: 600;
         color: #343a40;
+        cursor: pointer;
     }
 
     @media (max-width: 768px) {
@@ -156,8 +158,8 @@
                 <h6 class="text-muted">Real Benefit Finansial</h6>
                 <div id="financialBenefits" class="financial-benefits"></div>
             </div>
-            <div class="col-md-12">
-                <h6 class="text-muted">Potensial Benefit</h6>
+            <div class="col-md-12 mt-3">
+                <h6 class="text-muted">Benefit Potensial</h6>
                 <div id="potentialBenefits" class="financial-benefits"></div>
             </div>
         </div>

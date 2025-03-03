@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Total team chart | Dashboard')
+@section('title', 'Chart Total Tim | Dashboard')
 
 @section('content')
     <div class="container mt-3">
         <div class="card">
             <div class="card-header" style="background-color: #eb4a3a">
-                <h5 class="text-white">Total Tim Chart</h5>
+                <h5 class="text-white">Chart Total Tim</h5>
             </div>
             <div class="card-body">
                 <canvas id="total-team-chart"></canvas>

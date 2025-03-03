@@ -55,7 +55,7 @@
                         <div class="card">
                             <div class="card-header bg-gradient-primary">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Tersubmit</h5>
+                                    <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Terkirim</h5>
                                     <a href="http://127.0.0.1:8000/detail-company-chart" class="text-white" style="font-size: 1.7rem;">
                                         <i class="bi bi-bar-chart-line"></i> <!-- Icon for chart -->
                                     </a>

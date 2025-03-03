@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Company Chart')
+@section('title', 'Detail Chart Perusahaan | Dashboard')
 
 @section('content')
     @vite(['resources/css/detailCompanyChart.css'])

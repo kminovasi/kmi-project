@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdatePaperRequest;
-use App\Mail\PaperStatusUpdated;
-use App\Models\Company;
-use App\Models\CustomBenefitFinancial;
-use App\Models\Event;
-use App\Models\History;
-use App\Models\Paper;
-use App\Models\PvtCustomBenefit;
-use App\Models\PvtEventTeam;
-use App\Models\PvtMember;
-use App\Models\Team;
-use App\Notifications\PaperNotification;
-use App\Services\PaperFileUploadService;
+use DB;
 use Auth;
 use DataTables;
-use DB;
+use App\Models\Team;
+use App\Models\Event;
+use App\Models\Paper;
+use App\Models\Company;
+use App\Models\History;
+use App\Models\PvtMember;
+use App\Models\PvtEventTeam;
 use Illuminate\Http\Request;
+use App\Mail\PaperStatusUpdated;
+use App\Models\PvtCustomBenefit;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Models\CustomBenefitFinancial;
 use Illuminate\Support\Facades\Storage;
-use Log;
+use App\Notifications\PaperNotification;
+use App\Services\PaperFileUploadService;
+use App\Http\Requests\UpdatePaperRequest;
 
 class EventTeamController extends Controller
 {
@@ -37,7 +38,7 @@ public function getEvents(Request $request)
     $user = Auth::user();
 
     // Buat query untuk mengambil event
-    $query = Event::with('company'); // Ambil semua event dengan relasi company
+    $query = Event::with('companies'); // Ambil semua event dengan relasi companies
 
     // Jika user bukan Superadmin, ambil tim yang diikuti oleh user
     if ($user->role !== 'Superadmin') {
@@ -74,7 +75,9 @@ public function getEvents(Request $request)
 
     // Filter berdasarkan perusahaan
     if ($request->has('company_code') && $request->company_code != '') {
-        $query->where('company_code', $request->company_code);
+        $query->whereHas('companies', function ($q) use ($request) {
+            $q->where('company_code', $request->company_code);
+        });
     }
 
     // Filter berdasarkan status
@@ -88,7 +91,7 @@ public function getEvents(Request $request)
 
     return DataTables::of($query)
         ->addColumn('company', function ($event) {
-            return $event->company ? $event->company->company_name : 'N/A';
+            return $event->companies->pluck('company_name')->implode(', ') ?: 'N/A';
         })
         ->toJson();
 }

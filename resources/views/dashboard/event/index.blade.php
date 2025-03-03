@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Event')
+@section('title', 'Daftar Event | Dashboard')
 
 @push('css')
     <link
@@ -16,7 +16,7 @@
                 <table id="eventsTable" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Nama Event</th>
                             <th>Status</th>
                             <th>Tanggal Mulai</th>
@@ -27,7 +27,7 @@
                     <tbody>
                         @foreach ($events as $event)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ $event->event_name }}</td>
                                 <td>
                                     @if ($event->status === 'active')
@@ -38,7 +38,7 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($event->date_start)->format('d M Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($event->date_end)->format('d M Y') }}</td>
-                                <td>
+                                <td class="d-flex flex-row gap-2">
                                     <a href="{{ route('dashboard-event.show', $event->id) }}"
                                         class="btn btn-sm btn-primary">
                                         <i class="bi bi-eye"></i> Lihat Deskripsi

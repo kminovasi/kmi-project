@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Custom Benefit Financial | Dashboard')
+@section('title', 'Benefit Non Finansial | Dashboard')
 
 @section('content')
     @push('css')
@@ -9,7 +9,7 @@
             rel="stylesheet">
     @endpush
 
-    <x-header-content :title="'Custom Benefit Financial Table | Kategori : ' . $customBenefitPotentialName">
+    <x-header-content :title="'Benefit Non Finansial | Kategori : ' . $customBenefitPotentialName">
         <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-blue">Kembali</a>
     </x-header-content>
     <div class="container">
@@ -19,7 +19,7 @@
                     <tr>
                         <th>Nama Non Finansial Benefit</th>
                         <th>Judul Makalah</th>
-                        <th>Deskripsi Non Finansial Benefit</th>
+                        <th>Deskripsi Benefit Non Finansial</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -43,7 +43,7 @@
                         <div class="col-md-4 mb-3">
                             <div class="card shadow-sm mb-3">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Detail Team</h5>
+                                    <h5 class="m-0">Detail Tim</h5>
                                 </div>
                                 <div class="card-body">
                                     <form id="modal-card-form">
@@ -53,7 +53,7 @@
                                                 value="" readonly />
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="leader">Leader</label>
+                                            <label class="form-label" for="leader">Ketua</label>
                                             <input class="form-control form-control-lg" id="leader" type="text"
                                                 value="" readonly />
                                         </div>

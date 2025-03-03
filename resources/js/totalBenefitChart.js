@@ -14,10 +14,10 @@ import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 
 // Fungsi untuk memformat nilai ke dalam bentuk Rupiah
 const formatRupiah = (value) => {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
     }).format(value);
 };
 
@@ -31,7 +31,7 @@ Chart.register(
     LineElement,
     LineController,
     PointElement,
-    ChartDataLabels
+    ChartDataLabels,
 );
 
 const logoImages = [];
@@ -50,7 +50,7 @@ const loadLogos = async (logos) => {
                     };
                     img.onerror = reject;
                 });
-            })
+            }),
         );
     } catch (error) {
         console.error("Error loading logos:", error);
@@ -83,7 +83,7 @@ const imagePlugin = {
                     x,
                     y - imgHeight / 2, // Center the image vertically
                     imgWidth, // width
-                    imgHeight // height
+                    imgHeight, // height
                 );
             }
         });
@@ -118,27 +118,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Financial Benefit (Last 4 Years)",
+                    text: "Total Benefit Finansial (4 Tahun Terakhir)",
                 },
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    color: 'black',
+                    color: "black",
                     align: "center", // Center the label vertically
                     anchor: "center", // Center the label horizontally
                     formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
-                        size: 17,
+                        size: 14,
                     },
                 },
                 tooltip: {
                     callbacks: {
                         label: (tooltipItem) => {
                             return formatRupiah(tooltipItem.raw);
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
             scales: {
                 y: {
@@ -153,14 +153,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
-                        text: "Finansial Benefit",
+                        text: "Benefit Finansial",
                     },
                     beginAtZero: true,
                     ticks: {
-                        callback: function(value) {
+                        callback: function (value) {
                             return formatRupiah(value);
-                        }
-                    }
+                        },
+                    },
                 },
             },
         },
@@ -197,26 +197,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Financial Benefit (Last 4 Years)",
+                    text: "Total Benefit Finansial (4 Tahun Terakhir)",
                 },
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
+                    color: "black",
                     align: "center", // Center the label vertically
                     anchor: "center", // Center the label horizontally
                     formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
                     font: {
                         weight: "bold",
-                        size: 17,
+                        size: 14,
                     },
                 },
                 tooltip: {
                     callbacks: {
                         label: (tooltipItem) => {
                             return formatRupiah(tooltipItem.raw);
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
             scales: {
                 y: {
@@ -231,14 +232,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
-                        text: "Potensial Benefit",
+                        text: "Benefit Potensial",
                     },
                     beginAtZero: true,
                     ticks: {
-                        callback: function(value) {
+                        callback: function (value) {
                             return formatRupiah(value);
-                        }
-                    }
+                        },
+                    },
                 },
             },
         },

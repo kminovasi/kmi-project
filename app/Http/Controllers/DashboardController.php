@@ -219,7 +219,10 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.total-financial-benefit-chart', ['chartDataTotalBenefit' => $chartData, 'isSuperadmin' => $isSuperadmin]);
+        return view('dashboard.total-financial-benefit-chart', [
+            'chartDataTotalBenefit' => $chartData, 
+            'isSuperadmin' => $isSuperadmin
+        ]);
     }
 
 

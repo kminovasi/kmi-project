@@ -7,7 +7,7 @@
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"
                     onclick="resetModalApproveFasil()"></button>
             </div>
-            <form id="accFasilPaperForm" method="POST" enctype="multipart/form-data">
+            <form id="accFasilPaperForm" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -32,9 +32,9 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                    <button class="btn btn-primary" type="submit">Kirim</button>
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal"
-                        onclick="resetModalApproveFasil()">Close</button>
+                        onclick="resetModalApproveFasil()">Tutup</button>
                 </div>
             </form>
         </div>
@@ -44,6 +44,8 @@
 
 @push('js')
     <script>
+        let currentPaperId = null; // Deklarasikan currentPaperId di luar fungsi
+
         $('#status_by_fasil').on('change', function() {
             const selectedValue = $(this).val();
             const commentField = $('#commentFacilitator');
@@ -105,9 +107,9 @@
 
         function approve_paper_fasil_modal(idPaper) {
             // alert(idPapern)
-            var form = document.getElementById('accFasilPaperForm');
-
-            var url = `{{ route('paper.approvePaperFasil', ['id' => ':idPaper']) }}`;
+            const form = document.getElementById('accFasilPaperForm');
+            
+            let url = `{{ route('paper.approvePaperFasil', ['id' => ':idPaper']) }}`;
             url = url.replace(':idPaper', idPaper);
             form.action = url;
             currentPaperId = idPaper;

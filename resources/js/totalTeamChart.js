@@ -14,7 +14,7 @@ Chart.register(
     BarController,
     BarElement,
     Tooltip,
-    ChartDataLabels
+    ChartDataLabels,
 );
 
 // Array untuk menyimpan gambar logo
@@ -34,7 +34,7 @@ const loadLogos = async (logos) => {
                     };
                     img.onerror = reject; // Tangani kesalahan pemuatan gambar
                 });
-            })
+            }),
         );
     } catch (error) {
         console.error("Error loading logos:", error);
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Teams Per Perusahaan",
+                    text: "Total Tim Per Perusahaan",
                 },
                 datalabels: {
                     // Konfigurasi plugin Data Labels
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 x: {
                     title: {
                         display: false,
-                        text: "Companies",
+                        text: "Perusahaan",
                     },
                     ticks: {
                         display: false,
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 y: {
                     title: {
                         display: true,
-                        text: "Number of Teams",
+                        text: "Jumlah Tim",
                     },
                 },
             },

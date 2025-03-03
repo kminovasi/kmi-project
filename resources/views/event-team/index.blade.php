@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Event')
+@section('title', 'Daftar Event')
 @push('css')
     <link
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
@@ -46,7 +46,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            List Event
+                            Daftar Event
                         </h1>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <select name="type" class="form-select">
-                                <option value="">Select Type</option>
+                                <option value="">Pilih Tipe Event</option>
                                 <option value="AP">Anak Perusahaan</option>
                                 <option value="group">Group</option>
                                 <option value="national">National</option>
@@ -72,7 +72,7 @@
                         @if (auth()->user()->role === 'Superadmin')
                             <div class="col-md-4">
                                 <select name="company_code" class="form-select">
-                                    <option value="">Select Company</option>
+                                    <option value="">Pilih Perusahaan</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
                                     @endforeach
@@ -81,7 +81,7 @@
                         @endif
                         <div class="col-md-4">
                             <select name="status" class="form-select">
-                                <option value="">Select Status</option>
+                                <option value="">Pilih Status Event</option>
                                 <option value="active">Active</option>
                                 <option value ="not active">Not Active</option>
                             </select>
@@ -93,8 +93,8 @@
                 <table id="eventsTable" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Event Name</th>
-                            <th>Company</th>
+                            <th>Nama Event</th>
+                            <th>Perusahaan</th>
                             <th>Mulai</th>
                             <th>Berakhir</th>
                             <th>Status</th>

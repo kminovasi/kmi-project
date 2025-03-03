@@ -4,13 +4,13 @@
             <div class="col-md-6 col-sm-6 col-xs-6">
                 <div class="d-flex align-items-center">
                     <div class="d-flex">
-                        <h2 class="my-2">
+                        <h2 class="my-3">
                             @if (Auth::user()->role == 'User')
                                 Dashboard Innovator
                             @elseif(Auth::user()->role == 'Admin')
                                 Dashboard Pengelola Inovasi
                             @elseif(Auth::user()->role == 'Superadmin')
-                                Dashboard Superadmin
+                                Dashboard Super Admin
                             @elseif(Auth::user()->role == 'BOD')
                                 Dashboard BOD
                             @elseif(Auth::user()->role == 'Juri')

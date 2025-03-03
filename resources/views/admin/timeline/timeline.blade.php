@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Timeline Management')
+@section('title', 'Manajemen Linimasa')
 
 @section('content')
     @push('css')
@@ -16,7 +16,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="image"></i></div>
-                            Timeline
+                            Manajemen Linimasa
                         </h1>
                     </div>
                 </div>

@@ -2,25 +2,26 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use View;
+use TCPDF;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Paper;
 use App\Models\PvtMember;
+use Endroid\QrCode\QrCode;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
 use App\Models\PvtCustomBenefit;
-use Illuminate\Support\Facades\Storage;
-use TCPDF;
+use shihjay2\tcpdi_merger\Merger;
 //use TCPDI;
 use shihjay2\tcpdi_merger\MyTCPDI;
-use shihjay2\tcpdi_merger\Merger;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
-use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
+use Illuminate\Support\Facades\Log;
 use App\Services\GhostscriptService;
-use View;
+use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 
 class EmailApprovalBenefit extends Mailable
 {
@@ -55,77 +56,57 @@ class EmailApprovalBenefit extends Mailable
 
     public function build()
     {
-        $attachment = $this->getAttachment();
-        //$attachment = Storage::path('public/' . $this->paper->file_review);
+        $attachments = $this->getAttachment();
+
+        $email = $this->view('emails.email_benefit_approval')
+            ->with([
+                'status' => $this->status,
+                'paper' => $this->paper,
+                'innovation_title' => $this->innovation_title,
+                'team_name' => $this->team_name,
+                'gmName' => $this->gmName,
+                'benefitFinancial' => $this->benefitFinancial,
+                'benefitPotential' => $this->benefitPotential,
+                'potensiReplikasi' => $this->potensiReplikasi,
+                'benefitNonFinancial' => $this->benefitNonFinancial,
+                'leaderName' => $this->leaderName,
+                'inovasi_lokasi' => $this->inovasi_lokasi,
+            ]);
 
         if ($this->status == 'accepted benefit by facilitator') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Accepted')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Accepted by Facilitator');
         } elseif ($this->status == 'rejected benefit by facilitator') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Rejected')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Rejected by Facilitator');
         } elseif ($this->status == 'revision benefit by facilitator') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Revision')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
-        } elseif ($this->status == 'revision benefit by facilitator') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Revision Benefit')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Revision by Facilitator');
         } elseif ($this->status == 'accepted benefit by general manager') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Accepted')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Accepted by General Manager');
         } elseif ($this->status == 'rejected benefit by general manager') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Rejected')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Rejected by General Manager');
         } elseif ($this->status == 'revision benefit by general manager') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Benefit Revision')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Benefit Revision by General Manager');
         } elseif ($this->status == 'revision paper by general manager') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Paper Revision')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Paper Revision by General Manager');
         } elseif ($this->status == 'revision paper and benefit by general manager') {
-            return $this->view('emails.email_benefit_approval')
-                ->subject('Notification: Paper & Benefit Revision')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email->subject('Notification: Paper & Benefit Revision by General Manager');
+        } else {
+            throw new \Exception('Invalid status for sending email');
         }
+
+        foreach ($attachments as $attachment) {
+            $email->attach($attachment, [
+                'as' => basename($attachment),
+                'mime' => 'application/pdf',
+            ]);
+        }
+
+        return $email;
     }
 
     public function getAttachment()
     {
+        $attachments = [];
+
         if ($this->status == 'accepted benefit by facilitator' || $this->status == 'accepted benefit by general manager' || $this->status == 'rejected benefit by general manager' || $this->status == 'reject' || $this->status == 'accept') {
             $pdfFolder = 'public/benefit-approvals/';
             $pdf = new TCPDF();
@@ -180,24 +161,17 @@ class EmailApprovalBenefit extends Mailable
             $pdf_file_name = 'Berita Acara Benefit_' . $this->paper->id . '.pdf';
             Storage::put($pdfFolder . $pdf_file_name, $pdf->Output($pdf_file_name, 'S'));
 
-            $attachment = Storage::path($pdfFolder . $pdf_file_name);
-
-            // $file_review = Storage::path($this->paper->file_review);
-            $file_review_path = $this->paper->file_review;
-            $file_review = Storage::disk('public')->path($file_review_path);
-
-            $pdfMerger = PDFMerger::init();
-            $pdfMerger->addPDF($file_review, 'all');
-            $pdfMerger->addPDF($attachment, 'all');
-            $pdfMerger->merge();
-            $filename = time() . '_attachment_acc.pdf';
-            Storage::disk('public')->put('benefit-approvals/' . $filename, $pdfMerger->output());
-            $attachment = Storage::disk('public')->path('benefit-approvals/' . $filename);
-        } else {
-            $attachment = Storage::path($this->paper->file_review);
+            $attachments[] = Storage::path($pdfFolder . $pdf_file_name);
         }
 
-        return $attachment;
+        $file_review_path = storage_path('app/public/' . $this->paper->file_review);
+        if (Storage::exists('public/' . $this->paper->file_review)) {
+            $attachments[] = $file_review_path;
+        } else {
+            throw new \Exception('File review tidak ditemukan: ' . $file_review_path);
+        }
+
+        return $attachments;
     }
 
     public function generatePdfContentForRole($role)

@@ -949,71 +949,23 @@ class PaperController extends Controller
 
     public function approveBenefitFasil(Request $request, $id)
     {
-        // dd($request->all());
-        $paper = Paper::with('team')->findOrFail($id);
-        $paper->status = $request->status;
-        $paper->updateAndHistory([], $request->status);
+        try {
+            $paper = Paper::with('team')->findOrFail($id);
+            $paper->status = $request->status;
+            $paper->updateAndHistory([], $request->status);
 
-        Comment::UpdateOrCreate([
-            'paper_id' => $id,
-            'writer' => "facilitator on Benefit",
-        ], [
-            'comment' => $request->comment
-        ]);
+            Comment::updateOrCreate([
+                'paper_id' => $id,
+                'writer' => "facilitator on Benefit",
+            ], [
+                'comment' => $request->comment
+            ]);
 
-        $benefitFinancial = $paper->financial;
-        $benefitPotential = $paper->potential_benefit;
-        $potensiReplikasi = $paper->potensi_replikasi;
-        $benefitNonFinancial = $paper->non_financial;
+            $benefitFinancial = $paper->financial;
+            $benefitPotential = $paper->potential_benefit;
+            $potensiReplikasi = $paper->potensi_replikasi;
+            $benefitNonFinancial = $paper->non_financial;
 
-        // Pastikan relasi Team sudah dimuat dengan benar
-        if ($paper->team) {
-            $gmId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'gm')
-                ->pluck('employee_id')
-                ->first();
-
-            $gmData = User::where('employee_id', $gmId)
-                ->select('name', 'email')
-                ->first();
-
-            $leaderId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'leader')
-                ->pluck('employee_id')
-                ->first();
-
-            $leaderData = User::where('employee_id', $leaderId)
-                ->select('name', 'email')
-                ->first();
-
-            $inovasi_lokasi = Paper::where('id', $id)
-                ->select('inovasi_lokasi')
-                ->first();
-
-            // Membuat objek EmailApproval
-            $mail = new EmailApprovalBenefit(
-                $paper,
-                $request->status,
-                $paper->innovation_title,
-                $paper->team->team_name,
-                $gmData,
-                $benefitFinancial,
-                $benefitPotential,
-                $potensiReplikasi,
-                $benefitNonFinancial,
-                $leaderData,
-                $inovasi_lokasi
-            );
-
-            //dd($leaderData);
-
-            // Mengirim email ke inovator (ketua tim)
-            Mail::to($leaderData->email)->send($mail);
-        } else {
-            throw new \Exception('Paper tidak memiliki relasi dengan Team.');
-        }
-
-        if ($request->status == 'accepted benefit by facilitator') {
             // Pastikan relasi Team sudah dimuat dengan benar
             if ($paper->team) {
                 $gmId = PvtMember::where('team_id', $paper->team->id)
@@ -1038,8 +990,8 @@ class PaperController extends Controller
                     ->select('inovasi_lokasi')
                     ->first();
 
-                //dd($gmData);
-                $mail = new EmailNotificationBenefitGM(
+                // Membuat objek EmailApproval
+                $mail = new EmailApprovalBenefit(
                     $paper,
                     $request->status,
                     $paper->innovation_title,
@@ -1053,14 +1005,64 @@ class PaperController extends Controller
                     $inovasi_lokasi
                 );
 
-
                 // Mengirim email ke inovator (ketua tim)
-                Mail::to($gmData->email)->send($mail);
+                Mail::to($leaderData->email)->send($mail);
             } else {
                 throw new \Exception('Paper tidak memiliki relasi dengan Team.');
             }
+
+            if ($request->status == 'accepted benefit by facilitator') {
+                // Pastikan relasi Team sudah dimuat dengan benar
+                if ($paper->team) {
+                    $gmId = PvtMember::where('team_id', $paper->team->id)
+                        ->where('status', 'gm')
+                        ->pluck('employee_id')
+                        ->first();
+
+                    $gmData = User::where('employee_id', $gmId)
+                        ->select('name', 'email')
+                        ->first();
+
+                    $leaderId = PvtMember::where('team_id', $paper->team->id)
+                        ->where('status', 'leader')
+                        ->pluck('employee_id')
+                        ->first();
+
+                    $leaderData = User::where('employee_id', $leaderId)
+                        ->select('name', 'email')
+                        ->first();
+
+                    $inovasi_lokasi = Paper::where('id', $id)
+                        ->select('inovasi_lokasi')
+                        ->first();
+
+                    // Membuat objek EmailNotificationBenefitGM
+                    $mail = new EmailNotificationBenefitGM(
+                        $paper,
+                        $request->status,
+                        $paper->innovation_title,
+                        $paper->team->team_name,
+                        $gmData,
+                        $benefitFinancial,
+                        $benefitPotential,
+                        $potensiReplikasi,
+                        $benefitNonFinancial,
+                        $leaderData,
+                        $inovasi_lokasi
+                    );
+
+                    // Mengirim email ke general manager
+                    Mail::to($gmData->email)->send($mail);
+                } else {
+                    throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+                }
+            }
+
+            return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+        } catch (\Exception $e) {
+            Log::debug($e);
+            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
-        return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
     }
 
     public function approvebenefitbyGM(Request $request, $id)
@@ -1085,202 +1087,161 @@ class PaperController extends Controller
 
     public function approveBenefitGM(Request $request, $id)
     {
-        $paper = Paper::with('team')->findOrFail($id);
-        $revisionType = $request->input('revision_type');
+        try {
+            $paper = Paper::with('team')->findOrFail($id);
+            $revisionType = $request->input('revision_type');
 
-        if (is_array($revisionType)) {
-            // Cek jika array mengandung nilai "benefit"
-            if (in_array('benefit', $revisionType)) {
-                $paper->status = 'revision benefit by general manager';
-                $paper->updateAndHistory([], 'revision benefit by general manager');
+            if (is_array($revisionType)) {
+                if (in_array('benefit', $revisionType)) {
+                    $paper->status = 'revision benefit by general manager';
+                    $paper->updateAndHistory([], 'revision benefit by general manager');
 
-                Comment::updateOrCreate(
-                    [
-                        'paper_id' => $id,
-                        'writer' => "General Manager Revisi Benefit",
-                    ],
-                    [
-                        'comment' => $request->comment
-                    ]
-                );
-            }
+                    Comment::updateOrCreate(
+                        [
+                            'paper_id' => $id,
+                            'writer' => "General Manager Revisi Benefit",
+                        ],
+                        [
+                            'comment' => $request->comment
+                        ]
+                    );
+                }
 
-            // Cek jika array mengandung nilai "paper"
-            if (in_array('paper', $revisionType)) {
-                // Lakukan sesuatu jika ada "paper"
-                $paper->status = 'revision paper by general manager';
-                $paper->updateAndHistory([], 'revision paper by general manager');
+                if (in_array('paper', $revisionType)) {
+                    $paper->status = 'revision paper by general manager';
+                    $paper->updateAndHistory([], 'revision paper by general manager');
 
-                Comment::updateOrCreate(
-                    [
-                        'paper_id' => $id,
-                        'writer' => "General Manager Revisi Makalah",
-                    ],
-                    [
-                        'comment' => $request->comment
-                    ]
-                );
-                if ($request->has('revision_steps')) {
-                    // Revisi langkah: kosongkan langkah yang dipilih
-                    foreach ($request->revision_steps as $step) {
-                        $stepColumn = 'step_' . $step;
-                        $paper->$stepColumn = null; // Set langkah ke null
+                    Comment::updateOrCreate(
+                        [
+                            'paper_id' => $id,
+                            'writer' => "General Manager Revisi Makalah",
+                        ],
+                        [
+                            'comment' => $request->comment
+                        ]
+                    );
+                    if ($request->has('revision_steps')) {
+                        foreach ($request->revision_steps as $step) {
+                            $stepColumn = 'step_' . $step;
+                            $paper->$stepColumn = null;
+                            $paper->full_paper = null;
+                        }
+                    } elseif ($request->has('full_paper')) {
                         $paper->full_paper = null;
                     }
-                } elseif ($request->has('full_paper')) {
-                    // Revisi full_paper: kosongkan full_paper
-                    $paper->full_paper = null;
                 }
-            }
 
-            // Cek jika array hanya memiliki 2 elemen tertentu
-            if ($revisionType === ['benefit', 'paper']) {
-                $paper->status = 'revision paper and benefit by general manager';
-                $paper->updateAndHistory([], 'revision paper and benefit by general manager');
+                if ($revisionType === ['benefit', 'paper']) {
+                    $paper->status = 'revision paper and benefit by general manager';
+                    $paper->updateAndHistory([], 'revision paper and benefit by general manager');
 
-                Comment::updateOrCreate(
-                    [
-                        'paper_id' => $id,
-                        'writer' => "General Manager Revisi Makalah dan Benefit",
-                    ],
-                    [
-                        'comment' => $request->comment
-                    ]
-                );
+                    Comment::updateOrCreate(
+                        [
+                            'paper_id' => $id,
+                            'writer' => "General Manager Revisi Makalah dan Benefit",
+                        ],
+                        [
+                            'comment' => $request->comment
+                        ]
+                    );
 
-                if ($request->has('revision_steps')) {
-                    // Revisi langkah: kosongkan langkah yang dipilih
-                    foreach ($request->revision_steps as $step) {
-                        $stepColumn = 'step_' . $step;
-                        $paper->$stepColumn = null; // Set langkah ke null
+                    if ($request->has('revision_steps')) {
+                        foreach ($request->revision_steps as $step) {
+                            $stepColumn = 'step_' . $step;
+                            $paper->$stepColumn = null;
+                            $paper->full_paper = null;
+                        }
+                    } elseif ($request->has('full_paper')) {
                         $paper->full_paper = null;
                     }
-                } elseif ($request->has('full_paper')) {
-                    // Revisi full_paper: kosongkan full_paper
-                    $paper->full_paper = null;
                 }
+            } else {
+                $paper->status = $request->status;
+                $paper->updateAndHistory([], $request->status);
             }
-        } else {
-            $paper->status = $request->status;
-            $paper->updateAndHistory([], $request->status);
-        }
 
-        $benefitFinancial = $paper->financial;
-        $benefitPotential = $paper->potential_benefit;
-        $potensiReplikasi = $paper->potensi_replikasi;
-        $benefitNonFinancial = $paper->non_financial;
+            $benefitFinancial = $paper->financial;
+            $benefitPotential = $paper->potential_benefit;
+            $potensiReplikasi = $paper->potensi_replikasi;
+            $benefitNonFinancial = $paper->non_financial;
 
-        // Pastikan relasi Team sudah dimuat dengan benar
-        if ($paper->team) {
-            $gmId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'gm')
-                ->pluck('employee_id')
-                ->first();
-
-            $gmData = User::where('employee_id', $gmId)
-                ->select('name', 'email')
-                ->first();
-
-            $leaderId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'leader')
-                ->pluck('employee_id')
-                ->first();
-
-            $leaderData = User::where('employee_id', $leaderId)
-                ->select('name', 'email')
-                ->first();
-
-            $inovasi_lokasi = Paper::where('id', $id)
-                ->select('inovasi_lokasi')
-                ->first();
-
-            // Membuat objek EmailApproval
-            $mail = new EmailApprovalBenefit(
-                $paper,
-                $paper->status,
-                $paper->innovation_title,
-                $paper->team->team_name,
-                $gmData,
-                $benefitFinancial,
-                $benefitPotential,
-                $potensiReplikasi,
-                $benefitNonFinancial,
-                $leaderData,
-                $inovasi_lokasi
-            );
-
-            // Mengirim email ke inovator (ketua tim)
-            Mail::to($leaderData->email)->send($mail);
-        } else {
-            throw new \Exception('Paper tidak memiliki relasi dengan Team.');
-        }
-
-        if ($request->status == 'accepted benefit by general manager') {
-            // Pastikan relasi Team sudah dimuat dengan benar
             if ($paper->team) {
-                // Ambil data admin
-                // $admins = User::where('role', 'Admin')
-                // ->select('name', 'email')
-                //     ->get();
-
-                //ambil id general manager
                 $gmId = PvtMember::where('team_id', $paper->team->id)
                     ->where('status', 'gm')
                     ->pluck('employee_id')
                     ->first();
 
-                // Ambil data general manager
                 $gmData = User::where('employee_id', $gmId)
                     ->select('name', 'email')
                     ->first();
 
-                // Ambil id leader paper
                 $leaderId = PvtMember::where('team_id', $paper->team->id)
                     ->where('status', 'leader')
                     ->pluck('employee_id')
                     ->first();
 
-                // Ambil data leader paper
                 $leaderData = User::where('employee_id', $leaderId)
-                    ->select('name', 'email', 'company_name')
+                    ->select('name', 'email')
                     ->first();
 
-                // Ambil data inovasi lokasi
                 $inovasi_lokasi = Paper::where('id', $id)
                     ->select('inovasi_lokasi')
                     ->first();
 
-                // Ambil data admin yang satu perusahaan dengan leader paper
-                $admins = User::where('home_company', $leaderData->company_name)
-                    ->where('role', 'Admin')
-                    ->select('name', 'email')
-                    ->get();
+                $mail = new EmailApprovalBenefit(
+                    $paper,
+                    $paper->status,
+                    $paper->innovation_title,
+                    $paper->team->team_name,
+                    $gmData,
+                    $benefitFinancial,
+                    $benefitPotential,
+                    $potensiReplikasi,
+                    $benefitNonFinancial,
+                    $leaderData,
+                    $inovasi_lokasi
+                );
 
-                foreach ($admins as $admin) {
-                    $mail = new EmailNotificationFinal(
-                        $paper,
-                        $request->status,
-                        $paper->innovation_title,
-                        $paper->team->team_name,
-                        $gmData,
-                        $benefitFinancial,
-                        $benefitPotential,
-                        $potensiReplikasi,
-                        $benefitNonFinancial,
-                        $leaderData,
-                        $admin,
-                        $inovasi_lokasi
-                    );
-
-                    // Kirim email ke setiap admin
-                    Mail::to($admin->email)->send($mail);
-                }
+                Mail::to($leaderData->email)->send($mail);
             } else {
                 throw new \Exception('Paper tidak memiliki relasi dengan Team.');
             }
-        }
 
-        return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+            if ($request->status == 'accepted benefit by general manager') {
+                if ($paper->team) {
+                    $admins = User::where('home_company', $leaderData->company_name)
+                        ->where('role', 'Admin')
+                        ->select('name', 'email')
+                        ->get();
+
+                    foreach ($admins as $admin) {
+                        $mail = new EmailNotificationFinal(
+                            $paper,
+                            $request->status,
+                            $paper->innovation_title,
+                            $paper->team->team_name,
+                            $gmData,
+                            $benefitFinancial,
+                            $benefitPotential,
+                            $potensiReplikasi,
+                            $benefitNonFinancial,
+                            $leaderData,
+                            $admin,
+                            $inovasi_lokasi
+                        );
+
+                        Mail::to($admin->email)->send($mail);
+                    }
+                } else {
+                    throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+                }
+            }
+
+            return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+        } catch (\Exception $e) {
+            Log::debug($e);
+            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
+        }
     }
 
     public function approvePaperAdmin(Request $request, $id)

@@ -122,7 +122,6 @@ Route::middleware('auth')->group(function () {
         Route::get('reject-benefitGM/{id}', [PaperController::class, 'rejectbenefitbyGM'])->name('reject.benefitGM');
         Route::get('/approve-generalmanager-benefit/{id}', [PaperController::class, 'approveBenefitGM'])->name('approveBenefitGM');
         Route::put('/approve-generalmanager-benefit/{id}', [PaperController::class, 'approveBenefitGM'])->name('approveBenefitGM');
-
         Route::put('/approve-admin-paper/{id}', [PaperController::class, 'approvePaperAdmin'])->name('approveadmin');
 
         //email approval

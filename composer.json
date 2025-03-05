@@ -32,6 +32,7 @@
         "setasign/tfpdf": "^1.33",
         "silviolleite/laravelpwa": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/pdf-to-image": "^1.2",
         "tecnickcom/tcpdf": "^6.7",
         "webklex/laravel-pdfmerger": "^1.3",
         "yajra/laravel-datatables-oracle": "^10.10"

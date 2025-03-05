@@ -43,12 +43,6 @@ class EmailApprovalFinal extends Mailable
 
     public function build()
     {
-        // $attachment1 = Storage::path('public/' . mb_substr(Paper::where('id', '=', $this->paper->id)->pluck('full_paper')[0], 3));
-
-        // $attachment1 = public_path("storage/" . mb_substr(Paper::where('id', '=', $this->paper->id)->pluck('full_paper')[0], 3));
-        //$attachment2 = Storage::path('public/' . $this->paper->file_review);
-
-        // if ($this->status == 'accept' || $this->status == 'reject') {
         $emailApprovalBenefit = new EmailApprovalBenefit(
             $this->paper,
             $this->status,
@@ -63,21 +57,28 @@ class EmailApprovalFinal extends Mailable
             $this->inovasi_lokasi
         );
 
-        $attachment2 = $emailApprovalBenefit->getAttachment();
-        // }
+        $attachments = $emailApprovalBenefit->getAttachment();
+
         if ($this->status == 'accepted by innovation admin') {
             $attachmentPath = mb_substr($this->paper->full_paper, 3);
             $attachment1 = Storage::disk('public')->path($attachmentPath);
-            return $this->view('emails.email_final_approval')
+            $email = $this->view('emails.email_final_approval')
                 ->subject('Notification: Final Paper Accepted')
                 ->attach($attachment1, [
                     'as' => 'Makalah Full Paper.pdf',
                     'mime' => 'application/pdf',
-                ])
-                ->attach($attachment2, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
                 ]);
+
+            foreach ($attachments as $attachment) {
+                if (is_string($attachment)) {
+                    $email->attach($attachment, [
+                        'as' => basename($attachment),
+                        'mime' => 'application/pdf',
+                    ]);
+                }
+            }
+
+            return $email;
         } elseif ($this->status == 'revision paper by innovation admin') {
             return $this->view('emails.email_final_approval')
                 ->subject('Notification: Final Paper Revisi');
@@ -87,23 +88,26 @@ class EmailApprovalFinal extends Mailable
         } elseif ($this->status == 'revision paper and benefit by innovation admin') {
             return $this->view('emails.email_final_approval')
                 ->subject('Notification: Final Paper Revisi Benefit dan Makalah');
-            // ->attach($attachment2, [
-            //     'as' => 'Berita Acara Benefit.pdf',
-            //     'mime' => 'application/pdf',
-            // ]);
         } elseif ($this->status == 'rejected by innovation admin') {
             $attachmentPath = mb_substr($this->paper->full_paper, 3);
             $attachment1 = Storage::disk('public')->path($attachmentPath);
-            return $this->view('emails.email_final_approval')
+            $email = $this->view('emails.email_final_approval')
                 ->subject('Notification: Final Paper Not Complete')
                 ->attach($attachment1, [
                     'as' => 'Makalah Full Paper.pdf',
                     'mime' => 'application/pdf',
                 ]);
-            // ->attach($attachment2, [
-            //     'as' => 'Berita Acara Benefit.pdf',
-            //     'mime' => 'application/pdf',
-            // ]);
+
+            foreach ($attachments as $attachment) {
+                if (is_string($attachment)) {
+                    $email->attach($attachment, [
+                        'as' => basename($attachment),
+                        'mime' => 'application/pdf',
+                    ]);
+                }
+            }
+
+            return $email;
         }
     }
 }

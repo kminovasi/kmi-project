@@ -95,7 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{id}', [PaperController::class, 'update'])->name('update');
         Route::post('/store-event-external', [PaperController::class, 'storeEventExternal'])->name('register.external');
         Route::post('/fixate-paper/{id}', [PaperController::class, 'fixatePaper'])->name('fixatePaper');
-
+        
         //Route step Paper
         Route::get('/create-stages/{id}/{stage}', [PaperController::class, 'createStages'])->name('create.stages');
         Route::post('/store-stages/{id}/{stage}', [PaperController::class, 'storeStages'])->name('store.stages');

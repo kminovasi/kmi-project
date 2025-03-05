@@ -42,7 +42,6 @@
 </div>
 
 
-@push('js')
     <script>
         let currentPaperId = null; // Deklarasikan currentPaperId di luar fungsi
 
@@ -123,4 +122,3 @@
             currentPaperId = null; // Reset currentPaperId
         };
     </script>
-@endpush

@@ -268,11 +268,6 @@ class PaperController extends Controller
                 'activity' => "Team " . $newTeam->team_name . " created",
                 'status' => 'created'
             ]);
-            History::create([
-                'team_id' => $newTeam->id,
-                'activity' => "Accepted to Event Internal",
-                'status' => 'Accepted'
-            ]);
             
             $step = MetodologiPaper::where('id', $request->input('metodologi_paper_id'))->pluck('step')[0];
             if ($step < 8) {
@@ -1361,6 +1356,12 @@ class PaperController extends Controller
                 ->where('pvt_event_teams.id', $idEventTeam)
                 ->pluck('category_parent')
                 ->first();
+            
+            History::create([
+                'team_id' => $team_id,
+                'activity' => "Accepted to Event Internal",
+                'status' => 'Accepted'
+            ]);
 
             if ($category == 'IDEA BOX')
                 $category = 'IDEA';

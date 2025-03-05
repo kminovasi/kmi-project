@@ -2,12 +2,13 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 use App\Models\Paper;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class EmailNotificationBenefitGM extends Mailable
 {
@@ -42,7 +43,6 @@ class EmailNotificationBenefitGM extends Mailable
 
     public function build()
     {
-        // $attachment = Storage::path('public/' . $this->paper->file_review);
         // ambil attachment dari EmailApprovalBenefit
         $emailApprovalBenefit = new EmailApprovalBenefit(
             $this->paper,
@@ -57,15 +57,24 @@ class EmailNotificationBenefitGM extends Mailable
             (object)['name' => $this->leaderName],
             $this->inovasi_lokasi
         );
-        $attachment = $emailApprovalBenefit->getAttachment();
+        $attachments = $emailApprovalBenefit->getAttachment();
 
         if ($this->status == 'accepted benefit by facilitator') {
-            return $this->view('emails.email_benefit_notification')
-                ->subject('Notification: Request Approval Benefit GM')
-                ->attach($attachment, [
-                    'as' => 'Berita Acara Benefit.pdf',
-                    'mime' => 'application/pdf',
-                ]);
+            $email = $this->view('emails.email_benefit_notification')
+                ->subject('Notification: Request Approval Benefit GM');
+
+            foreach ($attachments as $attachment) {
+                if (is_string($attachment)) {
+                    $email->attach($attachment, [
+                        'as' => 'Berita Acara Benefit.pdf',
+                        'mime' => 'application/pdf',
+                    ]);
+                } else {
+                    Log::error('Attachment is not a string: ' . json_encode($attachment));
+                }
+            }
+
+            return $email;
         } else {
             throw new \Exception('Invalid status for sending email');
         }

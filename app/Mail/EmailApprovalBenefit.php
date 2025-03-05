@@ -94,10 +94,14 @@ class EmailApprovalBenefit extends Mailable
         }
 
         foreach ($attachments as $attachment) {
-            $email->attach($attachment, [
-                'as' => basename($attachment),
-                'mime' => 'application/pdf',
-            ]);
+            if (is_string($attachment)) {
+                $email->attach($attachment, [
+                    'as' => basename($attachment),
+                    'mime' => 'application/pdf',
+                ]);
+            } else {
+                Log::error('Attachment is not a string: ' . json_encode($attachment));
+            }
         }
 
         return $email;

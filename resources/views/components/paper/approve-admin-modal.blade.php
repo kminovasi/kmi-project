@@ -47,7 +47,7 @@
 
                      <div class="mb">
                          <label class="mb-1" for="commentFacilitator">Komentar</label>
-                         <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"></textarea>
+                         <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"  placeholder="Mohon berikan komentar yang jelas dan terstruktur"></textarea>
                      </div>
                  </div>
 

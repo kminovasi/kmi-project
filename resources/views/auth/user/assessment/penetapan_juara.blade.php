@@ -226,47 +226,12 @@
                                     <input type="date" name="penetapan_juara" id="inputDate" class="form-control" required>
                                 </div>
                                 <div class="card-footer text-end">
-                                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
+                                    <button class="btn btn-primary" type="submit">Buat Berita Acara</button>
                                 </div>
                             </div>
                         </div>
 
                 </form>
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <table id="datatablesSimple" class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Event</th>
-                                    <th>Tahun</th>
-                                    <th>No. Surat</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $no = 1; ?>
-                                @foreach ($data as $d)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $d->event_name }}</td>
-                                        <td>{{ $d->year }}</td>
-                                        <td>{{ $d->no_surat }}</td>
-                                        <td>
-                                            <a href="{{ route('berita-acara.showPDF', ['id' => $d->id]) }}" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>
-                                            <a href="{{ route('berita-acara.downloadPDF', ['id' => $d->id]) }}" class="btn btn-primary btn-sm">Unduh</a>
-                                            <form class="mt-2" action="{{ route('berita-acara.destroy', ['id' => $d->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita acara ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
             </div>
             <div class="modal-footer">

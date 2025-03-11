@@ -759,9 +759,12 @@ class PaperController extends Controller
 
         // Mengelola file review jika ada
         if ($request->file('file_review')) {
+            $teamName = Str::slug($record->team->team_name); // Get the team name and slugify it
+            $fileName = $teamName . '.' . $request->file('file_review')->extension();
+            Log::debug($fileName); // Create the file name with the team name and extension
             $record->file_review = $request->file('file_review')->storeAs(
-                './file_review',
-                $record->innovation_title . "." . $request->file('file_review')->extension(),
+                'file_review',
+                $fileName,
                 'public'
             );
         }

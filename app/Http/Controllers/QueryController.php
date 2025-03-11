@@ -38,6 +38,13 @@ use Illuminate\Support\Facades\Cache;
 
 class QueryController extends Controller
 {
+    protected function checkIfJudge()
+    {
+        return Judge::where('employee_id', Auth::user()->employee_id)
+            ->where('status', 'active')
+            ->exists();
+    }
+
     public function autocomplete(Request $request)
     {
         $query = $request->input('query');
@@ -1334,16 +1341,15 @@ class QueryController extends Controller
                 $dataTable->addColumn('action', function ($data_row) use ($request) {
                     $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
                     $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
-                    $judgeService = app(JudgeService::class);
 
-                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin' || $judgeService->isJudgeInEvent(Auth::user(), $request->filterEvent)) {
+                    if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
                         $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
-                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
-                            "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
+                            "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
+                            "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
                         return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                    } elseif (auth()->user()->role == 'Juri') {
-                        $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
+                    } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
+                        $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
                         return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } else {
                         return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
@@ -1455,7 +1461,7 @@ class QueryController extends Controller
                 ->where('pvt_assesment_team_judges.stage', 'presentation')
                 ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
-            if (auth()->user()->role == "Juri") {
+            if (auth()->user()->role == "Juri" || $this->checkIfJudge()) {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                     ->where('judges.employee_id', auth()->user()->employee_id);
             }
@@ -1483,7 +1489,6 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Ranking';
             $dataTable->addColumn('Urutan', function ($data_row) use ($request, $categoryid) {
-                Log::debug($data_row);
 
                 // Mengambil data tim berdasarkan total_score_presentation per kategori
                 $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -1512,10 +1517,6 @@ class QueryController extends Controller
                 return $data_total[$eventTeamId]['Ranking'];
             });
 
-
-
-
-
             $rawColumns[] = 'fix';
             $dataTable->addColumn('fix', function ($data_row) {
                 if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'Presentation')
@@ -1528,16 +1529,16 @@ class QueryController extends Controller
             $dataTable->addColumn('action', function ($data_row) {
                 $inputPenilaianUrl = route('assessment.juri.value.pa', ['id' => $data_row['event_team_id(removed)']]);
                 $lihatSofiUrl = route('assessment.show.sofi.pa', ['id' => $data_row['event_team_id(removed)']]);
-
+                
                 // Mengecek peran pengguna dan status peserta
                 if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
                     $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
+                        "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
+                        "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
                     return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'Presentation' ? 'disabled' : '') . "\"\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                } elseif (auth()->user()->role == 'Juri') {
-                    $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
+                } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
+                    $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
                     return "$inputPenilaianButton <a class=\"btn btn-info btn-xs  " . ($data_row['status(removed)'] == 'Presentation' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                 } else {
                     // Jika bukan admin, superadmin, atau juri, hanya menampilkan tombol Lihat SOFI
@@ -2381,7 +2382,7 @@ class QueryController extends Controller
                 ->where('pvt_assesment_team_judges.stage', 'caucus')
                 ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international']);
 
-            if (auth()->user()->role == "Juri") {
+            if (auth()->user()->role == "Juri" || $this->checkIfJudge()) {
                 $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                     ->where('judges.employee_id', auth()->user()->employee_id);
             }
@@ -2456,12 +2457,12 @@ class QueryController extends Controller
                 // Mengecek peran pengguna dan status peserta
                 if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
                     $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
-                        "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
+                        "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
+                        "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
                     return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'Caucus' ? 'disabled' : '') . "\"\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
-                } elseif (auth()->user()->role == 'Juri') {
-                    $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
+                } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
+                    $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
                     return "$inputPenilaianButton <a class=\"btn btn-info btn-xs  " . ($data_row['status(removed)'] == 'Caucus' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                 } else {
                     // Jika bukan admin, superadmin, atau juri, hanya menampilkan tombol Lihat SOFI

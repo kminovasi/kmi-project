@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Validation\ValidationException;
 use App\Models\User;
 
 class SessionController extends Controller
@@ -15,27 +14,6 @@ class SessionController extends Controller
     function index()
     {
         return view('layouts.login');
-    }
-
-    private function single_auth($data)
-    {
-        $ch = curl_init(env('SSO_URL'));
-        $curlDefault = array(
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => array(
-                'token:$2y$10$3DDqyL./M7Qn4h426rnOAux3H20.VWXE2sqO83tk6n24QDtswGwF.',  // when akses using token
-            ),
-        );
-        // execute!
-        curl_setopt_array($ch, $curlDefault);
-        $html = curl_exec($ch);
-        $response = json_decode($html, true);
-        $err = curl_error($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-
-        return $response;
     }
 
     public function login(Request $request)
@@ -84,35 +62,4 @@ class SessionController extends Controller
 
         return redirect('/');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // function login(Request $request)
-    // {
-    //     $cred = $request->validate([
-    //         'email' => 'required|email:dns',
-    //         'password' => 'required'
-    //     ]);
-
-    //     if (Auth::attempt($cred)) {
-    //         $request->session()->regenerate();
-    //         return redirect()->intended('page/dashboard');
-    //     }
-
-    //     return back()->with('loginErr', 'Login failed.');
-    // }
 }

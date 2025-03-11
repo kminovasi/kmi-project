@@ -114,7 +114,7 @@
                     <a class="nav-link {{ request()->routeIs('timeline.index') ? 'active' : '' }}"
                         href="{{ route('timeline.index') }}">
                         <div class="nav-link-icon"><i data-feather="clock"></i></div>
-                        <span class="text-white">Linimasa</span>
+                        <span class="text-white">Timeline</span>
                     </a>
                     <a class="nav-link {{ request()->routeIs('post.index') ? 'active' : '' }}"
                         href="{{ route('post.index') }}">

@@ -8,14 +8,14 @@
             <form id="accGmBenefitForm" method="POST" enctype="multipart/form-data" class="p-2">
                 @csrf
                 @method('PUT')
-                <select class="form-select" aria-label="Default select example" name="status" id="change_benefit_by_gm" required>
-                    <option selected>-</option>
-                    <option value="accepted benefit by general manager">Accept</option>
-                    <option value="revision">Revisi</option>
-                    <option value="rejected benefit by general manager">Reject</option>
-                </select>
-
+                
                 <div class="modal-body">
+                    <select class="form-select" aria-label="Default select example" name="status" id="change_benefit_by_gm" required>
+                        <option selected>-</option>
+                        <option value="accepted benefit by general manager">Accept</option>
+                        <option value="revision">Revisi</option>
+                        <option value="rejected benefit by general manager">Reject</option>
+                    </select>
                     <div id="revisionTypeContainer" class="mb-3" style="display: none;">
                         <h5>Pilih Tipe Revisi:</h5>
                         <div class="form-check">

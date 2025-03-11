@@ -9,15 +9,17 @@
              <form id="accFasilBenefitForm" method="POST" enctype="multipart/form-data">
                  @csrf
                  @method('PUT')
-                 <select class="form-select" aria-label="Default select example" name="status"
-                     id="change_benefit_by_fasil" require>
-                     <option selected>-</option>
-                     <option value="accepted benefit by facilitator">Accept</option>
-                     <option value="revision benefit by facilitator">Revisi</option>
-                     <option value="rejected benefit by facilitator">Reject</option>
-                 </select>
                  <div class="modal-body">
-                     <div class="mb">
+                     <div class="mb-2">
+                         <select class="form-select" aria-label="Default select example" name="status"
+                             id="change_benefit_by_fasil" require>
+                             <option selected>-</option>
+                             <option value="accepted benefit by facilitator">Accept</option>
+                             <option value="revision benefit by facilitator">Revisi</option>
+                             <option value="rejected benefit by facilitator">Reject</option>
+                         </select>
+                     </div>
+                     <div class="mb-2">
                          <label class="mb-1" for="commentFacilitator">Berikan Komentar</label>
                          <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"
                              placeholder="Mohon berikan komentar yang jelas dan terstruktur"></textarea>

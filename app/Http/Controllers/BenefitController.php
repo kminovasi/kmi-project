@@ -176,7 +176,7 @@ class BenefitController extends Controller
             // Simpan file baru
             $record->file_review = $request->file('file_review')->storeAs(
                 'file_review',
-                $record->team_name . "." . $request->file('file_review')->extension(),
+                $teamName. "." . $request->file('file_review')->extension(),
                 'public'
             );
         } else {

@@ -699,7 +699,7 @@ class PaperController extends Controller
                     // $tcpdf->WriteHTML(mb_substr($column, 3));
                     // return response($tcpdf->Output(), 200)->header('Content-Type', 'application/pdf');
                     // $pageCount = $fpdi->SetSourceFile(Storage::path('public/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf'));
-                    $fullPath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
+                    $fullPath = storage_path('app/public/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
                     if (!file_exists($fullPath)) {
                         $fullPath = storage_path('app/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
                     }
@@ -712,7 +712,7 @@ class PaperController extends Controller
                             $fpdi->AddPage();
                     }
                 } elseif ($column[0] == 'f') {
-                    $pageCount = $fpdi->setSourceFile(public_path('storage/' . mb_substr($column, 3)));
+                    $pageCount = $fpdi->setSourceFile(storage_path('app/public/' . mb_substr($column, 3)));
 
                     for ($i = 1; $i <= $pageCount; $i++) {
                         $pageId = $fpdi->ImportPage($i);
@@ -720,10 +720,8 @@ class PaperController extends Controller
                         if ($i != $pageCount)
                             $fpdi->AddPage();
                     }
-                    // return response($fpdi->Output(), 200)->header('Content-Type', 'application/pdf');
-                } elseif ($column[0] == '-') { //ini buat kalo user upload cuma sampai step tertentu dan lsg upload full paper, maka detail step yang tidak diisi saat diklik akan mengarah ke no file directory
-                    // $tcpdf->WriteHTML(mb_substr($column, 3));
-                    // return response($tcpdf->Output(), 200)->header('Content-Type', 'application/pdf');
+                    return response($fpdi->Output(), 200)->header('Content-Type', 'application/pdf');
+                } elseif ($column[0] == '-') { 
                     $fullPath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
                     if (!file_exists($fullPath)) {
                         $fullPath = storage_path('app/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
@@ -759,12 +757,11 @@ class PaperController extends Controller
 
         // Mengelola file review jika ada
         if ($request->file('file_review')) {
-            $teamName = Str::slug($record->team->team_name); // Get the team name and slugify it
-            $fileName = $teamName . '.' . $request->file('file_review')->extension();
-            Log::debug($fileName); // Create the file name with the team name and extension
+            $teamName = $record->team ? $record->team->team_name : 'unknown_team';
+            Log::debug($teamName); // Create the file name with the team name and extension
             $record->file_review = $request->file('file_review')->storeAs(
                 'file_review',
-                $fileName,
+                $teamName . '.' . $request->file('file_review')->extension(),
                 'public'
             );
         }

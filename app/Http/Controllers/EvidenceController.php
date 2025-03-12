@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use TCPDF;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EvidenceController extends Controller
 {
@@ -37,7 +38,7 @@ class EvidenceController extends Controller
         $team = Team::findOrFail($id);
 
         // Ambil tim berdasarkan team_id
-        $papers = \DB::table('teams')
+        $papers = DB::table('teams')
             ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
             ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')

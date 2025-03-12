@@ -18,6 +18,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\BodEventController;
 use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\EvidenceWordExport;
 use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\DashboardController;
@@ -375,9 +376,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/export/{categoryId}', function ($categoryId) {
             return Excel::download(new PaperExport($categoryId), 'papers_category_' . $categoryId . '.xlsx');
         })->name('excel');
-        Route::get('/export-detail/{teamId}', function ($teamId) {
-            return Excel::download(new DetailPaperExport($teamId), 'papers_detail_' . $teamId . '.xlsx');
-        })->name('export-detail');
+        Route::get('/download-word/{id}', [EvidenceWordExport::class, 'downloadWord'])->name('downloadWord');
         Route::get('/download/{id}', [EvidenceController::class, 'download'])->name('download-paper');
     });
 

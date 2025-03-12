@@ -261,7 +261,7 @@
             "ajax": {
                 "url": "{{ route('query.get_oda_assessment') }}",
                 "type": "GET",
-                "async": false,
+                "async": true,
                 "dataSrc": function (data) {
                     return data.data;
                 },

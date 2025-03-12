@@ -1,72 +1,135 @@
-<table>
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Judul</th>
-            <th>Tema</th>
-            <th>Abstrak</th>
-            <th>Status Inovasi</th>
-            <th>Permasalahan</th>
-            <th>Permasalahan Utama</th>
-            <th>Solusi</th>
-            <th>On Desk</th>
-            <th>Presentation</th>
-            <th>Caucus</th>
-            <th>Final Score</th>
-            <th>Best of The Best</th>
-            <th>Financial</th>
-            <th>Potential Benefit</th>
-            <th>Non-Financial Impact</th>
-            <th>Potensi Replikasi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($papers as $index => $paper)
-        <tr>
-            <!-- Data Inovasi -->
-            <td>{{ $index + 1 }}</td>
-            <td>{{ $paper->innovation_title }}</td>
-            <td>{{ $paper->theme_name }}</td>
-            <td>{{ $paper->abstract }}</td>
-            <td>{{ $paper->status_inovasi }}</td>
-            <td>{{ $paper->problem }}</td>
-            <td>{{ $paper->main_cause }}</td>
-            <td>{{ $paper->solution }}</td>
-            <td>{{ $paper->total_score_on_desk }}</td>
-            <td>{{ $paper->total_score_presentation }}</td>
-            <td>{{ $paper->total_score_caucus }}</td>
-            <td>{{ $paper->final_score }}</td>
-            <td>{{ $paper->is_best_of_the_best ? 'Yes' : 'No'}}</td>
-            <td>Rp.{{ number_format($paper->financial, 0, ',', '.') }}</td>
-            <td>Rp.{{ number_format($paper->potential_benefit, 0, ',', '.') }}</td>
-            <td>{{ $paper->non_financial }}</td>
-            <td>{{ $paper->potensi_replikasi }}</td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Detail Tim</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Detail Tim {{ $team->team_name }}</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th scope="col">NIK</th>
-            <th scope="col">Nama</th>
-            <th scope="col">Status</th>
-            <th scope="col">Email</th>
-            <th scope="col">Perusahaan</th>
-            <th scope="col">Kode</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($teamMember as $member)
-        <tr>
-            <td>{{ $member->user->employee_id }}</td>
-            <td>{{ $member->user->name }}</td>
-            <td>{{ $member->status }}</td>
-            <td>{{ $member->user->email }}</td>
-            <td>{{ $member->user->company_name }}</td>
-            <td>{{ $member->user->company_code }}</td>
-        </tr>
+    <div class="card" id="team-member">
+        <h4>Anggota Tim:</h4>
+        <table>
+            <tr>
+                <th>NIK</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Perusahaan</th>
+                <th>Kode Perusahaan</th>
+            </tr>
+            @foreach ($team->pvtMembers as $member)
+                <tr>
+                    <td>{{ $member->user->employee_id }}</td>
+                    <td>{{ $member->user->name }}</td>
+                    <td>{{ $member->user->email }}</td>
+                    <td>{{ $member->status }}</td>
+                    <td>{{ $member->user->company_name }}</td>
+                    <td>{{ $member->user->company_code }}</td>
+                </tr>
+            @endforeach
+        </table>
+    </div>
+    <div class="card" id="team-paper">
+        <h4>Informasi Paper:</h4>
+        @foreach ($team->papers as $paper)
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Judul:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->innovation_title }}</p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Lokasi:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->inovasi_lokasi }}</p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Abstrak:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->abstract }}</p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Masalah:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->problem }}</p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Penyebab Utama:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->main_cause }}</p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-3">
+                <p><strong>Solusi:</strong></p>
+            </div>
+            <div class="col-9">
+                <p>{{ $paper->solution }}</p>
+            </div>
+        </div>
+        <div class="row mb-1 text-center">
+            <h5>Foto Tim</h5>
+            <img src="{{ storage_path('app/public/' . $paper->proof_idea) }}" alt="Foto Tim" width="100px">
+        </div>
+        <div class="row mb-1 text-center">
+            <h5>Foto Inovasi</h5>
+            <img src="{{ storage_path('app/public/' . $paper->innovation_photo) }}" alt="Foto Inovasi"  width="100px">
+        </div>
+        <div class="row mb-1">
+            <h5>Nilai Yang Didapatkan:</h5>
+            <div class="col-3">
+                <p><strong>On Desk:</strong> {{ $eventTeam->total_score_on_desk }}</p>
+            </div>
+            <div class="col-3">
+                <p><strong>Presentasi:</strong> {{ $eventTeam->total_score_presentation }}</p>
+            </div>
+            <div class="col-3">
+                <p><strong>Caucus:</strong> {{ $eventTeam->total_score_caucus }}</p>
+            </div>
+            @if($eventTeam->is_best_of_the_best)
+            <div class="col-3">
+                <p><strong>Best Of The Best</strong></p>
+            </div>
+            @else
+            <div class="col-3">
+                <p><strong>Bukan Best Of The Best</strong></p>
+            </div>
+            @endif
+        </div>
+        <div class="row mb-1">
+            <h5>Benefit Inovasi:</h5>
+            <div class="col-3">
+                <p><strong>Benefit Finansial (Real):</strong> {{ $paper->financial }}</p>
+            </div>
+            <div class="col-3">
+                <p><strong>Benefit Finansial (Potensial):</strong> {{ $paper->potential_benefit}}</p>
+            </div>
+            <div class="col-3">
+                <p><strong>Benefit Non-Finansial</strong> {{ $paper->non_financial }}</p>
+            </div>
+        </div>
         @endforeach
-    </tbody>
-</table>
+    </div>
+</body>
+</html>

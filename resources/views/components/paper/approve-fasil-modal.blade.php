@@ -27,7 +27,7 @@
                     <div class="mb">
                         <label class="mb-1" for="commentFacilitator">Berikan Komentar</label>
                         <textarea name="comment" class="form-control" placeholder="Mohon berikan komentar yang jelas dan terstruktur"
-                            id="commentFacilitator" cols="30" rows="5"></textarea>
+                            id="commentFacilitator" cols="30" rows="5" required></textarea>
                     </div>
                 </div>
 

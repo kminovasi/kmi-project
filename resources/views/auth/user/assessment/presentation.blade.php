@@ -92,38 +92,9 @@
     </header>
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        <div class="p-2">
-            <!-- <a href="{{ route('paper.index') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Paper</a>
-                                                                                                                                        <a href="{{ route('paper.register.team') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-                                                                                                                                        @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-    <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a> -->
-            <!-- <a href="" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1">Event</a> -->
-            <!-- <a href="{{ route('paper.event') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
-@elseif(Auth::user()->role == 'Juri')
-    <a href="{{ route('assessment.presentation') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.presentation') ? 'active-link' : '' }}">Assessment</a>
-    @endif -->
-            <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
+        {{-- Component Navigation Bar Assessment --}}
+        @include('components.assessment.navbar')
 
-            <a href="{{ route('paper.index') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
-                Inovasi</a>
-
-            @if (Auth::user()->role == 'Juri' ||
-                    Auth::user()->role == 'BOD' ||
-                    Auth::user()->role == 'Admin' ||
-                    Auth::user()->role == 'Superadmin' ||
-                    $is_judge)
-                <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
-            @endif
-
-            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
-            @endif
-
-        </div>
         <div class="mb-3">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
@@ -145,7 +116,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-4 col-sm-8 col-xs-12">
-                        Tabel Presentasi
+                        Tabel Penilaian Presentasi
                     </div>
                     <div class="col-md-8 col-sm-8 col-xs-12">
                         <div id="event-title">
@@ -175,7 +146,7 @@
 
                     <input type="text" class="form-control" name="category" id="category-pa" hidden>
                     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                        <div class="d-flex">
+                        <div class="d-flex mt-2">
                             <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
                             <button type="button" class="btn btn-outline-primary next shadow-sm" data-bs-toggle="modal"
                                 data-bs-target="#fixModalPA">Kirim Semua</button>
@@ -192,7 +163,7 @@
             <div class="modal-content">
                 <!-- Modal Header -->
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                    <h5 class="modal-title fw-bold" id="filterModalLabel">Pengaturan Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
@@ -200,12 +171,12 @@
                     <!-- Filter Category -->
                     <div class="form-floating mb-4">
                         <select id="filter-category" name="filter-category" class="form-select">
-                            <option value="" selected>All Categories</option>
+                            <option value="" selected>Semua Kategori</option>
                             @foreach ($data_category as $category)
                                 <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
-                        <label for="filter-category">Category</label>
+                        <label for="filter-category">Katgeori</label>
                     </div>
 
                     <!-- Filter Event -->
@@ -223,8 +194,8 @@
                 </div>
                 <!-- Modal Footer -->
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply Filter</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -237,7 +208,7 @@
         <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title">Fix all Presentation Participant</h5>
+                    <h5 class="modal-title" id="title">Fiksasi Nilai Peserta Penilaian Presentasi</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="form-fixall-pa" action="{{ route('assessment.fix.pa') }}" method="POSt">
@@ -251,8 +222,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Fiksasi</button>
                     </div>
                 </form>
             </div>

@@ -10,12 +10,14 @@
                 @method('PUT')
                 
                 <div class="modal-body">
-                    <select class="form-select" aria-label="Default select example" name="status" id="change_benefit_by_gm" required>
-                        <option selected>-</option>
-                        <option value="accepted benefit by general manager">Accept</option>
-                        <option value="revision">Revisi</option>
-                        <option value="rejected benefit by general manager">Reject</option>
-                    </select>
+                    <div class="mb-2">
+                        <select class="form-select" aria-label="Default select example" name="status" id="change_benefit_by_gm" required>
+                            <option selected>-</option>
+                            <option value="accepted benefit by general manager">Accept</option>
+                            <option value="revision">Revisi</option>
+                            <option value="rejected benefit by general manager">Reject</option>
+                        </select>
+                    </div>
                     <div id="revisionTypeContainer" class="mb-3" style="display: none;">
                         <h5>Pilih Tipe Revisi:</h5>
                         <div class="form-check">
@@ -32,7 +34,7 @@
 
                     <div class="mb">
                         <label class="mb-1" for="commentGM">Berikan Komentar</label>
-                        <textarea name="comment" class="form-control" id="commentGMr" cols="30" rows="3" placeholder="Mohon berikan komentar yang jelas dan terstruktur"></textarea>
+                        <textarea name="comment" class="form-control" id="commentGMr" cols="30" rows="3" placeholder="Mohon berikan komentar yang jelas dan terstruktur" required></textarea>
                     </div>
                 </div>
 

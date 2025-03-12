@@ -10,67 +10,47 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            /* Menambah jarak antar elemen */
         }
 
         #filter-status-inovasi {
             width: 160px;
             height: 45px;
             border: 1px solid #d6d8db;
-            /* Border abu-abu cerah tipis */
             border-radius: 4px;
-            /* Radius sudut border */
             padding: 8px 12px;
-            /* Padding di dalam dropdown */
             background-color: #ffffff;
-            /* Background putih */
             color: #000000;
-            /* Teks hitam */
             font-size: 14px;
-            /* Ukuran font */
             transition: border-color 0.3s;
-            /* Transisi untuk perubahan warna border */
         }
 
         #filter-status-inovasi:focus {
             outline: none;
-            /* Menghilangkan outline default */
             border-color: #d6d8db;
-            /* Border abu-abu cerah saat fokus */
         }
 
         .btn-red {
             background-color: #ffffff;
-            /* Warna putih cerah */
             color: #000000;
-            /* Teks hitam */
             border: 1px solid #d6d8db;
-            /* Border abu-abu cerah tipis */
             border-radius: 4px;
             padding: 8px 16px;
-            /* Jarak dalam tombol */
             font-size: 14px;
             cursor: pointer;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Efek timbul */
             transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
         }
 
         .btn-red:hover {
             background-color: #f0f0f0;
-            /* Warna abu-abu sangat cerah saat hover */
             border-color: #d6d8db;
-            /* Border abu-abu cerah */
             color: #000000;
-            /* Teks hitam */
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            /* Efek timbul lebih dalam saat hover */
         }
 
         .btn-red:focus {
             outline: none;
-            /* Menghilangkan outline default */
         }
     </style>
 @endpush
@@ -92,28 +72,8 @@
     </header>
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        <div class="p-2">
-            <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
-            <a href="{{ route('paper.index') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
-                Inovasi</a>
-
-
-            @if (Auth::user()->role == 'Juri' ||
-                    Auth::user()->role == 'BOD' ||
-                    Auth::user()->role == 'Admin' ||
-                    Auth::user()->role == 'Superadmin' ||
-                    $is_judge)
-                <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
-            @endif
-
-            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event</a>
-            @endif
-        </div>
+        {{-- Component Navigation Bar Assessment --}}
+        @include('components.assessment.navbar')
 
         <div class="mb-3">
             @if (session('success'))
@@ -133,6 +93,17 @@
         </div>
         @include('auth.user.assessment.bar')
         <div class="card mb-4">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-4 col-sm-8 col-xs-12">
+                        Tabel Penilaian On Desk
+                    </div>
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <div id="event-title">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="card-body">
                 <div class="mb-3">
                     <div class="row">
@@ -159,7 +130,7 @@
 
                     <input type="text" class="form-control" name="category" id="category-oda" hidden>
                     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                        <div class="d-flex">
+                        <div class="d-flex mt-2">
                             <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
                             <button type="button" class="btn btn-outline-primary next shadow-sm" data-bs-toggle="modal"
                                 data-bs-target="#fixModalODA">Kirim Semua</button>
@@ -176,19 +147,19 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                    <h5 class="modal-title fw-bold" id="filterModalLabel">Pengaturan Filter</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Filter Category -->
                     <div class="form-floating mb-4">
                         <select id="filter-category" name="filter-category" class="form-select">
-                            <option value="" selected>All Categories</option>
+                            <option value="" selected>Semua Kategori</option>
                             @foreach ($data_category as $category)
                                 <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
-                        <label for="filter-category">Category</label>
+                        <label for="filter-category">Kategori</label>
                     </div>
 
                     <!-- Filter Event -->
@@ -205,8 +176,8 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Apply Filter</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -218,12 +189,12 @@
         <div class="modal-dialog modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter Category</h5>
+                    <h5 class="modal-title" id="detailTeamMemberTitle">Filter Kategori</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="mb-1" for="filter-category1">Category</label>
+                        <label class="mb-1" for="filter-category1">Katgeori</label>
                         <select id="filter-category1" name="filter-category1" class="form-select">
                             <option value=""></option>
                             @foreach ($data_category as $category)
@@ -233,7 +204,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -246,7 +217,7 @@
         <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title">Fix all On Desk Participant</h5>
+                    <h5 class="modal-title" id="title">Fiksasi Nilai Peserta On Desk</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="form-fixall-oda" action="{{ route('assessment.fix.oda') }}" method="POSt">
@@ -260,8 +231,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Fiksasi</button>
                     </div>
                 </form>
             </div>

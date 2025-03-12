@@ -47,7 +47,7 @@
 
                      <div class="mb">
                          <label class="mb-1" for="commentFacilitator">Komentar</label>
-                         <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"  placeholder="Mohon berikan komentar yang jelas dan terstruktur"></textarea>
+                         <textarea name="comment" class="form-control" id="commentFacilitator" cols="30" rows="3"  placeholder="Mohon berikan komentar yang jelas dan terstruktur" required></textarea>
                      </div>
                  </div>
 
@@ -55,7 +55,6 @@
                      <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                      <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton">
                          Approval</button>
-
                  </div>
              </form>
          </div>
@@ -74,6 +73,7 @@
                  revisionTypeContainerAdmin.show();
                  commentFieldAdmin.attr('required', 'required');
              } else if (selectedValueAdmin === 'accept') {
+                 revisionTypeContainerAdmin.hide();
                  await check_admin_approve(currentTeamId);
              } else {
                  revisionTypeContainerAdmin.hide();

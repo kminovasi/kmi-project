@@ -246,6 +246,19 @@ class PvtEventTeamController extends Controller
             // Now, update the selected team to mark it as the best of the best
             PvtEventTeam::whereIn('id', $selectedTeams)
                 ->update(['is_best_of_the_best' => true]);
+            
+            // Ambil informasi tim untuk history
+            $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->where('pvt_event_teams.id', $selectedTeams)
+                ->select('teams.team_name', 'teams.id as team_id')
+                ->first();
+                
+            // Tambahkan history bahwa tim lolos ke tahap Presentasi
+            History::create([
+                'team_id' => $team->team_id,
+                'activity' => "Selamat Tim " . $team->team_name . " Berhasil Menjadi Best Of The Best",
+                'status' => 'passed'
+            ]);
 
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Team berhasil dipilih menjadi Best of the Best');
         } catch (\Exception $e) {

@@ -62,31 +62,9 @@
 
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        <div class="p-2">
-
-            <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Registrasi</a>
-
-            <a href="{{ route('paper.index') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
-                Inovasi</a>
-
-            @if (Auth::user()->role == 'Juri' ||
-                    Auth::user()->role == 'BOD' ||
-                    Auth::user()->role == 'Admin' ||
-                    Auth::user()->role == 'Superadmin' ||
-                    $is_judge)
-                <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Penilaian</a>
-            @endif
-
-            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event
-                    Group</a>
-            @endif
-
-        </div>
+        {{-- Component Navigation Bar Assessment --}}
+        @include('components.assessment.navbar')
+        
         <div class="mb-3">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
@@ -129,7 +107,9 @@
                                 @csrf
                                 @method('POST')
                                 <table id="datatable-presentasi-bod" class="display"></table>
-                                <button type="submit" class="btn btn-primary submit">Kirim</button>
+                                <div class="d-flex mt-3 border-top pt-3">
+                                    <button type="submit" class="btn btn-primary submit mt-2">Kirim</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -144,7 +124,7 @@
                 <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                        <h5 class="modal-title fw-bold" id="filterModalLabel">Pengaturan Filter</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <!-- Modal Body -->
@@ -152,12 +132,12 @@
                         <!-- Filter Category -->
                         <div class="form-floating mb-4">
                             <select id="filter-category" name="filter-category" class="form-select">
-                                <option value="" selected>All Categories</option>
+                                <option value="" selected>Semua Kategori</option>
                                 @foreach ($data_category as $category)
                                     <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                                 @endforeach
                             </select>
-                            <label for="filter-category">Category</label>
+                            <label for="filter-category">Kategori</label>
                         </div>
 
                         <!-- Filter Event -->
@@ -176,8 +156,8 @@
                     </div>
                     <!-- Modal Footer -->
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Apply Filter</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </div>
@@ -253,14 +233,14 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="pptLabel">PDF Viewer</h5>
+                        <h5 class="modal-title" id="pptLabel">Lihat PDF</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <iframe id="viewPPT" src="" width="100%" height="500px"></iframe>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </div>

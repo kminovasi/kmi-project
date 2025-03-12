@@ -99,17 +99,18 @@ class BeritaAcaraController extends Controller
 
     public function showPDF($id)
     {
-        // Get the year
+        // Ambil data utama
         $category = Category::all();
         $data = BeritaAcara::join('events', 'berita_acaras.event_id', 'events.id')
             ->where('berita_acaras.id', $id)
-            ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
-            ->first();
+            ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
+            ->firstOrFail(); // Gunakan firstOrFail() untuk mencegah error jika data tidak ditemukan
+
         $idEvent = $data->eventID;
 
-        $carbonInstance =  Carbon::parse($data->penetapan_juara);
+        // Ubah tanggal ke format lokal
+        $carbonInstance = Carbon::parse($data->penetapan_juara);
         setlocale(LC_TIME, 'id_ID');
-        // dd($carbonInstance->isoFormat('DD'));
         $day = $carbonInstance->isoFormat('dddd');
         $date = numberToWords($carbonInstance->isoFormat('D'));
         $month = $carbonInstance->isoFormat('MMMM');
@@ -118,38 +119,42 @@ class BeritaAcaraController extends Controller
         $carbonInstance_startDate = Carbon::parse($data->date_start);
         $carbonInstance_endDate = Carbon::parse($data->date_end);
 
+        // Ambil daftar kategori yang bukan IDEA BOX
         $categoryID_list = Category::whereNot('category_parent', 'IDEA BOX')->pluck('id')->toArray();
 
+        // Cek apakah ada event assessment BI dan IDEA yang aktif
         $assessment_event_poin_bi = PvtAssessmentEvent::where('event_id', $idEvent)
             ->where('category', 'BI/II')
             ->where('status_point', 'active')
-            ->limit(1)
-            ->pluck('id')
-            ->toArray();
+            ->exists();
 
         $assessment_event_poin_idea = PvtAssessmentEvent::where('event_id', $idEvent)
             ->where('category', 'IDEA')
             ->where('status_point', 'active')
-            ->limit(1)
-            ->pluck('id')
-            ->toArray();
+            ->exists();
 
-
-        // dd($assessment_event_poin_bi);
+        // Ambil data juara berdasarkan kategori
         $juara = [];
         foreach ($categoryID_list as $categoryID) {
-            $category_name = Category::where('id', '=', $categoryID)->pluck('category_name')[0];
+            $category_name = Category::where('id', '=', $categoryID)->value('category_name');
+
             if ($assessment_event_poin_bi) {
                 $juara[$category_name] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                     ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                     ->join('papers', 'papers.team_id', '=', 'teams.id')
-                    ->join('companies', 'companies.company_code', 'teams.company_code')
+                    ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                     ->where('teams.category_id', '=', $categoryID)
                     ->where('pvt_event_teams.status', '=', 'Juara')
                     ->where('pvt_event_teams.event_id', '=', $idEvent)
-                    ->where('pvt_assesment_team_judges.stage', 'presentation')
-                    ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
-                    ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
+                    ->where('pvt_assesment_team_judges.stage', '=', 'presentation')
+                    ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                    ->select(
+                        'teams.team_name as teamname', 
+                        'papers.innovation_title', 
+                        'companies.company_name',
+                        'pvt_event_teams.final_score',
+                        DB::raw('RANK() OVER (ORDER BY pvt_event_teams.final_score DESC) as rank')
+                    )
                     ->take(3)
                     ->get()
                     ->toArray();
@@ -157,18 +162,26 @@ class BeritaAcaraController extends Controller
                 $juara[$category_name] = [];
             }
         }
+
+        // Kategori IDEA BOX
         if ($assessment_event_poin_idea) {
             $juara["IDEA"] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
-                ->join('companies', 'companies.company_code', 'teams.company_code')
+                ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->where('categories.category_parent', '=', 'IDEA BOX')
                 ->where('pvt_event_teams.status', '=', 'Juara')
                 ->where('pvt_event_teams.event_id', '=', $idEvent)
-                ->where('pvt_assesment_team_judges.stage', 'presentation')
-                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
-                ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
+                ->where('pvt_assesment_team_judges.stage', '=', 'presentation')
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->select(
+                    'teams.team_name as teamname', 
+                    'papers.innovation_title', 
+                    'companies.company_name',
+                    'pvt_event_teams.final_score',
+                    DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
+                )
                 ->take(3)
                 ->get()
                 ->toArray();
@@ -176,15 +189,22 @@ class BeritaAcaraController extends Controller
             $juara["IDEA"] = [];
         }
 
+        // Best Of The Best
         if ($assessment_event_poin_bi) {
             $juara['Best Of The Best'] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
-                ->join('companies', 'companies.company_code', 'teams.company_code')
+                ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->where('pvt_event_teams.event_id', $idEvent)
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
-                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name')
-                ->select('teams.team_name as teamname', 'papers.innovation_title', 'companies.company_name')
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->select(
+                    'teams.team_name as teamname', 
+                    'papers.innovation_title', 
+                    'companies.company_name',
+                    'pvt_event_teams.final_score',
+                    DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
+                )
                 ->take(1)
                 ->get()
                 ->toArray();
@@ -192,34 +212,25 @@ class BeritaAcaraController extends Controller
             $juara['Best Of The Best'] = [];
         }
 
+        // Ambil data BOD
         $bods = BodEvent::join('users', 'users.employee_id', '=', 'bod_events.employee_id')
             ->where('event_id', '=', $idEvent)
             ->select('users.name', 'users.position_title')
             ->get()
             ->toArray();
 
-
+        // Generate PDF
         $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4-P']);
         $html = view('auth.admin.berita-acara.pdf', compact(
-            'data',
-            'day',
-            'date',
-            'month',
-            'year',
-            'carbonInstance',
-            'juara',
-            'category',
-            'bods',
-            'carbonInstance_startDate',
-            'carbonInstance_endDate'
+            'data', 'day', 'date', 'month', 'year', 
+            'carbonInstance', 'juara', 'category', 'bods',
+            'carbonInstance_startDate', 'carbonInstance_endDate'
         ))->render();
 
         $mpdf->WriteHTML($html);
-        $content = $mpdf->Output('', 'S');
-
         $filename = str_replace(' ', '_', $data->event_name) . '_Berita_Acara.pdf';
 
-        return response($content)
+        return response($mpdf->Output('', 'S'))
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }

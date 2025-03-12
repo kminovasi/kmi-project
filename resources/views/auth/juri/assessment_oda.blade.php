@@ -146,7 +146,7 @@
             </div>
         </div>
         <div class="card mb-4">
-            <div class="card-header">Form Assessment Judges</div>
+            <div class="card-header">Form Penilaian Juri</div>
             <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
                 @csrf
                 @method('put')

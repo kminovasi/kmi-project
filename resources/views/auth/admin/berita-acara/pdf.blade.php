@@ -87,6 +87,10 @@
     .justify-text{
         text-align: justify;
     }
+
+    .ranking, .number{
+        text-align: center;
+    }   
 </style>
 <body>
     <div class="header">
@@ -111,8 +115,6 @@
 
     <div class="kategori">
         @foreach($juara as $category => $team )
-
-
         @if (count($team) > 0)
         <div class="mb-3">
             <p>{{$category}}</p>
@@ -121,15 +123,17 @@
                 <th>No</th>
                 <th>Nama Tim</th>
                 <th>Judul</th>
-                <th>Company</th>
+                <th>Perusahaan</th>
+                <th>Ranking</th>
             </tr>
             <?php $no = 1; ?>
             @foreach ($team as $dt)
                 <tr>
-                    <td>{{$no}}</td>
-                    <td>{{$dt['teamname']}}</td>
-                    <td>{{$dt['innovation_title']}}</td>
-                    <td>{{$dt['company_name']}}</td>
+                    <td class="number">{{ $no }}</td>
+                    <td>{{ $dt['teamname'] }}</td>
+                    <td>{{ $dt['innovation_title'] }}</td>
+                    <td>{{ $dt['company_name'] }}</td>
+                    <td class="ranking">Juara {{ $dt['rank'] }}</td>
                 </tr>
                 <?php $no++; ?>
             @endforeach

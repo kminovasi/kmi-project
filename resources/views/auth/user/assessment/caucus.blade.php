@@ -23,35 +23,24 @@
             background-color: #e81500;
         }
 
-        /* Menambahkan border pada tabel */
         #datatable-caucus {
             border-collapse: collapse;
-            /* Menghilangkan jarak antara border sel */
             width: 100%;
-            /* Mengatur lebar tabel */
         }
 
-        /* Menambahkan border pada sel tabel */
         #datatable-caucus th,
         #datatable-caucus td {
             border: 1px solid #ddd;
-            /* Border abu-abu muda */
             padding: 8px;
-            /* Padding di dalam sel */
             text-align: center;
-            /* Teks terpusat di dalam sel */
         }
 
-        /* Menambahkan border pada header tabel */
         #datatable-caucus th {
             background-color: #f2f2f2;
-            /* Warna latar belakang untuk header */
         }
 
-        /* Jika ingin border pada seluruh tabel */
         #datatable-caucus {
             border: 1px solid #ddd;
-            /* Border di sekitar tabel */
         }
     </style>
 @endpush
@@ -74,31 +63,10 @@
 
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        <div class="p2">
+        {{-- Component Navigation Bar Assessment --}}
+        @include('components.assessment.navbar')
 
-            <a href="{{ route('paper.register.team') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.register.team') ? 'active-link' : '' }}">Register</a>
-
-            <a href="{{ route('paper.index') }}"
-                class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.index') ? 'active-link' : '' }}">Makalah
-                Inovasi</a>
-
-            @if (Auth::user()->role == 'Juri' ||
-                    Auth::user()->role == 'BOD' ||
-                    Auth::user()->role == 'Admin' ||
-                    Auth::user()->role == 'Superadmin' ||
-                    $is_judge)
-                <a href="{{ route('assessment.on_desk') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.on_desk') ? 'active-link' : '' }}">Assessment</a>
-            @endif
-
-            @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                <a href="{{ route('paper.event') }}"
-                    class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('paper.event') ? 'active-link' : '' }}">Event
-                    Group</a>
-            @endif
-        </div>
-        <div class="mb-4">
+        <div class="mb-3">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
                     {{ session('success') }}
@@ -124,7 +92,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-md-4 col-sm-8 col-xs-12">
-                                Tabel Caucus
+                                Tabel Penilaian Caucus
                             </div>
                             <div class="col-md-8 col-sm-8 col-xs-12">
                                 <div id="event-title">
@@ -147,7 +115,7 @@
                             </div>
                             <input type="text" class="form-control" name="category" id="category-pa" hidden>
                             @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
-                            <div class="d-flex">
+                            <div class="d-flex mt-3 border-top pt-3">
                                 <button type="submit" class="btn btn-primary next shadow-sm me-4">Kirim</button>
                                 <button type="button" class="btn btn-outline-primary next shadow-sm"
                                     data-bs-toggle="modal" data-bs-target="#fixModalPA">Kirim Semua</button>
@@ -165,7 +133,7 @@
                 <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold" id="filterModalLabel">Filter Options</h5>
+                        <h5 class="modal-title fw-bold" id="filterModalLabel">Pengaturan Filter</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <!-- Modal Body -->
@@ -173,12 +141,12 @@
                         <!-- Filter Category -->
                         <div class="form-floating mb-4">
                             <select id="filter-category" name="filter-category" class="form-select">
-                                <option value="">All</option>
+                                <option value="">Semua Kategori</option>
                                 @foreach ($data_category as $category)
                                     <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                                 @endforeach
                             </select>
-                            <label for="filter-category">Category</label>
+                            <label for="filter-category">Katgeori</label>
                         </div>
 
                         <!-- Filter Event -->
@@ -196,8 +164,8 @@
                     </div>
                     <!-- Modal Footer -->
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Apply Filter</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </div>
@@ -263,7 +231,7 @@
             <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="title">Fix all Caucus Participant</h5>
+                        <h5 class="modal-title" id="title">Fiksasi Nilai Peserta Caucus</h5>
                         <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="form-fixall-pa" action="{{ route('assessment.fixSubmitAllCaucus') }}" method="POST">
@@ -277,8 +245,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Submit</button>
+                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Tutup</button>
+                            <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Fiksasi</button>
                         </div>
                     </form>
                 </div>

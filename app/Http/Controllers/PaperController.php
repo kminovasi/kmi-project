@@ -585,7 +585,7 @@ class PaperController extends Controller
     {
         try {
             if ($this->checkIsCompressed($request)) {
-                return redirect()->back()->withErrors('File Terkompres');
+                return redirect()->back()->withErrors('Gagal mengunggah Paper! Pastikan berkas tidak terkompres dan coba lagi.');
             }
 
             $paper = Paper::findOrFail($id);
@@ -594,7 +594,7 @@ class PaperController extends Controller
             $paper->save();
 
             $paper->updateAndHistory([
-                $stage => "f: " . $request->file('file_stage')->storeAs(
+                $stage => $request->file('file_stage')->storeAs(
                     'internal/' . $team->status_lomba . '/' . $team->team_name,
                     $stage . "." . $request->file('file_stage')->getClientOriginalExtension(),
                     'public'
@@ -627,11 +627,11 @@ class PaperController extends Controller
                 route('paper.index')
             ));
 
-            return redirect()->route('paper.index')->with('success', 'Paper successfully updated!');
+            return redirect()->route('paper.index')->with('success', 'Full Paper berhasil diunggah dan diperbarui!');
             // return redirect()->route('paper.show.stages', [$id, $stage]);
         } catch (\Exception $e) {
             // dd($e->getMessage());
-            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('paper.index')->withErrors('Error: Terjadi kesalahan saat menyimpan berkas. Silakan coba lagi nanti.');
         }
     }
 
@@ -821,7 +821,7 @@ class PaperController extends Controller
             throw new \Exception('Paper tidak memiliki relasi dengan Team.');
         }
 
-        return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+        return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
     }
 
     public function approvePaper(Request $request, $id)
@@ -908,10 +908,9 @@ class PaperController extends Controller
                 throw new \Exception('Paper tidak memiliki relasi dengan Team.');
             }
 
-            return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+            return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
         } catch (\Exception $e) {
-            Log::debug($e);
-            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('paper.index')->withErrors('Error: Gagal approve paper! Pastikan semua data yang diperlukan telah diisi dengan benar.');
         }
     }
 
@@ -1053,10 +1052,10 @@ class PaperController extends Controller
                 }
             }
 
-            return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+            return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
         } catch (\Exception $e) {
             Log::debug($e);
-            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('paper.index')->withErrors('Error: Gagal approve benefit! Pastikan semua data yang diperlukan telah diisi dengan benar.');
         }
     }
 
@@ -1232,10 +1231,10 @@ class PaperController extends Controller
                 }
             }
 
-            return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+            return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
         } catch (\Exception $e) {
             Log::debug($e);
-            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('paper.index')->withErrors('Error: Gagal approve benefit! Pastikan semua data yang diperlukan telah diisi dengan benar.');
         }
     }
 
@@ -1440,7 +1439,7 @@ class PaperController extends Controller
         } else {
             throw new \Exception('Paper tidak memiliki relasi dengan Team.');
         }
-        return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+        return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
     }
 
     public function event()

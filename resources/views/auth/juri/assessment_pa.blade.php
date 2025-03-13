@@ -217,10 +217,8 @@
             "ajax": {
                 "url": "{{ route('query.get_input_pa_assessment_team') }}",
                 "type": "GET",
-                "async": false,
+                "async": true,
                 "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
                     return data.data;
                 },
                 "data": function (d) {
@@ -231,7 +229,6 @@
             },
             "columns": columns,
             "scrollY": true,
-            // "scrollX": true,
             "stateSave": true,
             "destroy": true,
             "paging": false
@@ -251,8 +248,6 @@
             },
             async: false,
             success: function (data) {
-                // newColumn = []
-                console.log(data.data)
                 if(data.data.length){
                     let row_column = {};
                     row_column['data'] = "DT_RowIndex"

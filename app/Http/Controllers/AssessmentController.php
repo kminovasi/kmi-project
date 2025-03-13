@@ -937,17 +937,17 @@ class AssessmentController extends Controller
 
                     if ($team_status === 'Presentation') {
                         // Ambil informasi tim untuk history
-                        $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                            ->where('pvt_event_teams.team_id', $team_id)
-                            ->select('teams.team_name')
-                            ->first();
+                        $team = PvtEventTeam::with('team')->where('id', $team_id)->first();
 
-                        // Tambahkan history bahwa tim lolos ke tahap Presentasi
-                        History::create([
-                            'team_id' => $team_id,
-                            'activity' => "Tim " . $team->team_name . " telah Lolos ke stage Presentasi",
-                            'status' => 'passed'
-                        ]);
+                        if ($team && $team->team) {
+                            History::create([
+                                'team_id' => $team->team->id,
+                                'activity' => "Tim " . $team->team->team_name . " telah Lolos ke stage Presentasi",
+                                'status' => 'passed'
+                            ]);
+                        } else {
+                            Log::error("Team dengan ID $team_id tidak ditemukan.");
+                        }
 
                         // Ambil daftar juri dan event yang terkait
                         $data_assessment_team_judge = DB::table('pvt_assesment_team_judges as judge')
@@ -1255,17 +1255,16 @@ class AssessmentController extends Controller
                     if ($team_status[0] == 'Caucus') {
                         
                         // Ambil informasi tim untuk history
-                        $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                            ->where('pvt_event_teams.id', $team_id)
-                            ->select('teams.team_name')
-                            ->first();
+                        $team = PvtEventTeam::with('team')->where('id', $team_id)->first();
 
-                        // Tambahkan history bahwa tim tidak lolos ke tahap Presentasi
-                        History::create([
-                            'team_id' => $team_id,
-                            'activity' => "Tim " . $team->team_name . " Lolos ke stage Caucus",
-                            'status' => 'passed'
-                        ]);
+                        if($team && $team->team){
+                            // Tambahkan history bahwa tim tidak lolos ke tahap Presentasi
+                            History::create([
+                                'team_id' => $team->team->id,
+                                'activity' => "Tim " . $team->team->team_name . " Lolos ke stage Caucus",
+                                'status' => 'passed'
+                            ]);
+                        }
                         
                         $data_assessment_team_judge =
                             DB::table('pvt_assesment_team_judges as judge')
@@ -1707,29 +1706,27 @@ class AssessmentController extends Controller
                             ]);
                     }
 
-                    // Ambil informasi tim untuk history
-                    $teams = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                        ->where('pvt_event_teams.event_id', $request->event_id)
-                        ->select('pvt_event_teams.id as team_id', 'teams.team_name', 'pvt_event_teams.status')
-                        ->get();
-                    
-                    foreach ($teams as $team) {
-                        if ($team->status == 'Presentation BOD') {
-                            // Tambahkan history bahwa tim lolos ke tahap Presentasi
-                            History::create([
-                                'team_id' => $team->team_id,
-                                'activity' => "Tim " . $team->team_name . " telah Lolos ke stage Presentasi BOD",
-                                'status' => 'passed'
-                            ]);
-                        } else {
-                            // Tambahkan history bahwa tim tidak lolos ke tahap Presentasi
-                            History::create([
-                                'team_id' => $team->team_id,
-                                'activity' => "Tim " . $team->team_name . " tidak Lolos ke stage Presentasi BOD",
-                                'status' => 'failed'
-                            ]);
-                        }
-                    }
+                    // Ambil informasi tim untuk history dengan relasi team
+                    PvtEventTeam::with('team')
+                        ->where('event_id', $request->event_id)
+                        ->chunk(100, function ($teams) {
+                            foreach ($teams as $team) {
+                                if ($team->team) { // Pastikan tim memiliki relasi ke team
+                                    $activity = ($team->status == 'Presentation BOD') 
+                                        ? "Tim " . $team->team->team_name . " telah Lolos ke stage Presentasi BOD"
+                                        : "Tim " . $team->team->team_name . " tidak Lolos ke stage Presentasi BOD";
+
+                                    $status = ($team->status == 'Presentation BOD') ? 'passed' : 'failed';
+
+                                    History::create([
+                                        'team_id' => $team->team->id,
+                                        'activity' => $activity,
+                                        'status' => $status
+                                    ]);
+                                } 
+                            }
+                        });
+
 
                     $event_team_item = PvtEventTeam::findOrFail($request->pvt_event_team_id);
 
@@ -1754,25 +1751,24 @@ class AssessmentController extends Controller
                         $total_score = $event_team->total_score_caucus;
 
                         // Ambil Informasi Tim Untuk History
-                        $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                            ->where('pvt_event_teams.id', $event_team_id)
-                            ->select('teams.team_name')
+                        $team = PvtEventTeam::with('team')
+                            ->where('id', $event_team_id)
                             ->first();
 
                         if ($total_score >= $score_oda) {
                             $event_team->status = 'Presentation BOD';
 
                             History::create([
-                                'team_id' => $event_team->team_id,
-                                'activity' => "Tim " . $team->team_name . " telah Lolos ke stage Presentasi BOD",
+                                'team_id' => $team->team->id,
+                                'activity' => "Tim " . $team->team->team_name . " telah Lolos ke stage Presentasi BOD",
                                 'status' => 'passed'
                             ]);
                         } else {
                             $event_team->status = 'tidak lolos Caucus';
 
                             History::create([
-                                'team_id' => $event_team->team_id,
-                                'activity' => "Tim " . $team->team_name . " tidak Lolos ke stage Presentasi BOD",
+                                'team_id' => $team->team->id,
+                                'activity' => "Tim " . $team->team->team_name . " tidak Lolos ke stage Presentasi BOD",
                                 'status' => 'failed'
                             ]);
                         }
@@ -1997,7 +1993,7 @@ class AssessmentController extends Controller
     public function addWatermarks($paperId) {
     try {
         // Ensure the filepath is correctly formatted by removing "f: " and trimming any leading/trailing slashes
-        $filePath = storage_path('app/public/' . mb_substr(Paper::where('id', '=', $paperId)->pluck('full_paper')[0], 3));
+        $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck('full_paper')[0], '/'));
 
         if (!file_exists($filePath)) {
                 dump($filePath);

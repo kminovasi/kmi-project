@@ -2591,39 +2591,81 @@ class QueryController extends Controller
                 // Cek apakah total_score_presentation null atau 0
                 $eventTeamId = $data_row['event_team_id(removed)'];
                 if (!isset($data_total[$eventTeamId]) || $data_total[$eventTeamId]['final_score'] == 0) {
-                    return 'belum dinilai'; // Kembalikan jika belum ada penilaian atau nilai 0
+                    return 'belum dinilai'; 
                 }
 
                 // Kembalikan ranking untuk event_team_id saat ini
                 return $data_total[$eventTeamId]['Ranking'];
             });
 
-            $rawColumns[] = 'Total';
-            $dataTable->addColumn('Total', function ($data_row) {
+            $rawColumns[] = 'Nilai akhir keputusan BOD';
+            $dataTable->addColumn('Nilai akhir keputusan BOD', function ($data_row) {
                 $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
-                $description = 'Nilai akhir dari keputusan BOD';
+                $divStart = '<div class="d-flex flex-column align-items-center">';
+                $divEnd = '</div>';
+
                 if ($pvtEventTeam->final_score !== null) {
-                    return '<input style="border: none;" class="form-control small-input text-center" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->final_score . '" readonly>';
+                    $finalScore = '<input style="border: 1px dotted #e1e1e1;" 
+                                        class="form-control small-input text-center mb-2" 
+                                        type="text" 
+                                        id="text-' . $data_row['event_team_id(removed)'] . '" 
+                                        name="total_score_event[]" 
+                                        value="' . $pvtEventTeam->final_score . '" 
+                                        readonly>';
+
+                    return $divStart . 
+                            $finalScore . 
+                            '<form class="d-flex flex-column align-items-center" 
+                                method="post" 
+                                action="' . route('assessment.updateScoreKeputusanBOD') . '">
+                                ' . csrf_field() . '
+                                ' . method_field('PUT') . '
+                                <input type="hidden" value=\'' . htmlspecialchars(json_encode($data_row), ENT_QUOTES) . '\' 
+                                    name="selected_data_team" />
+                                <input class="form-control small-input mb-2 text-center" 
+                                    value="0" 
+                                    type="number" 
+                                    name="val_peringkat" 
+                                    min="0" 
+                                    max="1000">
+                                ' . ((Auth::user()->role === "Superadmin" || Auth::user()->role === "Admin") ? 
+                                    '<button type="submit" class="btn btn-sm btn-primary">Submit</button>' : '') . '
+                            </form>' . 
+                            $divEnd;
                 } else {
-                    return '<input style="border: none;" class="form-control small-input" type="text" id="text-' . $data_row['event_team_id(removed)'] . '" name="total_score_event[]" value="' . $pvtEventTeam->total_score_caucus . '" readonly>';
+                    $totalScore = '<input style="border: 1px dotted #e1e1e1;" 
+                                        class="form-control small-input text-center mb-2" 
+                                        type="text" 
+                                        id="text-' . $data_row['event_team_id(removed)'] . '" 
+                                        name="total_score_event[]" 
+                                        value="' . $pvtEventTeam->total_score_caucus . '" 
+                                        readonly>';
+
+                    return $divStart . 
+                            $totalScore . 
+                            '<form class="d-flex flex-column align-items-center" 
+                                method="post" 
+                                action="' . route('assessment.updateScoreKeputusanBOD') . '">
+                                ' . csrf_field() . '
+                                ' . method_field('PUT') . '
+                                <input type="hidden" value=\'' . htmlspecialchars(json_encode($data_row), ENT_QUOTES) . '\' 
+                                    name="selected_data_team" />
+                                <input class="form-control small-input mb-2 text-center" 
+                                    value="0" 
+                                    type="number" 
+                                    name="val_peringkat" 
+                                    min="0" 
+                                    max="1000">
+                                ' . ((Auth::user()->role === "Superadmin" || Auth::user()->role === "Admin") ? 
+                                    '<button type="submit" class="btn btn-sm btn-primary">Submit</button>' : '') . '
+                            </form>' . 
+                            $divEnd;
                 }
+
             });
 
-            $rawColumns[] = 'Score Keputusan BOD';
-            $dataTable->addColumn('Score Keputusan BOD', function ($data_row) {
-                return
-                    '<form method="post" action="' . route('assessment.updateScoreKeputusanBOD') . '">
-                    ' . csrf_field() . '
-                    ' . method_field('PUT') . '
-                    <input type="hidden" value=\'' . htmlspecialchars(json_encode($data_row), ENT_QUOTES) . '\' name="selected_data_team" />
-                    <input class="form-control small-input" value="0" type="number" name="val_peringkat" min="0" max="1000">
-                    <br>
-                    ' . ((Auth::user()->role === "Superadmin" || Auth::user()->role === "Admin") ? '<button type="submit" class="btn btn-sm btn-primary">Submit</button>' : '') . '
-                </form>';
-            });
-
-            $rawColumns[] = 'fix';
-            $dataTable->addColumn('fix', function ($data_row) {
+            $rawColumns[] = 'Fiks';
+            $dataTable->addColumn('Fiks', function ($data_row) {
                 if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status'] === 'Presentation BOD')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else

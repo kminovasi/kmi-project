@@ -42,6 +42,10 @@
         #datatable-caucus {
             border: 1px solid #ddd;
         }
+
+        th {
+            text-transform: capitalize;
+        }
     </style>
 @endpush
 @section('content')

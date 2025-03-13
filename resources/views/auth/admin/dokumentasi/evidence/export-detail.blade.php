@@ -120,13 +120,13 @@
         <div class="row mb-1">
             <h5>Benefit Inovasi:</h5>
             <div class="col-3">
-                <p><strong>Benefit Finansial (Real):</strong> {{ $paper->financial }}</p>
+                <p><strong>Benefit Finansial (Real):</strong> Rp.{{ number_format($paper->financial, 0, ',', '.') }}</p>
             </div>
             <div class="col-3">
-                <p><strong>Benefit Finansial (Potensial):</strong> {{ $paper->potential_benefit}}</p>
+                <p><strong>Benefit Finansial (Potensial):</strong> Rp.{{ number_format($paper->potential_benefit, 0, ',', '.')}}</p>
             </div>
             <div class="col-3">
-                <p><strong>Benefit Non-Finansial</strong> {{ $paper->non_financial }}</p>
+                <p><strong>Benefit Non-Finansial:</strong> {{ $paper->non_financial }}</p>
             </div>
         </div>
         @endforeach

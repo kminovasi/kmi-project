@@ -27,7 +27,6 @@
         .display thead th,
         .display tbody td {
             border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
         }
     </style>
 @endpush

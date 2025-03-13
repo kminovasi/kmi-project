@@ -276,7 +276,6 @@
                 },
                 "data": function (d) {
                     d.filterEvent = $('#filter-event').val();
-                    // d.filterYear = $('#filter-year').val();
                     d.filterCategory = $('#filter-category').val();
                 }
 
@@ -286,10 +285,10 @@
             "scrollX": false,
             "stateSave": true,
             "destroy": true,
-            "headerCallback": function(thead, data, start, end, display) {
-                $(thead).find('th').each(function(index) {
-                    if ($(this).text() === 'Total') {
-                        $(this).html('<span class="d-block">Total</span><span class="fw-400" style="font-size: 0.6rem;">Nilai Akhir BOD</span>');
+            "createdRow": function(row, data, dataIndex) {
+                $('thead th').each(function(index) {
+                    if ($(this).text().trim() === 'Ranking') {
+                        $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); // Set text center untuk <td>
                     }
                 });
             }

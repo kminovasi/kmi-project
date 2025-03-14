@@ -52,9 +52,9 @@
                             <td>>Rp.{{ number_format($paper->potential_benefit, 0, ',', '.') }}</td>
                             <td class="text-center">
                                 @if ($paper->is_best_of_the_best == false)
-                                    Juara {{ $paper->rank }}
+                                    {{ $paper->rank <= 3 ? 'Juara ' . $paper->rank : 'Peserta' }}
                                 @else
-                                Juara {{ $paper->rank }}
+                                    Best Of The Best
                                     <button type="button" class="btn btn-warning btn-xs" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                         data-bs-title="Best of The Best">

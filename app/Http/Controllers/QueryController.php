@@ -1594,7 +1594,7 @@ class QueryController extends Controller
 
             $size_event_team = count($arr_event_team_id);
             $arr_select_case = [
-                'point',
+                'point as Poin',
                 'detail_point as detail_point(removed)',
                 'score_max as score_max(removed)',
                 'pvt_assessment_events.id as assessment_events_id(removed)',
@@ -1656,13 +1656,13 @@ class QueryController extends Controller
 
 
 
-            $rawColumns[] = 'Detail point';
-            $dataTable->addColumn('Detail point', function ($data_row) {
+            $rawColumns[] = 'Detail Poin';
+            $dataTable->addColumn('Detail Poin', function ($data_row) {
                 return '<textarea class="form-control mb-3"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
 
-            $rawColumns[] = 'Score max';
-            $dataTable->addColumn('Score max', function ($data_row) {
+            $rawColumns[] = 'Maks Skor';
+            $dataTable->addColumn('Maks Skor', function ($data_row) {
                 return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
             <br>
             <br>';
@@ -1798,8 +1798,8 @@ class QueryController extends Controller
             }
             $dataTable = DataTables::of($data_row->get());
 
-            $rawColumns[] = 'Detail point';
-            $dataTable->addColumn('Detail point', function ($data_row) {
+            $rawColumns[] = 'Detail poin';
+            $dataTable->addColumn('Detail poin', function ($data_row) {
                 return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
             });
 
@@ -1847,8 +1847,8 @@ class QueryController extends Controller
 
 
 
-            $rawColumns[] = 'Score max';
-            $dataTable->addColumn('Score max', function ($data_row) {
+            $rawColumns[] = 'Maks skor';
+            $dataTable->addColumn('Maks skor', function ($data_row) {
                 return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
             <br>
             <br>';

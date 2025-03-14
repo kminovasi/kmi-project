@@ -296,7 +296,7 @@ class ManagamentSystemController extends Controller
             return redirect()->route('management-system.role.bod.event.create')->withErrors('Error: ' . $e->getMessage());
         }
 
-        return redirect()->route('management-system.role.bod.event.create')->with('success', 'Change successful');
+        return redirect()->route('management-system.role.bod.event.create')->with('success', 'BOD Event Berhasil Dibuat');
     }
 
     public function indexInnovator()

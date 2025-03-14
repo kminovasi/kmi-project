@@ -268,13 +268,7 @@
                 {"data": "detail_point", "title": "Detail Penilian"},
                 {"data": "pdca", "title": "Kategori"},
                 {"data": "score_max", "title": "Skor Maksimal"},
-                {"data": "assign","title": "Tambahkan"
-                //     "render": function (data, type, row) {
-                //     // Check if checkbox is already checked on initial load
-                //     let isChecked = data ? 'checked' : '';
-                //     return `<input type="checkbox" name="assessment_poin_id[]" value="${row.id}" ${isChecked}>`;
-                // }
-                },
+                {"data": "assign","title": "Tambahkan"},
                 {"data": "action","title": "Action"},
                 {"data": "stage", "title": "Stage"}
             ],
@@ -301,13 +295,6 @@
         // Inisialisasi 'selectAllButton' dan set 'active' menjadi false
         const selectAllButton = $('#select-all-button');
         selectAllButton.removeClass('active');
-
-         // Saat table selesai dirender, hilangkan centang pada semua checkbox
-        // dataTable.on('draw.dt', function () {
-        //     $('#datatable-assessment tbody input[type="checkbox"]').prop('checked', false);
-        //     selectAllButton.removeClass('active');
-        //     cek(); // Recalculate score after unchecking
-        // });
 
         $('#select-all-button').on('click', function () {
         // Get all checkboxes in the 'assign' column
@@ -344,20 +331,13 @@
                 limit: 1
             },
             success: function(response) {
-                // companyField.value = response[0].company_name
                 document.getElementById("inputPoint").value = response[0].point
                 document.getElementById("inputScoreMax").value = response[0].score_max
-                //document.getElementById("inputDetailPoint").value = response[0].detail_point;
                 var inputDetailPoint = document.getElementById("inputDetailPoint"); //agar detail bisa ditambah tapi tdk dapat dihapus
                 inputDetailPoint.defaultValue = response[0].detail_point;
                 inputDetailPoint.value = inputDetailPoint.defaultValue;
 
                 var isDeleting = false;
-                // inputDetailPoint.addEventListener("keydown", function(event) {
-                //     if (event.key === "Backspace" || event.key === "Delete") {
-                //         isDeleting = true;
-                //     }
-                // });
 
                 inputDetailPoint.addEventListener("input", function(event) {
                     if (isDeleting && event.target.value.length < inputDetailPoint.defaultValue.length) {
@@ -411,11 +391,11 @@
         var selectedValue = selectElement.value;
 
         if (selectedValue == "BI/II") {
-    // Set nilai antara 920 hingga 1000
-    nilai = Math.min(1000, Math.max(920, totalMaxScore));
-} else {
-    nilai = 100; // Untuk kasus selain "BI/II"
-}
+            // Set nilai antara 920 hingga 1000
+            nilai = Math.min(1000, Math.max(920, totalMaxScore));
+        } else {
+            nilai = 100; // Untuk kasus selain "BI/II"
+        }
 
         sisaMaxScore = nilai - totalMaxScore;
 

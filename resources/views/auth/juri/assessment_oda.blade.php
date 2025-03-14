@@ -43,7 +43,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                            Input Assessment
+                            Input Penilaian On Desk
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -70,29 +70,29 @@
 
         <!-- Account details card-->
         <div class="card mb-4">
-            <div class="card-header">Detail Team</div>
+            <div class="card-header">Detail Tim</div>
             <div class="card-body">
                 <!-- Form Group (first name)-->
                 <div class="row">
                     <div class="col-md-7">
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1" for="inputFirstName">Team Name</label>
+                                <label class="small mb-1 fw-600" for="inputFirstName">Nama Tim</label>
                                 <input class="form-control" id="inputFirstName" type="text"
                                     value="{{ $datas->team_name }}" readonly>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1" for="inputFirstName">Innovation Title</label>
+                                <label class="small mb-1 fw-600" for="inputFirstName">Judul Inovasi</label>
                                 <input class="form-control" id="inputFirstName" type="text"
                                     placeholder="Enter your first name" value="{{ $datas->innovation_title }}" readonly>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1" for="inputFirstName">Category</label>
+                                <label class="small mb-1 fw-600" for="inputFirstName">Kategori Inovasi</label>
                                 <input class="form-control" id="inputFirstName" type="text"
                                     placeholder="Enter your first name" value="{{ $datas->category_name }}" readonly>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1" for="inputFirstName">Judges</label>
+                                <label class="small mb-1 fw-600" for="inputFirstName">Juri</label>
                                 <div class="table-responsive table-billing-history">
                                     <table class="table mb-0">
                                         <tbody>
@@ -107,10 +107,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-5 mb-3">
-                        <label class="small mb-1" for="fotoTim">Foto Tim</label>
+                    <div class="col-md-5 mb-3 text-center">
+                        <label class="small mb-1 d-block fw-600" for="fotoTim">Foto Tim</label>
                         <img src="{{ route('query.getFile') }}?directory={{ urlencode($datas->proof_idea) }}"
-                            id="fotoTim">
+                            id="fotoTim" class="rounded">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -146,7 +146,7 @@
             </div>
         </div>
         <div class="card mb-4">
-            <div class="card-header">Form Penilaian Juri</div>
+            <div class="card-header">Form Penilaian On Desk</div>
             <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
                 @csrf
                 @method('put')
@@ -159,12 +159,12 @@
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->recommend_category }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputStrength">Strength</label>
+                        <label class="small mb-1" for="inputStrength">Keunggulan Inovasi</label>
                         <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->strength }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputOpportunity">Opportunity</label>
+                        <label class="small mb-1" for="inputOpportunity">Peluang Inovasi</label>
                         <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->opportunity_for_improvement }}</textarea>
                     </div>
@@ -179,17 +179,17 @@
                         <div class="row">
                             <div class="col-md-6 mb-2 d-grid">
                                 <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#addJuri">Add Judge</button>
+                                    data-bs-target="#addJuri">Tambah Juri</button>
                             </div>
                             <div class="col-md-6 mb-2 d-grid">
                                 <button class="btn btn-outline-danger" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#deleteJuri">Delete Judge</button>
+                                    data-bs-target="#deleteJuri">Hapus Juri</button>
                             </div>
                         </div>
                     @endif
                     @if (Auth::user()->role == 'Juri' || $is_judge)
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="btnsubmit">Submit</button>
+                            <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
                         </div>
                     @endif
                 </div>
@@ -202,7 +202,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Add Judge</h5>
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Form Tambah Juri</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('assessment.addJuri') }}" method="post">
@@ -211,14 +211,14 @@
                     <input type="text" name="stage" value="on desk" hidden>
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <label for="dataJudge">Choose Judge</label>
+                            <label for="dataJudge">Pilih Juri</label>
                             <select class="js-example-basic-single" name="judge_id" z-index="10" id="select2-juri">
                             </select>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-primary" type="submit">Pilih</button>
                     </div>
                 </form>
             </div>
@@ -231,14 +231,14 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Delete Judge</h5>
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Form Hapus Juri</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{ route('assessment.deleteJuri') }}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <label for="dataJudge">Choose Judge</label>
+                            <label for="dataJudge">Pilih Juri</label>
                             <select name="judge_id" class="form-select" id="">
                                 @foreach ($datas_juri as $data_juri)
                                     <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} -
@@ -248,8 +248,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-danger" type="submit">Hapus</button>
                     </div>
                 </form>
             </div>

@@ -198,11 +198,11 @@ public function getEvents(Request $request)
 
             DB::commit();
             Log::info('Redirecting back with success message.');
-            return redirect()->back()->with('success', 'Paper updated successfully');
+            return redirect()->back()->with('success', 'Makalah Inovasi berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error updating paper: ' . $e->getMessage());
-            return back()->with('error', 'An error occurred while updating the paper: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi error ketika memperbarui makalah: ' . $e->getMessage());
         }
     }
     
@@ -276,7 +276,7 @@ public function getEvents(Request $request)
         }
 
         return redirect()->route('event-team.benefit.edit', ['id' => $id, 'eventId' => $eventId])
-            ->with('success', 'Benefit information updated successfully.');
+            ->with('success', 'Benefit Inovasi Telah Berhasil diperbarui');
     }
 
     public function showCheckPaper($id, $eventId)
@@ -355,6 +355,6 @@ public function getEvents(Request $request)
             Mail::to($member->email)->send(new PaperStatusUpdated($paper, $member));
         }
 
-        return redirect()->back()->with('success', 'Paper status has been updated successfully');
+        return redirect()->back()->with('success', 'Status Makalah Inovasi Berhasil Diperbarui');
     }
 }

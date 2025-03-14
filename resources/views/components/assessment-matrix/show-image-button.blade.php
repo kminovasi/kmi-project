@@ -16,7 +16,7 @@
 
 <div>
     <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#imageGallery" aria-expanded="false">
-        Gambar Penilaian Matriks
+        Lihat Matriks Penilaian
     </button>
 
     <div class="collapse mt-3" id="imageGallery">

@@ -295,10 +295,8 @@
         $.ajax({
             url: "{{ route('query.get_oda_assessment') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
             method: 'GET',
-            // dataType: 'json',
             data:{
                 filterEvent: $('#filter-event').val(),
-                // filterYear: $('#filter-year').val(),
                 filterCategory: $('#filter-category').val()
             },
             async: false,

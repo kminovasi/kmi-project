@@ -202,7 +202,14 @@
             "scrollY": true,
             "scrollX": false,
             "stateSave": true,
-            "destroy": true
+            "destroy": true,
+            "createdRow": function(row, data, dataIndex) {
+                $('thead th').each(function(index) {
+                    if ($(this).text().trim() === 'Ranking') {
+                        $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); // Set text center untuk <td>
+                    }
+                });
+            }
         });
         return dataTable;
     }

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Check Paper')
+@section('title', 'Periksa Malakah Inovasi | Event Group')
 @push('css')
     <style>
         #loadingOverlay {
@@ -29,7 +29,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="edit"></i></div>
-                            Paper Review
+                            Preview Makalah Inovasi
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -63,55 +63,52 @@
             <div class="col-12">
                 <div class="card shadow-sm">
                     <div class="card-header text-white" style="background-color: #e94838;">
-                        <h3 class="card-title mb-0 text-white">Paper Review</h3>
+                        <h3 class="card-title mb-0 text-white">Ringkasan Makalah Inovasi</h3>
                     </div>
                     <div class="card-body">
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Team Name</label>
-                                    <p class="form-control-plaintext">{{ $paper->team->team_name }}</p>
-                                </div>
-                                <div class="mb-3">
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <div class="mb-3 border-bottom pb-2">
+                                    <label class="form-label fw-600 capitalize mb-0">Nama Tim</label>
+                                    <p class="form-control-plaintext mt-0">{{ $paper->team->team_name }}</p>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#detailTeamMember">
-                                        Detail Team Member
+                                        Detail Anggota Tim
                                     </button>
-
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Innovation Title</label>
-                                    <p class="form-control-plaintext">{{ $paper->innovation_title }}</p>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Lokasi Inovasi</label>
-                                    <p class="form-control-plaintext">{{ $paper->inovasi_lokasi }}</p>
+                                <div class="mb-3 border-bottom">
+                                    <label class="form-label fw-600 mb-0">Judul Inovasi</label>
+                                    <p class="form-control-plaintext mt-0">{{ $paper->innovation_title }}</p>
                                 </div>
 
+                                <div class="mb-3 border-bottom">
+                                    <label class="form-label fw-600 fw-600 mb-0">Lokasi Inovasi</label>
+                                    <p class="form-control-plaintext mt-0">{{ $paper->inovasi_lokasi }}</p>
+                                </div>
+
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Abstract</label>
+                                    <label class="form-label fw-600 fw-600 mb-0">Abstrak</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->abstract !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Problem</label>
+                                    <label class="form-label fw-600">Masalah</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->problem !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Main Cause</label>
+                                    <label class="form-label fw-600">Penyebab Utama</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->main_cause !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Solution</label>
+                                    <label class="form-label fw-600">Solusi</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->solution !!}
                                     </div>
@@ -120,36 +117,36 @@
 
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Financial</label>
+                                    <label class="form-label fw-600">Benefit Finansial</label>
                                     <p class="form-control-plaintext">Rp {{ $paper->financial_formatted }}</p>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Potential Benefit</label>
+                                    <label class="form-label fw-600">Benefit Potensial</label>
                                     <p class="form-control-plaintext">Rp {{ $paper->potential_benefit_formatted }}</p>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Non Financial</label>
+                                    <label class="form-label fw-600">Benefit Non-Finansial</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->non_financial !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Potensi Replikasi</label>
+                                    <label class="form-label fw-600">Potensi Replikasi</label>
                                     <div class="border rounded p-3">
                                         {!! $paper->potensi_replikasi !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Full Paper</label>
+                                    <label class="form-label fw-600">Full Paper</label>
                                     @if ($paper->full_paper && !str_contains($paper->full_paper, '/AP/'))
                                         <div>
                                             <a href="{{ route('assessment.watermarks', $paper->id) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
-                                                <i class="fas fa-file-pdf"></i> View Full Paper
+                                                <i class="fas fa-file-pdf me-1"></i> Lihat Full Paper
                                             </a>
                                         </div>
                                     @else
@@ -158,40 +155,40 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">File Review</label>
+                                    <label class="form-label fw-600">Berita Acara Benefit</label>
                                     @if ($paper->file_review)
                                         <div>
                                             <a href="{{ asset('storage/' . $paper->file_review) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
-                                                <i class="fas fa-file-pdf"></i> View Review File
+                                                <i class="fas fa-file-pdf me-1"></i> Lihat Berita Acara
                                             </a>
                                         </div>
                                     @else
-                                        <p class="text-muted">No file uploaded</p>
+                                        <p class="text-muted">File belum diupload</p>
                                     @endif
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Innovation Photo</label>
+                                <div class="mb-3 text-center">
+                                    <label class="form-label fw-600">Foto Inovasi</label>
                                     @if ($paper->innovation_photo)
                                         <div>
                                             <img src="{{ asset('storage/' . $paper->innovation_photo) }}"
                                                 class="img-fluid rounded" alt="Innovation Photo">
                                         </div>
                                     @else
-                                        <p class="text-muted">No image uploaded</p>
+                                        <p class="text-muted">Foto inovasi belum diupload</p>
                                     @endif
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Proof of Idea</label>
+                                <div class="mb-3 text-center">
+                                    <label class="form-label fw-600">Proof of Idea</label>
                                     @if ($paper->proof_idea)
                                         <div>
                                             <img src="{{ asset('storage/' . $paper->proof_idea) }}"
                                                 class="img-fluid rounded" alt="Proof of Idea">
                                         </div>
                                     @else
-                                        <p class="text-muted">No image uploaded</p>
+                                        <p class="text-muted">Proof of Idea belum di unggah</p>
                                     @endif
                                 </div>
                             </div>
@@ -205,7 +202,7 @@
                                         @csrf
                                         @method('PUT')
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">Update Status</label>
+                                            <label class="form-label fw-600">Perbarui Status</label>
                                             <select name="status_event" id="statusSelect" class="form-select">
                                                 <option value="accept_group"
                                                     {{ $paper->status_event == 'accept_group' ? 'selected' : '' }}>Accept
@@ -231,7 +228,7 @@
                                                     Reject International</option>
                                             </select>
                                         </div>
-                                        <button type="submit" id="updateStatusBtn" class="btn btn-primary">Update
+                                        <button type="submit" id="updateStatusBtn" class="btn btn-primary">Perberui
                                             Status</button>
                                         <div class="spinner-border text-primary" id="loadingSpinner"
                                             style="display: none;" role="status">
@@ -246,6 +243,8 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Detail team --}}
     <div class="modal fade" id="detailTeamMember" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -260,17 +259,17 @@
                             <!-- Detail Team -->
                             <div class="card shadow-sm mb-3">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Detail Team</h5>
+                                    <h5 class="m-0">Detail Tim</h5>
                                 </div>
                                 <div class="card-body">
                                     <form id="modal-card-form">
                                         <div class="mb-3">
-                                            <label class="form-label" for="facilitator">Fasilitator</label>
+                                            <label class="form-label fw-600" for="facilitator">Fasilitator</label>
                                             <input class="form-control form-control-lg" id="facilitator" type="text"
                                                 value="{{ $facilitator->user->name ?? 'Tidak ada' }}" readonly />
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="leader">Leader</label>
+                                            <label class="form-label fw-600" for="leader">Leader</label>
                                             <input class="form-control form-control-lg" id="leader" type="text"
                                                 value="{{ $leader->user->name ?? 'Tidak ada' }}" readonly />
                                         </div>
@@ -311,16 +310,18 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Modal Rejection Comments --}}
     <div class="modal fade" id="rejectModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Rejection Comments</h5>
+                    <h5 class="modal-title">Komentar Penolakan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="rejectForm"
@@ -368,11 +369,7 @@
                     }
                 }
 
-                // Check initial status
-                if (checkStatus()) {
-                    $('#updateStatusBtn').text('Reject (Requires Comment)');
-                }
-
+                // Ubah teks tombol saat status dipilih
                 $('#statusSelect').on('change', function() {
                     if (checkStatus()) {
                         $('#updateStatusBtn').text('Reject (Requires Comment)');
@@ -382,22 +379,22 @@
                 });
 
                 $('#updateStatusForm').on('submit', function(e) {
-                    $('#loadingOverlay').show();
                     if (checkStatus()) {
-                        e.preventDefault();
+                        e.preventDefault(); // Mencegah form utama terkirim
                         $('#reject_status_event').val($('#statusSelect').val());
                         toggleRejectModal(true);
                     }
                 });
 
                 $('#rejectForm').on('submit', function(e) {
-                    e.preventDefault();
+                    e.preventDefault(); // Mencegah reload form rejection
+
                     $.ajax({
                         url: $(this).attr('action'),
                         method: 'POST',
                         data: $(this).serialize(),
                         beforeSend: function() {
-                            $('#loadingOverlay').show(); // Tampilkan overlay sebelum mengirim
+                            $('#loadingSpinner').show();
                         },
                         success: function(response) {
                             window.location.reload();
@@ -406,16 +403,17 @@
                             alert('Error updating status');
                         },
                         complete: function() {
-                            $('#loadingOverlay').hide(); // Sembunyikan overlay setelah selesai
+                            $('#loadingSpinner').hide();
                         }
                     });
                 });
 
-                // Close modal and reset form when modal is dismissed
+                // Reset modal saat ditutup
                 $('#rejectModal').on('hidden.bs.modal', function() {
                     $('#rejectForm')[0].reset();
                 });
             });
+
         </script>
     @endpush
 @endsection

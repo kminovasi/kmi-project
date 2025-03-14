@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="col-6 mb-3">
-                        <label for="eventSelect" class="form-label text-sm"> Event</label>
+                        <label for="eventSelect" class="form-label text-sm">Event</label>
                         @livewire('event-select')
                     </div>
 
@@ -57,7 +57,7 @@
                         @livewire('switches')
                     </div>
 
-                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-sm btn-primary">Tambahkan</button>
                 </form>
             </div>
 

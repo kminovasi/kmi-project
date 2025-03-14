@@ -46,7 +46,7 @@
     </style>
 <body>
 <div class="container">
-    <img src="{{ asset('assets/login-frame.png') }}" alt="Header Image" style="width: 700px; height: 210px;">
+    <img src="{{ asset('assets/login-frame.jpg') }}" alt="Header Image" style="width: 700px; height: 210px;">
 
     @if($status == 'upload benefit')
         <h2>Benefit telah diupload oleh Tim {{ $record->team->team_name }}</h2>

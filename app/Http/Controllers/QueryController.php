@@ -695,7 +695,7 @@ class QueryController extends Controller
             $dataTable->addColumn('action', function ($data_row) {
                 if ($data_row->status === "accepted benefit by general manager") {
                     if (auth()->user()->role === "Admin" || auth()->user()->role === "Superadmin") {
-                        return '<div class="d-flex">
+                        return '<div class="d-flex flex-column gap-1">
                                     <button class="btn btn-warning btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#updateData" onclick="get_data_modal_update(' . $data_row->team_id . ')">Update</button>
                                     <button class="btn btn-danger btn-sm next" type="button" data-bs-toggle="modal" data-bs-target="#rollback" onclick="change_url(' . $data_row->paper_id . ', \'formRollback\' )">Rollback</button>
                                 </div>';

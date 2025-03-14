@@ -46,7 +46,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="{{ asset('assets/login-frame.png') }}" alt="Header Image" style="width: 700px; height: 210px;">
+        <img src="{{ asset('assets/login-frame.jpg') }}" alt="Header Image" style="width: 700px; height: 210px;">
 
         @if($stage == 'full_paper')
             <h2>Makalah Full Paper telah diupload oleh Tim {{ $paper->team->team_name }}</h2>

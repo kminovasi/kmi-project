@@ -2,9 +2,15 @@
 <html>
 <head>
     <title>Final Paper Approval Notification</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <img src="{{ asset('assets/login-frame.png') }}" alt="Header Image" style="width: 700px; height: 210px;">
+    <img src="{{ asset('assets/login-frame.jpg') }}" alt="Header Image" style="width: 700px; height: 210px;">
 
     @if($status == 'accept')
         <h2>Selamat! Paper Anda Telah Disetujui Secara Final oleh Pengelola Inovasi</h2>

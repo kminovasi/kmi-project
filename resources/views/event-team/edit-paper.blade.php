@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Edit Paper | ' . $paper->innovation_title)
+@section('title', 'Edit Makalah | ' . $paper->innovation_title)
 
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -9,7 +9,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="edit"></i></div>
-                            Edit Paper
+                            Edit Makalah Inovasi
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -43,7 +43,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">Paper Information</div>
+                    <div class="card-header">Informasi Makalah Inovasi</div>
                     <div class="card-body">
                         <form action="{{ route('event-team.paper.update', ['id' => $paper->id, 'eventId' => $eventId]) }}"
                             method="POST" enctype="multipart/form-data">
@@ -51,7 +51,7 @@
                             @method('PUT')
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="inovasi_lokasi">Inovasi Lokasi</label>
+                                <label class="small mb-1 fw-600" for="inovasi_lokasi">Inovasi Lokasi</label>
                                 <input class="form-control @error('inovasi_lokasi') is-invalid @enderror"
                                     id="inovasi_lokasi" name="inovasi_lokasi" type="text"
                                     value="{{ old('inovasi_lokasi', $paper->inovasi_lokasi) }}" required>
@@ -61,11 +61,11 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="full_paper">Full Paper</label>
+                                <label class="small mb-1 fw-600" for="full_paper">Full Paper</label>
                                 <input class="form-control @error('full_paper') is-invalid @enderror" id="full_paper"
                                     name="full_paper" type="file" accept="application/pdf">
                                 @if ($paper->full_paper)
-                                    <small class="text-muted">Current file: {{ $paper->full_paper }}</small>
+                                    <small class="text-muted">File saat ini: {{ $paper->full_paper }}</small>
                                 @endif
                                 @error('full_paper')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -73,7 +73,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="abstract">Abstract</label>
+                                <label class="small mb-1 fw-600" for="abstract">Abstrak</label>
                                 <textarea class="form-control @error('abstract') is-invalid @enderror" id="abstract" name="abstract" rows="4"
                                     required>{{ old('abstract', $paper->abstract) }}</textarea>
                                 @error('abstract')
@@ -82,7 +82,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="problem">Problem</label>
+                                <label class="small mb-1 fw-600" for="problem">Masalah</label>
                                 <textarea class="form-control @error('problem') is-invalid @enderror" id="problem" name="problem" rows="4"
                                     required>{{ old('problem', $paper->problem) }}</textarea>
                                 @error('problem')
@@ -91,7 +91,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="main_cause">Main Cause</label>
+                                <label class="small mb-1 fw-600" for="main_cause">Penyebab Utama</label>
                                 <textarea class="form-control @error('main_cause') is-invalid @enderror" id="main_cause" name="main_cause"
                                     rows="4" required>{{ old('main_cause', $paper->main_cause) }}</textarea>
                                 @error('main_cause')
@@ -100,7 +100,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="solution">Solution</label>
+                                <label class="small mb-1 fw-600" for="solution">Solusi</label>
                                 <textarea class="form-control @error('solution') is-invalid @enderror" id="solution" name="solution" rows="4"
                                     required>{{ old('solution', $paper->solution) }}</textarea>
                                 @error('solution')
@@ -109,11 +109,11 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="innovation_photo">Innovation Photo</label>
+                                <label class="small mb-1 fw-600" for="innovation_photo">Foto Inovasi</label>
                                 <input class="form-control @error('innovation_photo') is-invalid @enderror"
                                     id="innovation_photo" name="innovation_photo" type="file" accept="image/*">
                                 @if ($paper->innovation_photo)
-                                    <small class="text-muted">Current file: {{ $paper->innovation_photo }}</small>
+                                    <small class="text-muted">File saat ini: {{ $paper->innovation_photo }}</small>
                                 @endif
                                 @error('innovation_photo')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -121,11 +121,11 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="proof_idea">Proof of Idea</label>
+                                <label class="small mb-1 fw-600" for="proof_idea">Foto anggota tim</label>
                                 <input class="form-control @error('proof_idea') is-invalid @enderror" id="proof_idea"
                                     name="proof_idea" type="file" accept="image/*">
                                 @if ($paper->proof_idea)
-                                    <small class="text-muted">Current file: {{ $paper->proof_idea }}</small>
+                                    <small class="text-muted">File saat ini: {{ $paper->proof_idea }}</small>
                                 @endif
                                 @error('proof_idea')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -133,7 +133,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="status_inovasi">Status Inovasi</label>
+                                <label class="small mb-1 fw-600" for="status_inovasi">Status Inovasi</label>
                                 <select class="form-control @error('status_inovasi') is-invalid @enderror"
                                     id="status_inovasi" name="status_inovasi" required>
                                     <option value="Not Implemented"
@@ -152,7 +152,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="potensi_replikasi">Potensi Replikasi</label>
+                                <label class="small mb-1 fw-600" for="potensi_replikasi">Potensi Replikasi</label>
                                 <select class="form-control @error('potensi_replikasi') is-invalid @enderror"
                                     id="potensi_replikasi" name="potensi_replikasi" required>
                                     <option value="Bisa Direplikasi"
@@ -167,7 +167,7 @@
                                 @enderror
                             </div>
 
-                            <button class="btn btn-primary" type="submit">Update Paper</button>
+                            <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                         </form>
                     </div>
                 </div>

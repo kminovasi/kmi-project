@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Edit Benefit | ' . $paper->innovation_title)
+@section('title', 'Edit Benefit Inovasi | ' . $paper->innovation_title)
 
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
@@ -9,7 +9,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="edit"></i></div>
-                            Edit Benefit
+                            Edit Benefit Inovasi
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -44,7 +44,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4">
-                    <div class="card-header">Benefit Information</div>
+                    <div class="card-header">Informasi Benefit Inovasi</div>
                     <div class="card-body">
                         <form action="{{ route('event-team.benefit.update', ['id' => $paper->id, 'eventId' => $eventId]) }}"
                             method="POST">
@@ -52,7 +52,7 @@
                             @method('PUT')
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="financial">Financial Benefit (IDR)</label>
+                                <label class="small mb-1 fw-600" for="financial">Benefit Finansial (IDR)</label>
                                 <input class="form-control @error('financial') is-invalid @enderror" id="financial"
                                     name="financial" type="text"
                                     value="{{ old('financial', $paper->financial_formatted) }}" required>
@@ -62,7 +62,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="potential_benefit">Potential Benefit (IDR)</label>
+                                <label class="small mb-1 fw-600" for="potential_benefit">Benefit Potensial (IDR)</label>
                                 <input class="form-control @error('potential_benefit') is-invalid @enderror"
                                     id="potential_benefit" name="potential_benefit" type="text"
                                     value="{{ old('potential_benefit', $paper->potential_benefit_formatted) }}" required>
@@ -72,7 +72,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="small mb-1" for="non_financial">Non-Financial Benefit</label>
+                                <label class="small mb-1 fw-600" for="non_financial">Benefit Non-Finasial</label>
                                 <textarea class="form-control @error('non_financial') is-invalid @enderror" id="non_financial" name="non_financial"
                                     rows="4" required>{{ old('non_financial', $paper->non_financial) }}</textarea>
                                 @error('non_financial')
@@ -110,7 +110,7 @@
                                 </div>
                             @endif
 
-                            <button class="btn btn-primary" type="submit">Save changes</button>
+                            <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                         </form>
                     </div>
                 </div>

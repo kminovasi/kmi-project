@@ -2,9 +2,14 @@
 <html>
 <head>
     <title>Request Final Approval Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <img src="{{ asset('assets/login-frame.png') }}" alt="Header Image" style="width: 700px; height: 210px;">
+    <img src="{{ asset('assets/login-frame.jpg') }}" alt="Header Image" style="width: 700px; height: 210px;">
 
     @if($status == 'accepted benefit by general manager')
         <h2>Request Final Approval Tim {{ $paper->team->team_name }}</h2>

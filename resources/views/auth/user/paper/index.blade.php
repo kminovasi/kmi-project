@@ -466,7 +466,7 @@
                     <div class="modal-body">
                         <!-- Rollback Option -->
                         <div class="mb-4">
-                            <label for="rollback_option" class="form-label fw-semibold">Rollback Option</label>
+                            <label for="rollback_option" class="form-label fw-semibold">Pilih Rollback</label>
                             <select class="form-select shadow-sm" name="rollback_option" id="rollback_option">
                                 <option value="full_paper">Rollback Paper</option>
                                 <option value="benefit">Rollback Benefit</option>
@@ -481,8 +481,8 @@
                     </div>
                     <!-- Footer -->
                     <div class="modal-footer">
-                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" type="submit">Kirim</button>
+                        <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
+                        <button class="btn btn-primary" type="submit">RollBack</button>
                     </div>
                 </form>
             </div>
@@ -810,13 +810,6 @@
 
                 var lokasiElement = document.getElementById('inovasi_lokasi');
                 lokasiElement.textContent = data.paper[0].inovasi_lokasi;
-                //document.getElementById('inovasi_lokasi').innerHTML = data.paper[0].inovasi_lokasi;
-                // var lokasiElement = document.getElementById('inovasi_lokasi');
-                //     if (data.papers && data.paper[0] && data.paper[0].inovasi_lokasi) {
-                //         lokasiElement.textContent = data.paper[0].inovasi_lokasi;
-                //     } else {
-                //         lokasiElement.textContent = "Data tidak tersedia";
-                //     }
 
 
                 var abstractElement = document.getElementById('abstrak');
@@ -825,20 +818,11 @@
                 var problemElement = document.getElementById('problem');
                 problemElement.textContent = data.paper[0].problem;
 
-                // var problem_impactElement = document.getElementById('problem_impact');
-                // problem_impactElement.textContent = data.paper[0].problem_impact;
-
                 var main_causeElement = document.getElementById('main_cause');
                 main_causeElement.textContent = data.paper[0].main_cause;
 
                 var solutionElement = document.getElementById('solution');
                 solutionElement.textContent = data.paper[0].solution;
-
-                // var outcomeElement = document.getElementById('outcome');
-                // outcomeElement.textContent = data.paper[0].outcome;
-
-                // var performanceElement = document.getElementById('performance');
-                // performanceElement.textContent = data.paper[0].performance;
 
                 fotoTim =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].proof_idea);
                 fotoInovasi =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].innovation_photo);

@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\Event;
 use App\Models\Paper;
 use App\Models\Team;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

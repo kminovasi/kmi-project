@@ -41,10 +41,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class AssessmentController extends Controller
 {
-    //
-    // public function index(){
-    //     return view('auth.juri.assessment');
-    // }
     public function showTemplate()
     {
         $checkStatus = Auth::user()->role;
@@ -56,17 +52,19 @@ class AssessmentController extends Controller
             $events = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
                 $query->where('company_code', $userCompanyCode);
             })->where('status', '!=', 'finish')
-                ->where('type', 'AP')
+                ->where('type', ['internal', 'AP'])
                 ->get();
         }
 
         return view('auth.admin.assessment.template.index', compact('events'));
     }
+
     public function createTemplate()
     {
         // $rows = TemplateAssessmentPoint::get();
         return view('auth.admin.assessment.template.create');
     }
+    
     public function storeTemplate(assessmentTemplateRequests $request)
     {
         // dd($request->all());
@@ -158,12 +156,15 @@ class AssessmentController extends Controller
     public function showAssessmentPoint()
     {
         $checkStatus = Auth::user()->role;
-        $userCompanyId = Auth::user()->company_id;
+        $userCompanyCode = Auth::user()->company_code;
 
         if ($checkStatus == 'Admin') {
-            $data_event = Event::whereHas('companies', function ($query) use ($userCompanyId) {
-                $query->where('company_id', $userCompanyId);
-            })->where('status', '!=', 'finish')->get();
+            $data_event = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
+                $query->where('company_code', $userCompanyCode);
+            })
+            ->where('status', '!=', 'finish')
+            ->where('type', ['internal', 'AP'])
+            ->get();
         } elseif ($checkStatus == 'Superadmin') {
             $data_event = Event::where('status', '!=', 'finish')->get();
         }
@@ -1001,7 +1002,7 @@ class AssessmentController extends Controller
                 }
 
                 DB::commit();
-                return redirect()->back()->with('success', 'Fiksasi Nilai berhasil dilakukan');
+                return redirect()->back()->with('success', 'Nilai On Desk telah Berhasil Ditetapkan');
             } elseif (isset($request->pvt_event_team_id)) {
                 $category = Category::where('id', $request->category)->pluck('category_parent') == "IDEA BOX" ? "IDEA" : "BI/II";
                 $event_id = PvtEventTeam::where('id', $request->pvt_event_team_id[0])->pluck('event_id');
@@ -1114,7 +1115,7 @@ class AssessmentController extends Controller
                     }
                 }
                 DB::commit();
-                return redirect()->back()->with('success', 'update successfully');
+                return redirect()->back()->with('success', 'Nilai On Desk Telah Berhasil Ditetapkan');
             } else {
                 DB::rollback();
                 return redirect()->back()->withErrors('Error: tidak ada tim yang dipilih');
@@ -1332,7 +1333,7 @@ class AssessmentController extends Controller
                 }
 
                 DB::commit();
-                return redirect()->back()->with('success', 'update successfully');
+                return redirect()->back()->with('success', 'Nilai Presentasi Telah Berhasil Ditetapkan');
             } elseif (isset($request->pvt_event_team_id)) {
                 $category = Category::where('id', $request->category)->pluck('category_parent') == "IDEA BOX" ? "IDEA" : "BI/II";
                 $event_id = PvtEventTeam::where('id', $request->pvt_event_team_id[0])->pluck('event_id');
@@ -1345,25 +1346,26 @@ class AssessmentController extends Controller
                     $event_team = PvtEventTeam::findOrFail($event_team_id);
                     
                     // Ambil Informasi Tim Untuk History
-                    $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                            ->where('pvt_event_teams.team_id', $event_team->team_id)
-                            ->select('teams.team_name')
-                            ->first();
-                    
+                    $team = PvtEventTeam::with('team')->findOrFail($event_team->id);
+
+                    if(!$team) {
+                        Log::debug($team->team->team_name);
+                    }                    
+
                     if ($event_team->total_score_presentation >= $score_oda) {
                         $event_team->status = 'Caucus';
 
                         History::create([
-                            'team_id' => $team->team_id,
-                            'activity' => "Tim " . $team->team_name . " Lolos ke stage Caucus",
+                            'team_id' => $team->team->id,
+                            'activity' => "Tim " . $team->team->team_name . " Lolos ke stage Caucus",
                             'status' => 'passed'
                         ]);
                     } else {
                         $event_team->status = 'tidak lolos Presentation';
 
                         History::create([
-                            'team_id' => $team->team_id,
-                            'activity' => "Tim " . $team->team_name . " tidak Lolos ke stage Caucus",
+                            'team_id' => $team->team->id,
+                            'activity' => "Tim " . $team->team->team_name . " tidak Lolos ke stage Caucus",
                             'status' => 'failed'
                         ]);
                     }
@@ -1437,7 +1439,7 @@ class AssessmentController extends Controller
                     }
                 }
                 DB::commit();
-                return redirect()->back()->with('success', 'update successfully');
+                return redirect()->back()->with('success', 'Nilai Presentasi telah Berhasil Ditetapkan');
             } else {
                 DB::rollback();
                 return redirect()->back()->withErrors('Error: tidak ada tim yang dipilih');
@@ -1710,7 +1712,7 @@ class AssessmentController extends Controller
                     $event_team_item->update(['final_score' => $finalScore]);
 
                     DB::commit();
-                    return redirect()->back()->with('success', 'Skor Akhir Telah Berhasil Dimasukkan');
+                    return redirect()->back()->with('success', 'Nilai Caucus Telah Berhasil Ditetapkan');
                 } elseif (isset($request->pvt_event_team_id)) {
                     $category = Category::where('id', $request->category)->pluck('category_parent') == "IDEA BOX" ? "IDEA" : "BI/II";
                     $event_id = PvtEventTeam::where('id', $request->pvt_event_team_id[0])->pluck('event_id');
@@ -1745,8 +1747,6 @@ class AssessmentController extends Controller
                                 'activity' => $activity,
                                 'status' => $status
                             ]);
-                        } else {
-                            Log::error("Gagal menyimpan history: Tim dengan ID {$event_team_id} tidak ditemukan di tabel teams.");
                         }
 
                     }
@@ -1759,7 +1759,7 @@ class AssessmentController extends Controller
                         'final_score' => $finalScore
                     ]);
                     DB::commit();
-                    return redirect()->back()->with('success', 'Nilai Caucus Berhasil difiksasi');
+                    return redirect()->back()->with('success', 'Nilai Caucus Telah Berhasil Ditetapkan');
                 } else {
                     DB::rollback();
                     return redirect()->back()->withErrors('Error: tidak ada tim yang dipilih');
@@ -1841,9 +1841,7 @@ class AssessmentController extends Controller
                         'activity' => $activity,
                         'status' => $status
                     ]);
-                } else {
-                    Log::error("Gagal menyimpan history: Tim dengan ID {$team->id} tidak ditemukan di tabel teams.");
-                }
+                } 
             }
 
 
@@ -1851,12 +1849,11 @@ class AssessmentController extends Controller
             DB::commit();
             return redirect()->back()->with(
                 'success',
-                'Nilai Caucus semua tim telah berhasil di fiksasi'
+                'Nilai Caucus Semua Tim Telah Berhasil Ditetapkan'
             );
         } catch (\Exception $e) {
             // Rollback jika terjadi error
             DB::rollback();
-            Log::error($e->getMessage());
             return redirect()->back()->withErrors('Error: ' . $e->getMessage());
         }
     }
@@ -1865,8 +1862,12 @@ class AssessmentController extends Controller
     {
         $userEmployeeId = Auth::user()->employee_id;
         $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
-        $currentYear = Carbon::now()->year;
-        $data_event = Event::where('status', 'active')->get();
+        $data_event = Event::whereHas('companies', function ($query) {
+                $query->where('company_code', auth()->user()->company_code);
+            })
+            ->where('status', 'active')
+            ->get();
+
         $data_category = Category::all();
         return view('auth.user.assessment.presentasi_bod', [
             "data_event" => $data_event,
@@ -1874,16 +1875,34 @@ class AssessmentController extends Controller
             'is_judge' => $is_judge
         ]);
     }
+    
     public function penetapanJuara(Request $request)
     {
         $userEmployeeId = Auth::user()->employee_id;
         $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
-        $currentYear = Carbon::now()->year;
-        $data_event = Event::where('status', 'active')->get();
-        $data_category = Category::all();
-        $data = BeritaAcara::join('events', 'berita_acaras.event_id', 'events.id')
-            ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
+        $data_event = Event::whereHas('companies', function ($query) {
+                $query->where('company_code', auth()->user()->company_code);
+            })
+            ->where('status', 'active')
             ->get();
+        $data_category = Category::all();
+        $data = BeritaAcara::join('events', 'berita_acaras.event_id', '=', 'events.id')
+            ->join('company_event', 'events.id', '=', 'company_event.event_id')
+            ->join('companies', 'company_event.company_id', '=', 'companies.id')
+            ->when(auth()->user()->role !== 'Superadmin', function ($query) {
+                $query->where('companies.company_code', auth()->user()->company_code);
+            })
+            ->select(
+                'berita_acaras.*', 
+                'events.id as eventID', 
+                'events.event_name', 
+                'events.year', 
+                'events.date_start', 
+                'events.date_end'
+            )
+            ->get();
+
+
         return view('auth.user.assessment.penetapan_juara', [
             "data_event" => $data_event,
             'data_category' => $data_category,
@@ -1926,7 +1945,7 @@ class AssessmentController extends Controller
             // dd($e->getMessage());
             return redirect()->route('assessment.presentasiBOD')->withErrors('Belum ada Tim Yang Dipilih');
         }
-        return redirect()->route('assessment.presentasiBOD')->with('success', 'Tim Telah Berhasil Menyelesaikan Makalah'); // masih belom tau
+        return redirect()->route('assessment.presentasiBOD')->with('success', 'Nilai Akhir BOD Berhasil Ditetapkan');
     }
     public function pdfSummary($team_id)
     {
@@ -1982,49 +2001,49 @@ class AssessmentController extends Controller
     }
 
     public function addWatermarks($paperId) {
-    try {
-        // Ensure the filepath is correctly formatted by removing "f: " and trimming any leading/trailing slashes
-        $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck('full_paper')[0], '/'));
+        try {
+            // Ensure the filepath is correctly formatted by removing "f: " and trimming any leading/trailing slashes
+            $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck('full_paper')[0], '/'));
 
-        if (!file_exists($filePath)) {
-                dump($filePath);
+            if (!file_exists($filePath)) {
+                    dump($filePath);
+                return response()->json(['error' => 'File tidak ditemukan.'], 404);
+            }
+
+            $fpdi = new Fpdi();
+
+            // Ambil Data User Saat Ini
+            $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+            $userEmail = Auth::user()->email;
+            $userIp = request()->ip();
+
+            $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
+            $pageCount = $fpdi->setSourceFile($filePath);
+            for($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+                $tplIdx = $fpdi->importPage($pageNum);
+                $fpdi->AddPage();
+                $fpdi->useTemplate($tplIdx, 0, 0);
+
+                // Tambahkan watermark
+                $fpdi->SetAlpha(0.1); // Transparansi watermark
+                $fpdi->SetFont('helvetica', 'B', 40);
+                $fpdi->SetTextColor(255, 0, 0);
+
+                // Memulai transformasi untuk rotasi
+                $fpdi->StartTransform();
+                $fpdi->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+                $fpdi->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
+                $fpdi->StopTransform(); // Akhiri transformasi
+
+                $fpdi->SetAlpha(1); // Reset transparansi
+            }
+
+            return response($fpdi->Output($filePath, 'I'), 200)->header('Content-Type', 'application/pdf');
+        } catch (FileNotFoundException $e) {
             return response()->json(['error' => 'File tidak ditemukan.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $fpdi = new Fpdi();
-
-        // Ambil Data User Saat Ini
-        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
-        $userEmail = Auth::user()->email;
-        $userIp = request()->ip();
-
-        $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
-
-        $pageCount = $fpdi->setSourceFile($filePath);
-        for ($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
-            $tplIdx = $fpdi->importPage($pageNum);
-            $fpdi->AddPage();
-            $fpdi->useTemplate($tplIdx, 0, 0);
-
-            // Tambahkan watermark
-            $fpdi->SetAlpha(0.1); // Transparansi watermark
-            $fpdi->SetFont('helvetica', 'B', 40);
-            $fpdi->SetTextColor(255, 0, 0);
-
-            // Memulai transformasi untuk rotasi
-            $fpdi->StartTransform();
-            $fpdi->Rotate(45, 150, 100); // Adjusted rotation and position
-            $fpdi->MultiCell(180, 280, $watermarkText, 0, 'C'); // Adjusted size and position
-            $fpdi->StopTransform(); // Akhiri transformasi
-
-            $fpdi->SetAlpha(1); // Reset transparansi
-        }
-
-        return response($fpdi->Output($filePath, 'I'), 200)->header('Content-Type', 'application/pdf');
-    } catch (FileNotFoundException $e) {
-        return response()->json(['error' => 'File tidak ditemukan.'], 404);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 }

@@ -91,6 +91,9 @@
                                 <input class="form-control" id="inputFirstName" type="text"
                                     placeholder="Enter your first name" value="{{ $datas->category_name }}" readonly>
                             </div>
+                            @if(count($datas_juri) == 0)
+                            <div class="col-md-12 mb-3 d-none"></div>
+                            @else
                             <div class="col-md-12 mb-3">
                                 <label class="small mb-1 fw-600" for="inputFirstName">Juri</label>
                                 <div class="table-responsive table-billing-history">
@@ -105,6 +108,7 @@
                                     </table>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                     <div class="col-md-5 mb-3 text-center">
@@ -154,22 +158,22 @@
                     <table id="datatable-penilaian"></table>
                     <hr>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputRecomCategory">Rekomendasi Kategori</label>
+                        <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
                         <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->recommend_category }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputStrength">Keunggulan Inovasi</label>
+                        <label class="small mb-1 fw-600" for="inputStrength">Keunggulan Inovasi</label>
                         <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->strength }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputOpportunity">Peluang Inovasi</label>
+                        <label class="small mb-1 fw-600" for="inputOpportunity">Peluang Inovasi</label>
                         <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->opportunity_for_improvement }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
+                        <label class="small mb-1 fw-600" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
@@ -395,7 +399,6 @@
 
     count_exceed_max_score = new Set()
     function validate_score(elemen){
-        // console.log(+$(`#${elemen.id.split('-')[2]}`).text() < elemen.value);
         id_split = elemen.id.split('-')
         if(+$(`#${id_split[2]}`).text() < elemen.value){
             $(`#input-${id_split[1]}-${id_split[2]}`).addClass('is-invalid')

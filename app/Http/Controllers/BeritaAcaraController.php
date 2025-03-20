@@ -73,7 +73,7 @@ class BeritaAcaraController extends Controller
             return redirect()->route('assessment.penetapanJuara')->withErrors('Error: ' . $e->getMessage());
         }
 
-        return redirect()->route('assessment.penetapanJuara')->with('success', 'Data Berhasil disimpan');
+        return redirect()->route('assessment.penetapanJuara')->with('success', 'Berita Acara Berhasil Di Buat');
     }
 
     public function destroy($id)

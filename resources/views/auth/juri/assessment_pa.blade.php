@@ -109,19 +109,19 @@
                     <table id="datatable-penilaian"></table>
                     <hr>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputRecomCategory">Rekomendasi Kategori</label>
+                        <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
                         <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control">{{ $sofiData->recommend_category }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputStrength">Kekuatan Inovasi</label>
+                        <label class="small mb-1 fw-600" for="inputStrength">Kekuatan Inovasi</label>
                         <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control">{{ $sofiData->strength }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputOpportunity">Peluang inovasi</label>
+                        <label class="small mb-1 fw-600" for="inputOpportunity">Peluang inovasi</label>
                         <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3">{{ $sofiData->opportunity_for_improvement }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
-                        <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
+                        <label class="small mb-1 fw-600" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
                 </div>
@@ -145,6 +145,7 @@
             </form>
         </div>
     </div>
+
     {{-- modal add juri --}}
     <div class="modal fade" id="addJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
@@ -174,7 +175,7 @@
         </div>
     </div>
 
-    {{-- modal dekete juri --}}
+    {{-- modal delete juri --}}
     <div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -210,141 +211,83 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="">
-    function initializeDataTable(columns) {
-        var dataTable = $('#datatable-penilaian').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": "{{ route('query.get_input_pa_assessment_team') }}",
-                "type": "GET",
-                "async": true,
-                "dataSrc": function (data) {
-                    return data.data;
-                },
-                "data": function (d) {
-                    d.filterEventTeamId = {{ Request::segments()[2] }};
-                    // d.filterYear = $('#filter-year').val();
-                    // d.filterCategory = $('#filter-category').val();
-                }
-            },
-            "columns": columns,
-            "scrollY": true,
-            "stateSave": true,
-            "destroy": true,
-            "paging": false
-
-        });
-        return dataTable;
-    }
-
-    function updateColumnDataTable() {
-        newColumn = []
-        $.ajax({
-            url: "{{ route('query.get_input_pa_assessment_team') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
-            method: 'GET',
-            // dataType: 'json',
-            data:{
-                filterEventTeamId: {{ Request::segments()[2] }}
-            },
-            async: false,
-            success: function (data) {
-                if(data.data.length){
-                    let row_column = {};
-                    row_column['data'] = "DT_RowIndex"
-                    row_column['title'] = "No"
-                    row_column['mData'] = "DT_RowIndex"
-                    row_column['sTitle'] = "No"
-                    newColumn.push(row_column)
-                    for( var key in data.data[0]){
-                        if(key != "DT_RowIndex"){
-                            let row_column = {};
-                            row_column['data'] = key
-                            row_column['title'] = key
-                            row_column['mData'] = key
-                            row_column['sTitle'] = key
-                            newColumn.push(row_column)
-                        }
+        function initializeDataTable(columns) {
+            var dataTable = $('#datatable-penilaian').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ route('query.get_input_pa_assessment_team') }}",
+                    "type": "GET",
+                    "async": true,
+                    "dataSrc": function (data) {
+                        return data.data;
+                    },
+                    "data": function (d) {
+                        d.filterEventTeamId = {{ Request::segments()[2] }};
                     }
-                }else{
-                    let row_column = {};
-                    row_column['data'] = ''
-                    row_column['title'] = ''
-                    row_column['mData'] = ''
-                    row_column['sTitle'] = ''
-                    newColumn.push(row_column)
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Gagal mengambil kolom: ' + error);
-            }
-        });
-        console.log("ini yang di fungsi update");
-        console.log(newColumn);
-        return newColumn
-    }
-
-    $(document).ready(function() {
-
-        let column = updateColumnDataTable();
-        // column = []
-        let dataTable = initializeDataTable(column);
-    });
-
-    // In your Javascript (external .js resource or <script> tag)
-    $(document).ready(function() {
-        $('#select2-juri').select2({
-            // allowClear: true,
-            // theme: "classic",
-            dropdownParent: $("#addJuri"),
-            allowClear: true,
-            width: "100%",
-            placeholder: "Pilih Employee untuk dijadikan juri",
-            ajax: {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'GET', // Metode HTTP POST
-                url: '{{ route('query.custom') }}',
-                dataType: 'json',
-                delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
+                "columns": columns,
+                "scrollY": true,
+                "stateSave": true,
+                "destroy": true,
+                "paging": false
+            });
+            return dataTable;
+        }
+
+        function updateColumnDataTable() {
+            newColumn = []
+            $.ajax({
+                url: "{{ route('query.get_input_pa_assessment_team') }}",
+                method: 'GET',
                 data: {
-                    table: "judges",
-                    where: {
-                        'event_id': {{ $datas->event_id }},
-                        'status': 'active'
-                    },
-                    limit: 100,
-                    join: {
-                        'users':{
-                            'users.employee_id': 'judges.employee_id'
+                    filterEventTeamId: {{ Request::segments()[2] }}
+                },
+                async: false,
+                success: function (data) {
+                    if (data.data.length) {
+                        let row_column = {
+                            'data': "DT_RowIndex",
+                            'title': "No",
+                            'mData': "DT_RowIndex",
+                            'sTitle': "No"
+                        };
+                        newColumn.push(row_column);
+                        for (var key in data.data[0]) {
+                            if (key !== "DT_RowIndex") {
+                                let row_column = {
+                                    'data': key,
+                                    'title': key === "point" ? "Poin" : key,
+                                    'mData': key,
+                                    'sTitle': key === "point" ? "Poin" : key
+                                };
+                                newColumn.push(row_column);
+                            }
                         }
-                    },
-                    select:[
-                        'judges.id as judges_id',
-                        'users.employee_id as employee_id',
-                        'users.name as name'
-                    ]
+                    } else {
+                        let row_column = {
+                            'data': '',
+                            'title': '',
+                            'mData': '',
+                            'sTitle': ''
+                        };
+                        newColumn.push(row_column);
+                    }
                 },
-                processResults: function(data) {
-                    // Memformat data yang diterima untuk format yang sesuai dengan Select2
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                text: item.employee_id + ' - ' + item
-                                    .name, // Nama yang akan ditampilkan di kotak seleksi
-                                id: item.judges_id // Nilai yang akan dikirimkan saat opsi dipilih
-                            };
-                        })
-                    };
-                },
-                cache: true,
-            }
-        });
-    });
+                error: function (xhr, status, error) {
+                    console.error('Gagal mengambil kolom: ' + error);
+                }
+            });
+            return newColumn;
+        }
 
-    count_exceed_max_score = new Set()
-    function validate_score(elemen){
-        // console.log(+$(`#${elemen.id.split('-')[2]}`).text() < elemen.value);
+        $(document).ready(function () {
+            let column = updateColumnDataTable();
+            let dataTable = initializeDataTable(column);
+        });
+
+        count_exceed_max_score = new Set()
+        function validate_score(elemen){
         id_split = elemen.id.split('-')
         if(+$(`#${id_split[2]}`).text() < elemen.value){
             $(`#input-${id_split[1]}-${id_split[2]}`).addClass('is-invalid')
@@ -362,5 +305,6 @@
             $('#btnsubmit').prop('disabled', false)
         }
     }
-</script>
+
+    </script>
 @endpush

@@ -16,9 +16,9 @@
                         <select class="form-select" aria-label="Default select example" name="status"
                             id="status_by_fasil" require>
                             <option selected>-</option>
-                            <option value="accepted paper by facilitator">accept</option>
-                            <option value="revision paper by facilitator">revisi</option>
-                            <option value="rejected paper by facilitator">reject</option>
+                            <option value="accepted paper by facilitator">Accept</option>
+                            <option value="revision paper by facilitator">Revisi</option>
+                            <option value="rejected paper by facilitator">Reject</option>
                         </select>
                     </div>
                     <div class="mb-2">

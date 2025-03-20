@@ -3,12 +3,6 @@
 
 <head>
     <title>Paper Approval Notification</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-    </style>
 </head>
 
 <body>
@@ -37,19 +31,20 @@
     <p></p>
     @if ($status == 'accepted paper by facilitator')
         <p>Selamat, paper Anda telah disetujui oleh Fasilitator. Silakan untuk lanjut ke tahap berikutnya.</p>
+        <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
+        <p>Terimakasih</p>
+        <p>Anda bisa download makalah full paper <a href="{{ $fileUrl }}">disini</a>.</p>
     @elseif($status == 'rejected paper by facilitator')
         <p>Maaf, paper Anda belum disetujui oleh Fasilitator sehingga Anda masih belum dapat lanjut ke tahap berikutnya.
         </p>
+        <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
+    <p>Terimakasih</p>
     @elseif($status == 'revision paper by facilitator')
         <p>Paper Anda memerlukan revisi sesuai dengan masukan dari Fasilitator. Mohon untuk memperhatikan langkah revisi
             yang telah diberikan dan mengunggah ulang paper Anda setelah revisi selesai dilakukan.</p>
+        <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
+        <p>Terimakasih</p>
     @endif
-
-
-    <p>Informasi lebih lanjut silakan kunjungi Portal Inovasi pada url berikut www.example.com</p>
-    <p>Terimakasih</p>
-    <p>Anda bisa download makalah full paper <a href="{{ $fileUrl }}">disini</a>.</p>
-
 
     <p>Hormat kami,<br>Unit KMI</p>
 </body>

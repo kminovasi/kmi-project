@@ -3,12 +3,6 @@
 
 <head>
     <title>Benefit Approval Notification</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-    </style>
 </head>
 
 <body>

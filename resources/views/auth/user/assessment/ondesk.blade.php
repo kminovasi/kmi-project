@@ -52,6 +52,10 @@
         .btn-red:focus {
             outline: none;
         }
+
+        .display thead th {
+            text-transform: ;
+        }
     </style>
 @endpush
 

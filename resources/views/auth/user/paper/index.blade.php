@@ -89,13 +89,6 @@
                             <button class="btn btn-primary btn-sm me-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#filterModal">Filter</button>
                         @endif
-                        {{-- @if (Auth::user()->role === 'Superadmin' || Auth::user()->role === 'Admin')
-                            <select id="filter-status-inovasi" name="filter-status-inovasi" class="form-select">
-                                <option value="Not Implemented">Not Implemented</option>
-                                <option value="Progress">Progress</option>
-                                <option value="Implemented">Implemented</option>
-                            </select>
-                        @endif --}}
                     </div>
                 </div>
                 <table id="datatable-makalah" class="display">
@@ -411,9 +404,6 @@
         </div>
     </div>
 
-
-
-
     {{-- modal untuk info history --}}
     <div class="modal fade" id="infoHistory" tabindex="-1" role="dialog" aria-labelledby="infoHistoryTitle"
         aria-hidden="true">
@@ -421,7 +411,7 @@
             <div class="modal-content">
                 <!-- Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="infoHistoryTitle">Aktivitas Riwayat</h5>
+                    <h5 class="modal-title fw-bold text-white" id="infoHistoryTitle">Riwayat Aktivitas</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -503,7 +493,6 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            {{-- <p id="paper_id_input"></p> --}}
                             <input type="hidden" name="paper_id" id="paper_id_input" value="">
                             <input type="file" name="file_stage" class="form-control" multiple accept=".pdf">
                         </div>

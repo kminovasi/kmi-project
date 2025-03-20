@@ -6,9 +6,9 @@ import {
     BarElement,
     Tooltip,
 } from "chart.js";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import autocolors from 'chartjs-plugin-autocolors'; // Import AutoColors
-import toRupiah from '@develoka/angka-rupiah-js';
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import autocolors from "chartjs-plugin-autocolors"; // Import AutoColors
+import toRupiah from "@develoka/angka-rupiah-js";
 
 // Register necessary components
 Chart.register(
@@ -18,15 +18,19 @@ Chart.register(
     BarElement,
     Tooltip,
     ChartDataLabels,
-    autocolors // Register AutoColors plugin
+    autocolors, // Register AutoColors plugin
 );
 
 // Get data from the data-attributes
-const labels = JSON.parse(document.getElementById("chartDataAkumulasiBenefit").dataset.labels);
-const dataValues = JSON.parse(
-    document.getElementById("chartDataAkumulasiBenefit").dataset.data
+const labels = JSON.parse(
+    document.getElementById("chartDataAkumulasiBenefit").dataset.labels,
 );
-const logos = JSON.parse(document.getElementById("chartDataAkumulasiBenefit").dataset.logos);
+const dataValues = JSON.parse(
+    document.getElementById("chartDataAkumulasiBenefit").dataset.data,
+);
+const logos = JSON.parse(
+    document.getElementById("chartDataAkumulasiBenefit").dataset.logos,
+);
 
 // Create a custom plugin for drawing images
 const imagePlugin = {
@@ -56,7 +60,7 @@ const imagePlugin = {
                     x,
                     y - imgHeight / 2, // Center the image vertically
                     imgWidth, // width
-                    imgHeight // height
+                    imgHeight, // height
                 );
             }
         });
@@ -81,7 +85,7 @@ const initChart = async () => {
                     img.onerror = reject;
                     img.src = url;
                 });
-            })
+            }),
         );
 
         // Create the chart
@@ -114,8 +118,13 @@ const initChart = async () => {
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
-                                return toRupiah(value, { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false });
+                            callback: function (value) {
+                                return toRupiah(value, {
+                                    useUnit: true,
+                                    longUnit: true,
+                                    spaceBeforeUnit: true,
+                                    formal: false,
+                                });
                             },
                         },
                     },
@@ -125,7 +134,7 @@ const initChart = async () => {
                         display: false,
                     },
                     autocolors: {
-                        mode: 'data'
+                        mode: "data",
                     },
                     tooltip: {
                         callbacks: {
@@ -135,18 +144,24 @@ const initChart = async () => {
                             },
                             label: (tooltipItem) => {
                                 // Display the value of the hovered item
-                                return `Nilai: ${toRupiah(dataValues[tooltipItem.dataIndex], {useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false})}`;
+                                return `Nilai: ${toRupiah(dataValues[tooltipItem.dataIndex], { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}`;
                             },
                         },
                     },
                     datalabels: {
-                        formatter: (value) => toRupiah(value, {useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false}),
-                        color: 'black',
-                        anchor: 'center', // Center the label horizontally
-                        align: 'right', // Center the label vertically
+                        formatter: (value) =>
+                            toRupiah(value, {
+                                useUnit: true,
+                                longUnit: true,
+                                spaceBeforeUnit: true,
+                                formal: false,
+                            }),
+                        color: "black",
+                        anchor: "center",
+                        align: "right",
                         font: {
-                            weight: 'bold',
-                            size: 17,
+                            weight: "regular",
+                            size: 15,
                         },
                     },
                     customImagePlugin: imagePlugin,
@@ -162,21 +177,27 @@ const initChart = async () => {
 // Initialize the chart
 initChart();
 
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     // Ambil elemen data dari DOM
-    const financialDataElement = document.getElementById('financialBenefitsData');
+    const financialDataElement = document.getElementById(
+        "financialBenefitsData",
+    );
 
     if (financialDataElement) {
         // Ambil data benefits dari atribut data
-        const financialBenefits = JSON.parse(financialDataElement.dataset.benefits);
-        const potentialBenefits = JSON.parse(financialDataElement.dataset.potentialBenefits);
+        const financialBenefits = JSON.parse(
+            financialDataElement.dataset.benefits,
+        );
+        const potentialBenefits = JSON.parse(
+            financialDataElement.dataset.potentialBenefits,
+        );
 
         // Render financial benefits
-        const financialBenefitsContainer = document.getElementById('financialBenefits');
-        financialBenefits.forEach(benefit => {
-            const benefitItem = document.createElement('div');
-            benefitItem.className = 'financial-benefit-item';
+        const financialBenefitsContainer =
+            document.getElementById("financialBenefits");
+        financialBenefits.forEach((benefit) => {
+            const benefitItem = document.createElement("div");
+            benefitItem.className = "financial-benefit-item";
             benefitItem.innerHTML = `
                 <span class="financial-benefit-year">${benefit.year}</span>
                 <span class="financial-benefit-total">
@@ -188,10 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Render potential benefits
-        const potentialBenefitsContainer = document.getElementById('potentialBenefits');
-        potentialBenefits.forEach(benefit => {
-            const benefitItem = document.createElement('div');
-            benefitItem.className = 'financial-benefit-item';
+        const potentialBenefitsContainer =
+            document.getElementById("potentialBenefits");
+        potentialBenefits.forEach((benefit) => {
+            const benefitItem = document.createElement("div");
+            benefitItem.className = "financial-benefit-item";
             benefitItem.innerHTML = `
                 <span class="financial-benefit-year">${benefit.year}</span>
                 <span class="financial-benefit-total">

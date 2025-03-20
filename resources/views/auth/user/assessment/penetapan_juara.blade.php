@@ -49,9 +49,8 @@
 
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        {{-- Component Navigation Bar Assessment --}}
+        {{-- Component Navigation Paper --}}
         @include('components.assessment.navbar')
-
 
         <div class="mb-3">
             @if ($errors->any())
@@ -79,14 +78,7 @@
             @endif
         </div>
 
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
-                {{ session('success') }}
-                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
+        {{-- Component Navigation Bar Assessment --}}
         @include('auth.user.assessment.bar')
         <div class="row">
             <div class="col-md-12">

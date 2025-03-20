@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Judge;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 class JudgeTable extends Component
 {
@@ -55,6 +56,8 @@ class JudgeTable extends Component
 
     public function render()
     {
+        $user = Auth::user();
+
         $query = Judge::with('event')
             ->join('users', 'judges.employee_id', '=', 'users.employee_id')
             ->select(
@@ -66,8 +69,8 @@ class JudgeTable extends Component
                 'users.unit_name',
             );
 
-            if ($this->company) {
-                $query->where('company_code', $this->company);
+            if ($user->role !== 'Superadmin') {
+                $query->where('company_code', $user->company_code);
             }
 
             if ($this->event) {

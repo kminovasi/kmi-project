@@ -90,7 +90,7 @@
                         const fullPaperContainer = $(`
                             <div id="stepsContainerGm" class="mb">
                                 <h5 class="mb-3">Revisi berdasarkan dokumen Full Paper</h5>
-                                <p>Pengumpulan dilakukan menggunakan dokumen full_paper yang telah diunggah.</p>
+                                <p>Pengumpulan dilakukan menggunakan dokumen full paper yang telah diunggah.</p>
                                 <a href="/storage/${response.full_paper_path}" target="_blank" class="btn btn-primary">Lihat Full Paper</a>
                                 <input type="hidden" name="full_paper" value="1">
                             </div>

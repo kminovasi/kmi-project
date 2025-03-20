@@ -253,10 +253,8 @@ class PaperController extends Controller
             $newTeam = Team::create([
                 'team_name' => $request->input('team_name'),
                 'company_code' => Company::where('company_name', $request->input('company'))->pluck('company_code')[0],
-                // 'fasilitator_employee_id' => $request->input('fasil'),
                 'category_id' => $request->input('category'),
                 'theme_id' => $request->input('theme'),
-                // 'event_id' => $request->input('event'),
                 'phone_number' => $request->input('phone_number'),
                 'status_lomba' => $request->input('status_lomba'),
                 'inovasi_lokasi' => $request->input('inovasi_lokasi'),
@@ -265,7 +263,7 @@ class PaperController extends Controller
 
             History::create([
                 'team_id' => $newTeam->id,
-                'activity' => "Team " . $newTeam->team_name . " created",
+                'activity' => "Membentuk Tim " . $newTeam->team_name,
                 'status' => 'created'
             ]);
             
@@ -382,15 +380,12 @@ class PaperController extends Controller
             DB::rollback();
             return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
-        // $request->status = 'created team';
-        // $request->updateAndHistory([] ,'created team');
-        //dd($e->getMessage());
-        return redirect()->route('paper.index')->with('success', 'Registrasi telah berhasil!'); // masih belom tau
+
+        return redirect()->route('paper.index')->with('success', 'Registrasi telah berhasil! Selamat Berinovasi'); 
     }
 
     public function storeEventExternal(Request $request)
     {
-        // dd($request->all());
         try {
             $now = Carbon::now();
 
@@ -399,10 +394,6 @@ class PaperController extends Controller
             $newTeam = Team::create([
                 'team_name' => $request->input('team_name'),
                 'company_code' => $request->input('company'),
-                // 'fasilitator_employee_id' => $request->input('fasil'),
-                // 'category_id' => $request->input('category'),
-                // 'theme_id' => $request->input('theme'),
-                // 'event_id' => $request->input('event'),
                 'phone_number' => $request->input('phone_number'),
                 'status_lomba' => $request->input('status_lomba')
             ]);
@@ -421,7 +412,6 @@ class PaperController extends Controller
 
             if ($request->input('anggota') != null) {
                 foreach ($request->input('anggota') as $input_anggota) {
-                    // echo $input_anggota;
                     PvtMember::create([
                         'team_id' => $newTeam->id,
                         'employee_id' => $input_anggota,
@@ -628,9 +618,7 @@ class PaperController extends Controller
             ));
 
             return redirect()->route('paper.index')->with('success', 'Full Paper berhasil diunggah dan diperbarui!');
-            // return redirect()->route('paper.show.stages', [$id, $stage]);
         } catch (\Exception $e) {
-            // dd($e->getMessage());
             return redirect()->route('paper.index')->withErrors('Error: Terjadi kesalahan saat menyimpan berkas. Silakan coba lagi nanti.');
         }
     }
@@ -642,7 +630,7 @@ class PaperController extends Controller
             $fpdi = new Fpdi();
 
             if ($stage == 'full') {
-                $filePath = storage_path('app/public/' . mb_substr(Paper::where('id', '=', $id)->pluck('full_paper')[0], 3));
+                $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $id)->pluck('full_paper')[0], '/'));
                 if (!file_exists($filePath)) {
                     throw new Exception("Error, file tidak ada");
                 }
@@ -684,9 +672,6 @@ class PaperController extends Controller
 
             $item = Paper::where('id', '=', $id)->select($stage)->get()[0];
             $team = Team::findOrFail($paper->team_id);
-
-            // $mpdf = new Mpdf();
-            // $tcpdf = new TCPDF();
 
             foreach ($item->toArray() as $name_column => $column) {
                 if ($column == null) {
@@ -758,7 +743,6 @@ class PaperController extends Controller
         // Mengelola file review jika ada
         if ($request->file('file_review')) {
             $teamName = $record->team ? $record->team->team_name : 'unknown_team';
-            Log::debug($teamName); // Create the file name with the team name and extension
             $record->file_review = $request->file('file_review')->storeAs(
                 'file_review',
                 $teamName . '.' . $request->file('file_review')->extension(),
@@ -910,7 +894,7 @@ class PaperController extends Controller
 
             return redirect()->route('paper.index')->with('success', 'Status Approval telah berhasil diperbarui');
         } catch (\Exception $e) {
-            return redirect()->route('paper.index')->withErrors('Error: Gagal approve paper! Pastikan semua data yang diperlukan telah diisi dengan benar.');
+            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
     }
 
@@ -1175,7 +1159,7 @@ class PaperController extends Controller
                     ->first();
 
                 $leaderData = User::where('employee_id', $leaderId)
-                    ->select('name', 'email')
+                    ->select('name', 'email', 'company_code')
                     ->first();
 
                 $inovasi_lokasi = Paper::where('id', $id)
@@ -1203,7 +1187,7 @@ class PaperController extends Controller
 
             if ($request->status == 'accepted benefit by general manager') {
                 if ($paper->team) {
-                    $admins = User::where('home_company', $leaderData->company_name)
+                    $admins = User::where('company_code', $leaderData->company_code)
                         ->where('role', 'Admin')
                         ->select('name', 'email')
                         ->get();
@@ -1326,9 +1310,7 @@ class PaperController extends Controller
                 $paper->updateAndHistory([], $msg);
             }
         }
-
-
-
+        
         Comment::UpdateOrCreate([
             'paper_id' => $id,
             'writer' => $request->evaluatedBy,
@@ -1529,10 +1511,6 @@ class PaperController extends Controller
             DB::beginTransaction();
 
             $paper = Paper::findOrFail($paper_id);
-
-            // $paper->status = "rollback";
-            // $msg = "change to " . $paper->status . " by " . $request->evaluatedBy . " (rollback) ";
-            // $paper->updateAndHistory([] , $msg);
 
             if ($rollbackOption == 'full_paper') {
                 $paper->status_rollback = "rollback paper";
@@ -1775,52 +1753,49 @@ class PaperController extends Controller
     {
         $paper = Paper::findOrFail($id);
 
-        // Update status fiksasi
-        $paper->status = 'upload full paper'; // Atur status sesuai kebutuhan
-        $paper->save();
-
-        if ($paper->team) {
-            $fasilId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'facilitator')
-                ->pluck('employee_id')
-                ->first();
-
-            $fasilData = User::where('employee_id', $fasilId)
-                ->select('name', 'email')
-                ->first();
-
-            $leaderId = PvtMember::where('team_id', $paper->team->id)
-                ->where('status', 'leader')
-                ->pluck('employee_id')
-                ->first();
-
-            $leaderData = User::where('employee_id', $leaderId)
-                ->select('name', 'email')
-                ->first();
-
-            $inovasi_lokasi = Paper::where('id', $id)
-                ->select('inovasi_lokasi')
-                ->first();
-
-            $stage = 'full_paper';
-
-            // Membuat objek
-            $mail = new EmailNotificationPaperFasil(
-                $paper,
-                $stage,
-                $paper->innovation_title,
-                $paper->team->team_name,
-                $leaderData,
-                $fasilData,
-                $inovasi_lokasi
-            );
-
-            // Mengirim email ke fasilitator
-            Mail::to($fasilData->email)->send($mail);
-        } else {
-            throw new \Exception('Paper tidak memiliki relasi dengan Team.');
+        if (!$paper->team) {
+            return response()->json(['success' => false, 'message' => 'Paper tidak memiliki tim.'], 400);
         }
 
-        return response()->json(['success' => true, 'message' => 'Makalah berhasil difiksasi']);
+        // Update status fiksasi
+        $paper->status = 'upload full paper';
+        $paper->save();
+
+        // Ambil fasilitator dan leader
+        $fasilData = PvtMember::where('team_id', $paper->team->id)
+            ->where('status', 'facilitator')
+            ->first();
+
+        $leaderData = PvtMember::where('team_id', $paper->team->id)
+            ->where('status', 'leader')
+            ->first();
+
+        if (!$fasilData || !$leaderData) {
+            return response()->json(['success' => false, 'message' => 'Fasilitator atau Leader tidak ditemukan.'], 400);
+        }
+
+        $fasilUser = User::where('employee_id', $fasilData->employee_id)->first();
+        $leaderUser = User::where('employee_id', $leaderData->employee_id)->first();
+
+        if (!$fasilUser || !$leaderUser) {
+            return response()->json(['success' => false, 'message' => 'Data user tidak valid.'], 400);
+        }
+
+        // Kirim email ke fasilitator
+        try {
+            Mail::to($fasilUser->email)->send(new EmailNotificationPaperFasil(
+                $paper,
+                'full_paper',
+                $paper->innovation_title,
+                $paper->team->team_name,
+                $leaderUser->name,
+                $fasilUser->name,
+                $paper->inovasi_lokasi
+            ));
+
+            return response()->json(['success' => true, 'message' => 'Makalah berhasil difiksasi dan email dikirim.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal mengirim email.', 'error' => $e->getMessage()], 500);
+        }
     }
 }

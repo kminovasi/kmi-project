@@ -32,7 +32,14 @@
         .display thead th,
         .display tbody td {
             border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
+        }
+
+        .display thead th {
+            text-align: center !important;
+        }
+
+        .display tbody tr td {
+            text-transform: capitalize;
         }
     </style>
 @endpush

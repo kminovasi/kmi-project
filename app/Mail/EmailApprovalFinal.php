@@ -60,7 +60,7 @@ class EmailApprovalFinal extends Mailable
         $attachments = $emailApprovalBenefit->getAttachment();
 
         if ($this->status == 'accepted by innovation admin') {
-            $attachmentPath = mb_substr($this->paper->full_paper, 3);
+            $attachmentPath = ltrim($this->paper->full_paper, '/');
             $attachment1 = Storage::disk('public')->path($attachmentPath);
             $email = $this->view('emails.email_final_approval')
                 ->subject('Notification: Final Paper Accepted')

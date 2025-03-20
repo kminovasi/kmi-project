@@ -13,7 +13,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use App\Models\PvtCustomBenefit;
 use shihjay2\tcpdi_merger\Merger;
-//use TCPDI;
 use shihjay2\tcpdi_merger\MyTCPDI;
 use Illuminate\Support\Facades\Log;
 use App\Services\GhostscriptService;
@@ -99,8 +98,6 @@ class EmailApprovalBenefit extends Mailable
                     'as' => basename($attachment),
                     'mime' => 'application/pdf',
                 ]);
-            } else {
-                Log::error('Attachment is not a string: ' . json_encode($attachment));
             }
         }
 

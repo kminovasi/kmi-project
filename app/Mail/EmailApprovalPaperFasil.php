@@ -33,24 +33,24 @@ class EmailApprovalPaperFasil extends Mailable
     {
 
         if ($this->status == 'accepted paper by facilitator') {
-            $fullPaper = Paper::where('id', '=', $this->paper->id)->value('full_paper');
+            $fullPaper = $this->paper->full_paper;
             if (!$fullPaper) {
                 throw new \Exception("File path for 'full_paper' is missing or invalid in database.");
             }
 
-            // Hapus awalan jalur jika perlu
-            $attachmentPath = mb_substr($fullPaper, 3);
+            // Pastikan tidak ada awalan yang tidak perlu seperti '/'
+            $fullPaper = ltrim($fullPaper, '/');
 
             // Pastikan file ada di disk
-            if (!Storage::disk('public')->exists($attachmentPath)) {
-                throw new \Exception("Attachment file not found in storage path: {$attachmentPath}");
+            if (!Storage::disk('public')->exists($fullPaper)) {
+                throw new \Exception("Attachment file not found in storage path: {$fullPaper}");
             }
 
-            $attachment = Storage::disk('public')->path($attachmentPath);
-            $fileUrl = Storage::disk('public')->url($attachmentPath);
+            $attachment = storage_path('app/public/' . $fullPaper);
+            
             return $this->view('emails.email_paper_approval')
                 ->subject('Notification: Paper Accepted')
-                ->with(['fileUrl' => $fileUrl]);
+                ->with(['fileUrl' => $attachment]);
         } elseif ($this->status == 'rejected paper by facilitator') {
             return $this->view('emails.email_paper_approval')
                 ->subject('Notification: Paper Rejected');

@@ -103,7 +103,7 @@ class ManagamentSystemController extends Controller
             // Commit transaksi
             DB::commit();
 
-            return redirect()->route('management-system.assign.event')->with('success', 'Event assigned successfully');
+            return redirect()->route('management-system.assign.event')->with('success', 'Event Telah Berhasil Dibuat');
         } catch (\Exception $e) {
             // Rollback transaksi jika ada error
             DB::rollback();
@@ -148,15 +148,12 @@ class ManagamentSystemController extends Controller
 
             DB::commit();
 
-            return redirect()->route('management-system.assign.event')->with('success', 'Change Status Event successful');
+            return redirect()->route('management-system.assign.event')->with('success', 'Event Telah Berhasil Diperbarui');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
         }
     }
-
-
-
 
     public function updateEvent(Request $request, $id)
     {
@@ -203,7 +200,7 @@ class ManagamentSystemController extends Controller
 
             DB::commit();
             return redirect()->route('management-system.assign.event')
-                ->with('success', 'Data Event updated successfully');
+                ->with('success', 'Event Telah Berhasil Diperbarui');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -224,10 +221,8 @@ class ManagamentSystemController extends Controller
     }
     public function roleAssignStore(Request $request)
     {
-        // dd($request->all());
         try {
 
-            // Cek apakah user yang sedang melakukan pergantian adalah Superadmin
             $currentUser = auth()->user();
 
             // Jika user yang melakukan pergantian adalah Superadmin
@@ -256,18 +251,26 @@ class ManagamentSystemController extends Controller
             DB::rollback();
             return redirect()->route('management-system.role.assign.add')->withErrors('Error: ' . $e->getMessage());
         }
-        return redirect()->route('management-system.role.assign.add')->with('success', 'Change  successful');
+        return redirect()->route('management-system.role.assign.add')->with('success', 'Pembaruan Role User Berhasil');
     }
+
     public function indexBOD()
     {
         return view('auth.admin.management_system.assign-role.bod-role-index');
     }
+
     public function createAssignBOD()
     {
         $data_team = Team::all();
-        $datas_event = Event::whereIn('status', ['active', 'not active'])->get();
+        
+        $datas_event = Event::whereHas('companies', function ($query) {
+                $query->where('company_code', auth()->user()->company_code);
+            })
+            ->where('status', ['active', 'not active'])
+            ->get();
         return view('auth.admin.management_system.assign-role.bod-role-add', ['datas_event' => $datas_event]);
     }
+
     public function storeAssignBOD(Request $request)
     {
         try {
@@ -303,6 +306,7 @@ class ManagamentSystemController extends Controller
     {
         return view('auth.admin.management_system.assign-role.innovator-role-index');
     }
+
     public function indexAdmin(Request $request)
     {
         // Get list of companies for filter dropdown
@@ -341,14 +345,17 @@ class ManagamentSystemController extends Controller
 
         return view('auth.admin.management_system.assign-role.admin-role-index', compact('companies'));
     }
+
     public function indexSuperAdmin()
     {
         return view('auth.admin.management_system.assign-role.superadmin-role-index');
     }
+
     public function categoryIndex()
     {
         return view('auth.admin.management_system.team.category');
     }
+
     public function categoryStore(Request $request)
     {
         try {
@@ -363,8 +370,9 @@ class ManagamentSystemController extends Controller
             dd($e->getMessage());
             return redirect()->route('management-system.team.category.index');
         }
-        return redirect()->route('management-system.team.category.index')->with('success', 'Data berhasil disimpan');
+        return redirect()->route('management-system.team.category.index')->with('success', 'Kategori Telah Berhasil Dibuat');
     }
+
     public function categoryUpdate(Request $request, $id)
     {
         //dd($request->all());
@@ -383,8 +391,9 @@ class ManagamentSystemController extends Controller
             dd($e->getMessage());
         }
 
-        return redirect()->route('management-system.team.category.index')->with('success', 'Data berhasil diperbarui');
+        return redirect()->route('management-system.team.category.index')->with('success', 'Katgori Telah berhasil diperbarui');
     }
+
     public function categoryDelete($id)
     {
 
@@ -393,12 +402,14 @@ class ManagamentSystemController extends Controller
             return redirect()->route('management-system.team.category.index')->with('error', 'Data tidak ditemukan');
         }
         $data->delete();
-        return redirect()->route('management-system.team.category.index')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('management-system.team.category.index')->with('success', 'Kategori Telah berhasil dihapus');
     }
+
     public function themeIndex()
     {
         return view('auth.admin.management_system.team.theme');
     }
+
     public function themeStore(Request $request)
     {
 
@@ -412,8 +423,9 @@ class ManagamentSystemController extends Controller
             DB::rollback();
             dd($e->getMessage());
         }
-        return redirect()->route('management-system.team.theme.index')->with('success', 'Data berhasil disimpan');
+        return redirect()->route('management-system.team.theme.index')->with('success', 'Tema Telah berhasil Dibuat');
     }
+
     public function themeUpdate(Request $request, $id)
     {
         try {
@@ -428,8 +440,9 @@ class ManagamentSystemController extends Controller
             DB::rollback();
             dd($e->getMessage());
         }
-        return redirect()->route('management-system.team.theme.index')->with('success', 'Data berhasil disimpan');
+        return redirect()->route('management-system.team.theme.index')->with('success', 'Tema Telah Berhasil Diperbarui');
     }
+
     public function themeDelete($id)
     {
 
@@ -438,12 +451,14 @@ class ManagamentSystemController extends Controller
             return redirect()->route('management-system.team.theme.index')->with('error', 'Data tidak ditemukan');
         }
         $data->delete();
-        return redirect()->route('management-system.team.theme.index')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('management-system.team.theme.index')->with('success', 'Tema Telah Berhasil Dihapus');
     }
+
     public function companyIndex()
     {
         return view('auth.admin.management_system.team.company');
     }
+    
     public function companyStore(Request $request)
     {
 

@@ -44,10 +44,7 @@ class EmailNotificationFinal extends Mailable
 
     public function build()
     {
-        // $attachment1 = Storage::path(mb_substr(Paper::where('id', '=', $this->paper->id)->pluck('full_paper')[0], 3));
-        //$attachment2 = Storage::path('public/' . $this->paper->file_review);
-        $attachmentPath = mb_substr(Paper::where('id', '=', $this->paper->id)->pluck('full_paper')[0], 3);
-        $attachment1 = Storage::disk('public')->path($attachmentPath);
+        $attachmentPath1 = storage_path('app/public/' . $this->paper->full_paper);
 
         // Ambil attachment yang sama dengan yang dikirim saat status accepted benefit by general manager
         $emailApprovalBenefit = new EmailApprovalBenefit(
@@ -68,7 +65,7 @@ class EmailNotificationFinal extends Mailable
         if ($this->status == 'accepted benefit by general manager') {
             return $this->view('emails.email_final_notification')
                 ->subject('Notification: Request Approval Final Admin')
-                ->attach($attachment1, [
+                ->attach($attachmentPath1, [
                     'as' => 'Makalah Full Paper.pdf',
                     'mime' => 'application/pdf',
                 ])

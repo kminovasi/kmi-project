@@ -47,7 +47,11 @@ class PvtEventTeamController extends Controller
     {
         $userEmployeeId = Auth::user()->employee_id;
         $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
-        $data_event = Event::where('status', 'active')->get();
+        $data_event = Event::whereHas('companies', function ($query) {
+                $query->where('company_code', auth()->user()->company_code);
+            })
+            ->where('status', 'active')
+            ->get();
         $data_category = Category::all();
         return view('auth.user.assessment.best_of_the_best', [
             "data_event" => $data_event,
@@ -260,7 +264,7 @@ class PvtEventTeamController extends Controller
                 'status' => 'passed'
             ]);
 
-            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Team berhasil dipilih menjadi Best of the Best');
+            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Best Of The Best Telah Ditetapkan');
         } catch (\Exception $e) {
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->withErrors('Error: ' . $e->getMessage());
         }

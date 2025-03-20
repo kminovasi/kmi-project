@@ -64,7 +64,7 @@
                     <p>Ketua: Tidak ada informasi</p>
                 @endif
 
-                <p>Lokasi Implementasi Inovasi: {{ $inovasi_lokasi->inovasi_lokasi }}</p>
+                <p>Lokasi Implementasi Inovasi: {{ $inovasi_lokasi }}</p>
                 <p></p>
             </div>
 

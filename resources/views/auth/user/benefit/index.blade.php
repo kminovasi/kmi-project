@@ -156,7 +156,7 @@
 
                                 </div>
                                 <div class="card-footer">
-                                    <div class="mb-0">
+                                    <div class="mb-0 d-flex justify-content-between">
                                         <a href="{{ route('paper.index') }}" class="btn btn-red">Tutup</a>
                                         <button class="btn btn-primary btn-end" type="submit"
                                             id="submit_benefit_{{ $row->paper_id }}">Simpan</button>

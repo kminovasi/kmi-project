@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Judge;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class JuriController extends Controller
 {

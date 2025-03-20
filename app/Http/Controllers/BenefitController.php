@@ -280,7 +280,7 @@ class BenefitController extends Controller
             throw new \Exception('Paper tidak memiliki relasi dengan Team.');
         }
 
-        return redirect()->route('paper.index')->with('success', 'Data berhasil diperbarui');
+        return redirect()->route('paper.index')->with('success', 'Benefit Berhasil Di Perbarui');
     }
 
 

@@ -1,6 +1,6 @@
-import { Chart, registerables } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import autocolors from 'chartjs-plugin-autocolors';
+import { Chart, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import autocolors from "chartjs-plugin-autocolors";
 
 // Register the custom plugin
 Chart.register(...registerables, ChartDataLabels);
@@ -19,11 +19,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 type: "bar",
                 data: {
                     ...chartData,
-                    datasets: chartData.datasets.map(dataset => ({
+                    datasets: chartData.datasets.map((dataset) => ({
                         ...dataset,
-                        label: 'Total Innovator per Kategori',
-                        maxBarThickness: 40
-                    }))
+                        label: "Total Innovator per Kategori",
+                        maxBarThickness: 40,
+                    })),
                 },
                 options: {
                     responsive: true,
@@ -35,14 +35,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     plugins: {
                         autocolors: {
-                            mode: 'data'
+                            mode: "data",
                         },
                         datalabels: {
-                            color: 'black',
-                            anchor: 'center', // Center the label horizontally
-                            align: 'center', // Center the label vertically
+                            color: "black",
+                            anchor: "center", // Center the label horizontally
+                            align: "center", // Center the label vertically
                             font: {
-                                weight: 'bold',
+                                weight: "bold",
                                 size: 12,
                             },
                         },
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             labels: {
                                 font: {
                                     size: 12,
-                                    weight: 'bold',
+                                    weight: "bold",
                                 },
                             },
                         },

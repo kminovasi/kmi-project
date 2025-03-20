@@ -52,9 +52,9 @@
                  </div>
 
                  <div class="modal-footer">
-                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                     <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton">
-                         Approval</button>
+                    <button class="btn btn-primary" type="submit" data-bs-dismiss="modal" id="accAdminButton">
+                        Kirim</button>
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
                  </div>
              </form>
          </div>

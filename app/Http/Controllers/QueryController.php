@@ -178,10 +178,6 @@ class QueryController extends Controller
                 $select = $request->input('select');
             }
 
-            // if($request->input('search') !== null){
-            //     $search = $request->input('search');
-            // }
-
 
             if (!$table || !$limit) {
                 return response()->json([
@@ -221,11 +217,6 @@ class QueryController extends Controller
 
             $result = $query->limit($limit)
                 ->get();
-            // $result = DB::table($table)
-            //     ->whereRaw($where_column. '='. $where_data)
-            //     ->limit($limit)
-            //     ->get();
-            Log::debug($result);
 
             if ($result->isEmpty()) {
                 return response()->json([
@@ -259,14 +250,8 @@ class QueryController extends Controller
                 $select = $request->input('select');
             }
 
-            // if($request->input('search') !== null){
-            //     $search = $request->input('search');
-            // }
-
-
             if (!$table || !$limit) {
                 return response()->json([
-                    // 'where' => $where,
                     'table' => $table,
                     'limit' => $limit,
                     'message' => "pastikan semua parameter terpenuhi"
@@ -280,8 +265,6 @@ class QueryController extends Controller
                     $query->join($table, function ($join) use ($column) {
 
                         foreach ($column as $column1 => $column2) {
-                            // dd($column1);
-                            // $join->on($column1, '=', $column2);
                             $join->on($column1, '=', DB::raw("ANY(string_to_array(" . $column2 . ", ','))"));
                         }
                     });
@@ -304,11 +287,6 @@ class QueryController extends Controller
 
             $result = $query->limit($limit)
                 ->get();
-            // $result = DB::table($table)
-            //     ->whereRaw($where_column. '='. $where_data)
-            //     ->limit($limit)
-            //     ->get();
-            Log::debug(response()->json($result));
 
             if ($result->isEmpty()) {
                 return response()->json([
@@ -324,52 +302,52 @@ class QueryController extends Controller
         }
     }
 
-  public function getCompanyByEventId(Request $request)
-{
-    try {
-        $eventId = $request->input('eventId');
+    public function getCompanyByEventId(Request $request)
+    {
+        try {
+            $eventId = $request->input('eventId');
 
-        // Ensure event_id is provided
-        if (!$eventId) {
+            // Ensure event_id is provided
+            if (!$eventId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Event ID is required'
+                ], 400);
+            }
+
+            $event = Event::with(['companies' => function($query) {
+                $query->select('companies.id', 'companies.company_name', 'companies.company_code');
+            }])->find($eventId);
+
+            // Check if event exists
+            if (!$event) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Event not found'
+                ], 404);
+            }
+
+            $response = $event->companies->map(function($company) use ($event) {
+                return [
+                    'company_name' => $company->company_name,
+                    'company_code' => $company->company_code,
+                    'event_name' => $event->event_name,
+                    'year' => $event->year
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data_event' => $response
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Event ID is required'
-            ], 400);
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $event = Event::with(['companies' => function($query) {
-            $query->select('companies.id', 'companies.company_name', 'companies.company_code');
-        }])->find($eventId);
-
-        // Check if event exists
-        if (!$event) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Event not found'
-            ], 404);
-        }
-
-        $response = $event->companies->map(function($company) use ($event) {
-            return [
-                'company_name' => $company->company_name,
-                'company_code' => $company->company_code,
-                'event_name' => $event->event_name,
-                'year' => $event->year
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'data_event' => $response
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
 
     public function get_data_makalah(Request $request)
     {
@@ -1650,11 +1628,7 @@ class QueryController extends Controller
                                         END, pvt_assessment_events.id ASC");
             }
 
-            Log::debug($data_row->get());
-            // dd($data_row->get());
             $dataTable = DataTables::of($data_row->get());
-
-
 
             $rawColumns[] = 'Detail Poin';
             $dataTable->addColumn('Detail Poin', function ($data_row) {
@@ -1667,8 +1641,6 @@ class QueryController extends Controller
             <br>
             <br>';
             });
-
-
 
             if ($size_event_team != 0) {
                 for ($i = 0; $i < $size_event_team; $i++) {
@@ -1691,7 +1663,7 @@ class QueryController extends Controller
                     });
                 }
             }
-            // dd($rawColumns);
+            
             $dataTable->rawColumns($rawColumns);
 
             $remove_column = [];
@@ -2201,21 +2173,21 @@ class QueryController extends Controller
 
             $rawColumns[] = 'action';
             $dataTable->addColumn('action', function ($data_row) {
-                $userCompanyName = Auth::user()->company_name;
                 $companyCodeUser = Auth::user()->company_code;
                 $isAdmin = Auth::user()->role === "Admin";
                 $event = Event::find($data_row->id);
+                $startDiv = '<div class="d-flex flex-column gap-1 justify-content-center align-items-center">';
+                $endDiv = '</div>';
 
                 if (auth()->user()->role == 'Superadmin') {
-                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
-                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
-                }
-
-                if ($isAdmin && $event->companies()->where('company_code', $companyCodeUser)->exists() && $event->type === 'AP') {
-                    return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row['id'] . ')" >Edit Status</button>
-                            <button class="btn btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row['id'] . ')"><i class="fa fa-pencil"></i> Edit</button>';
+                    return $startDiv . '<button class="btn btn-sm btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row->id . ')" >Edit Status</button>
+                            <button class="btn btn-sm btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row->id . ')"><i class="fa fa-pencil me-1"></i> Edit</button>' . $endDiv;
+                } else if ($isAdmin && $event->companies()->where('company_code', $companyCodeUser)->exists() && in_array($event->type, ['internal', 'AP'])) {
+                    return $startDiv . '<button class="btn btn-sm btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#changeEvent" onclick="set_data_on_modal(' . $data_row->id . ')" >Edit Status</button>
+                            <button class="btn btn-sm btn-warning btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#updateEvent" onclick="update_modal(' . $data_row->id . ')"><i class="fa fa-pencil me-1"></i> Edit</button>' . $endDiv;
                 }
             });
+
             $dataTable->rawColumns($rawColumns);
 
             return $dataTable->toJson();
@@ -2603,6 +2575,8 @@ class QueryController extends Controller
                 $pvtEventTeam = PvtEventTeam::find($data_row['event_team_id(removed)']);
                 $divStart = '<div class="d-flex flex-column align-items-center">';
                 $divEnd = '</div>';
+                $isAdmin = Auth::user()->role === "Admin" || Auth::user()->role === "Superadmin" ? '' : 'readonly';
+
 
                 if ($pvtEventTeam->final_score !== null) {
                     $finalScore = '<input style="border: 1px dotted #e1e1e1;" 
@@ -2627,7 +2601,7 @@ class QueryController extends Controller
                                     type="number" 
                                     name="val_peringkat" 
                                     min="0" 
-                                    max="1000">
+                                    max="1000" '. $isAdmin .'>
                                 ' . ((Auth::user()->role === "Superadmin" || Auth::user()->role === "Admin") ? 
                                     '<button type="submit" class="btn btn-sm btn-primary">Submit</button>' : '') . '
                             </form>' . 
@@ -2655,7 +2629,7 @@ class QueryController extends Controller
                                     type="number" 
                                     name="val_peringkat" 
                                     min="0" 
-                                    max="1000">
+                                    max="1000" '. $isAdmin .'>
                                 ' . ((Auth::user()->role === "Superadmin" || Auth::user()->role === "Admin") ? 
                                     '<button type="submit" class="btn btn-sm btn-primary">Submit</button>' : '') . '
                             </form>' . 

@@ -3,11 +3,6 @@
 <head>
     <title>Final Paper Approval Notification</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-    </style>
 </head>
 <body>
     <img src="{{ asset('assets/login-frame.jpg') }}" alt="Header Image" style="width: 700px; height: 210px;">

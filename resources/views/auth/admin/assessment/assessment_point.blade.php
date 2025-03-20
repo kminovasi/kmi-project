@@ -94,7 +94,7 @@
     <div class="card mb-4 col-12">
         <div class="card-body">
             <button class="btn btn-outline-primary btn-sm" style="margin-right: 10px;" type="button" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
-            <button id="select-all-button" class="btn btn-outline-primary btn-sm">Select All</button>
+            <button id="select-all-button" class="btn btn-outline-primary btn-sm">Pilih Semua</button>
             <form id="formAssign" action="{{ route('assessment.update.status') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -117,25 +117,20 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-5 mb-3">
-                        <input class="form-control" type="number" name="minimumscore_oda" id="minimumscore_oda" onInput="validasi_minimum_score(this, 900)" placeholder="Masukkan skor minimum On Desk Assessment" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
+                        <input class="form-control" type="number" name="minimumscore_oda" id="minimumscore_oda" onInput="validasi_minimum_score(this, 900)" placeholder="Masukkan skor minimum Penilaian On Desk" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                         <div class="invalid-feedback">
                             skor minimum tidak boleh melebihi batas.
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
-                        <input class="form-control" type="number" name="minimumscore_pa" id="minimumscore_pa" onInput="validasi_minimum_score(this, 950)" placeholder="Masukkan skor minimum presentasi" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
+                        <input class="form-control" type="number" name="minimumscore_pa" id="minimumscore_pa" onInput="validasi_minimum_score(this, 950)" placeholder="Masukkan skor minimum Penilaian Presentasi" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                         <div class="invalid-feedback">
                             skor minimum tidak boleh melebihi batas.
                         </div>
                     </div>
                     <div class="col-md-2 mb-3">
                         <div class="d-grid">
-
-
-
-
                             <button type="submit" class="btn btn-primary" id="btnAssign" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
-
                         </div>
                     </div>
                 </div>
@@ -159,7 +154,7 @@
                 <div class="modal-body px-4 py-3">
                     <!-- Point Assessment -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Point Assessment</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputPoint">Poin Penilaian</label>
                         <input type="text" class="form-control shadow-sm" name="point" id="inputPoint" value="" readonly>
                     </div>
 
@@ -171,7 +166,7 @@
 
                     <!-- Max Score -->
                     <div class="mb-3">
-                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Max Score</label>
+                        <label class="mb-1 fw-bold text-muted" for="inputScoreMax">Skor Maks</label>
                         <input type="number" class="form-control shadow-sm" name="score_max" id="inputScoreMax" value="" min="0" step="1" required>
                     </div>
                 </div>
@@ -186,30 +181,6 @@
     </div>
 </div>
 
-{{-- Modal Untuk Delete Template Assessment --}}
-{{-- <div class="modal fade" id="deletePoint" tabindex="-1" role="dialog" aria-labelledby="deletePointTitle" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <form id="deletePointAssessment" method="POST">
-            @csrf
-            @method('DELETE')
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deletePointTitle">Konfirmasi Hapus Data</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Apakah yakin data ini akan dihapus ?
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-danger" type="submit">Delete</button>
-                </div>
-
-            </div>
-        </form>
-    </div>
-</div> --}}
-
 {{-- modal filter Assessment Point Setting --}}
 <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -217,7 +188,7 @@
             <!-- Header -->
             <div class="modal-header">
                 <h5 class="modal-title d-flex align-items-center" id="detailTeamMemberTitle">
-                    <i class="me-2" data-feather="filter"></i> Filter Options
+                    <i class="me-2" data-feather="filter"></i> Pengaturan Filter
                 </h5>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -286,18 +257,11 @@
             },
             "columns": [
                 {"data": "DT_RowIndex", "title": "No"},
-                {"data": "point", "title": "Point Assessment"},
-                {"data": "detail_point", "title": "Detail Point Assessment"},
-                {"data": "pdca", "title": "Category"},
-                {"data": "score_max", "title": "Score Max"},
-                {"data": "assign","title": "Assign"
-                //     "render": function (data, type, row) {
-                //     // Check if checkbox is already checked on initial load
-                //     // let isChecked = data ? 'checked' : '';
-                //     let isChecked = '';
-                //     return `<input type="checkbox" name="assessment_poin_id[]" value="${row.id}" ${isChecked}>`;
-                // }
-                },
+                {"data": "point", "title": "Poin Penilaian"},
+                {"data": "detail_point", "title": "Detail Poin Penilaian"},
+                {"data": "pdca", "title": "Kategori"},
+                {"data": "score_max", "title": "Skor Maks"},
+                {"data": "assign","title": "Assign"},
                 {"data": "status_point", "title": "Status"},
                 {"data": "action", "title": "Action"},
                 {"data": "stage", "title": "Stage"}
@@ -337,32 +301,22 @@
         selectAllButton.removeClass('active');
 
         $('#select-all-button').on('click', function () {
-        // Get all checkboxes in the 'assign' column
-        const checkboxes_assign = $('#datatable-assessment-point tbody input[type="checkbox"]');
+            // Get all checkboxes in the 'assign' column
+            const checkboxes_assign = $('#datatable-assessment-point tbody input[type="checkbox"]');
 
-        // Toggle their checked state based on the current "Select All" button state
-        if ($(this).hasClass('active')) {
-            checkboxes_assign.prop('checked', false);
-            $(this).removeClass('active');
-        } else {
-            checkboxes_assign.prop('checked', true);
-            $(this).addClass('active');
-        }
+            // Toggle their checked state based on the current "Select All" button state
+            if ($(this).hasClass('active')) {
+                checkboxes_assign.prop('checked', false);
+                $(this).removeClass('active');
+            } else {
+                checkboxes_assign.prop('checked', true);
+                $(this).addClass('active');
+            }
 
-        // Call cek() function to update total score
-        cek();
+            // Call cek() function to update total score
+            cek();
+        });
     });
-    });
-
-        // $('#filter-year').on('change', function () {
-        //     dataTable.ajax.reload();
-        //     cek()
-        //     document.getElementById('inputYear').value = $('#filter-year').val()
-        //     get_data_min_score($('#filter-event').val(), $('#filter-year').val(), $('#filter-category').val())
-        // });
-
-    //     cek()
-    // });
     function get_data_point(assessment_point_id) {
         $.ajax({
             headers: {
@@ -437,15 +391,15 @@
         sisaMaxScore = nilai - totalMaxScore
 
         if(totalMaxScore == nilai){
-            document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan submit`;
+            document.getElementById("konfirmasiScore").innerHTML = `Total Skor Maksimal <b class="text-green" id="totalScore"> ${totalMaxScore} </b> Silahkan Submit`;
         }
         else if(totalMaxScore > nilai){
             document.getElementById('btnAssign').setAttribute('disabled', true);
-            document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kelebihan <b class="text-red" id="totalScore"> ${Math.abs(sisaMaxScore)} </b>`;
+            document.getElementById("konfirmasiScore").innerHTML = `Total Skor Maksimal <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Terlalu Besar <b class="text-red" id="totalScore"> ${Math.abs(sisaMaxScore)} </b>`;
         }
         else{
             document.getElementById('btnAssign').setAttribute('disabled', true);
-            document.getElementById("konfirmasiScore").innerHTML = `Total Score Max <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kurang <b class="text-red" id="totalScore"> ${sisaMaxScore} </b>`;
+            document.getElementById("konfirmasiScore").innerHTML = `Total Skor Maksimal <b class="text-red" id="totalScore"> ${totalMaxScore} </b> Kurang <b class="text-red" id="totalScore"> ${sisaMaxScore} </b>`;
         }
     }
 

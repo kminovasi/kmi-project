@@ -75,8 +75,8 @@
                             <a class="nav-link {{ request()->routeIs('management-system.assign.event') ? 'active' : '' }}"
                                 href="{{ route('management-system.assign.event') }}">Event</a>
                             @if (Auth::user()->role == 'Admin')
-                                <a class="nav-link {{ request()->routeIs('assessment.show.point') ? 'active' : '' }}"
-                                    href="{{ route('assessment.show.point') }}">Penilaian</a>
+                                <a class="nav-link {{ request()->routeIs('assessment.show.template') ? 'active' : '' }}"
+                                    href="{{ route('assessment.show.template') }}">Penilaian</a>
                             @elseif(Auth::user()->role == 'Superadmin')
                                 <a class="nav-link {{ request()->routeIs('assessment.show.template') ? 'active' : '' }}"
                                     href="{{ route('assessment.show.template') }}">Penilaian</a>

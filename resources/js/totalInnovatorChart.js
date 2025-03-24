@@ -18,14 +18,16 @@ Chart.register(
     Tooltip,
     Legend,
     Title,
-    ChartDataLabels
+    ChartDataLabels,
 );
 
 // Array untuk menyimpan gambar logo
-const logoImages = [];
+let logoImages = [];
 
 // Fungsi untuk memuat semua gambar logo
 const loadLogos = async (logos) => {
+    logoImages = []; // Kosongkan array sebelum memuat ulang
+
     try {
         await Promise.all(
             logos.map((url, index) => {
@@ -38,7 +40,7 @@ const loadLogos = async (logos) => {
                     };
                     img.onerror = reject; // Tangani kesalahan pemuatan gambar
                 });
-            })
+            }),
         );
     } catch (error) {
         console.error("Error loading logos:", error);
@@ -72,33 +74,68 @@ document.addEventListener("DOMContentLoaded", async () => {
         .getElementById("total-innovator-chart")
         .getContext("2d");
 
-    // Memuat logo sebelum membuat grafik
+    // **Pastikan data tidak kosong**
+    if (!chartData.datasets || chartData.datasets.length === 0) {
+        console.error("Dataset kosong!");
+        return;
+    }
+
+    // **Ambil data dari tahun terbaru**
+    const latestYearIndex = chartData.datasets.length - 1; // Tahun terbaru ada di index terakhir
+    const latestYearData = chartData.datasets[latestYearIndex].data;
+
+    if (!latestYearData || latestYearData.length === 0) {
+        console.error("Data tahun terbaru kosong!");
+        return;
+    }
+
+    // **Gabungkan data untuk sorting**
+    let combinedData = chartData.labels.map((label, index) => ({
+        label,
+        logo: chartData.logos[index],
+        value: latestYearData[index], // Ambil jumlah inovator dari tahun terbaru
+        datasetValues: chartData.datasets.map((dataset) => dataset.data[index]), // Simpan seluruh nilai dataset per perusahaan
+    }));
+
+    // **Urutkan berdasarkan jumlah inovator terbesar**
+    combinedData.sort((a, b) => b.value - a.value);
+
+    // **Buat ulang chartData berdasarkan urutan baru**
+    chartData.labels = combinedData.map((item) => item.label);
+    chartData.logos = combinedData.map((item) => item.logo);
+
+    // **Update data di semua dataset dengan urutan baru**
+    chartData.datasets.forEach((dataset, datasetIndex) => {
+        dataset.data = combinedData.map(
+            (item) => item.datasetValues[datasetIndex],
+        );
+    });
+
+    console.log("Data setelah sorting:", chartData);
+
+    // **Muat ulang logo berdasarkan urutan baru**
     await loadLogos(chartData.logos);
 
-    // Membuat grafik
+    // **Buat chart setelah sorting**
     const chart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: chartData.labels, // Nama perusahaan
-            datasets: chartData.datasets, // Data inovator (berisi label tahun dan warna batang)
+            labels: chartData.labels,
+            datasets: chartData.datasets,
         },
         options: {
             responsive: true,
             layout: {
-                padding: {
-                    bottom: 50, // Tambahkan padding bawah untuk ruang logo
-                },
+                padding: { bottom: 50 },
             },
             plugins: {
                 legend: {
-                    display: true, // Aktifkan legend untuk warna tahun
-                    position: "top", // Legend di atas chart
+                    display: true,
+                    position: "top",
                     labels: {
-                        font: {
-                            size: 12, // Ukuran font legend
-                        },
-                        boxWidth: 20, // Lebar kotak warna di legend
-                        padding: 15, // Jarak antar item legend
+                        font: { size: 12 },
+                        boxWidth: 20,
+                        padding: 15,
                     },
                 },
                 title: {
@@ -106,32 +143,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                     text: "Jumlah Keterlibatan Inovator per Perusahaan",
                 },
                 datalabels: {
-                    // Konfigurasi plugin Data Labels
                     display: true,
                     align: "end",
                     anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
-                    font: {
-                        weight: "bold",
-                        size: 12,
-                    },
+                    formatter: (value) => value.toLocaleString(),
+                    font: { weight: "bold", size: 12 },
                 },
             },
             scales: {
                 x: {
-                    title: {
-                        display: false,
-                        text: "Perusahaan",
-                    },
-                    ticks: {
-                        display: false, // Sembunyikan teks label agar hanya logo yang tampil
-                    },
+                    title: { display: false, text: "Perusahaan" },
+                    ticks: { display: false }, // Sembunyikan teks label agar hanya logo yang tampil
                 },
                 y: {
-                    title: {
-                        display: true,
-                        text: "Jumlah Inovator",
-                    },
+                    title: { display: true, text: "Jumlah Inovator" },
                 },
             },
         },

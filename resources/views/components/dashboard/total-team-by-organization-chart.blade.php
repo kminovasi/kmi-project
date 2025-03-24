@@ -13,10 +13,10 @@
 
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
-    <canvas id="totalTeamChart"></canvas>
+    <canvas id="totalTeamChart"  style="width: 100%; height: 20rem;"></canvas>
     <div class="mt-3 text-center">
-        <button class="btn btn-success export-excel">Export to Excel</button>
-        <button class="btn btn-danger export-pdf">Export to PDF</button>
+        <button class="btn btn-sm btn-success export-excel">Export to Excel</button>
+        <button class="btn btn-sm btn-danger export-pdf">Export to PDF</button>
     </div>
 </div>
 @vite(['resources/js/totalTeamByOrganization.js']);

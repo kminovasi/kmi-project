@@ -29,17 +29,17 @@
             <table class="table-benefit">
                 <thead>
                     <tr>
-                        <th>Nama Benefit</th>
-                        <th>Jumlah Makalah</th>
-                        <th>Action</th>
+                        <th class="text-center">Nama Benefit</th>
+                        <th class="text-center">Jumlah Makalah</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($data as $benefit)
                         <tr>
-                            <td>{{ $benefit->name_benefit }}</td>
-                            <td>{{ $benefit->papers_count }}</td>
-                            <td><a href="{{route('dashboard.showAllBenefit', ['customBenefitPotentialId' => $benefit->id])}}" class="btn btn-success btn-sm">detail</a></td>
+                            <td class="text-center">{{ $benefit->name_benefit }}</td>
+                            <td class="text-center">{{ $benefit->papers_count }}</td>
+                            <td class="text-center"><a href="{{route('dashboard.showAllBenefit', ['customBenefitPotentialId' => $benefit->id])}}" class="btn btn-success btn-sm">detail</a></td>
                         </tr>
                     @endforeach
                 </tbody>

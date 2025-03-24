@@ -9,34 +9,30 @@
             @php
                 $colors = [
                     [
-                        'bg' => 'bg-custom-red',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%)',
+                        'bg' => '#e7efff',
+                        'text' => '#2f4858',
                     ],
                     [
-                        'bg' => 'bg-custom-green',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)',
+                        'bg' => '#9aa9e0',
+                        'text' => '#2f4858',
                     ],
                     [
-                        'bg' => 'bg-custom-blue',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
+                        'bg' => '#e7efff',
+                        'text' => '#2f4858',
                     ],
                     [
-                        'bg' => 'bg-custom-orange',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #f39c12 0%, #d35400 100%)',
+                        'bg' => '#9aa9e0',
+                        'text' => '#2f4858',
                     ],
                 ];
             @endphp
             @foreach ($teamData as $year => $count)
                 <div class="col-6 col-md-3">
-                    <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['gradient'] }};">
+                    <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
                         <div class="card-body py-4 position-relative z-1 text-center text-white">
                             <h6 class="text-uppercase mb-2 opacity-75">Tahun {{ $year }}</h6>
-                            <div class="display-6 fw-bold">{{ $count }}</div>
-                            <div class="mt-2 small opacity-75">Tim Terdaftar</div>
+                            <div class="display-6 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ $count }}</div>
+                            <div class="mt-2 small opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
                         </div>
                         <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-10"></div>
                     </div>
@@ -50,7 +46,7 @@
             Total tim yang diterima dalam 4 tahun terakhir
         </small>
         <br>
-        <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn btn-danger mt-3 px-4 py-2 text-white" style="border-radius: 10px;">
+        <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn btn-md mt-3 teams-chart-btn" style="border-radius: 10px;">
             Lihat Chart Total Tim
         </a>
     </div>
@@ -68,19 +64,20 @@
     .team-card .card:hover {
         transform: translateY(-10px);
         box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175);
+        cursor: pointer;
     }
 
-    .link-total-team-chart {
-        display: inline-block;
-        padding: 10px 15px;
-        background-color: #eb4a3a;
+    .teams-chart-btn {
+        width: 100%;
+        background-color: #4b5d8e;
         color: white;
         border-radius: 5px;
         text-decoration: none;
         transition: background-color 0.3s ease;
     }
 
-    .link-total-team-chart:hover {
-        background-color: #c0392b;
+    .teams-chart-btn:hover {
+        background-color: #41527e;
+        color: white;
     }
 </style>

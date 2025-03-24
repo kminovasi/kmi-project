@@ -11,26 +11,29 @@ export function initializeTotalTeamChart(chartData) {
 
     // Determine the range of years dynamically from the chartData
     const years = new Set();
-    labels.forEach(unit => {
-        Object.keys(chartData[unit]).forEach(year => {
+    labels.forEach((unit) => {
+        Object.keys(chartData[unit]).forEach((year) => {
             years.add(parseInt(year));
         });
     });
-    const sortedYears = Array.from(years).sort();
+    const sortedYears = Array.from(years);
 
-    sortedYears.forEach(year => {
+    if (sortedYears.length > 0) {
+        const firstYear = sortedYears[0]; // Ambil tahun pertama dari daftar
+
         datasets.push({
-            label: year.toString(),
-            data: labels.map((unit) => chartData[unit][year] || 0),
-            maxBarThickness: 40, // Maximum bar thickness
+            label: firstYear.toString(),
+            data: labels.map((unit) => chartData[unit][firstYear] || 0),
+            maxBarThickness: 60,
+            backgroundColor: "#009f5f",
         });
-    });
+    }
 
     const ctx = document.getElementById("totalTeamChart").getContext("2d");
     const calculateFontSize = () => {
         const screenWidth = window.innerWidth;
         const baseFontSize = 10; // Default font size for large screens
-        const minFontSize = 1;  // Minimum font size
+        const minFontSize = 1; // Minimum font size
         const dataFactor = Math.max(labels.length / 10, 1); // Adjust font size based on data count
 
         let fontSize = baseFontSize / dataFactor;
@@ -42,7 +45,7 @@ export function initializeTotalTeamChart(chartData) {
     };
     new Chart(ctx, {
         type: "bar", // Tipe chart
-        plugins: [autocolorPlugin, ChartDataLabels],
+        plugins: [ChartDataLabels],
         data: {
             labels: labels, // Nama unit
             datasets: datasets, // Data berdasarkan tahun
@@ -54,7 +57,7 @@ export function initializeTotalTeamChart(chartData) {
                     position: "top",
                 },
                 autocolorPlugin: {
-                    mode: 'data'
+                    mode: "data",
                 },
                 title: {
                     display: true,
@@ -65,7 +68,7 @@ export function initializeTotalTeamChart(chartData) {
                     display: true,
                     align: "center",
                     anchor: "center",
-                    color: 'black',
+                    color: "white",
                     formatter: (value) => value.toLocaleString(), // Format angka (opsional)
                     font: {
                         weight: "bold",
@@ -83,7 +86,7 @@ export function initializeTotalTeamChart(chartData) {
                         minRotation: 0,
                     },
                 },
-            }
+            },
         },
     });
 }

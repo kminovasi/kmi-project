@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Company;
+use Carbon\Carbon;
+use App\Models\Team;
 use App\Models\Event;
 use App\Models\Paper;
-use App\Models\Team;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use App\Models\Company;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -88,13 +89,20 @@ class DashboardController extends Controller
     public function showTotalTeamChart()
     {
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 4, $currentYear);
+        $years = range($currentYear - 3, $currentYear);
 
         $teams = Company::with(['teams' => function ($query) {
-            $query->whereHas('paper', function ($subQuery) {
-                $subQuery->where('status', 'accepted by innovation admin');
-            });
-        }])->get();
+                $query->whereHas('paper', function ($subQuery) {
+                    $subQuery->where('status', 'accepted by innovation admin');
+                });
+            }])
+            ->withCount(['teams as accepted_papers_count' => function ($query) {
+                $query->whereHas('paper', function ($subQuery) {
+                    $subQuery->where('status', 'accepted by innovation admin');
+                });
+            }])
+            ->orderByDesc('accepted_papers_count')
+            ->get();
 
         $chartData = [
             'labels' => [], // Logo perusahaan
@@ -105,7 +113,7 @@ class DashboardController extends Controller
         foreach ($years as $index => $year) {
             $chartData['datasets'][] = [
                 'label' => $year,
-                'backgroundColor' => ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"][$index % 5],
+                'backgroundColor' => ["#36A2EB", "#a20006", "#4BC0C0", "#38507a"][$index % 4],
                 'data' => []
             ];
         }
@@ -127,6 +135,7 @@ class DashboardController extends Controller
             // Tambahkan logo ke labels
             $chartData['labels'][] = $company->company_name;
             $chartData['logos'][] = $logoPath;
+            $chartData['company_id'][] = $company->id;
 
             $teamCounts = [];
             foreach ($years as $year) {
@@ -146,14 +155,14 @@ class DashboardController extends Controller
     public function showTotalBenefitChart()
     {
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 4, $currentYear);
+        $years = range($currentYear - 3, $currentYear);
         $isSuperadmin = Auth::user()->role === 'Superadmin';
         $company_code = Auth::user()->company_code;
 
         $companiesQuery  = Company::with(['teams.paper' => function ($query) use ($years) {
             $query->where('status', 'accepted by innovation admin')
                 ->whereBetween('created_at', [
-                    now()->subYears(4)->startOfYear(),
+                    now()->subYears(3)->startOfYear(),
                     now()->endOfYear()
                 ]);
         }]);

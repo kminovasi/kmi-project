@@ -3,16 +3,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     @push('css')
         <style>
-            .bg-blue {
-                background: linear-gradient(45deg, #4e73df, #224abe);
+            .bg-event {
+                background: #7d5dd0;
             }
 
-            .bg-pink {
-                background: linear-gradient(45deg, #e83e8c, #ba2465);
-            }
-
-            .bg-gradient-warning {
-                background: linear-gradient(45deg, #ffc107, #ff9800);
+            .bg-innovations {
+                background: #ed2267;
             }
 
             .bg-purple {
@@ -65,7 +61,7 @@
             }
 
             .bg-gradient-green {
-                background: linear-gradient(45deg, #09972a, #218838);
+                background: #4e9000;
             }
 
 
@@ -91,8 +87,10 @@
             }
         </style>
     @endpush
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-gradient-primary text-white h-100 shadow-lg">
+
+    {{-- Total Innovation --}}
+    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
+        <div class="card bg-innovations text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
@@ -206,8 +204,9 @@
         </div>
     </div>
 
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-gradient-warning text-white h-100 shadow-lg">
+    {{-- Idea Box --}}
+    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
+        <div class="card bg-innovations text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -271,9 +270,10 @@
 
 
 
+    {{-- Total Event Active --}}
     @if ($isSuperadmin || $isAdmin)
-        <div class="col-lg-12 col-xl-10 mb-9">
-            <div class="card bg-blue text-white h-100">
+        <div class="col-lg-11 col-xl-11 mb-9 mx-auto">
+            <div class="card bg-event text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
@@ -302,12 +302,12 @@
 
     <div class="col-12 mb-4"></div>
 
-    <div class="col-lg-14 col-xl-10 mb-8">
+    <div class="col-lg-11 col-xl-11 mb-8 mx-auto">
         <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <!-- Informasi Teks -->
-                    <div class="me-3 flex-grow-1">
+                    <div class="me-3 flex-grow-1 d-flex flex-column gap-y-2">
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
                             Akumulasi Total Inovator
                         </div>
@@ -344,8 +344,8 @@
 
     <div class="col-12 mb-4"></div>
 
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-green text-white h-100">
+    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
+        <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -357,7 +357,7 @@
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-mars fa-xl"
+                        <i class="fa-solid fa-mars fa-xl text-blue"
                             style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
                 </div>
@@ -365,8 +365,8 @@
         </div>
     </div>
 
-    <div class="col-lg-6 col-xl-5 mb-4">
-        <div class="card bg-teal text-white h-100">
+    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
+        <div class="card bg-gradient-green text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -378,7 +378,7 @@
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
-                        <i class="fa-solid fa-venus fa-xl"
+                        <i class="fa-solid fa-venus fa-xl text-pink"
                             style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
                     </div>
                 </div>
@@ -404,7 +404,7 @@
                         {{ $totalInnovators > 0 ? round(($totalInnovatorsMale / $totalInnovators) * 100, 2) : 0 }},
                         {{ $totalInnovators > 0 ? round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) : 0 }}
                     ],
-                    backgroundColor: ['#198754', '#20c997'],
+                    backgroundColor: ['#00905c', '#00889b'],
                 }]
             },
             options: {

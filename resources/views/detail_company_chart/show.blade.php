@@ -74,7 +74,6 @@
                         </div>
                     </div>
                 </div>
-                {{-- <x-detail-company-chart.total-custom-benefit :company-id="$company->id" /> --}}
             </div>
         </div>
         <div class="row mt-4">
@@ -90,19 +89,19 @@
                 <h4 class="text-center">Grafik pada tahun {{ $year }}</h4>
             </div>
         </div>
-        <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" :available-years="$availableYears" />
+        <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" :company-code="$company->code" :available-years="$availableYears" />
         <div class="row mt-4">
             <div class="col-lg-12 col-md-12">
-                <x-dashboard.total-team-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
+                <x-dashboard.total-team-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-innovator-by-organization-charts :organization-unit="$organizationUnit" :company-id="$companyId" />
+                <x-dashboard.total-innovator-by-organization-charts :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-financial-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
+                <x-dashboard.total-financial-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
             <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-potential-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$companyId" />
+                <x-dashboard.total-potential-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
             </div>
         </div>
 

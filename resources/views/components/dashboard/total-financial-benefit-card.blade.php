@@ -34,20 +34,19 @@
         box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175);
     }
 
-    .link-total-team-chart {
+    .benefit-chart-btn {
         display: inline-block;
         padding: 10px 15px;
-        background-color: #eb4a3a;
-        /* Warna primer Anda */
+        background-color: #4b5d8e;
         color: white;
         border-radius: 5px;
         text-decoration: none;
         transition: background-color 0.3s ease;
     }
 
-    .link-total-team-chart:hover {
-        background-color: #c0392b;
-        /* Warna lebih gelap saat hover */
+    .benefit-chart-btn:hover {
+        background-color: #41527e;
+        color: white;
     }
 
     .financial-benefits {
@@ -76,7 +75,7 @@
 
     .financial-benefit-year {
         font-size: 0.9rem;
-        color: #6c757d;
+        color: #2f4858;
         margin-bottom: 8px;
         display: block;
         text-transform: uppercase;
@@ -85,8 +84,8 @@
 
     .financial-benefit-total {
         font-size: 1.1rem;
+        color: #2f4858;
         font-weight: 600;
-        color: #343a40;
         cursor: pointer;
     }
 
@@ -97,9 +96,7 @@
     }
 
     .financial-benefit-item:nth-child(1) {
-        background-color: #ffbaba;
-        /* Kuning terang */
-        color: #856404;
+        background-color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -107,9 +104,8 @@
     }
 
     .financial-benefit-item:nth-child(2) {
-        background-color: #c3e6cb;
-        /* Hijau terang */
-        color: #155724;
+        background-color: #e7efff;
+        color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -117,9 +113,7 @@
     }
 
     .financial-benefit-item:nth-child(3) {
-        background-color: #bee5eb;
-        /* Biru terang */
-        color: #0c5460;
+        background-color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -127,9 +121,8 @@
     }
 
     .financial-benefit-item:nth-child(4) {
-        background-color: #f5c6cb;
-        /* Merah terang */
-        color: #721c24;
+        background-color: #e7efff;  
+        color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -155,16 +148,16 @@
          data-potential-benefits='@json($potentialBenefits)'>
         <div class="row">
             <div class="col-md-12">
-                <h6 class="text-muted">Real Benefit Finansial</h6>
+                <h6 class="text-muted">Benefit Finansial (Riil)</h6>
                 <div id="financialBenefits" class="financial-benefits"></div>
             </div>
             <div class="col-md-12 mt-3">
-                <h6 class="text-muted">Benefit Potensial</h6>
+                <h6 class="text-muted">Benefit Finansial (Potensial)</h6>
                 <div id="potentialBenefits" class="financial-benefits"></div>
             </div>
         </div>
         <div class="row">
-            <a href="{{ route('dashboard.showTotalBenefitChart') }}" class="btn link-total-team-chart mt-2">
+            <a href="{{ route('dashboard.showTotalBenefitChart') }}" class="btn benefit-chart-btn mt-2">
                 Lihat Chart Total Benefit
             </a>
         </div>

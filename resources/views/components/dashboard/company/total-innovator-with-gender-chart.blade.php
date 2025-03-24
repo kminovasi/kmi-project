@@ -1,12 +1,12 @@
 <div class="card p-3 mb-4">
     <h5 class="text-center">Total Innovator per Tahun</h5>
     <div class="row">
-        <canvas id="totalInnovatorWithGenderChart"></canvas>
+        <canvas id="totalInnovatorWithGenderChart" style="width: 100%; height: 20rem;"></canvas>
     </div>
     <div class="row">
         <div class="mt-3 text-center">
-            <button class="btn btn-success export-excel-totalInnovatorWithGender">Export to Excel</button>
-            <button class="btn btn-danger export-pdf-totalInnovatorWithGender">Export to PDF</button>
+            <button class="btn btn-sm btn-success export-excel-totalInnovatorWithGender">Export to Excel</button>
+            <button class="btn btn-sm btn-danger export-pdf-totalInnovatorWithGender">Export to PDF</button>
         </div>
     </div>
     <div class="row">

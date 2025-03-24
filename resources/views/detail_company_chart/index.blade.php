@@ -17,9 +17,10 @@
             </div>
         </div>
 
-        <div class="row card p-3">
+        {{-- Detail Chart company --}}
+        <div class="row p-3 d-flex justify-content-center bg-light">
             @foreach ($companies as $index => $company)
-                <div class="col-md-10 mb-4">
+                <div class="col-md-4 mb-4">
                     <div class="accordion" id="accordionCompany{{ $company->id }}">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ $company->id }}">
@@ -34,26 +35,26 @@
                                 aria-labelledby="heading{{ $company->id }}"
                                 data-bs-parent="#accordionCompany{{ $company->id }}">
                                 <div class="accordion-body">
-                                    <a href="{{ route('detail-company-chart-show', ['id' => $company->id]) }}" class="text-decoration-none">
+                                    <a href="{{ route('detail-company-chart-show', ['companyID' => $company->id]) }}" class="text-decoration-none">
                                         <div class="card" >
                                             <div class="company-card" data-company-id="{{ $company->id }}"
                                                 data-company-code="{{ $company->company_code }}">
-                                            <div class="card-header bg-light">
-                                                <h5 class="card-title mb-0 text-center">{{ $company->company_name }}</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="text-center mb-3">
-                                                    <img src="{{ $company->logo_url }}"
-                                                        alt="Logo {{ $company->company_name }}" class="img-fluid company-logo">
+                                                <div class="card-header bg-light">
+                                                    <h5 class="card-title mb-0 text-center">{{ $company->company_name }}</h5>
                                                 </div>
-                                                <div class="chart-container">
-                                                    <x-detail-company-chart.innovator-chart :selected-year="$selectedYear" :company-id="$company->id"
-                                                        :company-code="$company->company_code" />
+                                                <div class="card-body">
+                                                    <div class="text-center mb-3">
+                                                        <img src="{{ $company->logo_url }}"
+                                                            alt="Logo {{ $company->company_name }}" class="img-fluid company-logo">
+                                                    </div>
+                                                    <div class="chart-container">
+                                                        <x-detail-company-chart.innovator-chart :selected-year="$selectedYear" :company-id="$company->id"
+                                                            :company-code="$company->company_code" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
                                             <div class="p-3">
-                                                <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['id' => $company->id])}}">Lihat Detail</a>
+                                                <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['companyID' => $company->id])}}">Lihat Detail</a>
                                                 <button class="btn btn-success export-excel"
                                                     data-company-id="{{ $company->id }}">Export to Excel</button>
                                                 <button class="btn btn-danger export-pdf"

@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body">
-                <form id="filterForm" action="{{ route('detail-company-chart-show', ['id' => $companyId]) }}" method="GET">
+                <form id="filterForm" action="{{ route('detail-company-chart-show', ['companyId' => $companyId]) }}" method="GET">
                     <div class="mb-3">
                         <label for="organizationLevel" class="form-label">Pilih Tingkat Organisasi</label>
                         <select class="form-select" id="organizationLevel" name="organization-unit">

@@ -77,48 +77,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         options: {
             responsive: true,
             layout: {
-                padding: {
-                    bottom: 50,
-                },
+                padding: { bottom: 50 },
             },
             plugins: {
-                legend: {
-                    position: "top",
-                },
-                title: {
-                    display: true,
-                    text: "Total Tim Per Perusahaan",
-                },
+                legend: { position: "top" },
+                title: { display: true, text: "Total Tim Per Perusahaan" },
                 datalabels: {
-                    // Konfigurasi plugin Data Labels
                     display: true,
                     align: "end",
                     anchor: "end",
-                    formatter: (value) => value.toLocaleString(), // Format angka (opsional)
-                    font: {
-                        weight: "bold",
-                        size: 12,
-                    },
+                    formatter: (value) => value.toLocaleString(),
+                    font: { weight: "bold", size: 12 },
                 },
             },
             scales: {
-                x: {
-                    title: {
-                        display: false,
-                        text: "Perusahaan",
-                    },
-                    ticks: {
-                        display: false,
-                    },
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Jumlah Tim",
-                    },
-                },
+                x: { title: { display: false }, ticks: { display: false } },
+                y: { title: { display: true, text: "Jumlah Tim" } },
+            },
+            onClick: (event, elements) => {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const companyId = chartDataTotalTeam.company_id[index];
+
+                    if (companyId) {
+                        window.location.href = `/detail-company-chart/${companyId}`;
+                    }
+                }
             },
         },
-        plugins: [imagePlugin], // Daftarkan plugin untuk logo
+        plugins: [imagePlugin],
     });
 });

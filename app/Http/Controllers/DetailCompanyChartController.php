@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Models\Event;
 use App\Models\Paper;
+use App\Models\Company;
 use App\Models\PvtMember;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class DetailCompanyChartController extends Controller
 {
@@ -52,10 +53,10 @@ class DetailCompanyChartController extends Controller
 
         return view('detail_company_chart.index', compact('companies', 'availableYears', 'selectedYear'));
     }
-    public function show(Request $request, $id)
+    public function show(Request $request, $companyId)
     {
         // Ambil nama perusahaan dan company_code berdasarkan ID
-        $company = Company::select('company_name', 'id', 'company_code')->where('id', $id)->first();
+        $company = Company::select('company_name', 'id', 'company_code')->where('id', $companyId)->first();
 
         // Hitung total inovator dan berdasarkan gender
         $innovatorData = PvtMember::join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
@@ -64,7 +65,7 @@ class DetailCompanyChartController extends Controller
             ->where('users.company_code', $company->company_code)
             ->whereIn('pvt_members.status', ['leader', 'member'])
             ->where('papers.status', 'accepted by innovation admin')
-            ->select('users.gender', \DB::raw('count(distinct pvt_members.employee_id) as total'))
+            ->select('users.gender', DB::raw('count(distinct pvt_members.employee_id) as total'))
             ->groupBy('users.gender')
             ->get();
 
@@ -105,7 +106,6 @@ class DetailCompanyChartController extends Controller
             ->where('teams.company_code', $company->company_code)
             ->sum('papers.financial');
         $formattedTotalFinancialBenefit = number_format($totalFinancialBenefit, 0, ',', '.');
-        $companyId = $id;
 
         return view('detail_company_chart.show', compact(
             'company',
@@ -117,8 +117,6 @@ class DetailCompanyChartController extends Controller
             'year',
             'formattedTotalPotentialBenefit',
             'formattedTotalFinancialBenefit',
-            'companyId'
         ));
     }
 }
-

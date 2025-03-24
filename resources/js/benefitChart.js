@@ -98,7 +98,6 @@ const initChart = async () => {
                     {
                         label: "Benefit",
                         data: dataValues,
-                        // Removed backgroundColor for AutoColors plugin to work
                     },
                 ],
             },

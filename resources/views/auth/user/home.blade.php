@@ -41,7 +41,7 @@
 @endsection
 
 @section('content')
-    <div class="bgBase1">
+    <div class="bgBase1 p-2 pb-4" style="background-color: #f8f9fa;">
         <x-dashboard.header :year="$year" />
 
         <!-- Main page content-->
@@ -61,18 +61,13 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="p-3">
+                            <div class="p-2 pt-3 mx-auto">
                             <x-dashboard.card :categories="$categories" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
                                 :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" />
                             </div>
                         </div>
                     </div>
 
-
-                    <!-- Innovation Status Total -->
-                    {{-- <div>
-                        <x-dashboard.innovation-status-total :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-                    </div> --}}
                     <div>
                         @if ($isSuperadmin)
                             <x-dashboard.total-team-card />
@@ -85,14 +80,12 @@
                 <!-- Right Column - Benefits -->
                 <div class="col-12 col-lg-6 col-md-8 dashboard-section">
                     <!-- Benefit Section -->
-
                     <x-dashboard.benefit :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
-
 
                     <div class="mb-3">
                         <x-dashboard.total-financial-benefit-card :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
-
+                    
                     <div class="mb-3">
                         <x-dashboard.total-non-financial-benefit-card :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                     </div>
@@ -100,11 +93,11 @@
             </div>
 
             <!-- Bottom Section - Semen -->
-            <div class="row mt-4">
+            {{-- <div class="row mt-4">
                 <div class="col-12">
                     <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 @endsection

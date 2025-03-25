@@ -58,23 +58,35 @@ class DetailCompanyChartController extends Controller
         // Ambil nama perusahaan dan company_code berdasarkan ID
         $company = Company::select('company_name', 'id', 'company_code')->where('id', $companyId)->first();
 
-        // Hitung total inovator dan berdasarkan gender
+        // Ambil tahun yang tersedia untuk filter dropdown
+        $availableYears = Event::select('year')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC')
+            ->pluck('year')
+            ->toArray();
+
+        // Ambil tahun dari request, jika tidak ada, pakai tahun sekarang
+        $year = $request->query('year') ?? Carbon::now()->year;
+
+        // Ambil unit organisasi yang dipilih
+        $organizationUnit = $request->query('organization-unit');
+
+        // Hitung total inovator dan berdasarkan gender dengan filter tahun
         $innovatorData = PvtMember::join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
             ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->where('users.company_code', $company->company_code)
             ->whereIn('pvt_members.status', ['leader', 'member'])
             ->where('papers.status', 'accepted by innovation admin')
+            ->whereYear('papers.created_at', $year) // Tambahkan filter berdasarkan tahun
             ->select('users.gender', DB::raw('count(distinct pvt_members.employee_id) as total'))
             ->groupBy('users.gender')
             ->get();
 
-        // Inisialisasi variabel untuk menyimpan hasil
+        // Hitung total inovator pria & wanita
         $totalInnovators = 0;
         $maleCount = 0;
         $femaleCount = 0;
-
-        // Hitung total berdasarkan gender
         foreach ($innovatorData as $data) {
             $totalInnovators += $data->total;
             if ($data->gender === 'Male') {
@@ -84,26 +96,16 @@ class DetailCompanyChartController extends Controller
             }
         }
 
-        $organizationUnit = $request->query('organization-unit');
-        $availableYears = Event::select('year')
-            ->groupBy('year')
-            ->orderBy('year', 'DESC')
-            ->pluck('year')
-            ->toArray();
-
-
-        $year = $request->query('year');
-        if ($year === null) {
-            $year = Carbon::now()->year;
-        }
-
+        // Hitung total manfaat inovasi dengan filter tahun
         $totalPotentialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->where('teams.company_code', $company->company_code)
+            ->whereYear('papers.created_at', $year) // Tambahkan filter berdasarkan tahun
             ->sum('papers.potential_benefit');
         $formattedTotalPotentialBenefit = number_format($totalPotentialBenefit, 0, ',', '.');
 
         $totalFinancialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->where('teams.company_code', $company->company_code)
+            ->whereYear('papers.created_at', $year) // Tambahkan filter berdasarkan tahun
             ->sum('papers.financial');
         $formattedTotalFinancialBenefit = number_format($totalFinancialBenefit, 0, ',', '.');
 
@@ -116,7 +118,7 @@ class DetailCompanyChartController extends Controller
             'availableYears',
             'year',
             'formattedTotalPotentialBenefit',
-            'formattedTotalFinancialBenefit',
+            'formattedTotalFinancialBenefit'
         ));
     }
 }

@@ -4,7 +4,7 @@ namespace App\View\Components\Dashboard;
 
 use App\Models\Company;
 use App\Models\Paper;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\Component;
 
 class TotalPotentialBenefitByOrganizationChart extends Component
@@ -12,15 +12,17 @@ class TotalPotentialBenefitByOrganizationChart extends Component
     public $organizationUnit;
     public $chartData;
     public $company_name;
+    public $year;
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($organizationUnit = null, $companyId)
+    public function __construct($organizationUnit = null, $companyId, $year)
     {
         // Tetapkan nilai default jika $organizationUnit null
         $this->organizationUnit = $organizationUnit ?? 'directorate_name';
+        $this->year = $year;
 
         // Validasi apakah organizationUnit adalah kolom yang valid
         $validOrganizationUnits = [
@@ -60,7 +62,7 @@ class TotalPotentialBenefitByOrganizationChart extends Component
             })
             ->where('teams.company_code', $companyCode)
             ->where('papers.status', 'accepted by innovation admin')
-            ->whereBetween(DB::raw('EXTRACT(YEAR FROM papers.created_at)'), [$currentYear - 3, $currentYear])
+            ->whereYear('papers.created_at', $this->year)
             ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
             ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))
             ->get()

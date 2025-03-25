@@ -1,20 +1,31 @@
 import { Chart, registerables } from "chart.js";
 import autocolorPlugin from "chartjs-plugin-autocolors";
-import chartDataLabel from 'chartjs-plugin-datalabels'
+import chartDataLabel from "chartjs-plugin-datalabels";
 
 // Register required elements
 Chart.register(...registerables);
 
-export function initializeTotalInnovatorChart(chartData) {
+export function initializeTotalInnovatorChart(chartData, year) {
     const labels = Object.keys(chartData);
     const datasets = [];
 
-    const currentYear = new Date().getFullYear();
-    for (let year = currentYear - 3; year <= currentYear; year++) {
+    // Determine the range of years dynamically from the chartData
+    const years = new Set();
+    labels.forEach((unit) => {
+        Object.keys(chartData[unit]).forEach((year) => {
+            years.add(parseInt(year));
+        });
+    });
+    const sortedYears = Array.from(years);
+
+    if (sortedYears.length > 0) {
+        const firstYear = sortedYears[0]; // Ambil tahun pertama dari daftar
+
         datasets.push({
-            label: year.toString(),
-            data: labels.map((unit) => chartData[unit][year] || 0),
-            maxBarThickness: 40, // Maximum bar thickness
+            label: firstYear.toString(),
+            data: labels.map((unit) => chartData[unit][firstYear] || 0),
+            maxBarThickness: 60,
+            backgroundColor: "#38507a",
         });
     }
 
@@ -23,7 +34,7 @@ export function initializeTotalInnovatorChart(chartData) {
     const calculateFontSize = () => {
         const screenWidth = window.innerWidth;
         const baseFontSize = 10; // Default font size for large screens
-        const minFontSize = 8;  // Minimum font size
+        const minFontSize = 8; // Minimum font size
         const dataFactor = Math.max(labels.length / 10, 1); // Adjust font size based on data count
 
         let fontSize = baseFontSize / dataFactor;
@@ -54,20 +65,20 @@ export function initializeTotalInnovatorChart(chartData) {
                     },
                 },
                 autocolorPlugin: {
-                    mode: 'data',
+                    mode: "data",
                 },
                 title: {
                     display: true,
                     text: "Total Innovators",
                     font: {
-                        size:14
+                        size: 14,
                     },
                 },
                 datalabels: {
                     display: true,
                     align: "center",
                     anchor: "center",
-                    color: "black",
+                    color: "#fefefe",
                     formatter: (value) => value.toLocaleString(),
                     font: {
                         weight: "bold",

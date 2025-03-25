@@ -92,16 +92,37 @@
         <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" :company-code="$company->code" :available-years="$availableYears" />
         <div class="row mt-4">
             <div class="col-lg-12 col-md-12">
-                <x-dashboard.total-team-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
+                {{-- Blade component total team innovations by organization charts --}}
+                <x-dashboard.total-team-by-organization-chart
+                    :organizationUnit="$organizationUnit"
+                    :companyId="$company->id"
+                    :year="$year"
+                />
+            </div>
+            <div class="col-lg-12 col-md-12">
+                {{-- Blade component total innovator by organization charts --}}
+                <x-dashboard.total-innovator-by-organization-charts
+                    :organization-unit="$organizationUnit"
+                    :company-id="$company->id"
+                    :year="$year"
+                />
+            </div>
+            <div class="col-lg-12 col-md-12 mt-5">
+                {{-- Blade component total financial benefit by organization charts --}}
+                <x-dashboard.total-financial-benefit-by-organization-chart
+                    :organizationUnit="$organizationUnit"
+                    :companyId="$company->id"
+                    :year="$year"
+                />
+
             </div>
             <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-innovator-by-organization-charts :organization-unit="$organizationUnit" :company-id="$company->id" />
-            </div>
-            <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-financial-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
-            </div>
-            <div class="col-lg-12 col-md-12 mt-4">
-                <x-dashboard.total-potential-benefit-by-organization-chart :organization-unit="$organizationUnit" :company-id="$company->id" />
+                {{-- Blade component total potential benefit by organization charts --}}
+                <x-dashboard.total-potential-benefit-by-organization-chart 
+                    :organizationUnit="$organizationUnit" 
+                    :companyId="$company->id" 
+                    :year="$year"
+                />
             </div>
         </div>
 

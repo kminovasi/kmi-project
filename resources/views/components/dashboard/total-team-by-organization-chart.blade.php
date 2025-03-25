@@ -1,4 +1,4 @@
-<div class="card p-3">
+<div class="card p-2">
     <h2 class="chart-title text-center">Distribusi Ide
         @php
             $labels = [
@@ -14,7 +14,7 @@
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
     <canvas id="totalTeamChart"  style="width: 100%; height: 20rem;"></canvas>
-    <div class="mt-3 text-center">
+    <div class="mt-3 text-end">
         <button class="btn btn-sm btn-success export-excel">Export to Excel</button>
         <button class="btn btn-sm btn-danger export-pdf">Export to PDF</button>
     </div>
@@ -25,7 +25,7 @@
     import {
         initializeTotalTeamChart
     } from "{{ Vite::asset('resources/js/totalTeamByOrganizationChart.js') }}";
-    const chartData = @json($chartData); // Kirim data ke JavaScript
+    const chartData = @json($chartData);
     const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
     const company_name = @json($company_name);
     window.chartData = chartData; // Store chart data globally

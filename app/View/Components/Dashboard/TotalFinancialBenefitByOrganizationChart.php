@@ -12,6 +12,7 @@ class TotalFinancialBenefitByOrganizationChart extends Component
     public $organizationUnit;
     public $chartData;
     public $company_name;
+    public $year;
 
     /**
      * Create a new component instance.
@@ -19,10 +20,11 @@ class TotalFinancialBenefitByOrganizationChart extends Component
      * @param string|null $organizationUnit
      * @param int $companyId
      */
-    public function __construct($organizationUnit = null, $companyId)
+    public function __construct($organizationUnit = null, $companyId, $year)
     {
         // Tetapkan nilai default jika $organizationUnit null
         $this->organizationUnit = $organizationUnit ?? 'directorate_name';
+        $this->year = $year;
 
         // Validasi apakah organizationUnit adalah kolom yang valid
         $validOrganizationUnits = [
@@ -40,7 +42,6 @@ class TotalFinancialBenefitByOrganizationChart extends Component
 
         $company = Company::findOrFail($companyId);
         $companyCode = $company->company_code;
-        $currentYear = now()->year;
         $this->company_name = $company->company_name;
 
         // Ambil data total financial benefit
@@ -62,7 +63,7 @@ class TotalFinancialBenefitByOrganizationChart extends Component
             })
             ->where('teams.company_code', $companyCode)
             ->where('papers.status', 'accepted by innovation admin')
-            ->whereBetween(DB::raw('EXTRACT(YEAR FROM papers.created_at)'), [$currentYear - 3, $currentYear])
+            ->whereYear('papers.created_at', $this->year)
             ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
             ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))
             ->get()

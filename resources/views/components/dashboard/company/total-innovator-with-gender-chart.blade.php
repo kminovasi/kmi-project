@@ -4,13 +4,13 @@
         <canvas id="totalInnovatorWithGenderChart" style="width: 100%; height: 20rem;"></canvas>
     </div>
     <div class="row">
-        <div class="mt-3 text-center">
+        <div id="chartSummary"></div>
+    </div>
+    <div class="row">
+        <div class="mt-3 text-end">
             <button class="btn btn-sm btn-success export-excel-totalInnovatorWithGender">Export to Excel</button>
             <button class="btn btn-sm btn-danger export-pdf-totalInnovatorWithGender">Export to PDF</button>
         </div>
-    </div>
-    <div class="row">
-        <div id="chartSummary"></div>
     </div>
 </div>
 

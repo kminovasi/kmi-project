@@ -14,16 +14,18 @@ class TotalTeamByOrganizationChart extends Component
     public $organizationUnit;
     public $chartData;
     public $company_name;
+    public $year;
 
     /**
      * Create a new component instance.
      *
      * @param string|null $organizationUnit
      */
-    public function __construct($organizationUnit = null, $companyId)
+    public function __construct($organizationUnit = null, $companyId, $year)
     {
         // Tetapkan nilai default jika $organizationUnit null
         $this->organizationUnit = $organizationUnit ?? 'directorate_name';
+        $this->year = $year ?? now()->year;
 
         // Validasi apakah organizationUnit adalah kolom yang valid
         $validOrganizationUnits = [
@@ -41,7 +43,6 @@ class TotalTeamByOrganizationChart extends Component
 
         $company = Company::findOrFail($companyId);
         $companyCode = $company->company_code;
-        $currentYear = now()->year;
         $this->company_name = $company->company_name;
 
         // Ambil data 4 tahun terakhir
@@ -65,7 +66,7 @@ class TotalTeamByOrganizationChart extends Component
                     ->whereRaw('papers.created_at <= COALESCE(user_hierarchy_histories.effective_end_date, papers.created_at)');
             })
             ->where('teams.company_code', $companyCode)
-            ->whereBetween(DB::raw('EXTRACT(YEAR FROM papers.created_at)'), [$currentYear - 3, $currentYear])
+            ->whereYear('papers.created_at', $this->year)
             ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
             ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))
             ->get()

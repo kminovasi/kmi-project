@@ -29,6 +29,7 @@ class PaperCount extends Component
             $totalPapers = Paper::whereHas('team', function ($query) use ($company) {
                 $query->where('company_code', $company->company_code);
             })
+                ->where('papers.status', 'accepted by innovation admin')
                 ->whereYear('created_at', $year)
                 ->count();
 

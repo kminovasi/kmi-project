@@ -16,11 +16,6 @@ export function renderTotalInnovatorWithGenderChart(
     const femaleData = labels.map(
         (year) => chartDataTotalInnovatorWithGenderChart[year].perempuan || 0,
     );
-    const totalData = labels.map(
-        (year) =>
-            chartDataTotalInnovatorWithGenderChart[year].laki_laki +
-                chartDataTotalInnovatorWithGenderChart[year].perempuan || 0,
-    );
 
     new Chart(ctx, {
         type: "bar",
@@ -51,9 +46,6 @@ export function renderTotalInnovatorWithGenderChart(
                 datalabels: {
                     anchor: "end",
                     align: "top",
-                },
-                autocolors: {
-                    mode: "data",
                 },
             },
             scales: {

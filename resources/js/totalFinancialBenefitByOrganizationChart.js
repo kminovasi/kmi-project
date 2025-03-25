@@ -1,6 +1,5 @@
 import { Chart, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import autocolors from 'chartjs-plugin-autocolors';
 
 // Daftarkan semua elemen yang dibutuhkan
 Chart.register(...registerables);
@@ -11,7 +10,7 @@ export function initializeTotalFinancialChart(chartData) {
     const calculateFontSize = () => {
         const screenWidth = window.innerWidth;
         const baseFontSize = 10; // Default font size for large screens
-        const minFontSize = 6;  // Minimum font size
+        const minFontSize = 6; // Minimum font size
         const dataFactor = Math.max(labels.length / 10, 1); // Adjust font size based on data count
 
         let fontSize = baseFontSize / dataFactor;
@@ -22,19 +21,29 @@ export function initializeTotalFinancialChart(chartData) {
         return fontSize; // Large screens
     };
 
+    // Determine the range of years dynamically from the chartData
+    const years = new Set();
+    labels.forEach((unit) => {
+        Object.keys(chartData[unit]).forEach((year) => {
+            years.add(parseInt(year));
+        });
+    });
+    const sortedYears = Array.from(years);
 
-    const currentYear = new Date().getFullYear();
-    for (let year = currentYear - 3; year <= currentYear; year++) {
+    if (sortedYears.length > 0) {
+        const firstYear = sortedYears[0]; // Ambil tahun pertama dari daftar
+
         datasets.push({
-            label: year.toString(),
-            data: labels.map((unit) => chartData[unit][year] || 0), // Data tahun tertentu
-            maxBarThickness: 40, // Ketebalan maksimum bar
+            label: firstYear.toString(),
+            data: labels.map((unit) => chartData[unit][firstYear] || 0),
+            maxBarThickness: 60,
+            backgroundColor: "#4e9000",
         });
     }
 
     const ctx = document.getElementById("totalFinancialChart").getContext("2d");
     new Chart(ctx, {
-        plugins: [autocolors, ChartDataLabels],
+        plugins: [ChartDataLabels],
         type: "bar", // Tipe chart
         data: {
             labels: labels, // Nama unit
@@ -46,9 +55,6 @@ export function initializeTotalFinancialChart(chartData) {
                 legend: {
                     position: "top",
                 },
-                autocolors: {
-                    mode: 'data'
-                },
                 title: {
                     display: true,
                     text: "Total Benefit Finansial Berdasarkan Organisasi",
@@ -56,25 +62,14 @@ export function initializeTotalFinancialChart(chartData) {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: (context) =>
-                        context.dataset.data[context.dataIndex] < 10
-                            ? "end"
-                            : "center", // Jika kecil, posisikan di luar
-                    anchor: (context) =>
-                        context.dataset.data[context.dataIndex] < 10
-                            ? "end"
-                            : "center",
-                    color: (context) =>
-                        context.dataset.data[context.dataIndex] < 10
-                            ? "red"
-                            : "black", // Warna merah untuk angka kecil
-                    formatter: (value) =>
-                        formatRupiah(value.toLocaleString()), // Format angka
+                    align: "top", // Jika kecil, posisikan di luar
+                    anchor: "end",
+                    color: "black", // Warna merah untuk angka kecil
+                    formatter: (value) => formatRupiah(value.toLocaleString()), // Format angka
                     font: {
                         weight: "bold",
                         size: 12,
                     },
-                    padding: 4, // Tambahkan padding agar teks tidak menempel
                 },
             },
             scales: {
@@ -92,16 +87,16 @@ export function initializeTotalFinancialChart(chartData) {
                 x: {
                     title: {
                         display: true,
-                        text: "Unit Organisasi",
                         font: {
                             size: 14,
+                            weight: "bold",
                         },
                     },
                     ticks: {
                         font: {
                             size: calculateFontSize(), // Dynamic font size for x-axis labels
                         },
-                    }
+                    },
                 },
             },
         },
@@ -115,4 +110,3 @@ const formatRupiah = (value) => {
         minimumFractionDigits: 0,
     }).format(value);
 };
-

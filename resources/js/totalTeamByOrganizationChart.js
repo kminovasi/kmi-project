@@ -1,6 +1,5 @@
 import { Chart, registerables } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
-import autocolorPlugin from "chartjs-plugin-autocolors";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Daftarkan semua elemen yang dibutuhkan
 Chart.register(...registerables);
@@ -25,7 +24,7 @@ export function initializeTotalTeamChart(chartData) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
-            backgroundColor: "#009f5f",
+            backgroundColor: "#38507a",
         });
     }
 
@@ -72,7 +71,7 @@ export function initializeTotalTeamChart(chartData) {
                     formatter: (value) => value.toLocaleString(), // Format angka (opsional)
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 14,
                     },
                 },
             },

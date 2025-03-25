@@ -1,5 +1,5 @@
-import { Chart, registerables } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(...registerables, ChartDataLabels);
 document.addEventListener("DOMContentLoaded", function () {
@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const chartElement = document.getElementById("paperCountChart");
     if (chartElement) {
         const chartData = JSON.parse(chartElement.dataset.chart);
-        const companyName = chartElement.dataset.company;
 
         new Chart(chartElement.getContext("2d"), {
             type: "bar",
@@ -39,11 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                     },
                     datalabels: {
-                        color: 'black',
-                        anchor: 'center', // Center the label horizontally
-                        align: 'center', // Center the label vertically
+                        color: "black",
+                        anchor: "center", // Center the label horizontally
+                        align: "center", // Center the label vertically
                         font: {
-                            weight: 'bold',
+                            weight: "bold",
                             size: 12,
                         },
                     },
@@ -94,33 +93,32 @@ document.addEventListener("DOMContentLoaded", function () {
         ([key, value]) => ({
             directorate_name: key,
             ...value,
-        })
+        }),
     );
 
     const filteredData = directorateArray.filter(
         (item) =>
             item.directorate_name &&
             item.directorate_name !== "-" &&
-            item.directorate_name !== ""
+            item.directorate_name !== "",
     );
 
     filteredData.sort(
         (a, b) =>
             b.total_ideas +
             b.total_innovations -
-            (a.total_ideas + a.total_innovations)
+            (a.total_ideas + a.total_innovations),
     );
 
     const itemHeight = 40;
     const minHeight = 400;
     const calculatedHeight = Math.max(
         minHeight,
-        filteredData.length * itemHeight
+        filteredData.length * itemHeight,
     );
 
-    document.querySelector(
-        ".chart-wrapper"
-    ).style.height = `${calculatedHeight}px`;
+    document.querySelector(".chart-wrapper").style.height =
+        `${calculatedHeight}px`;
 
     const directorateNames = filteredData.map((item) => item.directorate_name);
     const totalIdeas = filteredData.map((item) => item.total_ideas);
@@ -163,11 +161,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     display: false,
                 },
                 datalabels: {
-                    color: 'black',
-                    anchor: 'center', // Center the label horizontally
-                    align: 'center', // Center the label vertically
+                    color: "black",
+                    anchor: "center", // Center the label horizontally
+                    align: "center", // Center the label vertically
                     font: {
-                        weight: 'bold',
+                        weight: "bold",
                         size: 12,
                     },
                 },
@@ -239,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.innovatorDirectorateData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
     );
     const values = Object.values(data);
 
@@ -265,11 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     display: false,
                 },
                 datalabels: {
-                    color: 'black',
-                    anchor: 'center', // Center the label horizontally
-                    align: 'center', // Center the label vertically
+                    color: "black",
+                    anchor: "center", // Center the label horizontally
+                    align: "center", // Center the label vertically
                     font: {
-                        weight: 'bold',
+                        weight: "bold",
                         size: 12,
                     },
                 },
@@ -295,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.potentialBenefitsData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
     );
     const values = Object.values(data);
 
@@ -362,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 ctx.fillText(
                                     data.toLocaleString(),
                                     xPos + padding,
-                                    bar.y
+                                    bar.y,
                                 );
                             }
                         });
@@ -372,6 +370,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ],
     });
 });
+
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document
         .getElementById("financialBenefitOrganization")
@@ -379,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.financialBenefitsData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
     );
     const values = Object.values(data);
 
@@ -446,7 +445,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 ctx.fillText(
                                     data.toLocaleString(),
                                     xPos + padding,
-                                    bar.y
+                                    bar.y,
                                 );
                             }
                         });

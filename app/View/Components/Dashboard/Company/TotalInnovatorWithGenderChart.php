@@ -30,9 +30,8 @@ class TotalInnovatorWithGenderChart extends Component
      */
     private function fetchChartData($companyId)
     {
-        $fourYearsAgo = now()->subYears(5)->startOfYear();
+        $fourYearsAgo = now()->subYears(3)->startOfYear();
         $companyCode = Company::findOrFail($companyId)->company_code;
-        $companyName = Company::findOrFail($companyId)->company_name;
 
         return DB::table('users')
             ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')

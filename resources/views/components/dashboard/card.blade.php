@@ -4,11 +4,11 @@
     @push('css')
         <style>
             .bg-event {
-                background: #7d5dd0;
+                background: #D84040;
             }
 
             .bg-innovations {
-                background: #ed2267;
+                background: #D84040;
             }
 
             .bg-purple {
@@ -61,7 +61,7 @@
             }
 
             .bg-gradient-green {
-                background: #4e9000;
+                background: #D84040;
             }
 
 
@@ -404,7 +404,7 @@
                         {{ $totalInnovators > 0 ? round(($totalInnovatorsMale / $totalInnovators) * 100, 2) : 0 }},
                         {{ $totalInnovators > 0 ? round(($totalInnovatorsFemale / $totalInnovators) * 100, 2) : 0 }}
                     ],
-                    backgroundColor: ['#00905c', '#00889b'],
+                    backgroundColor: ['#fff', '#c0c0c0'],
                 }]
             },
             options: {
@@ -413,14 +413,14 @@
                         display: true,
                         position: 'bottom',
                         labels: {
-                            color: '#fff',
+                            color: 'red',
                             font: {
                                 size: 15
                             }
                         }
                     },
                     datalabels: {
-                        color: '#fff',
+                        color: 'red',
                         font: {
                             size: 20,
                             weight: 'bold'

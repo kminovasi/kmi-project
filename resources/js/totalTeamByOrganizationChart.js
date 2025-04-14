@@ -24,7 +24,7 @@ export function initializeTotalTeamChart(chartData) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
-            backgroundColor: "#38507a",
+            backgroundColor: "#8E1616",
         });
     }
 

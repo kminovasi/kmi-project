@@ -7,7 +7,7 @@
     overflow: hidden;
     padding: 20px;
     margin-bottom: 20px;
-    color: #333;
+    color: #1D1616;
     /* Warna teks utama */
 }
 
@@ -25,14 +25,14 @@
 
 .innovator-label {
     font-size: 0.9rem;
-    color: #555;
+    color: #1D1616;
     margin-right: 10px;
 }
 
 .innovator-value {
     font-size: 1.8rem;
     font-weight: 600;
-    color: #007bff;
+    color: #D84040;
     /* Warna primer */
 }
 
@@ -46,20 +46,19 @@
     text-align: center;
     padding: 10px 15px;
     border-radius: 6px;
-    background-color: rgba(0, 123, 255, 0.1);
-    /* Warna primer dengan transparansi */
+    background-color: rgba(216, 64, 64, .1);
 }
 
 .gender-value {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #007bff;
+    color: #D84040;
     /* Warna primer */
 }
 
 .gender-label {
     font-size: 0.9rem;
-    color: #555;
+    color: #1D1616;
 }
 
 .company-card {
@@ -78,7 +77,7 @@
 
 .company-card .card-header h5 {
     margin: 0;
-    color: #333;
+    color: #1D1616;
     font-weight: 500;
     font-size: 1.1rem;
 }
@@ -112,7 +111,7 @@
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #007bff;
+    background-color: #D84040;
     color: white;
     padding: 5px 12px;
     border-radius: 4px;
@@ -136,12 +135,12 @@
 .chart-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #333;
+    color: #1D1616;
     margin-bottom: 15px;
     text-align: center;
 }
 
 .company-name {
-    color: #007bff;
+    color: #D84040;
     font-weight: bold;
 }

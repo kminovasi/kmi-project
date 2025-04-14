@@ -57,19 +57,17 @@ const loadLogos = async (logos) => {
     }
 };
 
+// Plugin untuk menampilkan logo di chart
 const imagePlugin = {
     id: "customImagePlugin",
     afterDraw: (chart) => {
         const { ctx, chartArea, scales } = chart;
+        const yScale = scales.y;
 
         chart.data.labels.forEach((label, index) => {
-            const yScale = scales.y;
+            const y = yScale.getPixelForValue(index); // Posisi sesuai sorting terbaru
+            const x = chartArea.left - 50; // Sesuaikan posisi ke kiri
 
-            // Calculate position for the image
-            const y = yScale.getPixelForValue(index);
-            const x = chartArea.left - 40; // Adjust this value to position the image
-
-            // Draw the image if it exists in logoImages
             if (logoImages[index]) {
                 const img = logoImages[index];
 
@@ -97,6 +95,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadLogos(chartDataTotalBenefit.logos);
     const chartType = chartDataTotalBenefit.isSuperadmin ? "bar" : "line";
 
+    // Sorting berdasarkan nilai terbesar ke terkecil
+    let sortedData = chartDataTotalBenefit.labels
+        .map((label, index) => ({
+            label: label,
+            logo: chartDataTotalBenefit.logos[index],
+            value: chartDataTotalBenefit.datasets[0].data[index],
+        }))
+        .sort((a, b) => b.value - a.value);
+
+    // Update chartData dengan data yang telah diurutkan
+    chartDataTotalBenefit.labels = sortedData.map((item) => item.label);
+    chartDataTotalBenefit.logos = sortedData.map((item) => item.logo);
+    chartDataTotalBenefit.datasets[0].data = sortedData.map(
+        (item) => item.value,
+    );
+
+    // Update logoImages agar sesuai dengan urutan baru
+    logoImages.length = 0;
+    await loadLogos(chartDataTotalBenefit.logos);
+
     new Chart(ctx, {
         type: chartType,
         data: {
@@ -106,10 +124,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x", // Ini adalah kunci untuk membuat chart horizontal
+            indexAxis: "y", // Membuat chart horizontal
             layout: {
                 padding: {
-                    left: 50, // Tambahkan padding kanan untuk logo
+                    left: 50, // Tambahkan padding untuk logo
                 },
             },
             plugins: {
@@ -118,18 +136,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Benefit Finansial (4 Tahun Terakhir)",
+                    text: "Total Benefit Finansial (Tahun Ini)",
                 },
                 datalabels: {
-                    // Konfigurasi plugin Data Labels
                     display: true,
                     color: "black",
-                    align: "center", // Center the label vertically
-                    anchor: "center", // Center the label horizontally
-                    formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
+                    align: "end",
+                    anchor: "center",
+                    formatter: (value) => formatRupiah(value),
                     font: {
                         weight: "bold",
-                        size: 14,
+                        size: 12,
                     },
                 },
                 tooltip: {
@@ -142,7 +159,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             },
             scales: {
                 y: {
-                    // Sekarang ini adalah sumbu x
                     ticks: {
                         display: chartDataTotalBenefit.isSuperadmin
                             ? false
@@ -150,7 +166,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     },
                 },
                 x: {
-                    // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
                         text: "Benefit Finansial",
@@ -172,8 +187,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     const ctx = document
         .getElementById("total-potential-benefit-chart")
         .getContext("2d");
-    const chartType = chartDataTotalBenefit.isSuperadmin ? "bar" : "line";
+    const chartType = chartDataTotalPotentialBenefit.isSuperadmin
+        ? "bar"
+        : "line";
 
+    // Sorting berdasarkan total nilai terbesar ke terkecil
+    let sortedData = chartDataTotalPotentialBenefit.labels
+        .map((label, index) => ({
+            label: label,
+            logo: chartDataTotalPotentialBenefit.logos[index],
+            values: chartDataTotalPotentialBenefit.datasets.map(
+                (dataset) => dataset.data[index],
+            ),
+        }))
+        .sort(
+            (a, b) =>
+                b.values.reduce((sum, v) => sum + v, 0) -
+                a.values.reduce((sum, v) => sum + v, 0),
+        );
+
+    // Update chartDataTotalPotentialBenefit dengan data yang telah diurutkan
+    chartDataTotalPotentialBenefit.labels = sortedData.map(
+        (item) => item.label,
+    );
+    chartDataTotalPotentialBenefit.logos = sortedData.map((item) => item.logo);
+
+    // Update setiap dataset dengan urutan yang benar
+    chartDataTotalPotentialBenefit.datasets.forEach((dataset, i) => {
+        dataset.data = sortedData.map((item) => item.values[i]);
+    });
+
+    // Update logoImages agar sesuai dengan urutan baru
+    logoImages.length = 0;
     await loadLogos(chartDataTotalPotentialBenefit.logos);
 
     new Chart(ctx, {
@@ -185,7 +230,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: chartDataTotalBenefit.isSuperadmin ? "y" : "x",
+            indexAxis: chartDataTotalPotentialBenefit.isSuperadmin ? "y" : "x",
             layout: {
                 padding: {
                     left: 50, // Tambahkan padding kanan untuk logo
@@ -197,18 +242,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
                 title: {
                     display: true,
-                    text: "Total Benefit Finansial (4 Tahun Terakhir)",
+                    text: "Total Potential Benefit (Tahun Ini)",
                 },
                 datalabels: {
-                    // Konfigurasi plugin Data Labels
                     display: true,
                     color: "black",
-                    align: "center", // Center the label vertically
-                    anchor: "center", // Center the label horizontally
-                    formatter: (value) => formatRupiah(value), // Format angka ke dalam Rupiah
+                    align: "end",
+                    anchor: "center",
+                    formatter: (value) => formatRupiah(value),
                     font: {
                         weight: "bold",
-                        size: 14,
+                        size: 12,
                     },
                 },
                 tooltip: {
@@ -221,18 +265,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             },
             scales: {
                 y: {
-                    // Sekarang ini adalah sumbu x
                     ticks: {
-                        display: chartDataTotalBenefit.isSuperadmin
+                        display: chartDataTotalPotentialBenefit.isSuperadmin
                             ? false
                             : true,
                     },
                 },
                 x: {
-                    // Sekarang ini adalah sumbu y
                     title: {
                         display: true,
-                        text: "Benefit Potensial",
+                        text: "Potential Benefit",
                     },
                     beginAtZero: true,
                     ticks: {

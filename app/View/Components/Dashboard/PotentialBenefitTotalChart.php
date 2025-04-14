@@ -3,7 +3,7 @@
 namespace App\View\Components\Dashboard;
 
 use App\Models\Company;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\View\Component;
 
@@ -23,10 +23,10 @@ class PotentialBenefitTotalChart extends Component
         $isSuperadmin = Auth::user()->role === 'Superadmin';
         $company_code = Auth::user()->company_code;
 
-        $companiesQuery = Company::with(['teams.paper' => function ($query) use ($years) {
+        $companiesQuery = Company::with(['teams.paper' => function ($query) use ($currentYear) {
             $query->where('status', 'accepted by innovation admin')
                 ->whereBetween('created_at', [
-                    now()->subYears(4)->startOfYear(),
+                    now()->startOfYear(),
                     now()->endOfYear()
                 ]);
         }]);
@@ -43,15 +43,13 @@ class PotentialBenefitTotalChart extends Component
         ];
 
         // Warna untuk setiap tahun
-        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
+        $colors = "#9966FF";
 
-        foreach ($years as $index => $year) {
-            $this->chartData['datasets'][] = [
-                'label' => $year,
-                'backgroundColor' => $colors[$index % count($colors)],
-                'data' => []
-            ];
-        }
+        $this->chartData['datasets'][] = [
+            'label' => $currentYear,
+            'backgroundColor' => $colors,
+            'data' => []
+        ];
 
         foreach ($companies as $company) {
             // Proses nama perusahaan menjadi nama file logo
@@ -71,24 +69,18 @@ class PotentialBenefitTotalChart extends Component
             $this->chartData['logos'][] = $logoPath; // Path logo perusahaan
 
             // Hitung total financial benefit per tahun
-            $financialPerYear = [];
-            foreach ($years as $year) {
-                $financialPerYear[$year] = $company->teams->reduce(function ($carry, $team) use ($year) {
-                    // Gunakan relasi papers
-                    $teamFinancial = $team->papers->whereBetween('created_at', [
-                        "$year-01-01",
-                        "$year-12-31"
-                    ])->sum('potential_benefit');
+            $financialThisYear = [];
+            $financialThisYear = $company->teams->reduce(function ($carry, $team) use ($currentYear) {
+                // Gunakan relasi papers
+                $teamFinancial = $team->papers->whereBetween('created_at', [
+                    "$currentYear-01-01",
+                    "$currentYear-12-31"
+                ])->sum('potential_benefit');
 
-                    return $carry + $teamFinancial;
-                }, 0);
-            }
+                return $carry + $teamFinancial;
+            }, 0);
 
-
-            // Tambahkan data ke dataset per tahun
-            foreach ($years as $index => $year) {
-                $this->chartData['datasets'][$index]['data'][] = $financialPerYear[$year] ?? 0;
-            }
+                $this->chartData['datasets'][0]['data'][] = $financialThisYear ?? 0;
         }
     }
 

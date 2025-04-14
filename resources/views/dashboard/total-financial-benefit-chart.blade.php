@@ -9,7 +9,7 @@
                     <h5 class="text-white">Total Finansial Benefit per Perusahaan </h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="total-benefit-chart" style="height: 1500px;"></canvas>
+                    <canvas id="total-benefit-chart" style="height: 35rem;"></canvas>
                 </div>
             </div>
             <x-dashboard.potential-benefit-total-chart />

@@ -128,7 +128,7 @@ function renderSummary(chartData) {
 
     // Create summary HTML
     const summaryHtml = `
-        <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+        <div class="mt-4 p-4 bg-gray-100 rounded summary-card">
             <h3 class="text-lg font-semibold mb-3 text-center">Ringkasan Statistik Innovator</h3>
 
             <div class="container-fluid d-flex flex-row justify-content-between align-items-baseline flex-wrap">

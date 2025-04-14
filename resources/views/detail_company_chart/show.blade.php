@@ -13,20 +13,41 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .benefit-title {
-            font-size: 1.2rem;
+        .benefit-title, .innovator-title {
+            font-size: 1rem;
+            font-weight: bold;
             margin-bottom: 15px;
-            color: #333;
+            color: #1D1616;
         }
 
         .benefit-stat {
             text-align: center;
         }
 
-        .benefit-value {
-            font-size: 1.5rem;
+        .benefit-value, .innovator-value, .gender-value {
+            font-size: 1.2rem;
             font-weight: bold;
+        }
+
+        .innovator-value, .gender-value {
+            color: #8E1616;
+        }
+
+        .benefit-value {
             color: #28a745;
+        }
+
+        .btn-filter {
+            background-color: #8E1616;
+            color: #EEEEEE;
+            text-transform: capitalize;
+        }
+
+        .btn-filter:hover {
+            background-color: #EEEEEE;
+            border: 2px solid #8E1616;
+            color: #8E1616;
+            font-weight: 600;
         }
     </style>
 @endpush
@@ -34,30 +55,30 @@
 @section('content')
     <div class="container mt-4">
         <h2 class="mb-4">Dashboard: <span class="company-name">{{ $company->company_name }}</span></h2>
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-6 col-sm-12">
                 <x-detail-company-chart.paper-count :company-id="$company->id" />
             </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
-                <div class="innovator-card">
-                    <h3 class="innovator-title">Data Inovator</h3>
-                    <div class="innovator-stat">
-                        <span class="innovator-label">Total Inovator</span>
-                        <span class="innovator-value">{{ $totalInnovators }}</span>
-                    </div>
-                    <div class="innovator-gender">
-                        <div class="gender-stat">
-                            <div class="gender-value">{{ $maleCount }}</div>
-                            <div class="gender-label">Laki-laki</div>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="row">
+                    <div class="innovator-card">
+                        <h3 class="innovator-title">Data Inovator</h3>
+                        <div class="innovator-stat">
+                            <span class="innovator-label">Total Inovator</span>
+                            <span class="innovator-value">{{ $totalInnovators }}</span>
                         </div>
-                        <div class="gender-stat">
-                            <div class="gender-value">{{ $femaleCount }}</div>
-                            <div class="gender-label">Perempuan</div>
+                        <div class="innovator-gender">
+                            <div class="gender-stat">
+                                <div class="gender-value">{{ $maleCount }}</div>
+                                <div class="gender-label">Laki-laki</div>
+                            </div>
+                            <div class="gender-stat">
+                                <div class="gender-value">{{ $femaleCount }}</div>
+                                <div class="gender-label">Perempuan</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 col-sm-12 mt-4">
                 <div class="row">
                     <div class="benefit-card">
                         <h3 class="benefit-title">Total Potential Benefit</h3>
@@ -81,7 +102,7 @@
                 <x-dashboard.company.total-innovator-with-gender-chart :companyId="$company->id" />
             </div>
             <div class="col-md-4 col-sm-4 col-xs-6">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <button type="button" class="btn btn-filter" data-bs-toggle="modal" data-bs-target="#filterModal">
                     Filter bedasarkan unit organisasi
                 </button>
             </div>

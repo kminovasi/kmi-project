@@ -4,7 +4,6 @@
 @section('css')
     <style>
         .bgBase1 {
-            background-color: #f8f9fa;
             min-height: 100vh;
         }
 
@@ -41,7 +40,7 @@
 @endsection
 
 @section('content')
-    <div class="bgBase1 p-2 pb-4" style="background-color: #f8f9fa;">
+    <div class="bgBase1 p-2 pb-4">
         <x-dashboard.header :year="$year" />
 
         <!-- Main page content-->
@@ -93,11 +92,11 @@
             </div>
 
             <!-- Bottom Section - Semen -->
-            {{-- <div class="row mt-4">
+            <div class="row mt-4">
                 <div class="col-12">
                     <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
                 </div>
-            </div> --}}
+            </div>
         </div>
     </div>
 @endsection

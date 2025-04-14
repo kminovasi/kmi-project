@@ -16,9 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     {
                         label: `Paper Count`,
                         data: chartData.paperCounts,
-                        backgroundColor: "rgba(54, 162, 235, 0.8)",
-                        borderColor: "rgba(54, 162, 235, 1)",
-                        borderWidth: 1,
+                        backgroundColor: "rgb(216, 64, 64)",
                     },
                 ],
             },
@@ -38,12 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         },
                     },
                     datalabels: {
-                        color: "black",
+                        color: "#EEEEEE",
                         anchor: "center", // Center the label horizontally
                         align: "center", // Center the label vertically
                         font: {
                             weight: "bold",
-                            size: 12,
+                            size: 18,
                         },
                     },
                 },

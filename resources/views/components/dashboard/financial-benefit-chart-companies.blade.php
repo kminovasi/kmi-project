@@ -12,6 +12,7 @@
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         transition: transform 0.3s ease;
+        cursor: pointer;
     }
 
     .financial-card:hover {
@@ -32,6 +33,9 @@
 </style>
 
 <div class="financial-charts container mt-3">
+    <div class="container-fluid bg-light mb-3 p-3 rounded shadow-sm">
+        <h3 class="text-center text-dark">Perkembangan Benefit Perusahaan Pertahun</h3>
+    </div>
     <div class="row">
         @foreach ($financialData as $data)
             <div class="col-md-4 col-sm-6 mb-4">

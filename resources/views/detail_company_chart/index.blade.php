@@ -13,7 +13,6 @@
     <div class="container mt-4">
         <div class="row align-items-center mb-4">
             <div class="col-md-4 text-md-end">
-
             </div>
         </div>
 
@@ -35,7 +34,7 @@
                                 aria-labelledby="heading{{ $company->id }}"
                                 data-bs-parent="#accordionCompany{{ $company->id }}">
                                 <div class="accordion-body">
-                                    <a href="{{ route('detail-company-chart-show', ['companyID' => $company->id]) }}" class="text-decoration-none">
+                                    <a href="{{ route('detail-company-chart-show', ['companyId' => $company->id]) }}" class="text-decoration-none">
                                         <div class="card" >
                                             <div class="company-card" data-company-id="{{ $company->id }}"
                                                 data-company-code="{{ $company->company_code }}">
@@ -54,7 +53,7 @@
                                                 </div>
                                             </div>
                                             <div class="p-3">
-                                                <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['companyID' => $company->id])}}">Lihat Detail</a>
+                                                <a class="btn btn-primary" href="{{route('detail-company-chart-show', ['companyId' => $company->id])}}">Lihat Detail</a>
                                                 <button class="btn btn-success export-excel"
                                                     data-company-id="{{ $company->id }}">Export to Excel</button>
                                                 <button class="btn btn-danger export-pdf"

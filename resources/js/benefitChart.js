@@ -70,12 +70,13 @@ const imagePlugin = {
 // Array to store loaded images
 const logoImages = [];
 
-// Load images and create chart
-const initChart = async () => {
+let benefitChart; // Declare chart globally to allow updates
+
+const initChart = async (newLabels = labels, newDataValues = dataValues, newLogos = logos) => {
     try {
         // Load all images
         await Promise.all(
-            logos.map((url, index) => {
+            newLogos.map((url, index) => {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
                     img.onload = () => {
@@ -88,16 +89,21 @@ const initChart = async () => {
             }),
         );
 
+        // Destroy existing chart if it exists
+        if (benefitChart) {
+            benefitChart.destroy();
+        }
+
         // Create the chart
         const ctx = document.getElementById("benefitChart").getContext("2d");
-        const chart = new Chart(ctx, {
+        benefitChart = new Chart(ctx, {
             type: "bar",
             data: {
-                labels: labels,
+                labels: newLabels,
                 datasets: [
                     {
                         label: "Benefit",
-                        data: dataValues,
+                        data: newDataValues,
                     },
                 ],
             },
@@ -139,11 +145,11 @@ const initChart = async () => {
                         callbacks: {
                             title: (tooltipItems) => {
                                 // Display the label of the hovered item
-                                return labels[tooltipItems[0].dataIndex];
+                                return newLabels[tooltipItems[0].dataIndex];
                             },
                             label: (tooltipItem) => {
                                 // Display the value of the hovered item
-                                return `Nilai: ${toRupiah(dataValues[tooltipItem.dataIndex], { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}`;
+                                return `Nilai: ${toRupiah(newDataValues[tooltipItem.dataIndex], { useUnit: true, longUnit: true, spaceBeforeUnit: true, formal: false })}`;
                             },
                         },
                     },
@@ -177,6 +183,43 @@ const initChart = async () => {
 initChart();
 
 document.addEventListener("DOMContentLoaded", () => {
+    let selectedStartYear = null;
+    let selectedEndYear = null;
+
+    document.querySelectorAll('.start-year-option').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            selectedStartYear = this.dataset.startyear;
+            document.getElementById('startYearDropdown').textContent = `Start Year: ${selectedStartYear}`;
+        });
+    });
+
+    document.querySelectorAll('.end-year-option').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            selectedEndYear = this.dataset.endyear;
+            document.getElementById('endYearDropdown').textContent = `End Year: ${selectedEndYear}`;
+        });
+    });
+
+    document.getElementById('applyYearFilter').addEventListener('click', function () {
+        if (!selectedStartYear || !selectedEndYear) {
+            alert('Silakan pilih Start Year dan End Year');
+            return;
+        }
+
+        fetch(`/dashboard/benefit-chart-data?startYear=${selectedStartYear}&endYear=${selectedEndYear}`)
+            .then((response) => response.json())
+            .then((data) => {
+                initChart(data.labels, data.data, data.logos);
+            })
+            .catch((error) => console.error("Error fetching chart data:", error));
+    });
+
+
+    // Initialize chart with default data
+    initChart();
+
     // Ambil elemen data dari DOM
     const financialDataElement = document.getElementById(
         "financialBenefitsData",

@@ -70,7 +70,10 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
     Route::get('/total-team-chart/{company_code}', [DashboardController::class, 'showTotalTeamChartCompany'])->middleware(['auth'])->name('showTotalTeamChartCompany');
     Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompany'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
+    Route::get('/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('benefitChartData');
 });
+
+Route::get('/dashboard/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('dashboard.benefit-chart-data');
 
 Route::middleware('auth')->group(function () {
     Route::get('/user/events/{companyCode}', [UserManagementController::class, 'getUserEvents'])->name('user.events');

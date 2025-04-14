@@ -2,9 +2,10 @@
 
 namespace App\View\Components\Dashboard;
 
-use Illuminate\View\Component;
-use App\Models\Paper;
 use Log;
+use App\Models\Paper;
+use Illuminate\Support\Carbon;
+use Illuminate\View\Component;
 
 class Benefit extends Component
 {
@@ -23,6 +24,7 @@ class Benefit extends Component
         $this->year = $year ?? date('Y');
         $this->isSuperadmin = $isSuperadmin;
         $this->userCompanyCode = $userCompanyCode;
+        $yearNow = Carbon::now()->year;
 
         // Status benefit yang sudah disetujui
         $acceptedStatuses = [
@@ -34,7 +36,7 @@ class Benefit extends Component
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
             ->whereIn('papers.status', $acceptedStatuses)
-            ->whereYear('papers.created_at', $this->year)
+            ->whereYear('papers.created_at', $yearNow)
             ->groupBy('companies.company_name')
             ->orderBy('total_benefit', 'DESC');
 

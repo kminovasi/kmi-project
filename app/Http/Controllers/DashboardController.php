@@ -155,17 +155,17 @@ class DashboardController extends Controller
     public function showTotalBenefitChart()
     {
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 3, $currentYear);
         $isSuperadmin = Auth::user()->role === 'Superadmin';
         $company_code = Auth::user()->company_code;
 
-        $companiesQuery  = Company::with(['teams.paper' => function ($query) use ($years) {
+        $companiesQuery = Company::with(['teams.paper' => function ($query) use ($currentYear) {
             $query->where('status', 'accepted by innovation admin')
                 ->whereBetween('created_at', [
-                    now()->subYears(3)->startOfYear(),
+                    now()->startOfYear(),
                     now()->endOfYear()
                 ]);
         }]);
+
         if (!$isSuperadmin) {
             $companiesQuery->where('company_code', $company_code);
         }
@@ -174,21 +174,19 @@ class DashboardController extends Controller
 
         $chartData = [
             'labels' => [], // Nama perusahaan
-            'datasets' => [], // Dataset untuk setiap tahun
+            'datasets' => [], // Dataset untuk tahun ini saja
             'logos' => [], // Path logo perusahaan
             'isSuperadmin' => $isSuperadmin
         ];
 
-        // Warna untuk setiap tahun
-        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
+        // Warna untuk tahun ini
+        $color = "#009e61";
 
-        foreach ($years as $index => $year) {
-            $chartData['datasets'][] = [
-                'label' => $year,
-                'backgroundColor' => $colors[$index % count($colors)],
-                'data' => [],
-            ];
-        }
+        $chartData['datasets'][] = [
+            'label' => $currentYear,
+            'backgroundColor' => $color,
+            'data' => [],
+        ];
 
         foreach ($companies as $company) {
             // Proses nama perusahaan menjadi nama file logo
@@ -207,25 +205,19 @@ class DashboardController extends Controller
             $chartData['labels'][] = $company->company_name; // Nama perusahaan
             $chartData['logos'][] = $logoPath; // Path logo perusahaan
 
-            // Hitung total financial benefit per tahun
-            $financialPerYear = [];
-            foreach ($years as $year) {
-                $financialPerYear[$year] = $company->teams->reduce(function ($carry, $team) use ($year) {
-                    // Gunakan relasi papers
-                    $teamFinancial = $team->papers->whereBetween('created_at', [
-                        "$year-01-01",
-                        "$year-12-31"
-                    ])->sum('financial');
+            // Hitung total financial benefit untuk tahun ini saja
+            $financialThisYear = $company->teams->reduce(function ($carry, $team) use ($currentYear) {
+                // Gunakan relasi papers
+                $teamFinancial = $team->papers->whereBetween('created_at', [
+                    "$currentYear-01-01",
+                    "$currentYear-12-31"
+                ])->sum('financial');
 
-                    return $carry + $teamFinancial;
-                }, 0);
-            }
+                return $carry + $teamFinancial;
+            }, 0);
 
-
-            // Tambahkan data ke dataset per tahun
-            foreach ($years as $index => $year) {
-                $chartData['datasets'][$index]['data'][] = $financialPerYear[$year] ?? 0;
-            }
+            // Tambahkan data ke dataset tahun ini
+            $chartData['datasets'][0]['data'][] = $financialThisYear;
         }
 
         return view('dashboard.total-financial-benefit-chart', [
@@ -233,7 +225,6 @@ class DashboardController extends Controller
             'isSuperadmin' => $isSuperadmin
         ]);
     }
-
 
     public function showTotalBenefitChartData()
     {
@@ -282,7 +273,7 @@ class DashboardController extends Controller
     {
         $companies = Company::with(['teams.paper'])->get();
         $currentYear = now()->year;
-        $years = range($currentYear - 4, $currentYear);
+        $years = range($currentYear - 3, $currentYear);
 
         $financialData = [];
 
@@ -363,5 +354,57 @@ class DashboardController extends Controller
         }
 
         return view('dashboard.internal.total-team-chart', ['chartDataTotalTeam' => $chartData]);
+    }
+
+    public function getBenefitChartData(Request $request)
+    {
+        $startYear = (int) $request->input('startYear', date('Y'));
+        $endYear = (int) $request->input('endYear', date('Y'));
+
+        $isSuperadmin = Auth::user()->role === "Superadmin";
+        $userCompanyCode = Auth::user()->company_code;
+
+        $acceptedStatuses = ['accepted by innovation admin'];
+
+        $query = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+            ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
+            ->whereIn('papers.status', $acceptedStatuses)
+            ->whereYear('papers.created_at', '>=', $startYear)
+            ->whereYear('papers.created_at', '<=', $endYear)
+            ->groupBy('companies.company_name')
+            ->orderBy('total_benefit', 'DESC');
+
+        if (!$isSuperadmin) {
+            $query->where('teams.company_code', $userCompanyCode);
+        }
+
+        $data = $query->get();
+
+        $charts = [
+            'labels' => [],
+            'data' => [],
+            'logos' => [],
+        ];
+
+        foreach ($data as $row) {
+            $company = $row->company_name;
+            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company));
+            $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
+            $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
+
+            $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
+            if (!file_exists($logoPath)) {
+                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png');
+            } else {
+                $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
+            }
+
+            $charts['labels'][] = $company;
+            $charts['data'][] = $row->total_benefit;
+            $charts['logos'][] = $logoPath;
+        }
+
+        return response()->json($charts);
     }
 }

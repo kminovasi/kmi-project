@@ -75,7 +75,7 @@
 
     .financial-benefit-year {
         font-size: 0.9rem;
-        color: #2f4858;
+        color: #cacaca;
         margin-bottom: 8px;
         display: block;
         text-transform: uppercase;
@@ -84,7 +84,7 @@
 
     .financial-benefit-total {
         font-size: 1.1rem;
-        color: #2f4858;
+        color: #fcfcfc;
         font-weight: 600;
         cursor: pointer;
     }
@@ -96,7 +96,7 @@
     }
 
     .financial-benefit-item:nth-child(1) {
-        background-color: #9aa9e0;
+        background-color: #38507a;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -104,7 +104,7 @@
     }
 
     .financial-benefit-item:nth-child(2) {
-        background-color: #e7efff;
+        background-color: #2f4858;
         color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;
@@ -113,7 +113,7 @@
     }
 
     .financial-benefit-item:nth-child(3) {
-        background-color: #9aa9e0;
+        background-color: #38507a;
         border-radius: 8px;
         padding: 10px;
         margin-bottom: 10px;
@@ -121,7 +121,7 @@
     }
 
     .financial-benefit-item:nth-child(4) {
-        background-color: #e7efff;  
+        background-color: #2f4858;  
         color: #9aa9e0;
         border-radius: 8px;
         padding: 10px;

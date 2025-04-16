@@ -2,47 +2,44 @@
 
 namespace App\View\Components\Dashboard;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 use Log;
 
 class Card extends Component
 {
-    public $breakthroughInnovation;
-    public  $detailBreakthroughInnovationManagement;
-    public  $incrementalInnovation;
-    public  $detailIncrementalInnovationPKMPlant;
-    public  $detailIncrementalInnovationGKMOffice;
-    public  $detailIncrementalInnovationPKMOffice;
-    public $detailIncrementalInnovationSSPlant = null;
     public  $ideaBox;
     public  $detailIdeaBoxIdea;
-    public  $detailBreakthroughInnovationPBB;
-    public  $detailBreakthroughInnovationTPP;
-    public  $detailIncrementalInnovationGKMPlant;
-    public  $detailIncrementalInnovationSSOffice;
     public  $totalInnovators;
     public  $totalInnovatorsMale;
     public  $totalInnovatorsFemale;
     public $totalActiveEvents;
-    public $categories;
+    public $implemented;
+    public $totalImplementedInnovations;
+    public $totalIdeaBoxInnovations;
     /**
      * Create a new component instance.
      *
      * @return void
      */
     public function __construct(
-        $categories = null,
+        $ideaBox = null,
+        $implemented,
         $totalInnovators = null,
         $totalInnovatorsMale = null,
         $totalInnovatorsFemale = null,
         $totalActiveEvents = null,
+        $totalImplementedInnovations = null,
+        $totalIdeaBoxInnovations = null
     ) {
+        $this->ideaBox = $ideaBox;
+        $this->implemented = $implemented;
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
         $this->totalActiveEvents = $totalActiveEvents;
-        $this->categories = $categories;
+        $this->totalImplementedInnovations = $totalImplementedInnovations;
+        $this->totalIdeaBoxInnovations = $totalIdeaBoxInnovations;
     }
 
 

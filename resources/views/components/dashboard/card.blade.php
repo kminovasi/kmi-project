@@ -89,7 +89,7 @@
     @endpush
 
     {{-- Total Innovation --}}
-    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
+    <div class="col-lg-4 col-xl-5 mb-4 mx-auto">
         <div class="card bg-innovations text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -98,14 +98,12 @@
                             data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             <!-- Menampilkan total jumlah inovasi berdasarkan kategori -->
-                            {{ $categories->sum(function ($category) {
-                                return $category->teams_count;
-                            }) }}
+                            {{ $totalImplementedInnovations }}
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
                         <i class="fa-solid fa-rocket fa-xl text-white"
-                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
+                            style="font-size: 30px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
@@ -119,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Add the modal with id="exampleModal" -->
+    <!-- Detail Innovation -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
@@ -133,7 +131,7 @@
 
                 <div class="modal-body bg-light">
                     <div class="row">
-                        @foreach ($categories as $category)
+                        @foreach ($implemented as $item)
                             @php
                                 $colors = [
                                     'text-success',
@@ -150,9 +148,9 @@
                                 <div class="card shadow-sm border-0 rounded">
                                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                         <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $category->category_name }}</h5>
+                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
                                         <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                                            {{ $category->teams_count ?? 0 }}
+                                            {{ $item["count"] ?? 0 }}
                                         </span>
                                     </div>
                                 </div>
@@ -169,41 +167,6 @@
         </div>
     </div>
 
-
-
-    <!-- filepath: /e:/Appi/magang/kmi-project/resources/views/auth/user/home.blade.php -->
-    <div class="modal fade" tabindex="-1" aria-hidden="true" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title text-white">
-                        <i class="fa-solid fa-rocket me-2"></i>Detail Inovasi
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    @foreach ($categories as $category)
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="fw-bold">{{ $category->category_name }}</h6>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ $category->category_name }}
-                                        <span class="badge bg-primary rounded-pill">{{ $category->teams_count }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Idea Box --}}
     <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
         <div class="card bg-innovations text-white h-100 shadow-lg">
@@ -214,12 +177,12 @@
                             Kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
-                            {{ $ideaBox }}
+                            {{ $totalIdeaBoxInnovations }}
                         </div>
                     </div>
                     <div class="icon-circle bg-white-25 flex-shrink-0">
                         <i class="fa-solid fa-lightbulb fa-xl text-white"
-                            style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
+                            style="font-size: 30px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);"></i>
                     </div>
                 </div>
             </div>
@@ -233,7 +196,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Detail Idea box -->
     <div class="modal fade" id="ideaBoxModal" tabindex="-1" aria-labelledby="ideaBoxModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -248,14 +211,31 @@
 
                 <div class="modal-body bg-light">
                     <div class="row">
-                        <div class="col-md-12">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Idea Box
-                                    <span class="badge bg-warning rounded-pill">{{ $detailIdeaBoxIdea }}</span>
-                                </li>
-                            </ul>
-                        </div>
+                        @foreach ($ideaBox as $item)
+                            @php
+                                $colors = [
+                                    'text-success',
+                                    'text-warning',
+                                    'text-info',
+                                    'text-primary',
+                                    'text-secondary',
+                                ];
+                                $icons = ['zap', 'layers', 'box', 'shield', 'star'];
+                                $color = $colors[$loop->index % count($colors)];
+                                $icon = $icons[$loop->index % count($icons)];
+                            @endphp
+                            <div class="col-md-6 mb-4">
+                                <div class="card shadow-sm border-0 rounded">
+                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                            {{ $item["count"] ?? 0 }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -350,7 +330,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
-                            Inovator Laki-laki</div>
+                            Inovator Laki-laki
+                        </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsMale }}
                             <small class="ms-2">(Orang)</small>
@@ -385,8 +366,6 @@
             </div>
         </div>
     </div>
-
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

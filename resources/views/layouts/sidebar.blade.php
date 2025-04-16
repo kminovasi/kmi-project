@@ -1,11 +1,5 @@
-<style>
-    .sidenav {
-        background-color: #8E1616;
-    }
-</style>
-
 <div id="layoutSidenav_nav">
-    <nav class="sidenav shadow-right sidenav-light opacity-75 sidebar-rounded">
+    <nav class="sidenav shadow-right sidenav-light bg-danger opacity-75 sidebar-rounded">
         <div class="sidenav-menu">
             <div class="nav accordion" id="accordionSidenav">
                 <!-- Sidenav Menu Heading (Account)-->

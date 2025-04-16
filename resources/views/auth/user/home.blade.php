@@ -61,8 +61,8 @@
                                 </div>
                             </div>
                             <div class="p-2 pt-3 mx-auto">
-                            <x-dashboard.card :categories="$categories" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
-                                :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" />
+                            <x-dashboard.card :implemented="$implemented" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
+                                :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" :idea-box="$ideaBox" :total-implemented-innovations="$totalImplementedInnovations" :total-idea-box-innovations="$totalIdeaBoxInnovations" />
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,8 @@
             <!-- Bottom Section - Semen -->
             <div class="row mt-4">
                 <div class="col-12">
-                    <x-dashboard.semen :year="$year" :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+                    <x-dashboard.innovation.cement-innovation-chart />
+                    <x-dashboard.innovation.non-cement-innovation-chart />
                 </div>
             </div>
         </div>

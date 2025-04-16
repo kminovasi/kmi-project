@@ -13,7 +13,10 @@ class Company extends Model
     protected $fillable = [
         'company_code',
         'company_name',
+        'group',
+        'sort_order',
     ];
+
     public function events()
     {
         return $this->belongsToMany(Event::class, 'company_event', 'company_id', 'event_id');

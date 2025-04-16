@@ -22,17 +22,66 @@ class DashboardController extends Controller
         $userCompanyCode = Auth::user()->company_code;
         $isSuperadmin = Auth::user()->role === "Superadmin";
 
-        // Fungsi helper untuk menambahkan filter berdasarkan company_code jika bukan superadmin
+        // Helper untuk filter berdasarkan company_code
         $addCompanyFilter = function ($query) use ($isSuperadmin, $userCompanyCode) {
             return $query->when(!$isSuperadmin, function ($q) use ($userCompanyCode) {
                 $q->where('teams.company_code', $userCompanyCode);
             });
         };
 
-        // Fetch all categories and count teams for each category
-        $categories = Category::withCount(['teams' => function ($query) use ($addCompanyFilter) {
-            $addCompanyFilter($query);
-        }])->get();
+        // Status untuk masing-masing grup
+        $implementedStatuses = ['Implemented'];
+        $ideaBoxStatuses = ['Progress', 'Not Implemented'];
+
+        // Ambil semua kategori dan tim dengan hanya id & category_id, dan relasi papers-nya minimal
+        $categories = Category::select('id', 'category_name')->with([
+            'teams' => function ($query) use ($addCompanyFilter) {
+                $addCompanyFilter($query);
+                $query->select('id', 'category_id');
+                $query->with(['papers:id,team_id,status_inovasi']);
+            }
+        ])->get();
+
+        $implemented = [];
+        $ideaBox = [];
+
+        $totalImplementedInnovations = 0;
+        $totalIdeaBoxInnovations = 0;
+
+        foreach ($categories as $category) {
+            $implementedTeamIds = [];
+            $ideaBoxTeamIds = [];
+
+            $implementedCount = 0;
+            $ideaBoxCount = 0;
+
+            foreach ($category->teams as $team) {
+                foreach ($team->papers as $paper) {
+                    if (in_array($paper->status_inovasi, $implementedStatuses)) {
+                        $implementedTeamIds[] = $team->id;
+                        $implementedCount++; // Tambah total inovasi
+                        break;
+                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses)) {
+                        $ideaBoxTeamIds[] = $team->id;
+                        $ideaBoxCount++; // Tambah total inovasi
+                        break;
+                    }
+                }
+            }
+
+            $implemented[] = [
+                'category_name' => $category->category_name,
+                'count' => count(array_unique($implementedTeamIds))
+            ];
+
+            $ideaBox[] = [
+                'category_name' => $category->category_name,
+                'count' => count(array_unique($ideaBoxTeamIds))
+            ];
+
+            $totalImplementedInnovations += $implementedCount;
+            $totalIdeaBoxInnovations += $ideaBoxCount;
+        }
 
         $availableYears = Event::select('year')
             ->groupBy('year')
@@ -82,7 +131,11 @@ class DashboardController extends Controller
             'totalInnovatorsMale',
             'totalInnovatorsFemale',
             'isSuperadmin',
-            'userCompanyCode'
+            'userCompanyCode',
+            'implemented',
+            'ideaBox',
+            'totalImplementedInnovations',
+            'totalIdeaBoxInnovations'
         ));
     }
 
@@ -91,23 +144,33 @@ class DashboardController extends Controller
         $currentYear = Carbon::now()->year;
         $years = range($currentYear - 3, $currentYear);
 
-        $teams = Company::with(['teams' => function ($query) {
+        // Ambil semua perusahaan + teams yang punya paper status accepted
+        $companies = Company::with(['teams' => function ($query) {
                 $query->whereHas('paper', function ($subQuery) {
                     $subQuery->where('status', 'accepted by innovation admin');
                 });
             }])
-            ->withCount(['teams as accepted_papers_count' => function ($query) {
-                $query->whereHas('paper', function ($subQuery) {
-                    $subQuery->where('status', 'accepted by innovation admin');
-                });
-            }])
-            ->orderByDesc('accepted_papers_count')
+            ->whereHas('teams.paper', function ($q) {
+                $q->where('status', 'accepted by innovation admin');
+            })
+            ->orderBy('sort_order') // urutkan sesuai sort_order
             ->get();
 
+        // Gabungkan teams dari company_code 7000 ke 2000
+        $company2000 = $companies->firstWhere('company_code', 2000);
+        $company7000 = $companies->firstWhere('company_code', 7000);
+
+        if ($company2000 && $company7000) {
+            $company2000->teams = $company2000->teams->merge($company7000->teams);
+            // Hapus 7000 dari list supaya tidak tampil terpisah
+            $companies = $companies->reject(fn($company) => $company->company_code == 7000)->values();
+        }
+
         $chartData = [
-            'labels' => [], // Logo perusahaan
+            'labels' => [],
             'datasets' => [],
-            'logos' => [] // Path logo untuk digunakan pada JavaScript
+            'logos' => [],
+            'company_id' => [],
         ];
 
         foreach ($years as $index => $year) {
@@ -118,34 +181,29 @@ class DashboardController extends Controller
             ];
         }
 
-        foreach ($teams as $company) {
-            // Sanitize nama perusahaan untuk mencocokkan nama file logo
+        foreach ($companies as $company) {
+            // Sanitasi nama untuk logo
             $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
             $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
             $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
             $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
 
-            // Pengecekan apakah file logo ada, jika tidak gunakan logo default
             if (!file_exists($logoPath)) {
-                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Logo default
+                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png');
             } else {
                 $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
             }
 
-            // Tambahkan logo ke labels
             $chartData['labels'][] = $company->company_name;
             $chartData['logos'][] = $logoPath;
             $chartData['company_id'][] = $company->id;
 
-            $teamCounts = [];
-            foreach ($years as $year) {
-                $teamCounts[$year] = $company->teams
-                    ->whereBetween('created_at', ["$year-01-01", "$year-12-31"])
-                    ->count();
-            }
-
             foreach ($years as $index => $year) {
-                $chartData['datasets'][$index]['data'][] = $teamCounts[$year];
+                $count = $company->teams
+                    ->filter(fn($team) => Carbon::parse($team->created_at)->year == $year)
+                    ->count();
+
+                $chartData['datasets'][$index]['data'][] = $count;
             }
         }
 
@@ -368,12 +426,12 @@ class DashboardController extends Controller
 
         $query = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
-            ->selectRaw('companies.company_name, SUM(papers.financial + papers.potential_benefit) as total_benefit')
+            ->selectRaw('teams.company_code, companies.company_name, companies.sort_order, SUM(papers.financial + papers.potential_benefit) as total_benefit')
             ->whereIn('papers.status', $acceptedStatuses)
             ->whereYear('papers.created_at', '>=', $startYear)
             ->whereYear('papers.created_at', '<=', $endYear)
-            ->groupBy('companies.company_name')
-            ->orderBy('total_benefit', 'DESC');
+            ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order')
+            ->orderBy('companies.sort_order');
 
         if (!$isSuperadmin) {
             $query->where('teams.company_code', $userCompanyCode);
@@ -381,6 +439,22 @@ class DashboardController extends Controller
 
         $data = $query->get();
 
+        // Gabungkan data company_code 7000 ke 2000
+        $company2000 = $data->firstWhere('company_code', 2000);
+        $company7000 = $data->firstWhere('company_code', 7000);
+
+        if ($company7000) {
+            if ($company2000) {
+                $company2000->total_benefit += $company7000->total_benefit;
+            }
+            // Hapus data 7000 agar tidak muncul
+            $data = $data->reject(fn($item) => $item->company_code == 7000)->values();
+        }
+
+        // Urutkan ulang berdasarkan sort_order
+        $data = $data->sortBy('sort_order')->values();
+
+        // Siapkan data untuk Chart.js
         $charts = [
             'labels' => [],
             'data' => [],

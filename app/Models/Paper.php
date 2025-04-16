@@ -29,11 +29,8 @@ class Paper extends Model
         'metodologi_paper_id', // new column
         'abstract',
         'problem',
-        // 'problem_impact',
         'main_cause',
         'solution',
-        // 'outcome',
-        // 'performance',
         'innovation_photo',
         'proof_idea',
         'status_inovasi',

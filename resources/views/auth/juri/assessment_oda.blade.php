@@ -120,7 +120,7 @@
                 <div class="row mb-3">
                     <div class="d-flex flex-column align-items-start">
                         @if ($datas->full_paper)
-                            <a href="{{ route('assessment.watermarks', ['paper_id' => $datas->paper_id]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
+                            <a href="{{ route('paper.watermarks', ['paper_id' => $datas->paper_id]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
                                 Lihat Makalah
                             </a>
 
@@ -276,14 +276,10 @@
                 "type": "GET",
                 "async": false,
                 "dataSrc": function (data) {
-                    // console.log(columns);
-                    // console.log(data.data);
                     return data.data;
                 },
                 "data": function (d) {
                     d.filterEventTeamId = {{ Request::segments()[2] }};
-                    // d.filterYear = $('#filter-year').val();
-                    // d.filterCategory = $('#filter-category').val();
                 }
             },
             "columns": columns,

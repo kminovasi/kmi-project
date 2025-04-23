@@ -204,7 +204,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('applyYearFilter').addEventListener('click', function () {
         if (!selectedStartYear || !selectedEndYear) {
-            alert('Silakan pilih Start Year dan End Year');
+            // Tampilkan modal Bootstrap
+            const modal = new bootstrap.Modal(document.getElementById('noYearValue'));
+            modal.show();
+            return;
+        }
+
+        if (selectedStartYear > selectedEndYear) {
+            // Tampilkan modal Bootstrap
+            const modal = new bootstrap.Modal(document.getElementById('invalidYearModal'));
+            modal.show();
+
+            // Reset dropdown dan variabel
+            selectedStartYear = null;
+            selectedEndYear = null;
+
+            document.getElementById('startYearDropdown').textContent = 'Start Year';
+            document.getElementById('endYearDropdown').textContent = 'End Year';
+
             return;
         }
 

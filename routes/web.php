@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store-stages/{id}/{stage}', [PaperController::class, 'storeStages'])->name('store.stages');
         Route::get('/show-stages/{id}/{stage}', [PaperController::class, 'showStep'])->name('show.stages');
         Route::post('/store-file-stages/{id}/{stage}', [PaperController::class, 'storeFileStages'])->name('store.file.stages');
+        Route::get('/template/{methodology}/{step}/preview', [PaperController::class, 'templatePreview'])->name('template.preview');
+        Route::get('/template/{methodology}/{step}', [PaperController::class, 'templateDownload'])->name('template.download');
 
         Route::get('/checkStepNotEmptyOrNullOnPaper/{paperId}', [ApprovalController::class, 'checkStepNotEmptyOrNullOnPaper'])->name('checkStepNotEmptyOrNullOnPaper');
 
@@ -139,6 +141,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete_document', [PaperController::class, 'deleteDocument'])->name('deleteDocument');
 
         Route::get('/detail_paper/{team_id}', [PaperController::class, 'detail_paper'])->name('detailpaper');
+
+        // Paper Watermark
+        Route::get('/watermarks-file/{paper_id}', [PaperController::class, 'addWatermarks'])->name('watermarks');
     });
 
 
@@ -245,8 +250,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/keputusanBOD', [AssessmentController::class, 'keputusanBOD'])->name('keputusanBOD');
         Route::put('/updateScoreKeputusanBOD', [PvtEventTeamController::class, 'updateScoreKeputusanBOD'])->name('updateScoreKeputusanBOD');
         Route::get('/pdf-summary/{team_id}', [AssessmentController::class, 'pdfSummary'])->name('pdfSummary');
-
-        Route::get('/watermarks-file/{paper_id}', [AssessmentController::class, 'addWatermarks'])->name('watermarks');
     });
 
     Route::prefix('berita-acara')->name('berita-acara.')->group(function () {

@@ -144,7 +144,7 @@
                                     <label class="form-label fw-600">Full Paper</label>
                                     @if ($paper->full_paper && !str_contains($paper->full_paper, '/AP/'))
                                         <div>
-                                            <a href="{{ route('assessment.watermarks', $paper->id) }}"
+                                            <a href="{{ route('paper.watermarks', $paper->id) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
                                                 <i class="fas fa-file-pdf me-1"></i> Lihat Full Paper
                                             </a>

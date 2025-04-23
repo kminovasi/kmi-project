@@ -35,7 +35,6 @@ class Benefit extends Component
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->selectRaw('companies.company_name, companies.company_code, SUM(papers.financial + papers.potential_benefit) as total_benefit, companies.sort_order')
             ->whereIn('papers.status', $acceptedStatuses)
-            ->whereYear('papers.created_at', $yearNow)
             ->groupBy('companies.company_name', 'companies.sort_order', 'companies.company_code')
             ->orderBy('companies.sort_order'); // fallback urutan kalau ada yang sort_order-nya sama/null
 

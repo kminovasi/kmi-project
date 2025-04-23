@@ -104,6 +104,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                 }
             },
+            onHover: function(event, chartElement) {
+                event.native.target.style.cursor = chartElement.length ? 'pointer' : 'default';
+            },
         },
         plugins: [imagePlugin],
     });

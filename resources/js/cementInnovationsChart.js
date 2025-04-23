@@ -61,12 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const x = xScale.getPixelForValue(i);
                     const y = chartArea.bottom;
-                    const width = 30;
-                    const height = 20;
+                    const aspectRatio = img.width / img.height;
+                    const imgWidth = 40; // Lebar gambar
+                    const imgHeight = imgWidth / aspectRatio; // Tinggi gambar berdasarkan rasio aspek
 
-                    ctx.save();
-                    ctx.drawImage(img, x - width / 2, y, width, height);
-                    ctx.restore();
+                    ctx.drawImage(img, x - imgWidth / 2, y, imgWidth, imgHeight); // Gambar logo
                 });
             }
         };
@@ -79,12 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     {
                         label: "Implemented",
                         data: implemented,
-                        backgroundColor: "#43a047"
+                        backgroundColor: "#67a9cf"
                     },
                     {
                         label: "Idea Box",
                         data: idea_box,
-                        backgroundColor: "#f9a825"
+                        backgroundColor: "#ef8a62"
                     }
                 ]
             },
@@ -108,10 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     },
                     datalabels: {
-                        anchor: "end",
-                        align: "top",
+                        anchor: "center",
+                        align: "center",
                         font: {
-                            size: 12
+                            size: 14,
+                            weight: "bold"
                         },
                         color: "#000"
                     }

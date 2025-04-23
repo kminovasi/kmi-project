@@ -26,15 +26,14 @@ class NonCementInnovationChart extends Component
                 'teams.company_code',
                 'companies.company_name',
                 'companies.sort_order',
-                DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
                 DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Implemented') THEN 1 ELSE 0 END) as implemented"),
                 DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Progress', 'Not Implemented') THEN 1 ELSE 0 END) as idea_box")
             )
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
-            ->whereYear('papers.created_at', $this->year)
             ->where('companies.group', 'Non Semen')
-            ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order', DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
+            ->where('papers.status', 'accepted by innovation admin')    
+            ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order',)
             ->orderBy('companies.sort_order')
             ->get();
 

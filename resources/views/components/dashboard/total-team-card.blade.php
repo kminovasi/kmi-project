@@ -9,20 +9,20 @@
             @php
                 $colors = [
                     [
-                        'bg' => '#e7efff',
-                        'text' => '#2f4858',
+                        'bg' => '#8e1616',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => '#9aa9e0',
-                        'text' => '#2f4858',
+                        'bg' => '#d84040',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => '#e7efff',
-                        'text' => '#2f4858',
+                        'bg' => '#8e1616',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => '#9aa9e0',
-                        'text' => '#2f4858',
+                        'bg' => '#d84040',
+                        'text' => '#eeeeee',
                     ],
                 ];
             @endphp
@@ -30,7 +30,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
                         <div class="card-body py-4 position-relative z-1 text-center text-white">
-                            <h6 class="text-uppercase mb-2 opacity-75">Tahun {{ $year }}</h6>
+                            <h6 class="text-uppercase mb-2 opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
                             <div class="display-6 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ $count }}</div>
                             <div class="mt-2 small opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
                         </div>
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="card-footer bg-light border-0 text-center">
-        <small class="text-muted">
+        <small class="text-muted text-capitalize">
             <i class="bi bi-info-circle me-1"></i>
             Total tim yang diterima dalam 4 tahun terakhir
         </small>
@@ -69,15 +69,15 @@
 
     .teams-chart-btn {
         width: 100%;
-        background-color: #4b5d8e;
-        color: white;
+        background-color: #8e1616;
+        color: #eeeeee;
         border-radius: 5px;
         text-decoration: none;
         transition: background-color 0.3s ease;
     }
 
     .teams-chart-btn:hover {
-        background-color: #41527e;
+        background-color: #b81e1e;
         color: white;
     }
 </style>

@@ -20,9 +20,6 @@
         .ck-editor__editable_inline {
             height: 350px;
         }
-
-        /* atur orientasi jika diperlukan */
-        /* orientation: landscape; */
     </style>
 </head>
 
@@ -35,15 +32,22 @@
                     <div class="row justify-content-center">
                         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-11">
                             <div class="card border-0 mt-5">
-                                <div class="card-header">Input Langkah {{ $urut }} </div>
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="text-md text-primary">Input Langkah {{ $urut }} <strong>-</strong> {{ $ket }}</h5>
+                                    <div>
+                                        <button class="btn btn-sm btn-secondary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#templatePreview"
+                                                data-pdf-url="{{ route('paper.template.preview', ['methodology' => $methodology, 'step' => $stage]) }}"
+                                                onclick="loadPdf(this)">Lihat Petunjuk Pengerjaan</button>
+                                        <a href="{{ route('paper.template.download', ['methodology' => $methodology, 'step' => $stage]) }}" class="btn btn-sm btn-success">Download Template</a>
+                                    </div>
+                                </div>
                                 <div class="card-body">
-                                    <label for="">{{ $ket }}</label>
-
                                     <form
                                         action="{{ route('paper.store.stages', ['id' => $item->id, 'stage' => $stage]) }}"
                                         method="POST" enctype="multipart/form-data">
                                         @csrf
-                                        <!-- {{ $item[$stage] }} -->
                                         <div class="mb-3">
                                             <input name="id" value="{{ $item->id }}" type="hidden" />
 
@@ -56,28 +60,14 @@
                                         </div>
                                     </form>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
-        {{-- <div id="layoutAuthentication_footer">
-                <footer class="footer-admin mt-auto footer-dark">
-                    <div class="container-xl px-4">
-                        <div class="row">
-                            <div class="col-md-6 small">Copyright &copy; KMI Website 2023</div>
-                            <div class="col-md-6 text-md-end small">
-                                <a href="#!">Privacy Policy</a>
-                                &middot;
-                                <a href="#!">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            </div> --}}
     </div>
+    @include('auth.user.paper.stage.template-preview')
     {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
@@ -92,7 +82,6 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.2/super-build/ckeditor.js"></script>
     <script>
         CKEDITOR.ClassicEditor.create(document.getElementById("stages"), {
-            // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
             toolbar: {
                 items: [
                     'exportPDF', 'exportWord', '|',
@@ -114,8 +103,6 @@
                 ],
                 shouldNotGroupWhenFull: true
             },
-            // Changing the language of the interface requires loading the language file using the <script> tag.
-            // language: 'es',
             list: {
                 properties: {
                     styles: true,
@@ -123,7 +110,6 @@
                     reversed: true
                 }
             },
-            // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
             heading: {
                 options: [{
                         model: 'paragraph',
@@ -168,9 +154,7 @@
                     }
                 ]
             },
-            // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
-            placeholder: 'Welcome to CKEditor&nbsp;5!',
-            // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+            placeholder: 'Masukkan tahapan inovasi Anda di sini...',
             fontFamily: {
                 options: [
                     'default',
@@ -185,13 +169,10 @@
                 ],
                 supportAllValues: true
             },
-            // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-size-feature
             fontSize: {
                 options: [10, 12, 14, 'default', 18, 20, 22, ],
                 supportAllValues: true
             },
-            // Be careful with the setting below. It instructs CKEditor to accept ALL HTML markup.
-            // https://ckeditor.com/docs/ckeditor5/latest/features/general-html-support.html#enabling-all-html-features
             htmlSupport: {
                 allow: [{
                     name: /.*/,
@@ -200,12 +181,9 @@
                     styles: true
                 }]
             },
-            // Be careful with enabling previews
-            // https://ckeditor.com/docs/ckeditor5/latest/features/html-embed.html#content-previews
             htmlEmbed: {
                 showPreviews: true
             },
-            // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
             link: {
                 decorators: {
                     addTargetToExternalLinks: true,
@@ -219,7 +197,6 @@
                     }
                 }
             },
-            // https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html#configuration
             mention: {
                 feeds: [{
                     marker: '@',
@@ -235,21 +212,10 @@
                     minimumCharacters: 1
                 }]
             },
-            // The "super-build" contains more premium features that require additional configuration, disable them below.
-            // Do not turn them on unless you read the documentation and know how to configure them and setup the editor.
             removePlugins: [
-                // These two are commercial, but you can try them out without registering to a trial.
-                // 'ExportPdf',
-                // 'ExportWord',
                 'CKBox',
                 'CKFinder',
                 'EasyImage',
-                // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
-                // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
-                // Storing images as Base64 is usually a very bad idea.
-                // Replace it on production website with other solutions:
-                // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/image-upload.html
-                // 'Base64UploadAdapter',
                 'RealTimeCollaborativeComments',
                 'RealTimeCollaborativeTrackChanges',
                 'RealTimeCollaborativeRevisionHistory',
@@ -260,10 +226,7 @@
                 'RevisionHistory',
                 'Pagination',
                 'WProofreader',
-                // Careful, with the Mathtype plugin CKEditor will not load when loading this sample
-                // from a local file system (file://) - load this site via HTTP server if you enable MathType.
                 'MathType',
-                // The following features are part of the Productivity Pack and require additional license.
                 'SlashCommand',
                 'Template',
                 'DocumentOutline',
@@ -274,10 +237,6 @@
         }).then(newEditor => {
             editor = newEditor;
         });
-
-        // function ambildata(){
-        //     console.log(editor.getData())
-        // }
     </script>
 </body>
 

@@ -95,7 +95,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi</div>
+                            data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi Kategori Implemented</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             <!-- Menampilkan total jumlah inovasi berdasarkan kategori -->
                             {{ $totalImplementedInnovations }}

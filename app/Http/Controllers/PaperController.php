@@ -478,12 +478,14 @@ class PaperController extends Controller
         $ket = $ket_step[$ket - 1];
         //$keterangan = isset($ket_step[$urut-1]) ? $ket_step[$urut-1] : '';
         $item = Paper::findOrFail($id);
+        $paper_metodologi = MetodologiPaper::findOrFail($item->metodologi_paper_id);
 
         return view('auth.user.paper.stage.stage', [
             'stage' => $step,
             'urut' => $urut,
             'item' => $item,
             'ket' => $ket,
+            'methodology' => $paper_metodologi->name,
         ]);
     }
 
@@ -497,7 +499,15 @@ class PaperController extends Controller
             $tcpdf = new TCPDF();
             $tcpdf->AddPage();
             $tcpdf->WriteHTML($request->step);
-            $tcpdf->Output(public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $stage . '.pdf'), 'F');
+
+            $relativePath = 'public/internal/' . $team->status_lomba . '/' . $team->team_name;
+            $storageFullPath = storage_path('app/' . $relativePath);
+            if (!file_exists($storageFullPath)) {
+                mkdir($storageFullPath, 0777, true);
+            }
+            $filePath = $storageFullPath . '/' . $stage . '.pdf';
+            
+            $tcpdf->Output($filePath, 'F');
             $paper->updateAndHistory([
                 $stage => "w: " . $request->step
             ]);
@@ -681,44 +691,44 @@ class PaperController extends Controller
                 // $tcpdf->AddPage();
                 $fpdi->AddPage();
                 if ($column[0] == 'w') {
-                    // $tcpdf->WriteHTML(mb_substr($column, 3));
-                    // return response($tcpdf->Output(), 200)->header('Content-Type', 'application/pdf');
-                    // $pageCount = $fpdi->SetSourceFile(Storage::path('public/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf'));
-                    $fullPath = storage_path('app/public/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
+                    $fullPath = storage_path('app/public/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
                     if (!file_exists($fullPath)) {
                         $fullPath = storage_path('app/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
                     }
-                    $pageCount = $fpdi->setSourceFile($fullPath);
+                    // Ambil Data User Saat Ini
+                    $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+                    $userEmail = Auth::user()->email;
+                    $userIp = request()->ip();
 
-                    for ($i = 1; $i <= $pageCount; $i++) {
-                        $pageId = $fpdi->ImportPage($i);
-                        $fpdi->useTemplate($pageId);
-                        if ($i != $pageCount)
-                            $fpdi->AddPage();
+                    $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
+                    $pageCount = $fpdi->setSourceFile($fullPath);
+                    for($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+                        $tplIdx = $fpdi->importPage($pageNum);
+                        $fpdi->AddPage();
+                        $fpdi->useTemplate($tplIdx, 0, 0);
+
+                        // Tambahkan watermark
+                        $fpdi->SetAlpha(0.1); // Transparansi watermark
+                        $fpdi->SetFont('helvetica', 'B', 40);
+                        $fpdi->SetTextColor(255, 0, 0);
+
+                        // Memulai transformasi untuk rotasi
+                        $fpdi->StartTransform();
+                        $fpdi->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+                        $fpdi->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
+                        $fpdi->StopTransform(); // Akhiri transformasi
+
+                        $fpdi->SetAlpha(1); // Reset transparansi
                     }
+                    return response($fpdi->Output($fullPath, 'I'), 200)->header('Content-Type', 'application/pdf');
+
                 } elseif ($column[0] == 'f') {
-                    $pageCount = $fpdi->setSourceFile(storage_path('app/public/' . mb_substr($column, 3)));
+                    return $this->addWatermarks($id);
 
-                    for ($i = 1; $i <= $pageCount; $i++) {
-                        $pageId = $fpdi->ImportPage($i);
-                        $fpdi->useTemplate($pageId);
-                        if ($i != $pageCount)
-                            $fpdi->AddPage();
-                    }
-                    return response($fpdi->Output(), 200)->header('Content-Type', 'application/pdf');
-                } elseif ($column[0] == '-') { 
-                    $fullPath = public_path('storage/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
-                    if (!file_exists($fullPath)) {
-                        $fullPath = storage_path('app/internal/' . $team->status_lomba . '/' . $team->team_name . '/' . $name_column . '.pdf');
-                    }
-                    $pageCount = $fpdi->setSourceFile($fullPath);
-
-                    for ($i = 1; $i <= $pageCount; $i++) {
-                        $pageId = $fpdi->ImportPage($i);
-                        $fpdi->useTemplate($pageId);
-                        if ($i != $pageCount)
-                            $fpdi->AddPage();
-                    }
+                } elseif ($column[0] == '-') {
+                    return response("<script>alert('halo semuanya');</script>", 200)
+                        ->header('Content-Type', 'text/html');
                 }
             }
 
@@ -1452,46 +1462,6 @@ class PaperController extends Controller
                     'event_name' => $request->event,
                     'year' => $request->year,
                 ]);
-            } else {
-                # code... group
-                # save tabel pvt_event_team
-                # save tabel pvt_assessment_team (sama seperti approve admin)
-
-                // $idEventTeam = PvtEventTeam::Create([
-                //     'team_id' => $request->team_id,
-                //     'event_id' => $request->event,
-                //     'year' => $request->year
-                // ])['id'];
-
-                // $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                //                     ->join('categories', 'categories.id', '=', 'teams.category_id')
-                //                     ->where('pvt_event_teams.id', $idEventTeam)
-                //                     ->pluck('category_parent')
-                //                     ->first();
-
-                // if($category == 'IDEA BOX')
-                //     $category = 'IDEA';
-                // else
-                //     $category = 'BI/II';
-
-                // $data_assessment_event = PvtEventTeam::join('pvt_assessment_events', function ($join) {
-                //                                             $join->on('pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
-                //                                                 ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
-                //                                         })
-                //                                         ->where('pvt_event_teams.id', $idEventTeam)
-                //                                         ->where('pvt_assessment_events.category', $category)
-                //                                         ->where('pvt_assessment_events.status_point', 'active')
-                //                                         ->pluck(
-                //                                             'pvt_assessment_events.id as assessment_event_id',
-                //                                         )
-                //                                         ->toArray();
-
-                // foreach($dataAssessmentEvent as $assessmentEvent){
-                //     PvtAssessmentTeam::updateOrCreate([
-                //         'event_team_id' => $id,
-                //         'assessment_event_id' => $assessmentEvent
-                //     ]);
-                // }
             }
 
             DB::commit();
@@ -1797,5 +1767,73 @@ class PaperController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal mengirim email.', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function addWatermarks($paperId, $stage = 'full_paper') {
+        try {
+            // Ensure the filepath is correctly formatted by removing "f: " and trimming any leading/trailing slashes
+            $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck($stage)[0], '/'));
+
+            if (!file_exists($filePath)) {
+                    dump($filePath);
+                return response()->json(['error' => 'File tidak ditemukan.'], 404);
+            }
+
+            $fpdi = new Fpdi();
+
+            // Ambil Data User Saat Ini
+            $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+            $userEmail = Auth::user()->email;
+            $userIp = request()->ip();
+
+            $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
+            $pageCount = $fpdi->setSourceFile($filePath);
+            for($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+                $tplIdx = $fpdi->importPage($pageNum);
+                $fpdi->useTemplate($tplIdx, 0, 0);
+
+                // Tambahkan watermark
+                $fpdi->SetAlpha(0.1); // Transparansi watermark
+                $fpdi->SetFont('helvetica', 'B', 40);
+                $fpdi->SetTextColor(255, 0, 0);
+
+                // Memulai transformasi untuk rotasi
+                $fpdi->StartTransform();
+                $fpdi->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
+                $fpdi->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
+                $fpdi->StopTransform(); // Akhiri transformasi
+
+                $fpdi->SetAlpha(1); // Reset transparansi
+            }
+
+            return response($fpdi->Output($filePath, 'I'), 200)->header('Content-Type', 'application/pdf');
+        } catch (FileNotFoundException $e) {
+            return response()->json(['error' => 'File tidak ditemukan.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function templatePreview($methodology, $step) {
+        $filePath = storage_path('app/public/paper_template/' . $methodology . '/' . $step . '.pdf');
+
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'File tidak ditemukan.'], 404);
+        }
+        
+        return response()->file($filePath, [
+            'Content-Disposition' => 'inline;'
+        ]);
+    }
+
+    public function templateDownload($methodology, $step) {
+        $filePath = storage_path('app/public/paper_template/' . $methodology . '/' . $step . '.docx');
+
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'File tidak ditemukan.'], 404);
+        }
+
+        return response()->download($filePath, basename($methodology . '-' . $step . '.docx'));
     }
 }

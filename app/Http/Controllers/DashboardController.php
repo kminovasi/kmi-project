@@ -33,11 +33,12 @@ class DashboardController extends Controller
         $implementedStatuses = ['Implemented'];
         $ideaBoxStatuses = ['Progress', 'Not Implemented'];
 
-        // Ambil semua kategori dan tim dengan hanya id & category_id, dan relasi papers-nya minimal
         $categories = Category::select('id', 'category_name')->with([
-            'teams' => function ($query) use ($addCompanyFilter) {
-                $addCompanyFilter($query);
-                $query->select('id', 'category_id');
+            'teams' => function ($query) {
+                $query->whereHas('papers', function ($q) {
+                    $q->where('status', 'accepted by innovation admin');
+                });
+                $query->select('id', 'category_id'); // pastikan kolom yang dibutuhkan tetap dipilih
                 $query->with(['papers:id,team_id,status_inovasi']);
             }
         ])->get();

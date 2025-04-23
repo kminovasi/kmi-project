@@ -5,16 +5,34 @@
 /* CSS kustom Anda di sini */
 #benefitChart {
     background-color: #fff;
-    /* Ganti dengan warna latar belakang yang Anda inginkan */
     border-radius: 8px;
-    /* Contoh: menambahkan sudut bulat pada canvas */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    /* Contoh: menambahkan bayangan untuk menonjolkan chart */
-
     width: 100% !important;
-    /* Sesuaikan ukuran canvas dengan kontainer */
-    height: auto !important;
-    /* Sesuaikan proporsinya */
+    height: 20rem !important;
 }
 
+
+/* Animation KeyFrame */
+/* app.css */
+
+@keyframes zoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    75% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animated--zoom-in {
+    animation-name: zoomIn;
+    animation-duration: 400ms;
+    animation-timing-function: cubic-bezier(0.18, 1.25, 0.4, 1);
+}
 

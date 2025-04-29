@@ -14,6 +14,13 @@ class MetodologiPaper extends Model
     protected $fillable = [
         'name',
         'step',
-        'max_user'
+        'max_user',
     ];
+
+    // This function is used to get the template paper steps associated with this metodologi paper
+    // It defines a one-to-many relationship between the MetodologiPaper and TemplatePaperStep models
+    function templatePaperStep()
+    {
+        return $this->hasMany(TemplatePaperStep::class, 'metodologi_paper_id', 'id');
+    }
 }

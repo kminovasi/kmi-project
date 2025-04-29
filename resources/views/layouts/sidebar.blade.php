@@ -43,7 +43,8 @@
                     Dokumentasi
                 </a>
 
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ request()->routeIs('patent.index') ? 'active' : '' }}" 
+                    href="{{ route('patent.index') }}">
                     <div class="nav-link-icon"><i data-feather="award"></i></div>
                     Paten
                 </a>

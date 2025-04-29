@@ -167,14 +167,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserHierarchyHistory::class);
     }
+
+    // This function is used to get the posts associated with this user
+    // It defines a one-to-many relationship between the User and Post models
     public function posts()
     {
         return $this->hasMany(Post::class, 'user_id', 'id');
     }
 
+    // This function is used to get the company associated with this user
+    // It defines a one-to-many relationship between the User and Company models
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
+    }
+
+    // This function is used to get the paten associated with this user
+    // It defines a one-to-many relationship between the User and Paten models
+    public function patens()
+    {
+        return $this->hasMany(Patent::class, 'person_in_charge', 'id');
     }
 
 }

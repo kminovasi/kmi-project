@@ -12,6 +12,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\FlyerController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\QueryController;
+use App\Http\Controllers\PatentController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SessionController;
@@ -390,6 +391,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/certificate', [CvController::class, 'generateCertificate'])->name('generateCertificate');
     });
 
+    // Dokumentasi
     Route::prefix('/dokumentasi')->name('dokumentasi.')->group(function () {
         Route::get('/', [DokumentasiController::class, 'index'])->name('index');
         //berita
@@ -406,6 +408,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/realisasiTeamChart', [ChartDashboardController::class, 'realisasiTeamChart'])->name('realisasiTeamChart');
         Route::get('/realisasiKaryawanChart', [ChartDashboardController::class, 'realisasiKaryawanChart'])->name('realisasiKaryawanChart');
         Route::get('/benefitTeamChart', [ChartDashboardController::class, 'benefitTeamChart'])->name('benefitTeamChart');
+    });
+
+    // Paten
+    Route::prefix('patent')->name('patent.')->group(function () {
+        Route::get('/', [PatentController::class, 'index'])->name('index');
+        Route::get('/patent-detail/{patentId}', [PatentController::class, 'detailInfo'])->name('detailInfo');
+        Route::post('/store', [PatentController::class, 'store'])->name('store');
+        Route::get('/autocomplete/title', [PatentController::class, 'autocompleteTitle'])->name('tittleSuggestion');
+        Route::get('/autocomplete/pic', [PatentController::class, 'autocompletePic'])->name('picSuggestion');
+        Route::put('/update-status/{patentId}', [PatentController::class, 'updateStatus'])->name('updateStatus');
+        Route::put('/upload-document/{patentId}', [PatentController::class, 'uploadDocument'])->name('uploadDocument');
+        Route::get('/search', [PatentController::class, 'search'])->name('search');
+        Route::get('/document-view/{patentId}/{documentType}', [PatentController::class, 'documentView'])->name('documentView');
+        Route::put('/update-template-document', [PatentController::class, 'updateTemplateDocument'])->name('updateTemplateDocument');
+        Route::get('/download-document/{documentType}', [PatentController::class, 'downloadTemplateDownload'])->name('downloadTemplateDownload');
+        Route::post('/upload-payment', [PatentController::class, 'uploadPatentPaymentProof'])->name('uploadPayment');
     });
 });
 

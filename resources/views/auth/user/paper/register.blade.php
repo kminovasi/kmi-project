@@ -369,12 +369,6 @@
                 console.log('Selected Max User:', selectedData.max_user);
                 jumlah = selectedData.max_user;
             });
-            // if (value == 8 || value == 9) {
-            //     jumlah = 1
-            // } else if (value != 0) {
-            //     console.log(value);
-            //     jumlah = 4
-            // }
             if (anggota_selectField_count < jumlah)
                 addInputRow(jumlah - anggota_selectField_count, anggota_selectField_count)
             else if (anggota_selectField_count > jumlah)

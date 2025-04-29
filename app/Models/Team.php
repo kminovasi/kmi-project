@@ -83,4 +83,16 @@ class Team extends Model
     {
         return $this->hasMany(PvtEventTeam::class, 'team_id');
     }
+
+    public function members()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            PvtMember::class,
+            'team_id',       // Foreign key di tabel PvtMember
+            'employee_id',   // Foreign key di tabel User
+            'id',            // Local key di tabel Team
+            'employee_id'    // Local key di tabel PvtMember
+        );
+    }
 }

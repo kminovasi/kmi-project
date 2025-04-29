@@ -1606,7 +1606,7 @@ class PaperController extends Controller
                     $fileSize = $value->getSize() / 1024; // ukuran dalam KB
 
                     // Validasi berdasarkan tipe file
-                    if (str_contains($fileType, 'pdf') && $fileSize > 10240) { // PDF maksimal 10MB (10240 KB)
+                    if (str_contains($fileType, 'pdf') && $fileSize > 30720) { // PDF maksimal 30MB (30720 KB)
                         $fail("The {$attribute} must not exceed 10MB.");
                     } elseif (str_contains($fileType, 'image') && $fileSize > 5120) { // Gambar maksimal 5MB (5120 KB)
                         $fail("The {$attribute} must not exceed 5MB.");

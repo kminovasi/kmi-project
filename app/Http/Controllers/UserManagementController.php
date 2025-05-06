@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
+use Log;
 use App\Models\User;
-use Auth;
+use App\Models\Event;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Log;
-use Yajra\DataTables\DataTables;
 
 class UserManagementController extends Controller
 {
@@ -43,7 +43,7 @@ class UserManagementController extends Controller
 
                     // Apply search filters, excluding search on 'atasan.name'
                     $query->where(function ($q) use ($search) {
-                        $q->whereRaw("CAST(users.id AS TEXT) LIKE ?", ["%{$search}%"])
+                        $q->where('users.id', 'LIKE', "%{$search}%")
                             ->orWhere('users.employee_id', 'LIKE', "%{$search}%")
                             ->orWhere('users.name', 'LIKE', "%{$search}%")
                             ->orWhere('users.email', 'LIKE', "%{$search}%")

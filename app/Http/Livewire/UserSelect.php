@@ -13,7 +13,7 @@ class UserSelect extends Component
 
     public function updatedQuery()
     {
-        $this->users = User::where('name', 'ILIKE', '%' . $this->query . '%')
+        $this->users = User::where('name', 'LIKE', '%' . $this->query . '%')
             ->select('employee_id', 'name', 'company_name')
             ->limit(5)
             ->get();

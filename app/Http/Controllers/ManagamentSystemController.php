@@ -53,7 +53,7 @@ class ManagamentSystemController extends Controller
             $datas_company = Company::where('company_code', $company_code)->get();
         }
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 7, $currentYear + 3);
+        $years = range($currentYear - 5, $currentYear + 5);
         return view('auth.admin.management_system.assign_event', [
             'datas_company' => $datas_company,
             'years' => $years
@@ -130,6 +130,7 @@ class ManagamentSystemController extends Controller
                     $activeEventExists = DB::table('events')
                         ->join('company_event', 'events.id', '=', 'company_event.event_id')
                         ->where('company_event.company_id', $company->id)
+                        ->where('events.year', $event->year)
                         ->where('events.status', 'active')
                         ->where('events.id', '!=', $id) // Hindari ambiguitas dengan menambahkan alias tabel
                         ->exists();

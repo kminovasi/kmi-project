@@ -24,6 +24,7 @@ use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventTeamController;
+use App\Http\Controllers\ImportUserDataExcel;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\BeritaAcaraController;
@@ -66,6 +67,7 @@ Route::get('dashboard', [
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{companyId}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
+Route::post('/import-user', [ImportUserDataExcel::class, 'importUserExcel'])->name('user.import');
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');

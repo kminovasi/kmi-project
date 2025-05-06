@@ -115,14 +115,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <div class="row mt-3 d-flex justify-content-center align-items-bottom">
                     <div class="col-md-5 mb-3">
+                        <label for="minimumscore_oda">Skor Minimal On Desk</label>
                         <input class="form-control" type="number" name="minimumscore_oda" id="minimumscore_oda" onInput="validasi_minimum_score(this, 900)" placeholder="Masukkan skor minimum Penilaian On Desk" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                         <div class="invalid-feedback">
                             skor minimum tidak boleh melebihi batas.
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
+                        <label for="minimumscore_pa">Skor Minimal Presentasi</label>
                         <input class="form-control" type="number" name="minimumscore_pa" id="minimumscore_pa" onInput="validasi_minimum_score(this, 950)" placeholder="Masukkan skor minimum Penilaian Presentasi" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>
                         <div class="invalid-feedback">
                             skor minimum tidak boleh melebihi batas.

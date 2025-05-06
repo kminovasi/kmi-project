@@ -160,7 +160,6 @@ class PaperController extends Controller
                     'companies.company_name'
                 )
                 ->first();
-            // dd($datas_member);
             return view('auth.user.paper.external_event', [
                 'datas_category' => $datas_category,
                 'datas_theme' => $datas_theme,
@@ -493,6 +492,10 @@ class PaperController extends Controller
     public function storeStages(Request $request, $id, $stage)
     {
         try {
+            $request->validate([
+                'step' => 'file|max:30720',
+            ]);
+
             $paper = Paper::with('metodologiPaper')->findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
 
@@ -584,9 +587,9 @@ class PaperController extends Controller
     public function storeFileStages(Request $request, $id, $stage)
     {
         try {
-            if ($this->checkIsCompressed($request)) {
-                return redirect()->back()->withErrors('Gagal mengunggah Paper! Pastikan berkas tidak terkompres dan coba lagi.');
-            }
+            $request->validate([
+                'file_stage' => 'file|max:30720',
+            ]);
 
             $paper = Paper::findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
@@ -1665,7 +1668,7 @@ class PaperController extends Controller
         try {
             // Validate the file input
             $request->validate([
-                'file_stage' => 'required|file|mimes:pdf|max:10240', // Adjust the max size as needed
+                'file_stage' => 'required|file|mimes:pdf|max:20480', // Adjust the max size as needed
             ]);
 
             // Get the uploaded file
@@ -1677,10 +1680,6 @@ class PaperController extends Controller
             // Initialize FPDI with the StreamReader
             $pdf = new Fpdi();
             $pdf->setSourceFile($stream);
-
-            // Add a page and import content to trigger reading of the PDF
-            $pdf->AddPage();
-            $pageCount = $pdf->setSourceFile($stream);
 
             // If it reaches here, the file is likely not compressed in a way that FPDI can't handle
             return false;

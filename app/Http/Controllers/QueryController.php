@@ -51,8 +51,8 @@ class QueryController extends Controller
 
         // Lakukan pencarian berdasarkan query dan kembalikan hasil sebagai JSON
         $results = User::join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->where('name', 'ilike', "%$query%")
-            ->orWhere('employee_id', 'ilike', "%$query%")
+            ->where('name', 'like', "%$query%")
+            ->orWhere('employee_id', 'like', "%$query%")
             ->limit(10)
             ->get();
 
@@ -120,7 +120,7 @@ class QueryController extends Controller
                 $q->where('name', 'ilike', "%$query%")
                     ->orWhere('email', 'ilike', "%$query%");
             })
-            ->whereIn('job_level', ["Band 2", "Band 1"])
+            ->whereIn('job_level', ["Band 2", "Band 1", "Band 3"])
             ->select('employee_id', 'name', 'company_name', 'job_level')
             ->limit(10)
             ->get();
@@ -441,7 +441,9 @@ class QueryController extends Controller
                 'papers.status as paper_status',
 
             ];
-            if ($request->filterRole == 'admin') {
+            if(Auth::user()->role == 'Superadmin') {
+                $query_data->distinct();
+            } elseif ($request->filterRole == 'admin') {
                 // Gabungkan tabel pvt_members untuk memeriksa keikutsertaan admin sebagai member
                 $query_data->leftJoin('pvt_members', function ($join) use ($request) {
                     $join->on('teams.id', '=', 'pvt_members.team_id')

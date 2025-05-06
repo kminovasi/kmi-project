@@ -35,11 +35,8 @@ class DashboardController extends Controller
 
         $categories = Category::select('id', 'category_name')->with([
             'teams' => function ($query) {
-                $query->whereHas('papers', function ($q) {
-                    $q->where('status', 'accepted by innovation admin');
-                });
                 $query->select('id', 'category_id'); // pastikan kolom yang dibutuhkan tetap dipilih
-                $query->with(['papers:id,team_id,status_inovasi']);
+                $query->with(['papers:id,team_id,status_inovasi,status']);
             }
         ])->get();
 
@@ -58,11 +55,11 @@ class DashboardController extends Controller
 
             foreach ($category->teams as $team) {
                 foreach ($team->papers as $paper) {
-                    if (in_array($paper->status_inovasi, $implementedStatuses)) {
+                    if (in_array($paper->status_inovasi, $implementedStatuses) && $paper->status !== 'not finish') {
                         $implementedTeamIds[] = $team->id;
                         $implementedCount++; // Tambah total inovasi
                         break;
-                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses)) {
+                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses) || $paper->status == 'not finish') {
                         $ideaBoxTeamIds[] = $team->id;
                         $ideaBoxCount++; // Tambah total inovasi
                         break;

@@ -28,4 +28,10 @@ class Company extends Model
     {
         return $this->hasMany(Team::class, 'company_code', 'company_code');
     }
+
+    // Define the relationship to the ReplicationInnovation model
+    public function replicationInnovations()
+    {
+        return $this->hasMany(ReplicationInnovation::class, 'company_code', 'company_code');
+    }
 }

@@ -588,7 +588,7 @@ class PaperController extends Controller
     {
         try {
             $request->validate([
-                'file_stage' => 'file|max:30720',
+                'file_stage' => 'required|file|mimes:pdf|max:30720',
             ]);
 
             $paper = Paper::findOrFail($id);
@@ -632,7 +632,9 @@ class PaperController extends Controller
 
             return redirect()->route('paper.index')->with('success', 'Full Paper berhasil diunggah dan diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->route('paper.index')->withErrors('Error: Terjadi kesalahan saat menyimpan berkas. Silakan coba lagi nanti.');
+            return redirect()
+                ->route('paper.index')
+                ->withErrors('Error: ' . $e->getMessage());
         }
     }
 
@@ -1338,6 +1340,10 @@ class PaperController extends Controller
             $eventData = Event::findOrFail($event_id);
             $team->update([
                 'status_lomba' => $eventData->type
+            ]);
+            $paper = Paper::findOrFail($id);
+            $paper->update([
+                'status_event' => 'accept' . $eventData->type,
             ]);
             $idEventTeam = PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,

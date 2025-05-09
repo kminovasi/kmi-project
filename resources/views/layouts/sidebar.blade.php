@@ -49,8 +49,8 @@
                     Paten
                 </a>
                 
-                <a class="nav-link" 
-                    href="#">
+                <a class="nav-link {{ request()->routeIs('replication.index') ? 'active' : '' }}" 
+                    href="{{ route('replication.index') }}">
                     <div class="nav-link-icon"><i data-feather="repeat"></i></div>
                     Replikasi
                 </a>

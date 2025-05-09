@@ -30,6 +30,7 @@ use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DokumentasiController;
+use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\ChartDashboardController;
@@ -67,7 +68,6 @@ Route::get('dashboard', [
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{companyId}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
-Route::post('/import-user', [ImportUserDataExcel::class, 'importUserExcel'])->name('user.import');
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
@@ -426,6 +426,13 @@ Route::middleware('auth')->group(function () {
         Route::put('/update-template-document', [PatentController::class, 'updateTemplateDocument'])->name('updateTemplateDocument');
         Route::get('/download-document/{documentType}', [PatentController::class, 'downloadTemplateDownload'])->name('downloadTemplateDownload');
         Route::post('/upload-payment', [PatentController::class, 'uploadPatentPaymentProof'])->name('uploadPayment');
+    });
+
+    // Replication
+    Route::prefix('replication')->name('replication.')->group(function () {
+        Route::get('/', [ReplicationController::class, 'index'])->name('index');
+        Route::get('/autocomplete/user', [ReplicationController::class, 'autocompleteEmployee'])->name('userSuggestion');
+        Route::post('/store', [ReplicationController::class, 'store'])->name('store');
     });
 });
 

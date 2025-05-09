@@ -30,11 +30,7 @@ class ManagamentSystemController extends Controller
         $datas_company = Company::all();
         $datas_event = Event::all();
         $currentYear = Carbon::now()->year;
-        $years = [];
-
-        for ($i = $currentYear; $i <= $currentYear + 10; $i++) {
-            $years[$i] = $i;
-        }
+        $years = range($currentYear - 5, $currentYear + 5);
         return view('auth.admin.management_system.assign_event_index', [
             'datas_company' => $datas_company,
             'datas_event' => $datas_event,

@@ -38,8 +38,12 @@ class TotalFinancialBenefitCard extends Component
         $benefits = [];
 
         for ($year = $currentYear - 3; $year <= $currentYear; $year++) {
-            $query = Paper::where('status', 'accepted by innovation admin')
-                ->whereYear('created_at', $year);
+            $query = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+                ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
+                ->where('papers.status', 'accepted by innovation admin')
+                ->where('events.year', $year)
+                ->where('events.status', 'finish');
 
             // Filter data based on user's company code if not a superadmin
             if (!$this->isSuperadmin) {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Log;
 use App\Models\User;
 use App\Models\Event;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -86,16 +87,20 @@ class UserManagementController extends Controller
                 ->withInput();
         }
 
+        // Ambil semua data kecuali password & konfirmasi
         $userData = $request->except(['password', 'password_confirmation']);
+
+        // Hash password dan generate UUID
         $userData['password'] = Hash::make($request->password);
+        $userData['uuid'] = Str::uuid()->toString();
 
         try {
             User::create($userData);
             return redirect()->route('management-system.user.index')
-                ->with('success', 'User created successfully');
+                ->with('success', 'User berhasil dibuat.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Failed to create user: ' . $e->getMessage())
+                ->with('error', 'Gagal membuat user: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -179,8 +184,8 @@ class UserManagementController extends Controller
             }
 
             // Safely fetch subordinates
-            $bawahan = User::where('manager_id', $user->id)
-                ->when(!is_numeric($user->id), function ($query) {
+            $bawahan = User::where('manager_id', $user->employee_id)
+                ->when(!is_numeric($user->employee_id), function ($query) {
                     return $query->where('1', '=', '0'); // Return empty collection if ID is not numeric
                 })
                 ->get();

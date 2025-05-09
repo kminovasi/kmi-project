@@ -23,6 +23,7 @@ class User extends Authenticatable
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'uuid',
         'employee_id',
         'username',
         'password',
@@ -128,16 +129,21 @@ class User extends Authenticatable
 
     public function atasan()
     {
-        return $this->belongsTo(User::class, 'manager_id');
+        return $this->belongsTo(User::class, 'manager_id', 'employee_id')
+            ->withDefault([
+                'name' => 'No Manager',
+                'position_title' => '-'
+            ]);
     }
     public function bawahan()
     {
-        return $this->hasMany(User::class, 'manager_id');
+        return $this->hasMany(User::class, 'manager_id', 'employee_id')
+            ->whereRaw('manager_id::integer = ?', [$this->id]);
     }
 
     public function atasan__()
     {
-        return $this->belongsTo(User::class, 'manager_id')
+        return $this->belongsTo(User::class, 'manager_id', 'employee_id')
             ->withDefault([
                 'name' => 'No Manager',
                 'position_title' => '-'
@@ -146,7 +152,7 @@ class User extends Authenticatable
 
     public function bawahan__()
     {
-        return $this->hasMany(User::class, 'manager_id')
+        return $this->hasMany(User::class, 'manager_id', 'employee_id')
             ->whereRaw('manager_id::integer = ?', [$this->id]);
     }
     public function teams()
@@ -187,6 +193,11 @@ class User extends Authenticatable
     public function patens()
     {
         return $this->hasMany(Patent::class, 'person_in_charge', 'id');
+    }
+
+    public function replications()
+    {
+        return $this->hasMany(ReplicationInnovation::class, 'person_in_charge', 'id');
     }
 
 }

@@ -3,7 +3,9 @@
 namespace App\Imports;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
@@ -14,62 +16,77 @@ class ImportUserData implements ToCollection
     */
     public function collection(Collection $collection)
     {
-        foreach ($collection as $row) {
-            $employeeId = $row[1];
-            $employeeName = $row[3];
-            $employeeEmail = $row[12];
-            $employeeDirectorate = $row[7];
-            $employeeGroupHead = $row[8];
-            $employeeDepartment = $row[9];
-            $employeeUnit = $row[10];
-            $employeeSection = $row[11];
-            $employeeBandLevel = $row[5];
-            $employeeCompanyName = $row[14];
-            $employeeCompanyCode = $row[13];
+        foreach ($collection->skip(1) as $row) {
+            $employeeId = $row[0];
+            $name = $row[1] . ' ' . $row[2]; // First Name + Last Name (spasi ditambahkan)
+            $positionTitle = $row[4];
+            $companyCode = $row[5];
+            $companyName = $row[6];
+            $directorate = $row[8];
+            $groupHead = $row[10];
+            $department = $row[12];
+            $unit = $row[14];
+            $section = $row[16];
+            $subSection = $row[18];
+            $birthDate = $row[19];
+            $gender = $row[20];
+            $bandLevel = $row[21];
+            $rawEmail   = trim($row[22] ?? '');
+            $managerId = $row[23];
+            $contract = $row[25];
+            $companyHome = $row[26];
+
+            $email = $rawEmail !== '' ? $rawEmail : strtolower("{$employeeId}@sig.id");
             
             $skipEmail = [
-                null, 
-                '', 
-                '-', 
-                'GIRI.PRABOWO@SIG.ID', // Data Double
-                'MUCHAMAD.SUPRIYADI@SIG.ID', // SF 800
-                'RIFQI.APRIAN@SIG.ID', // SF 15734
-                'AMY.AISYA@SIG.ID', // Data Double
-                'ANIS@SIG.ID', // SF 5203
-                'eddy.syahputra@sig.id', // SF 15767
-                'AKHMAD.FARHAN@SIG.ID', // SF 15688
-                'YOGI.PRASETYO@SIG.ID', // SF 15724 Email Double
-                'MUHAMMAD.FARIZAN@SIG.ID', // SF 15689
-                'SAGI.SBI@SIG.ID', // SF 15691
-                'ZULHAMRI.PILIANG@SIG.ID', // SF 9004 Email Double
-                'ERWIN.HALOMOANPURBA@SIG.ID', // SF 15731
-                'SYOFYAN.KAMAL@SIG.ID', // SF 15697
-                'HARAJAKI.ASMARA@SIG.ID' // SF 15690
+                'AKHMAD.FARHAN@SIG.ID',
+                'MUHAMMAD.FARIZAN@SIG.ID',
+                'RIFQI.APRIAN@SIG.ID',
+                'SAGI.SBI@SIG.ID',
+                'zainul.a14153.vub@sig.id',
+                'ERWIN.HALOMOANPURBA@SIG.ID',
+                'PRI.AKBAR@SIG.ID',
+                'eddy.syahputra@sig.id',
+                'SYOFYAN.KAMAL@SIG.ID',
+                'HARAJAKI.ASMARA@SIG.ID'
             ];
 
-            if (in_array($employeeEmail, $skipEmail)) {
+            if (in_array($email, $skipEmail)) {
                 continue;
             }
 
-            User::updateOrCreate(
-                [
-                    'employee_id' => $employeeId,
-                ],
-                [
-                    'name' => $employeeName,
-                    'email' => $employeeEmail,
-                    'username' => $employeeEmail,
-                    'password' => Hash::make('test'),
-                    'directorate_name' => $employeeDirectorate,
-                    'group_function_name' => $employeeGroupHead,
-                    'department_name' => $employeeDepartment,
-                    'unit_name' => $employeeUnit,
-                    'section_name' => $employeeSection,
-                    'job_level' => $employeeBandLevel,
-                    'company_name' => $employeeCompanyName,
-                    'company_code' => $employeeCompanyCode
-                ]
-            );
+            $data = [
+                'username' => $email,
+                'name' => $name,
+                'email' => $email,
+                'position_title' => $positionTitle,
+                'company_name' => $companyName,
+                'directorate_name' => $directorate,
+                'group_function_name' => $groupHead,
+                'department_name' => $department,
+                'unit_name' => $unit,
+                'section_name' => $section,
+                'sub_section_name' => $subSection,
+                'birth_of_date' => $birthDate,
+                'gender' => $gender,
+                'job_level' => $bandLevel,
+                'contract_type' => $contract,
+                'company_home' => $companyHome,
+                'manager_id' => $managerId,
+                'company_code' => $companyCode
+            ];
+                
+            $user = User::where('employee_id', $employeeId)->first();
+            if ($user) {
+                // Update existing user
+                $user->update($data);
+            } else {
+                // Create new user
+                $data['employee_id'] = $employeeId;
+                $data['uuid'] = Str::uuid()->toString();
+                $data['password'] = Hash::make('test');
+                User::create($data);
+            }
         }
     }
 }

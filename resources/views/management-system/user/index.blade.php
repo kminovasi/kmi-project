@@ -61,6 +61,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('management-system.user.data') }}',
+                stateSave: true,
                 columns: [{
                         data: 'id',
                         name: 'id'

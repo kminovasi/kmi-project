@@ -23,14 +23,16 @@ class TotalTeamCard extends Component
 
         $teamCounts = DB::table('teams')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
             ->select(
-                DB::raw('EXTRACT(YEAR FROM teams.created_at) as year'),
+                'events.year as year',
                 DB::raw('COUNT(DISTINCT teams.id) as total_teams')
             )
             ->where('papers.status', 'accepted by innovation admin')
-            ->whereIn(DB::raw('EXTRACT(YEAR FROM teams.created_at)'), $years)
-            ->groupBy(DB::raw('EXTRACT(YEAR FROM teams.created_at)'))
-            ->orderBy('year')
+            ->whereIn('events.year', $years)
+            ->groupBy('events.year')
+            ->orderBy('events.year')
             ->get();
 
         // Pastikan semua tahun memiliki data

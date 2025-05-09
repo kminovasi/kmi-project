@@ -23,7 +23,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Paten Inovasi
+                            Replikasi Inovasi
                         </h1>
                     </div>
                 </div>
@@ -38,18 +38,16 @@
                 <div class="d-flex justify-content-end mb-2">
                     <input type="text" id="search" class="form-control search-input" placeholder="Cari Daftar Paten">
                 </div>
-                @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin')
                 <div class="btn-container mb-3 text-end">
-                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#patent-application">Buat Usulan Replikasi</button>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#replication-application">Buat Usulan Replikasi</button>
                 </div>
-                @endif
-                <x-patent.patent-table />
+                <x-replication.replication-table />
             </div>
         </div>
     </div>
 
-    {{-- Modal Patent Application --}}
-    <div class="modal" id="patent-application" tabindex="-1" aria-labelledby="patent-application" aria-hidden="true">
+    {{-- Modal Replication Application --}}
+    <div class="modal" id="replication-application" tabindex="-1" aria-labelledby="replication-application" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -57,13 +55,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('patent.store') }}" method="POST">
+                    <form action="{{ route('replication.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <input type="text" id="inputInnovationTittle" class="form-control" placeholder="Masukkan Judul Inovasi" autocomplete="off">
                             <input type="hidden" name="title_id" id="inputInnovationTittleId">
-
-                            <div id="suggestions-title" class="list-group position-absolute z-3 bg-white w-100" style="display: none;"></div>
+                        </div>
+                        <div class="mb-3">
+                            @if(Auth::user()->role !== 'Superadmin' || Auth::user()->role !== 'Admin')
+                            <input type="text" id="inputPIC" class="form-control" placeholder="Masukkan Nama" autocomplete="off" value="{{ Auth::user()->name }}" readonly>
+                            <input type="hidden" name="pic_id" value="{{ Auth::user()->id }}">
+                            @else
+                            <input type="text" id="inputPIC" class="form-control" placeholder="Masukkan Nama" autocomplete="off">
+                            <input type="hidden" name="pic_id" id="inputEmployeeId">
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            @if(Auth::user()->role !== 'Superadmin' || Auth::user()->role !== 'Admin')
+                            <input type="text" id="InputCompanyName" class="form-control" placeholder="Masukkan Perusahaan" autocomplete="off" value="{{ Auth::user()->company_name }}" readonly>
+                            <input type="hidden" name="company_code" value="{{ Auth::user()->company_code }}">
+                            @else
+                            <input type="text" id="InputCompanyName" class="form-control" placeholder="Masukkan Perusahaan" autocomplete="off">
+                            <input type="hidden" name="company_code" id="inputCompanyId">
+                            @endif
                         </div>
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -96,6 +110,38 @@
                 }
             });
         },
+        select: function(event, ui) {
+            $("#inputInnovationTittleId").val(ui.item.id);
+        }
+    });
+    $("#inputPIC").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{{ route('replication.userSuggestion') }}",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    query: request.term
+                },
+                success: function(data) {
+                    let result = $.map(data, function(item) {
+                        return {
+                            label: item.employee_id + ' - ' + item.name,
+                            value: item.name,
+                            id: item.id,
+                            company_code: item.company_code,
+                            company_name: item.company_name
+                        };
+                    });
+                    response(result); // langsung kirim data tanpa filter ulang
+                },
+            });
+        },
+        select: function(event, ui) {
+            $("#inputEmployeeId").val(ui.item.id);
+            $("#InputCompanyName").val(ui.item.company_name);
+            $("#inputCompanyId").val(ui.item.company_code);
+        }
     });
     function showAlert(message, type = 'success') {
         const alertHtml = `

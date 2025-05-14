@@ -84,6 +84,11 @@ class Team extends Model
         return $this->hasMany(PvtEventTeam::class, 'team_id');
     }
 
+    public function coachingClinics()
+    {
+        return $this->hasMany(CoachingClinic::class, 'team_id', 'id');
+    }
+
     public function members()
     {
         return $this->hasManyThrough(

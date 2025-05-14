@@ -34,4 +34,10 @@ class Company extends Model
     {
         return $this->hasMany(ReplicationInnovation::class, 'company_code', 'company_code');
     }
+
+    // Define the relationship to the CoachingClinic model
+    public function coachingClinics()
+    {
+        return $this->hasMany(CoachingClinic::class, 'company_code', 'company_code');
+    }
 }

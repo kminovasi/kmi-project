@@ -200,4 +200,9 @@ class User extends Authenticatable
         return $this->hasMany(ReplicationInnovation::class, 'person_in_charge', 'id');
     }
 
+    public function coachingClinics()
+    {
+        return $this->hasMany(CoachingClinic::class, 'person_in_charge', 'employee_id');
+    }
+
 }

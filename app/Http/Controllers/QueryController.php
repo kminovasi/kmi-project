@@ -2,39 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Exception;
+use App\Models\Team;
 use App\Models\User;
-use App\Models\PvtMember;
+use App\Models\Event;
+use App\Models\Judge;
 use App\Models\Paper;
+use App\Models\Company;
+use App\Models\History;
+use App\Models\BodEvent;
+use App\Models\Category;
+use App\Models\ph2Member;
+use App\Models\PvtMember;
+use App\Models\BeritaAcara;
+use App\Models\PvtEventTeam;
+use Illuminate\Http\Request;
+use App\Services\JudgeService;
+use App\Models\AssessmentPoint;
+use App\Models\MetodologiPaper;
+use App\Models\SummaryExecutive;
+use App\Models\PvtAssessmentTeam;
+use App\Models\PvtAssessmentEvent;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\pvtAssesmentTeamJudge;
+use Illuminate\Support\Facades\Cache;
 use App\Models\CustomBenefitFinancial;
 use App\Models\TemplateAssessmentPoint;
-use App\Models\AssessmentPoint;
-use App\Models\PvtAssessmentEvent;
-use App\Models\pvtAssesmentTeamJudge;
-use App\Models\ph2Member;
-use App\Models\Company;
-use App\Models\Category;
-use App\Models\Event;
-use App\Models\Team;
-use App\Models\History;
-use App\Models\PvtEventTeam;
-use App\Models\Judge;
-use App\Models\BodEvent;
-use App\Models\BeritaAcara;
-use App\Models\MetodologiPaper;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use App\Models\PvtAssessmentTeam;
-use App\Models\SummaryExecutive;
-use App\Services\JudgeService;
-use DataTables;
-use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 class QueryController extends Controller
 {
@@ -487,7 +487,12 @@ class QueryController extends Controller
 
             $rawColumns = ['detail_team'];
             $dataTable->addColumn('detail_team', function ($data_row) {
-                return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember" onclick="get_data_on_modal(' . $data_row->team_id . ')" >Detail</button>';
+                return '
+                <div class="d-flex justify-content-center flex-column gap-1">
+                    <button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember" onclick="get_data_on_modal(' . $data_row->team_id . ')" >Detail</button>
+                    <button class="btn btn-primary btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#coachingClinic" onclick="prepare_modal_coaching('. $data_row->team_id .')">Coaching</button>
+                </div>
+                ';
             });
 
             //     // Add metodologi makalah column
@@ -743,7 +748,9 @@ class QueryController extends Controller
                 ->select('innovation_title', 'inovasi_lokasi', 'abstract', 'problem', 'main_cause', 'solution', 'innovation_photo', 'proof_idea')
                 ->get();
 
-            $data_anggotas = PvtMember::where('team_id', $request->team_id)->get();
+            $data_anggotas = PvtMember::with('team')
+                            ->where('team_id', $request->team_id)
+                            ->get();
 
             $data_karyawan = [];
             foreach ($data_anggotas as $data_anggota) {

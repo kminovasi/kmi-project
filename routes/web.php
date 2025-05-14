@@ -34,6 +34,7 @@ use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\ChartDashboardController;
+use App\Http\Controllers\CoachingClinicController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MetodologiPaperController;
@@ -347,6 +348,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('benefit')->name('benefit.')->group(function () {
             Route::get('/', [BenefitController::class, 'createBenefitAdmin'])->name('index');
             Route::get('/create/{id}', [BenefitController::class, 'createBenefitUser'])->name('create.user');
+            Route::get('/previewBenefit/{paper_id}', [BenefitController::class, 'previewBenefitPdf'])->name('preview.benefit');
             Route::post('/store/{id}/', [BenefitController::class, 'storeBenefitUser'])->name('store.user');
             Route::get('/getAllCustomBenefitFinancial', [BenefitController::class, 'getAllCustomBenefitFinancial'])->name('getAllCustomBenefitFinancial');
         });
@@ -433,6 +435,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ReplicationController::class, 'index'])->name('index');
         Route::get('/autocomplete/user', [ReplicationController::class, 'autocompleteEmployee'])->name('userSuggestion');
         Route::post('/store', [ReplicationController::class, 'store'])->name('store');
+    });
+
+    // CoachingClinic
+    Route::prefix('coaching-clinic')->name('coaching-clinic.')->group(function () {
+        Route::get('/', [CoachingClinicController::class, 'index'])->name('index');
+        Route::post('/store-coaching-apply', [CoachingClinicController::class, 'storeCoachingClinic'])->name('storeCoachingApply');
+        Route::put('/update-coaching-apply/{coachingId}/{status}', [CoachingClinicController::class, 'updateCoachingApply'])->name('updateCoachingApply');
     });
 });
 

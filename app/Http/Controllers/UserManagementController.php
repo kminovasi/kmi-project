@@ -218,7 +218,8 @@ class UserManagementController extends Controller
         // Ambil event berdasarkan company_code
         $events = Event::whereHas('companies', function ($query) use ($companyCode) {
             $query->where('company_code', $companyCode);
-        })->get();
+        })
+        ->get();
 
         return response()->json([
             'success' => true,

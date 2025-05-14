@@ -194,6 +194,9 @@
                                         <div class="small mb-0" id="solution"></div>
                                     </div>
                                     <hr>
+                                    <div class="mb-3 d-flex justify-content-center">
+                                        <button class="btn btn-md btn-primary">Coaching</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -508,6 +511,31 @@
         </div>
     </div>
 
+    {{-- Modal untuk Coaching --}}
+    <div class="modal fade" id="coachingClinic" tabindex="-1" role="dialog" aria-labelledby="submitCoachingApplication" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="{{ route('coaching-clinic.storeCoachingApply') }}" method="post">
+                @csrf
+                    <div class="modal-header">
+                        <h5>Form Pengajuan Coaching Clinic</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="coaching-date" class="form-label">Tanggal Coaching</label>
+                            <input class="form-control form-control-md coaching_date" type="date" name="coaching_date" id="coaching-date">
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-lg-between">
+                        <button class="btn btn-md btn-danger" data-bs-dismiss="modal">Batal</button>
+                        <input type="hidden" name="input_team_id" id="input_team_id">
+                        <button class="btn btn-md btn-primary">Ajukan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <x-paper.paper-confirmation-modal />
 
 
@@ -726,7 +754,6 @@
                 team_id: IdTeam
             },
             success: function(data) {
-                console.log(data);
 
                 if(typeof data.data.member !== 'undefined'){
                     new_div_member = `
@@ -826,7 +853,11 @@
                 alert(error.responseJSON.message);
             }
         });
+    }
 
+    // fungsi untuk prepare modal submit coaching
+    function prepare_modal_coaching(team_id){
+        document.getElementById('input_team_id').value = team_id;
     }
 
     // digunakan untuk menghapus detail member ketika modal ditutup

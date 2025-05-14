@@ -144,6 +144,20 @@ class BenefitController extends Controller
         return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName', 'is_disabled'));
     }
 
+    public function previewBenefitPdf($paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+
+        $path = storage_path('app/public/' . $paper->file_review);
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
     public function storeBenefitUser(Request $request, $id)
     {
         $validatedData = $request->validate([

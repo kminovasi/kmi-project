@@ -145,15 +145,17 @@
                                 $icon = $icons[$loop->index % count($icons)];
                             @endphp
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
-                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                                            {{ $item["count"] ?? 0 }}
-                                        </span>
+                                <a href="{{ route('dashboard.listPaper', ['category' => $item["category_name"], 'status' => 'implemented']) }}" class="text-decoration-none">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                            <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                            <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                                {{ $item["count"] ?? 0 }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -225,15 +227,17 @@
                                 $icon = $icons[$loop->index % count($icons)];
                             @endphp
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
-                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                                            {{ $item["count"] ?? 0 }}
-                                        </span>
+                                <a href="{{ route('dashboard.listPaper', ['category' => $item["category_name"], 'status' => 'idea box']) }}" class="text-decoration-none">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                            <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                            <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                                {{ $item["count"] ?? 0 }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>

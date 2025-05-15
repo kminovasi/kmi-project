@@ -354,6 +354,9 @@ Route::middleware('auth')->group(function () {
         });
         Route::get('/dashboard/non-financial-benefit/{customBenefitPotentialId}', [BenefitController::class, 'showAllBenefit'])->name('dashboard.showAllBenefit');
 
+        // List Paper Form Category
+        Route::get('/dashboard/list-paper/{category}/{status}', [DashboardController::class, 'showDashboardPaperList'])->name('dashboard.listPaper');
+
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);
 

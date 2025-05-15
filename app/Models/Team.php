@@ -60,6 +60,19 @@ class Team extends Model
         return $this->belongsTo(Company::class, 'company_code', 'company_code'); // Pastikan kolom yang digunakan sesuai
     }
 
+    // Team.php
+    public function getCompanyAttribute()
+    {
+        // Ambil semua events dari team ini → lalu ambil semua company dari tiap event
+        return $this->events
+            ->flatMap(function ($event) {
+                return $event->companies;
+            })
+            ->unique('id') // Optional: hilangkan duplikat
+            ->first();     // Ambil satu (atau bisa return semuanya kalau mau)
+    }
+
+
     public function events()
     {
         return $this->belongsToMany(Event::class, 'pvt_event_teams')

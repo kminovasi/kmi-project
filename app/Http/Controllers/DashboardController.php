@@ -137,6 +137,47 @@ class DashboardController extends Controller
         ));
     }
 
+    public function showDashboardPaperList($category, $status)
+    {
+        // Take category and status from the request
+        // and use them to filter the papers
+        // based on the category and status
+        $innovationStatus = match ($status) {
+            'implemented' => ['Implemented'],
+            'idea box' => ['Progress', 'Not Implemented'],
+        };
+
+        // Ambil data papers berdasarkan kategori dan status inovasi
+        $categories = Category::with([
+            'teams' => function ($query) {
+                $query->select('id', 'team_name', 'category_id', 'status_lomba');
+            },
+            'teams.papers' => function ($query) use ($innovationStatus) {
+                $query->select('id', 'innovation_title', 'team_id', 'status')
+                    ->whereIn('status_inovasi', $innovationStatus);
+            },
+            'teams.company' => function ($query) {
+                $query->select('company_code', 'company_name');
+            }
+        ])
+        ->where('category_name', $category)
+        ->get();
+
+        // di controller atau sebelum blade
+        $hasData = false;
+        foreach ($categories as $item) {
+            foreach ($item->teams as $team) {
+                if ($team->papers->count() > 0) {
+                    $hasData = true;
+                    break 2; // keluar dari kedua loop
+                }
+            }
+        }
+
+
+        return view('components.dashboard.list-paper', compact('categories', 'category', 'status', 'hasData'));
+    }
+
     public function showTotalTeamChart()
     {
         $currentYear = Carbon::now()->year;

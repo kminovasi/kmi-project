@@ -18,6 +18,7 @@ class ReplicationInnovation extends Model
         'evidence',
         'financial_benefit',
         'reward',
+        'description',
     ];
 
     // This function is used to get the paper associated with this replication

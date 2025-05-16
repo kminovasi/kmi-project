@@ -3,9 +3,9 @@
         <thead class="text-center align-middle">
             <tr style="font-size: .9rem;">
                 <th scope="col">No</th>
-                <th scope="col">Judul</th>
-                <th scope="col">PIC Replikator</th>
-                <th scope="col">Perusahaan Replikator</th>
+                <th scope="col" class="w-25">Judul</th>
+                <th scope="col">Replikator</th>
+                <th scope="col">Perusahaan</th>
                 <th scope="col">Status</th>
                 <th scope="col">Berita Acara</th>
                 <th scope="col">Eviden</th>
@@ -18,24 +18,91 @@
         </thead>
         <tbody id="patent-table-container">
           @foreach ($replicationData as $index => $replication)
-   
-          <tr style="font-size: .8rem;">
-            <td class="text-center align-middle">{{ $index + 1 }}</td>
-            <td class="align-middle">{{ $replication->paper->innovation_title }}</td>
-            <td class="align-middle">{{ $replication->personInCharge->name }}</td>
-            <td class="align-middle">{{ $replication->company->company_name }}</td>
-            <td class="text-center align-middle">{{ $replication->replication_status }}</td>
-            <td class="text-center align-middle">-</td>
-            <td class="text-center align-middle">-</td>
-            <td class="text-center align-middle">-</td>
-            <td class="text-center align-middle">-</td>
-            <td class="text-center align-middle">-</td>
-          </tr>
+            <tr style="font-size: .8rem;">
+              <td class="text-center align-middle">{{ $index + 1 }}</td>
+              <td class="align-middle">{{ $replication->paper->innovation_title }}</td>
+              <td class="align-middle">{{ $replication->personInCharge->name }}</td>
+              <td class="align-middle">{{ $replication->company->company_name }}</td>
+                @php
+                    $status = $replication->replication_status;
+                    $cellBg = match ($status) {
+                        'Pengajuan' => 'bg-secondary',
+                        'Progres' => 'bg-primary',
+                        'Replikasi Berhasil' => 'bg-success',
+                        'Replikasi Gagal' => 'bg-danger',
+                        default => 'bg-light', // fallback
+                    };
+                @endphp
+              <td class="text-center align-middle {{ $cellBg }}">
+                <button class="btn btn-md edit-status-btn text-white"
+                        data-replication-id="{{ $replication->id }}"
+                        data-replication-status="{{ $replication->replication_status }}">
+                    {{ $replication->replication_status }}
+                </button>
+              </td>
+
+              {{-- News Letter --}}
+              <td class="text-center align-middle">
+                @if($replication->event_news == null)
+                  <button href="" class="btn btn-sm btn-secondary upload-news-btn"
+                    data-replication-id="{{ $replication->id }}"><i class="bi bi-upload"></i>
+                  </button>
+                @else
+                  <a href="{{ route('replication.viewDocument', ['replicationId' => $replication->id, 'type' => 'news_letter']) }}" class="text-decoration-none btn-sm btn-primary" target="_blank"><i class="bi bi-file-earmark-fill"></i></a>
+                @endif
+              </td>
+
+              {{-- Evidence --}}
+              <td class="text-center align-middle">
+                @if($replication->evidence == null)
+                  <button href="" class="btn btn-sm btn-secondary upload-evidence-benefit"
+                    data-replication-id="{{ $replication->id }}"><i class="bi bi-upload"></i>
+                  </button>
+                @else
+                  <a href="{{ route('replication.viewDocument', ['replicationId' => $replication->id, 'type' => 'evidence']) }}" class="text-decoration-none btn-sm btn-primary" target="_blank"><i class="bi bi-file-earmark-fill"></i></a>
+                @endif
+              </td>
+
+              {{-- Benefit --}}
+              <td class="text-center align-middle">
+                @if($replication->financial_benefit == null)
+                <button href="" class="btn btn-sm btn-secondary upload-evidence-benefit"
+                  data-replication-id="{{ $replication->id }}"><i class="bi bi-upload"></i>
+                </button>
+                @else
+                Rp{{ number_format($replication->financial_benefit, 0, ',', '.') }}
+                @endif
+              </td>
+              <td class="text-center align-middle">
+                @if($replication->reward == null)
+                  <button href="" class="btn btn-sm btn-secondary upload-reward-desc"
+                    data-replication-id="{{ $replication->id }}"><i class="bi bi-upload"></i>
+                  </button>
+                @else
+                  <a href="{{ route('replication.viewDocument', ['replicationId' => $replication->id, 'type' => 'reward']) }}" class="text-decoration-none btn-sm btn-primary" target="_blank"><i class="bi bi-file-earmark-fill"></i></a>
+                @endif
+              </td>
+              @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin')
+                <td class="text-center align-middle">
+                    @if($replication->description == null)
+                      <button class="btn btn-sm btn-primary upload-reward-desc"
+                              data-replication-id="{{ $replication->id }}">
+                          <i class="bi bi-upload"></i>
+                      </button>
+                    @else
+                      <button class="btn btn-sm btn-primary btn-desc-view"
+                              data-replication-id="{{ $replication->id }}">
+                          <i class="bi bi-file-earmark-fill"></i>
+                      </button>
+                    @endif
+                </td>
+              @endif
+            </tr>
           @endforeach
           <tr>
-                {{-- <td colspan="10">
-                    {{ $patentData->links() }} <!-- Pagination Links -->
-                </td> --}}
+                <td colspan="10">
+                    {{ $replicationData->links() }} <!-- Pagination Links -->
+                </td>
           </tr>
         </tbody>
     </table>
@@ -54,18 +121,13 @@
           @csrf
           @method('PUT')
           <div class="mb-3">
-            <input type="hidden" name="patent_id" id="patent_id">
-            <label for="status" class="form-label">Status Pengajuan</label>
-            <select class="form-control" id="status" name="status">
-              <option value="Belum Diajukan">Belum Diajukan</option>
+            <label for="replication-status" class="form-label">Status Pengajuan</label>
+            <select class="form-control" id="replication-status" name="replication-status">
               <option value="Pengajuan">Pengajuan</option>
-              <option value="Dikaji DJKI">Dikaji DJKI</option>
-              <option value="Paten">Paten</option>
+              <option value="Progres">Progres</option>
+              <option value="Replikasi Berhasil">Replikasi Berhasil</option>
+              <option value="Replikasi Gagal">Replikasi Gagal</option>
             </select>
-          </div>
-          <div class="mb-3">
-            <label for="registration_number" class="form-label">Nomor Registrasi</label>
-            <input type="text" class="form-control" id="registration_number" name="registration_number" placeholder="Masukkan Registration Number">
           </div>
           <div class="text-end">
             <button type="submit" class="btn btn-primary">Update Status</button>
@@ -76,30 +138,21 @@
   </div>
 </div>
 
-<!-- Modal Upload Dokumen -->
-<div class="modal fade" id="uploadDocumentModal" tabindex="-1" aria-labelledby="uploadDocumentModalLabel" aria-hidden="true">
+<!-- Modal Upload Berita Acara -->
+<div class="modal fade" id="uploadNewsLetterModal" tabindex="-1" aria-labelledby="uploadNewsLetterModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Upload Dokumen</h5>
+        <h5 class="modal-title">Upload Berita Acara</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="uploadDocumentForm" method="POST" enctype="multipart/form-data">
+        <form id="uploadNewsLetterForm" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
-          <input type="hidden" name="patent_id-doc" id="patent_id-doc">
           <div class="mb-3">
-            <label for="draft" class="form-label">Draft Patent</label>
-            <input type="file" class="form-control" id="draft" name="draft" required>
-          </div>
-          <div class="mb-3">
-            <label for="owner_letter" class="form-label">Surat Kepemilikan</label>
-            <input type="file" class="form-control" id="owner_letter" name="owner_letter" required>
-          </div>
-          <div class="mb-3">
-            <label for="statement_of_transfer_rights" class="form-label">Surat Pengalihan Hak</label>
-            <input type="file" class="form-control" id="statement_of_transfer_rights" name="statement_of_transfer_rights" required>
+            <label for="news-letter" class="form-label">Berita Acara</label>
+            <input type="file" class="form-control" id="news-letter" name="news-letter" required>
           </div>
           <div class="text-end">
             <button type="submit" class="btn btn-primary">Upload Dokumen</button>
@@ -110,45 +163,142 @@
   </div>
 </div>
 
+{{-- Upload Benefit dan Evidence --}}
+<div class="modal fade" id="uploadBenefitEvidenceModal" tabindex="-1" aria-labelledby="uploadBenefitEvidenceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Benefit dan Evidence</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="uploadBenefitEvidenceForm" method="POST" enctype="multipart/form-data">
+          @csrf
+          @method('PUT')
+          <div class="mb-3">
+            <label for="evidence" class="form-label">Evidence</label>
+            <input type="file" class="form-control" id="evidence" name="evidence" required>
+          </div>
+          <div class="mb-3">
+            <label for="benefit" class="form-label">Benefit</label>
+            <div class="input-group">
+              <span class="input-group-text">Rp</span>
+              <input type="number" class="form-control" id="benefit" name="benefit" required>
+            </div>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-primary">Upload Dokumen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- Upload Reward dan Description --}}
+<div class="modal fade" id="uploadRewardDescModal" tabindex="-1" aria-labelledby="uploadRewardDescModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Upload Benefit dan Evidence</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="uploadRewardDescForm" method="POST" enctype="multipart/form-data">
+          @csrf
+          @method('PUT')
+          <div class="mb-3">
+            <label for="reward" class="form-label text-capitalize">Reward</label>
+            <input type="file" class="form-control" id="reward" name="reward" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Keterangan</label>
+            <textarea class="form-control" name="description" id="description" cols="20" rows="10"></textarea>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-sm btn-primary">Upload Dokumen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- View Description --}}
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Deskripsi Replikasi Inovasi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control descriptionValue" name="descriptionValue" id="descriptionValue" cols="20" rows="10" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     // Klik tombol Edit Status
     $('.edit-status-btn').click(function() {
-        let patentId = $(this).data('patent-id');
-        let status = $(this).data('patent-status');
-        let registrationNumber = $(this).data('registration-number');
+        let replicationId = $(this).data('replication-id');
+        let status = $(this).data('replication-status');
         
         // Ganti action form edit status
-        $('#editStatusForm').attr('action', '/patent/update-status/' + patentId);
+        $('#editStatusForm').attr('action', '/replication/update-status/' + replicationId);
 
         // Set selected status
-        $('#status').val(status);
-        $('#patent_id').val(patentId);
-        const registrationNumberField = document.getElementById('registration_number');
-        registrationNumberField.value = registrationNumber ? registrationNumber : '';
-
-        if(registrationNumber){
-            registrationNumberField.disabled = true;
-        } else {
-            registrationNumberField.disabled = false;
-        }
+        $('#replication-status').val(status);
 
         // Buka modal
         $('#editStatusModal').modal('show');
     });
 
-    // Klik tombol Upload Dokumen
-    $('.upload-doc-btn').click(function() {
-        let patentId = $(this).data('patent-id');
-        $('#patent_id-doc').val(patentId);
+    // Klik tombol Upload Berita Acara
+    $('.upload-news-btn').click(function() {
+        let replicationId = $(this).data('replication-id');
 
         // Ganti action form upload dokumen
-        $('#uploadDocumentForm').attr('action', '/patent/upload-document/' + patentId);
+        $('#uploadNewsLetterForm').attr('action', '/replication/upload-news-letter/' + replicationId);
 
         // Buka modal
-        $('#uploadDocumentModal').modal('show');
+        $('#uploadNewsLetterModal').modal('show');
     });
+
+    // Klik tombol Upload Dokumen
+    $('.upload-evidence-benefit').click(function() {
+        let replicationId = $(this).data('replication-id');
+
+        // Ganti action form upload dokumen
+        $('#uploadBenefitEvidenceForm').attr('action', '/replication/upload-benefit-evidence/' + replicationId);
+
+        // Buka modal
+        $('#uploadBenefitEvidenceModal').modal('show');
+    });
+
+    // Klik tombol Upload Dokumen
+    $('.upload-reward-desc').click(function() {
+        let replicationId = $(this).data('replication-id');
+
+        // Ganti action form upload dokumen
+        $('#uploadRewardDescForm').attr('action', 'replication/upload-reward-desc/' + replicationId);
+
+        // Buka modal
+        $('#uploadRewardDescModal').modal('show');
+    });
+
+    // Lihat Deskripsi
+    $('.btn-desc-view').on('click', function() {
+        const id = $(this).data('replication-id');
+
+        $.get(`/replication/view-document/${id}/description`, function(res) {
+            $('#descriptionValue').val(res.description);
+            $('#descriptionModal').modal('show');
+        });
+    });
+
 });
 </script>

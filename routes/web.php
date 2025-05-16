@@ -438,6 +438,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ReplicationController::class, 'index'])->name('index');
         Route::get('/autocomplete/user', [ReplicationController::class, 'autocompleteEmployee'])->name('userSuggestion');
         Route::post('/store', [ReplicationController::class, 'store'])->name('store');
+        Route::put('/update-status/{replicationId}', [ReplicationController::class, 'updateStatus'])->name('updateStatus');
+        Route::put('/upload-news-letter/{replicationId}', [ReplicationController::class, 'uploadNewsLetter'])->name('uploadNewsLetter');
+        Route::put('/upload-benefit-evidence/{replicationId}', [ReplicationController::class, 'uploadBenefitAndEvidence'])->name('uploadBenefitEvidence');
+        Route::put('/upload-reward-desc/{replicationId}', [ReplicationController::class, 'uploadRewardDesc'])->name('uploadRewardDesc');
+        Route::get('view-document/{replicationId}/{type}', [ReplicationController::class, 'viewDocument'])->name('viewDocument');
     });
 
     // CoachingClinic

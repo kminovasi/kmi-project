@@ -7,6 +7,8 @@
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <!-- head: below existing links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/css/multi-select-tag.min.css">
     <style>
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 20px;
@@ -200,9 +202,7 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -225,21 +225,16 @@
                 <div class="modal-body">
                     <form id="filterForm">
                         <!-- Role Filter -->
-                        <div class="mb-3">
-                            <label for="filter-role" class="form-label fw-semibold">Role</label>
-                            <select id="filter-role" name="filter-role" class="form-select">
-                                <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
-                                <option value="admin" selected>Admin</option>
-                                <?php endif; ?>
-                            </select>
-                        </div>
+                        @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
+                        <input type="hidden" name="filter-role" id="filter-role" value="admin">
+                        @endif
                         <!-- Company Filter -->
                         <div class="mb-3">
                             <label for="filter-company" class="form-label fw-semibold">Perusahaan</label>
                             <select id="filter-company" name="filter-company" class="form-select">
+                                <option value="" selected>-- Pilih Perusahaan --</option>
                                 @foreach ($data_company as $company)
-                                    <option value="{{ $company->company_code }}"
-                                        {{ $company->company_code == Auth::user()->company_code ? 'selected' : '' }}>
+                                    <option value="{{ $company->company_code }}">
                                         {{ $company->company_name }}
                                     </option>
                                 @endforeach
@@ -255,6 +250,15 @@
                                 <option value="Implemented">Implemented</option>
                             </select>
                         </div>
+                        <!-- Filter by Category -->
+                        <div class="mb-3">
+                            <label for="filter_category" class="form-label fw-semibold">Kategori</label>
+                            <select id="filter_category" name="filter_category" class="form-select">
+                                <option value="" selected>-- Pilih Kategori --</option>
+                                @foreach ($data_category as $category)
+                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                @endforeach
+                            </select> 
                     </form>
                 </div>
                 <!-- Footer -->
@@ -265,6 +269,7 @@
             </div>
         </div>
     </div>
+
     <x-paper.approve-fasil-modal />
 
     <x-paper.approve-benefit-modal-by-fasil />
@@ -562,6 +567,7 @@
                     d.filterCompany = $('#filter-company').val();
                     d.filterRole = $('#filter-role').val();
                     d.status_inovasi = $('#filter-status-inovasi')
+                    d.filter_category = $('#filter_category')
                         .val(); //ambil nilai yg dipilih ke server
                     return d;
                 }
@@ -652,6 +658,8 @@
     <script
         src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
     </script>
+    <!-- End of <body> -->
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/js/multi-select-tag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
@@ -682,7 +690,8 @@
                 data: function (d) {
                      d.filterCompany = $('#filter-company').val();
                      d.filterRole = $('#filter-role').val();
-                     d.status_inovasi = $('#filter-status-inovasi').val(); //ambil nilai yg dipilih ke server
+                     d.status_inovasi = $('#filter-status-inovasi').val(); 
+                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
                      return d;
                 }
             },
@@ -720,22 +729,7 @@
             }
         });
 
-        $('#filter-company').on('change', function () {
-            dataTable.ajax.reload();
-        });
-
-        $('#filter-role').on('change', function () {
-            dataTable.ajax.reload();
-
-            user_role = "{{ Auth::user()->role }}"
-            if($('#filter-role').val() == 'admin' && user_role == 'Superadmin'){
-                $('#filter-company').removeAttr("disabled");
-            }else{
-                $("#filter-company").attr("disabled", "disabled");
-            }
-        });
-
-        $('#filter-status-inovasi').on('change', function() {
+        $('#filter-company, #filter-role, #filter-status-inovasi, #filter_category').on('change', function () {
             dataTable.ajax.reload();
         });
     });

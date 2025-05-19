@@ -219,6 +219,7 @@ class UserManagementController extends Controller
         $events = Event::whereHas('companies', function ($query) use ($companyCode) {
             $query->where('company_code', $companyCode);
         })
+        ->where('status',  'active')
         ->get();
 
         return response()->json([

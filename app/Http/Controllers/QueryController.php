@@ -452,8 +452,7 @@ class QueryController extends Controller
 
                 // Filter berdasarkan company_code kecuali admin adalah peserta/member dengan status tertentu
                 $query_data->where(function ($query) use ($request) {
-                    $query->where('companies.company_code', $request->filterCompany) // Berdasarkan company_code
-                        ->orWhere(function ($query) {
+                    $query->where(function ($query) {
                             $query->whereNotNull('pvt_members.id') // Admin adalah member
                                 ->whereIn('pvt_members.status', ['leader', 'member', 'facilitator', 'gm']); // Status tertentu
                         });
@@ -471,10 +470,23 @@ class QueryController extends Controller
                 $select[] = 'pvt_members.status as member_status';
             }
 
+            // Filter untuk company_code (mendukung single dan multiple select)
+            if ($request->has('filterCompany') && !empty($request->filterCompany)) {
+                $filterCompany = is_array($request->filterCompany)
+                    ? $request->filterCompany
+                    : [$request->filterCompany]; // ubah jadi array kalau single string
+
+                $query_data->whereIn('teams.company_code', $filterCompany);
+            }
 
             //filter untuk status inovasi
             if ($request->has('status_inovasi') && $request->status_inovasi != '') {
                 $query_data->where('papers.status_inovasi', $request->status_inovasi);
+            }
+
+            //filter for category
+            if ($request->has('filter_category') && $request->filter_category != '') {
+                $query_data->where('teams.category_id', $request->filter_category);
             }
 
             $data_row = $query_data->select($select)->get();

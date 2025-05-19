@@ -1341,10 +1341,6 @@ class PaperController extends Controller
             $team->update([
                 'status_lomba' => $eventData->type
             ]);
-            $paper = Paper::findOrFail($id);
-            $paper->update([
-                'status_event' => 'accept' . $eventData->type,
-            ]);
             $idEventTeam = PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,
                 'event_id' => $event_id,

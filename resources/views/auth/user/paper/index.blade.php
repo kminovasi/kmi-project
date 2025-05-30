@@ -7,8 +7,6 @@
         href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-    <!-- head: below existing links -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/css/multi-select-tag.min.css">
     <style>
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 20px;
@@ -196,13 +194,12 @@
                                         <div class="small mb-0" id="solution"></div>
                                     </div>
                                     <hr>
-                                    <div class="mb-3 d-flex justify-content-center">
-                                        <button class="btn btn-md btn-primary">Coaching</button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -212,22 +209,22 @@
     </div>
 
     {{-- modal untuk filter khusus superadmin --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
+    {{-- modal untuk filter khusus superadmin --}}
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content shadow">
                 <!-- Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
                     <h5 class="modal-title fw-bold text-white" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Body -->
                 <div class="modal-body">
                     <form id="filterForm">
-                        <!-- Role Filter -->
                         @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
-                        <input type="hidden" name="filter-role" id="filter-role" value="admin">
+                            <input type="hidden" name="filter-role" id="filter-role" value="admin">
                         @endif
+
                         <!-- Company Filter -->
                         <div class="mb-3">
                             <label for="filter-company" class="form-label fw-semibold">Perusahaan</label>
@@ -240,6 +237,7 @@
                                 @endforeach
                             </select>
                         </div>
+
                         <!-- Status Inovasi Filter -->
                         <div class="mb-3">
                             <label for="filter-status-inovasi" class="form-label fw-semibold">Status Inovasi</label>
@@ -250,6 +248,7 @@
                                 <option value="Implemented">Implemented</option>
                             </select>
                         </div>
+
                         <!-- Filter by Category -->
                         <div class="mb-3">
                             <label for="filter_category" class="form-label fw-semibold">Kategori</label>
@@ -258,9 +257,11 @@
                                 @foreach ($data_category as $category)
                                     <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                                 @endforeach
-                            </select> 
-                    </form>
+                            </select>
+                        </div>
+                    </form> <!-- ✅ Penutup form di tempat yang benar -->
                 </div>
+
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -269,7 +270,7 @@
             </div>
         </div>
     </div>
-
+    
     <x-paper.approve-fasil-modal />
 
     <x-paper.approve-benefit-modal-by-fasil />
@@ -516,31 +517,6 @@
         </div>
     </div>
 
-    {{-- Modal untuk Coaching --}}
-    <div class="modal fade" id="coachingClinic" tabindex="-1" role="dialog" aria-labelledby="submitCoachingApplication" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <form action="{{ route('coaching-clinic.storeCoachingApply') }}" method="post">
-                @csrf
-                    <div class="modal-header">
-                        <h5>Form Pengajuan Coaching Clinic</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <label for="coaching-date" class="form-label">Tanggal Coaching</label>
-                            <input class="form-control form-control-md coaching_date" type="date" name="coaching_date" id="coaching-date">
-                        </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-lg-between">
-                        <button class="btn btn-md btn-danger" data-bs-dismiss="modal">Batal</button>
-                        <input type="hidden" name="input_team_id" id="input_team_id">
-                        <button class="btn btn-md btn-primary">Ajukan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <x-paper.paper-confirmation-modal />
 
 
@@ -563,13 +539,12 @@
                 "dataSrc": function(data) {
                     return data.data;
                 },
-                data: function(d) {
-                    d.filterCompany = $('#filter-company').val();
-                    d.filterRole = $('#filter-role').val();
-                    d.status_inovasi = $('#filter-status-inovasi')
-                    d.filter_category = $('#filter_category')
-                        .val(); //ambil nilai yg dipilih ke server
-                    return d;
+                data: function (d) {
+                     d.filterCompany = $('#filter-company').val();
+                     d.filterRole = $('#filter-role').val();
+                     d.status_inovasi = $('#filter-status-inovasi').val(); 
+                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
+                     return d;
                 }
             },
             "columns": [{
@@ -658,8 +633,6 @@
     <script
         src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.1.2/b-colvis-3.1.2/b-html5-3.1.2/b-print-3.1.2/cr-2.0.4/date-1.5.4/fc-5.0.4/fh-4.0.1/kt-2.12.1/r-3.0.3/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.8.1/sp-2.3.3/sl-2.1.0/sr-1.4.1/datatables.min.js">
     </script>
-    <!-- End of <body> -->
-    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@4.0.1/dist/js/multi-select-tag.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
@@ -729,7 +702,22 @@
             }
         });
 
-        $('#filter-company, #filter-role, #filter-status-inovasi, #filter_category').on('change', function () {
+        $('#filter-company').on('change', function () {
+            dataTable.ajax.reload();
+        });
+
+        $('#filter-role').on('change', function () {
+            dataTable.ajax.reload();
+
+            user_role = "{{ Auth::user()->role }}"
+            if($('#filter-role').val() == 'admin' && user_role == 'Superadmin'){
+                $('#filter-company').removeAttr("disabled");
+            }else{
+                $("#filter-company").attr("disabled", "disabled");
+            }
+        });
+
+        $('#filter-status-inovasi').on('change', function() {
             dataTable.ajax.reload();
         });
     });
@@ -748,6 +736,7 @@
                 team_id: IdTeam
             },
             success: function(data) {
+                // console.log(data);
 
                 if(typeof data.data.member !== 'undefined'){
                     new_div_member = `
@@ -843,15 +832,11 @@
             },
             error: function(error) {
                 // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
-                console.log(error.responseJSON);
+                // console.log(error.responseJSON);
                 alert(error.responseJSON.message);
             }
         });
-    }
 
-    // fungsi untuk prepare modal submit coaching
-    function prepare_modal_coaching(team_id){
-        document.getElementById('input_team_id').value = team_id;
     }
 
     // digunakan untuk menghapus detail member ketika modal ditutup
@@ -995,7 +980,7 @@
 
 
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
             }
         });
     }
@@ -1020,7 +1005,7 @@
                 result_data = response[0]
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
                 result_data = []
             }
         })
@@ -1099,7 +1084,7 @@
 
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
             }
         });
 
@@ -1160,10 +1145,7 @@
                 feather.replace()
             },
             error: function() {
-                // Handle kesalahan jika terjadi
-                console.log(error.responseJSON);
                 alert(error.responseJSON.message);
-                // console.error('Terjadi kesalahan saat mengambil data.');
             }
         });
     }

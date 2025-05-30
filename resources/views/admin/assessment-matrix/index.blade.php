@@ -63,8 +63,8 @@
                 <div class="col-md-3 image-item" data-id="{{ $image->id }}">
                     <div class="card shadow-sm border-0 h-100">
                         <div class="image-container position-relative overflow-hidden rounded-top">
-                            <a href="{{ asset('storage/' . $image->path) }}" class="glightbox" data-gallery="image-gallery" data-title="Gambar Matriks" data-zoomable="true">
-                                <img src="{{ asset('storage/' . $image->path) }}" class="card-img-top" alt="Gambar Matriks">
+                            <a href="{{ route('query.getFile') }}?directory={{ urlencode($image->path) }}" class="glightbox" data-gallery="image-gallery" data-title="Gambar Matriks" data-zoomable="true">
+                                <img src="{{ route('query.getFile') }}?directory={{ urlencode($image->path) }}" class="card-img-top" alt="Gambar Matriks">
                                 <div class="zoom-icon position-absolute top-50 start-50 translate-middle bg-dark text-white rounded-circle p-2 opacity-75">
                                     <i class="fas fa-search-plus"></i>
                                 </div>

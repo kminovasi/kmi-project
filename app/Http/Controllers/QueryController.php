@@ -128,6 +128,30 @@ class QueryController extends Controller
         return response()->json($results);
     }
 
+    public function getJudges(Request $request)
+    {
+        $searchTerm = $request->input('query');
+        $eventId = $request->input('event_id');
+
+        $judges = DB::table('judges')
+            ->join('users', 'users.employee_id', '=', 'judges.employee_id')
+            ->where('judges.status', 'active')
+            ->where('judges.event_id', $eventId)
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('users.name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('users.employee_id', 'like', '%' . $searchTerm . '%');
+            })
+            ->select(
+                'judges.id as judges_id',
+                'users.employee_id as employee_id',
+                'users.name as name'
+            )
+            ->limit(100)
+            ->get();
+
+        return response()->json($judges);
+    }
+
     public function get_GM(Request $request)
     {
         // $unit = $request->input('unit');
@@ -179,7 +203,7 @@ class QueryController extends Controller
             }
 
 
-            if (!$table || !$limit) {
+            if (empty($table) || empty($limit)) {
                 return response()->json([
                     // 'where' => $where,
                     'table' => $table,
@@ -196,7 +220,6 @@ class QueryController extends Controller
 
                         foreach ($column as $column1 => $column2) {
                             $join->on($column1, '=', $column2);
-                            // $join->on($column1, '=',DB::raw("ANY(string_to_array(".$column2.", ','))"));
                         }
                     });
                 }
@@ -1281,12 +1304,12 @@ class QueryController extends Controller
                     DB::raw('MIN(category_name) as Kategori'),
                     DB::raw('MIN(theme_name) as Tema'),
                     DB::raw('MIN(inovasi_lokasi) as Lokasi'),
-                    'pvt_event_teams.id AS event_team_id(removed)',
-                    'pvt_event_teams.status as status(removed)',
+                    'pvt_event_teams.id AS event_team_id_removed',
+                    'pvt_event_teams.status as status_removed',
                 ];
 
                 if (count($arr_event_id)) {
-                    $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
+                    $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong_removed\"");
                 }
 
                 $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -1307,7 +1330,7 @@ class QueryController extends Controller
                     $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                         ->where('judges.employee_id', auth()->user()->employee_id);
                 }
-                $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
+                $data_row->groupBy('pvt_event_teams.id', 'pvt_event_teams.status' )->select($arr_select_case);
 
                 $dataTable = DataTables::of($data_row->get());
 
@@ -1318,10 +1341,10 @@ class QueryController extends Controller
                 }
                 $rawColumns[] = 'fix';
                 $dataTable->addColumn('fix', function ($data_row) {
-                    if ((auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
-                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
-                    } else if ((auth()->user()->role === 'Admin' && $data_row['status(removed)'] === 'On Desk')) {
-                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                    if ((auth()->user()->role === 'Superadmin' && $data_row['status_removed'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
+                    } else if ((auth()->user()->role === 'Admin' && $data_row['status_removed'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
                     } else {
                         return '-';
                     }
@@ -1333,7 +1356,7 @@ class QueryController extends Controller
                         ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                         ->where('pvt_assessment_events.status_point', 'active')
                         ->where('pvt_assesment_team_judges.stage', 'on desk')
-                        ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                        ->where('pvt_event_teams.id', $data_row['event_team_id_removed'])
                         ->groupBy('pvt_event_teams.id')
                         ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
                         ->get()
@@ -1343,20 +1366,20 @@ class QueryController extends Controller
 
                 $rawColumns[] = 'action';
                 $dataTable->addColumn('action', function ($data_row) use ($request) {
-                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
-                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id_removed']]);
+                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id_removed']]);
 
                     if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
                         $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
-                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] != 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
                         $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
-                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } else {
-                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     }
                 });
 
@@ -1370,7 +1393,7 @@ class QueryController extends Controller
                                 ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                                 ->where('pvt_assessment_events.status_point', 'active')
                                 ->where('pvt_assesment_team_judges.stage', 'on desk')
-                                ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                                ->where('pvt_event_teams.id', $data_row['event_team_id_removed'])
                                 ->groupBy('pvt_event_teams.id')
                                 ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
                                 ->get()
@@ -1380,9 +1403,6 @@ class QueryController extends Controller
                         });
                     }
                 }
-
-
-
 
                 $dataTable->rawColumns($rawColumns);
 
@@ -1396,7 +1416,7 @@ class QueryController extends Controller
                 }
                 $dataTable->removeColumn($remove_column);
 
-                return $dataTable->addIndexColumn()->toJson();
+                return $dataTable->addIndexColumn()->make(true);
             });
 
             return $dataTable;
@@ -2876,14 +2896,6 @@ class QueryController extends Controller
             return response()->json(['error' => 'path harus diisi'], 401);
         }
         try {
-            // dd(storage_path('app/public'));
-            // if (!Storage::exists('app/public/' . $directory)) {
-            // if (!Storage::exists(storage_path('public'))) {
-            //     dd(storage_path('app/public'));
-            //     return response()->json(['error' => 'File tidak ditemukan.'], 404);
-            // }
-            // $fileContents = Storage::get('public/' . $directory);
-
             return response()->file(storage_path('app/public/' . $directory));
         } catch (FileNotFoundException $e) {
             return response()->json(['error' => 'File tidak ditemukan.'], 404);

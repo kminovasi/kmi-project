@@ -132,7 +132,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/approve-admin-paper/{id}', [PaperController::class, 'approvePaperAdmin'])->name('approveadmin');
 
         //email approval
-        //Route::post('/send-email/{id}', [PaperController::class, 'approvePaperFasil'])->name('send.email.approval');
+        Route::get('/team-data/{teamId}', [PaperController::class, 'getTeamData'])->name('teamData');
 
         //competition
         Route::get('/event', [PaperController::class, 'event'])->name('event');
@@ -161,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');
         Route::get('/metodologi_papers', [QueryController::class, 'getMetodologiPapers'])->name('metodologi_papers');
+        Route::get('/get-judge', [QueryController::class, 'getJudge'])->name('getJudge');
 
 
         Route::get('/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
@@ -216,6 +217,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/update-point/{id}', [AssessmentController::class, 'updateAssessmentPoint'])->name('update.point');
         Route::delete('/delete-point/{id}', [AssessmentController::class, 'deleteAssessmentPoint'])->name('delete.point');
         Route::put('/update-status', [AssessmentController::class, 'changeStatusAssessmentPoint'])->name('update.status');
+
+        // Lihat Berita Acara Benefit
+        Route::get('/berita-acara-benefit/{paperId}', [AssessmentController::class, 'showBeritaAcaraBenefit'])->name('benefitView');
 
         Route::get('/assessment-ondesk-value/{id}', [AssessmentController::class, 'assessmentValue_oda'])->name('juri.value.oda');
         Route::get('/assessment-presentation-value/{id}', [AssessmentController::class, 'assessmentValue_pa'])->name('juri.value.pa');

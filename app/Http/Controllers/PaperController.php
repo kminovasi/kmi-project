@@ -1837,4 +1837,15 @@ class PaperController extends Controller
 
         return response()->download($filePath, basename($methodology . '-' . $step . '.docx'));
     }
+
+    public function getTeamData($teamId)
+    {
+        try {
+            $teamData = Team::with(['members', 'papers'])->findOrFail($teamId)->first();
+
+            return response()->json(['success' => true, 'data' => $teamData]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Team not found.'], 404);
+        }
+    }
 }

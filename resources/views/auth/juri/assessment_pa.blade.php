@@ -137,10 +137,11 @@
                                     data-bs-target="#deleteJuri">Hapus Juri</button>
                             </div>
                         </div>
-                    @endif
+                    @elseif(Auth::user()->role == 'Juri')
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
                     </div>
+                    @endif
                 </div>
             </form>
         </div>
@@ -188,6 +189,8 @@
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12">
+                            <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
+                            <input type="hidden" name="stage" value="caucus">
                             <label for="dataJudge">Pilih Juri</label>
                             <select name="judge_id" class="form-select" id="">
                                 @foreach ($datas_juri as $data_juri)
@@ -285,6 +288,58 @@
             let column = updateColumnDataTable();
             let dataTable = initializeDataTable(column);
         });
+
+        // In your Javascript (external .js resource or <script> tag)
+    $(document).ready(function() {
+        $('#select2-juri').select2({
+            // allowClear: true,
+            // theme: "classic",
+            dropdownParent: $("#addJuri"),
+            allowClear: true,
+            width: "100%",
+            placeholder: "Pilih Employee untuk dijadikan juri",
+            ajax: {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'GET', // Metode HTTP POST
+                url: '{{ route('query.custom') }}',
+                dataType: 'json',
+                delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
+                data: {
+                    table: "judges",
+                    where: {
+                        'event_id': {{ $datas->event_id }},
+                        'status': 'active'
+                    },
+                    limit: 100,
+                    join: {
+                        'users':{
+                            'users.employee_id': 'judges.employee_id'
+                        }
+                    },
+                    select:[
+                        'judges.id as judges_id',
+                        'users.employee_id as employee_id',
+                        'users.name as name'
+                    ]
+                },
+                processResults: function(data) {
+                    // Memformat data yang diterima untuk format yang sesuai dengan Select2
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                text: item.employee_id + ' - ' + item
+                                    .name, // Nama yang akan ditampilkan di kotak seleksi
+                                id: item.judges_id // Nilai yang akan dikirimkan saat opsi dipilih
+                            };
+                        })
+                    };
+                },
+                cache: true,
+            }
+        });
+    });
 
         count_exceed_max_score = new Set()
         function validate_score(elemen){

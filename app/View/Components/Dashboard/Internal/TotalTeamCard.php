@@ -2,7 +2,7 @@
 
 namespace App\View\Components\Dashboard\Internal;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -24,17 +24,20 @@ class TotalTeamCard extends Component
 
         // Ambil 4 tahun terakhir
         $years = range(Carbon::now()->year - 3, Carbon::now()->year);
+        $paperStatus = ['accepted by innovation admin', 'rejected by innovation admin'];
 
         $teamCounts = DB::table('teams')
+            ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->select(
-                DB::raw('EXTRACT(YEAR FROM teams.created_at) as year'),
+                'events.year as year',
                 DB::raw('COUNT(DISTINCT teams.id) as total_teams')
             )
-            ->where('papers.status', 'accepted by innovation admin')
+            ->whereIn('papers.status', $paperStatus)
             ->where('teams.company_code', $companyCode)
-            ->whereIn(DB::raw('EXTRACT(YEAR FROM teams.created_at)'), $years)
-            ->groupBy(DB::raw('EXTRACT(YEAR FROM teams.created_at)'))
+            ->whereIn('events.year', $years)
+            ->groupBy('events.year')
             ->orderBy('year')
             ->get();
 

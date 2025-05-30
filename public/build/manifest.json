@@ -1,20 +1,210 @@
 {
+  "__commonjsHelpers-725317a4.js": {
+    "file": "assets/_commonjsHelpers-725317a4.js"
+  },
+  "_chartjs-plugin-autocolors.esm-334ffc15.js": {
+    "file": "assets/chartjs-plugin-autocolors.esm-334ffc15.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ]
+  },
+  "_chartjs-plugin-datalabels.esm-9070c457.js": {
+    "file": "assets/chartjs-plugin-datalabels.esm-9070c457.js"
+  },
+  "_html2canvas.esm-0b8b4967.js": {
+    "dynamicImports": [
+      "node_modules/dompurify/dist/purify.es.js",
+      "node_modules/canvg/lib/index.es.js"
+    ],
+    "file": "assets/html2canvas.esm-0b8b4967.js",
+    "imports": [
+      "__commonjsHelpers-725317a4.js"
+    ]
+  },
+  "node_modules/canvg/lib/index.es.js": {
+    "file": "assets/index.es-9fb1b6c3.js",
+    "imports": [
+      "__commonjsHelpers-725317a4.js",
+      "_html2canvas.esm-0b8b4967.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "node_modules/canvg/lib/index.es.js"
+  },
+  "node_modules/dompurify/dist/purify.es.js": {
+    "file": "assets/purify.es-2de9db7f.js",
+    "isDynamicEntry": true,
+    "src": "node_modules/dompurify/dist/purify.es.js"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-4ed993c7.js",
+    "file": "assets/app-6037ed8c.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
   "resources/js/app.js": {
-    "dynamicImports": [
-      "resources/js/semenChart.js"
+    "file": "assets/app-e4120a98.js",
+    "imports": [
+      "__commonjsHelpers-725317a4.js"
     ],
-    "file": "assets/app-37ec44ea.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   },
+  "resources/js/benefitChart.js": {
+    "file": "assets/benefitChart-43300cbc.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js",
+      "_chartjs-plugin-autocolors.esm-334ffc15.js",
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/benefitChart.js"
+  },
+  "resources/js/cementInnovationsChart.js": {
+    "file": "assets/cementInnovationsChart-fbc87849.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/cementInnovationsChart.js"
+  },
+  "resources/js/exportTotalFinancialBenefitByOrganizationChart.js": {
+    "file": "assets/exportTotalFinancialBenefitByOrganizationChart-93b86d9a.js",
+    "imports": [
+      "_html2canvas.esm-0b8b4967.js",
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/exportTotalFinancialBenefitByOrganizationChart.js"
+  },
+  "resources/js/exportTotalInnovatorByOrganization.js": {
+    "file": "assets/exportTotalInnovatorByOrganization-cf4a7a9a.js",
+    "imports": [
+      "_html2canvas.esm-0b8b4967.js",
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/exportTotalInnovatorByOrganization.js"
+  },
+  "resources/js/exportTotalPotentialBenefitByOrganizationChart.js": {
+    "file": "assets/exportTotalPotentialBenefitByOrganizationChart-51535a8c.js",
+    "imports": [
+      "_html2canvas.esm-0b8b4967.js",
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/exportTotalPotentialBenefitByOrganizationChart.js"
+  },
+  "resources/js/exportTotalTeamByOrganization.js": {
+    "file": "assets/exportTotalTeamByOrganization-1a0fc9fb.js",
+    "imports": [
+      "_html2canvas.esm-0b8b4967.js",
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/exportTotalTeamByOrganization.js"
+  },
+  "resources/js/financialBenefitChartCompanies.js": {
+    "file": "assets/financialBenefitChartCompanies-0e241d26.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/financialBenefitChartCompanies.js"
+  },
+  "resources/js/innovatorChart.js": {
+    "file": "assets/innovatorChart-eec113ba.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js",
+      "_chartjs-plugin-autocolors.esm-334ffc15.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/innovatorChart.js"
+  },
+  "resources/js/nonCementInnovationsChart.js": {
+    "file": "assets/nonCementInnovationsChart-3045eb15.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/nonCementInnovationsChart.js"
+  },
   "resources/js/semenChart.js": {
-    "file": "assets/semenChart-f4455533.js",
-    "isDynamicEntry": true,
+    "file": "assets/semenChart-61087b96.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
     "src": "resources/js/semenChart.js"
+  },
+  "resources/js/totalBenefit.js": {
+    "file": "assets/totalBenefit-3e580da3.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalBenefit.js"
+  },
+  "resources/js/totalBenefitChart.js": {
+    "file": "assets/totalBenefitChart-7704f392.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalBenefitChart.js"
+  },
+  "resources/js/totalFinancialBenefitByOrganizationChart.js": {
+    "file": "assets/totalFinancialBenefitByOrganizationChart-5283de8b.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalFinancialBenefitByOrganizationChart.js"
+  },
+  "resources/js/totalInnovatorByOrganizationChart.js": {
+    "file": "assets/totalInnovatorByOrganizationChart-5283de8b.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalInnovatorByOrganizationChart.js"
+  },
+  "resources/js/totalInnovatorChart.js": {
+    "file": "assets/totalInnovatorChart-1318f767.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalInnovatorChart.js"
+  },
+  "resources/js/totalInnovatorChartInternal.js": {
+    "file": "assets/totalInnovatorChartInternal-aeefba5e.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalInnovatorChartInternal.js"
+  },
+  "resources/js/totalPotentialBenefitByOrganizationChart.js": {
+    "file": "assets/totalPotentialBenefitByOrganizationChart-5283de8b.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalPotentialBenefitByOrganizationChart.js"
+  },
+  "resources/js/totalTeamChart.js": {
+    "file": "assets/totalTeamChart-a8ba724f.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalTeamChart.js"
+  },
+  "resources/js/totalTeamChartInternal.js": {
+    "file": "assets/totalTeamChartInternal-1056c27f.js",
+    "imports": [
+      "_chartjs-plugin-datalabels.esm-9070c457.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/totalTeamChartInternal.js"
   }
 }

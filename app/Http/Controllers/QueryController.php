@@ -2,39 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Exception;
+use App\Models\Team;
 use App\Models\User;
-use App\Models\PvtMember;
+use App\Models\Event;
+use App\Models\Judge;
 use App\Models\Paper;
+use App\Models\Company;
+use App\Models\History;
+use App\Models\BodEvent;
+use App\Models\Category;
+use App\Models\ph2Member;
+use App\Models\PvtMember;
+use App\Models\BeritaAcara;
+use App\Models\PvtEventTeam;
+use Illuminate\Http\Request;
+use App\Services\JudgeService;
+use App\Models\AssessmentPoint;
+use App\Models\MetodologiPaper;
+use App\Models\SummaryExecutive;
+use App\Models\PvtAssessmentTeam;
+use App\Models\PvtAssessmentEvent;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\pvtAssesmentTeamJudge;
+use Illuminate\Support\Facades\Cache;
 use App\Models\CustomBenefitFinancial;
 use App\Models\TemplateAssessmentPoint;
-use App\Models\AssessmentPoint;
-use App\Models\PvtAssessmentEvent;
-use App\Models\pvtAssesmentTeamJudge;
-use App\Models\ph2Member;
-use App\Models\Company;
-use App\Models\Category;
-use App\Models\Event;
-use App\Models\Team;
-use App\Models\History;
-use App\Models\PvtEventTeam;
-use App\Models\Judge;
-use App\Models\BodEvent;
-use App\Models\BeritaAcara;
-use App\Models\MetodologiPaper;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use App\Models\PvtAssessmentTeam;
-use App\Models\SummaryExecutive;
-use App\Services\JudgeService;
-use DataTables;
-use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 class QueryController extends Controller
 {
@@ -51,8 +51,8 @@ class QueryController extends Controller
 
         // Lakukan pencarian berdasarkan query dan kembalikan hasil sebagai JSON
         $results = User::join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->where('name', 'ilike', "%$query%")
-            ->orWhere('employee_id', 'ilike', "%$query%")
+            ->where('name', 'like', "%$query%")
+            ->orWhere('employee_id', 'like', "%$query%")
             ->limit(10)
             ->get();
 
@@ -120,12 +120,36 @@ class QueryController extends Controller
                 $q->where('name', 'ilike', "%$query%")
                     ->orWhere('email', 'ilike', "%$query%");
             })
-            ->whereIn('job_level', ["Band 2", "Band 1"])
+            ->whereIn('job_level', ["Band 2", "Band 1", "Band 3"])
             ->select('employee_id', 'name', 'company_name', 'job_level')
             ->limit(10)
             ->get();
 
         return response()->json($results);
+    }
+
+    public function getJudges(Request $request)
+    {
+        $searchTerm = $request->input('query');
+        $eventId = $request->input('event_id');
+
+        $judges = DB::table('judges')
+            ->join('users', 'users.employee_id', '=', 'judges.employee_id')
+            ->where('judges.status', 'active')
+            ->where('judges.event_id', $eventId)
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('users.name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('users.employee_id', 'like', '%' . $searchTerm . '%');
+            })
+            ->select(
+                'judges.id as judges_id',
+                'users.employee_id as employee_id',
+                'users.name as name'
+            )
+            ->limit(100)
+            ->get();
+
+        return response()->json($judges);
     }
 
     public function get_GM(Request $request)
@@ -179,7 +203,7 @@ class QueryController extends Controller
             }
 
 
-            if (!$table || !$limit) {
+            if (empty($table) || empty($limit)) {
                 return response()->json([
                     // 'where' => $where,
                     'table' => $table,
@@ -196,7 +220,6 @@ class QueryController extends Controller
 
                         foreach ($column as $column1 => $column2) {
                             $join->on($column1, '=', $column2);
-                            // $join->on($column1, '=',DB::raw("ANY(string_to_array(".$column2.", ','))"));
                         }
                     });
                 }
@@ -441,7 +464,9 @@ class QueryController extends Controller
                 'papers.status as paper_status',
 
             ];
-            if ($request->filterRole == 'admin') {
+            if(Auth::user()->role == 'Superadmin') {
+                $query_data->distinct();
+            } elseif ($request->filterRole == 'admin') {
                 // Gabungkan tabel pvt_members untuk memeriksa keikutsertaan admin sebagai member
                 $query_data->leftJoin('pvt_members', function ($join) use ($request) {
                     $join->on('teams.id', '=', 'pvt_members.team_id')
@@ -450,8 +475,7 @@ class QueryController extends Controller
 
                 // Filter berdasarkan company_code kecuali admin adalah peserta/member dengan status tertentu
                 $query_data->where(function ($query) use ($request) {
-                    $query->where('companies.company_code', $request->filterCompany) // Berdasarkan company_code
-                        ->orWhere(function ($query) {
+                    $query->where(function ($query) {
                             $query->whereNotNull('pvt_members.id') // Admin adalah member
                                 ->whereIn('pvt_members.status', ['leader', 'member', 'facilitator', 'gm']); // Status tertentu
                         });
@@ -469,10 +493,23 @@ class QueryController extends Controller
                 $select[] = 'pvt_members.status as member_status';
             }
 
+            // Filter untuk company_code (mendukung single dan multiple select)
+            if ($request->has('filterCompany') && !empty($request->filterCompany)) {
+                $filterCompany = is_array($request->filterCompany)
+                    ? $request->filterCompany
+                    : [$request->filterCompany]; // ubah jadi array kalau single string
+
+                $query_data->whereIn('teams.company_code', $filterCompany);
+            }
 
             //filter untuk status inovasi
             if ($request->has('status_inovasi') && $request->status_inovasi != '') {
                 $query_data->where('papers.status_inovasi', $request->status_inovasi);
+            }
+
+            //filter for category
+            if ($request->has('filter_category') && $request->filter_category != '') {
+                $query_data->where('teams.category_id', $request->filter_category);
             }
 
             $data_row = $query_data->select($select)->get();
@@ -485,7 +522,12 @@ class QueryController extends Controller
 
             $rawColumns = ['detail_team'];
             $dataTable->addColumn('detail_team', function ($data_row) {
-                return '<button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember" onclick="get_data_on_modal(' . $data_row->team_id . ')" >Detail</button>';
+                return '
+                <div class="d-flex justify-content-center flex-column gap-1">
+                    <button class="btn btn-dark btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#detailTeamMember" onclick="get_data_on_modal(' . $data_row->team_id . ')" >Detail</button>
+                    <button class="btn btn-primary btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#coachingClinic" onclick="prepare_modal_coaching('. $data_row->team_id .')">Coaching</button>
+                </div>
+                ';
             });
 
             //     // Add metodologi makalah column
@@ -536,6 +578,11 @@ class QueryController extends Controller
                             ";
                         }
                     }
+
+                    if($data_row->status === 'accepted by innovation admin'){
+                        $html .= '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )">Update Paper</button>';
+                    }
+
                     if ($data_row->status_rollback == 'rollback paper') {
                         $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
                     }
@@ -741,7 +788,9 @@ class QueryController extends Controller
                 ->select('innovation_title', 'inovasi_lokasi', 'abstract', 'problem', 'main_cause', 'solution', 'innovation_photo', 'proof_idea')
                 ->get();
 
-            $data_anggotas = PvtMember::where('team_id', $request->team_id)->get();
+            $data_anggotas = PvtMember::with('team')
+                            ->where('team_id', $request->team_id)
+                            ->get();
 
             $data_karyawan = [];
             foreach ($data_anggotas as $data_anggota) {
@@ -1255,12 +1304,12 @@ class QueryController extends Controller
                     DB::raw('MIN(category_name) as Kategori'),
                     DB::raw('MIN(theme_name) as Tema'),
                     DB::raw('MIN(inovasi_lokasi) as Lokasi'),
-                    'pvt_event_teams.id AS event_team_id(removed)',
-                    'pvt_event_teams.status as status(removed)',
+                    'pvt_event_teams.id AS event_team_id_removed',
+                    'pvt_event_teams.status as status_removed',
                 ];
 
                 if (count($arr_event_id)) {
-                    $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong(removed)\"");
+                    $arr_select_case[] = DB::raw("MIN(pvt_assesment_team_judges.score) as \"score_kosong_removed\"");
                 }
 
                 $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -1281,7 +1330,7 @@ class QueryController extends Controller
                     $data_row->join("judges", 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
                         ->where('judges.employee_id', auth()->user()->employee_id);
                 }
-                $data_row->groupBy('pvt_event_teams.id')->select($arr_select_case);
+                $data_row->groupBy('pvt_event_teams.id', 'pvt_event_teams.status' )->select($arr_select_case);
 
                 $dataTable = DataTables::of($data_row->get());
 
@@ -1292,10 +1341,10 @@ class QueryController extends Controller
                 }
                 $rawColumns[] = 'fix';
                 $dataTable->addColumn('fix', function ($data_row) {
-                    if ((auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'On Desk')) {
-                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
-                    } else if ((auth()->user()->role === 'Admin' && $data_row['status(removed)'] === 'On Desk')) {
-                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
+                    if ((auth()->user()->role === 'Superadmin' && $data_row['status_removed'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
+                    } else if ((auth()->user()->role === 'Admin' && $data_row['status_removed'] === 'On Desk')) {
+                        return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
                     } else {
                         return '-';
                     }
@@ -1307,7 +1356,7 @@ class QueryController extends Controller
                         ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                         ->where('pvt_assessment_events.status_point', 'active')
                         ->where('pvt_assesment_team_judges.stage', 'on desk')
-                        ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                        ->where('pvt_event_teams.id', $data_row['event_team_id_removed'])
                         ->groupBy('pvt_event_teams.id')
                         ->select(DB::raw("ROUND(ROUND(SUM(pvt_assesment_team_judges.score), 2) / COUNT(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[0]['id'] . "' THEN pvt_assesment_team_judges.assessment_event_id END), 2) AS \"total\""))
                         ->get()
@@ -1317,20 +1366,20 @@ class QueryController extends Controller
 
                 $rawColumns[] = 'action';
                 $dataTable->addColumn('action', function ($data_row) use ($request) {
-                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id(removed)']]);
-                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id(removed)']]);
+                    $inputPenilaianUrl = route('assessment.juri.value.oda', ['id' => $data_row['event_team_id_removed']]);
+                    $lihatSofiUrl = route('assessment.show.sofi.oda', ['id' => $data_row['event_team_id_removed']]);
 
                     if (auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin') {
                         $nextStepButton = $data_row['score_kosong(removed)'] == 0 ?
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
-                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] != 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
                         $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
-                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } else {
-                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status(removed)'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     }
                 });
 
@@ -1344,7 +1393,7 @@ class QueryController extends Controller
                                 ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                                 ->where('pvt_assessment_events.status_point', 'active')
                                 ->where('pvt_assesment_team_judges.stage', 'on desk')
-                                ->where('pvt_event_teams.id', $data_row['event_team_id(removed)'])
+                                ->where('pvt_event_teams.id', $data_row['event_team_id_removed'])
                                 ->groupBy('pvt_event_teams.id')
                                 ->select(DB::raw("ROUND(AVG(CASE WHEN pvt_assesment_team_judges.assessment_event_id = '" . $arr_event_id[$i]['id'] . "' THEN pvt_assesment_team_judges.score END), 2) AS \"Nilai\""))
                                 ->get()
@@ -1354,9 +1403,6 @@ class QueryController extends Controller
                         });
                     }
                 }
-
-
-
 
                 $dataTable->rawColumns($rawColumns);
 
@@ -1370,7 +1416,7 @@ class QueryController extends Controller
                 }
                 $dataTable->removeColumn($remove_column);
 
-                return $dataTable->addIndexColumn()->toJson();
+                return $dataTable->addIndexColumn()->make(true);
             });
 
             return $dataTable;
@@ -2850,14 +2896,6 @@ class QueryController extends Controller
             return response()->json(['error' => 'path harus diisi'], 401);
         }
         try {
-            // dd(storage_path('app/public'));
-            // if (!Storage::exists('app/public/' . $directory)) {
-            // if (!Storage::exists(storage_path('public'))) {
-            //     dd(storage_path('app/public'));
-            //     return response()->json(['error' => 'File tidak ditemukan.'], 404);
-            // }
-            // $fileContents = Storage::get('public/' . $directory);
-
             return response()->file(storage_path('app/public/' . $directory));
         } catch (FileNotFoundException $e) {
             return response()->json(['error' => 'File tidak ditemukan.'], 404);

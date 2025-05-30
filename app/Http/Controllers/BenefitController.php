@@ -61,7 +61,6 @@ class BenefitController extends Controller
                     WHEN papers.status = \'not accepted\' THEN \'na\'
                     WHEN papers.status = \'accepted by facilitator\' THEN \'abf\'
                     WHEN papers.status = \'rejected by facilitator\' THEN \'rbf\'
-                    WHEN papers.status = \'accepted by innovation admin\' THEN \'abia\'
                     WHEN papers.status = \'rejected by innovation admin\' THEN \'rbia\'
                     ELSE papers.status
                 END as status')
@@ -110,23 +109,21 @@ class BenefitController extends Controller
         }
 
         if (PvtEventTeam::where('team_id', $row->team_id)->exists()) {
-            $statusEventTeam = PvtEventTeam::where('team_id', $row->team_id)->first();
-            $isWinnerStatusTeam = $statusEventTeam->status === 'Juara' ? true : false;
             if (Auth::user()->role === 'Superadmin') {
                 // Superadmin bisa edit jika tim berstatus Juara
-                $is_owner = $isWinnerStatusTeam;
+                $is_owner = true;
             } else {
                 // Untuk user biasa (pemilik paper/benefit)
                 $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
                     ->where('team_id', $row->team_id)
                     ->whereIn('status', ['member', 'leader'])
-                    ->exists() && !$isWinnerStatusTeam; // Tambahkan pengecekan NOT isWinnerStatusTeam
+                    ->exists();// Tambahkan pengecekan NOT isWinnerStatusTeam
             }
         }
-        $is_disabled = true;
-
+            
         if (($row->status_rollback == 'rollback benefit' ||
                 $row->status == 'accepted paper by facilitator' ||
+                $row->status == 'accepted by innovation admin' ||
                 $row->status == 'upload benefit' ||
                 $row->status == 'rejected benefit by facilitator' ||
                 $row->status == 'revision benefit by facilitator' ||
@@ -142,6 +139,20 @@ class BenefitController extends Controller
         }
 
         return view('auth.user.benefit.index', compact('row', 'benefit_custom', 'file_content', 'is_owner', 'gmName', 'is_disabled'));
+    }
+
+    public function previewBenefitPdf($paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+
+        $path = storage_path('app/public/' . $paper->file_review);
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function storeBenefitUser(Request $request, $id)

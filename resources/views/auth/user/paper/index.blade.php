@@ -209,39 +209,35 @@
     </div>
 
     {{-- modal untuk filter khusus superadmin --}}
-    <div class="modal fade" id="filterModal" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
+    {{-- modal untuk filter khusus superadmin --}}
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content shadow">
                 <!-- Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
                     <h5 class="modal-title fw-bold text-white" id="detailTeamMemberTitle">Filter</h5>
-                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Body -->
                 <div class="modal-body">
                     <form id="filterForm">
-                        <!-- Role Filter -->
-                        <div class="mb-3">
-                            <label for="filter-role" class="form-label fw-semibold">Role</label>
-                            <select id="filter-role" name="filter-role" class="form-select">
-                                <?php if(auth()->user()->role == 'Admin' || auth()->user()->role == 'Superadmin'): ?>
-                                <option value="admin" selected>Admin</option>
-                                <?php endif; ?>
-                            </select>
-                        </div>
+                        @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
+                            <input type="hidden" name="filter-role" id="filter-role" value="admin">
+                        @endif
+
                         <!-- Company Filter -->
                         <div class="mb-3">
                             <label for="filter-company" class="form-label fw-semibold">Perusahaan</label>
                             <select id="filter-company" name="filter-company" class="form-select">
+                                <option value="" selected>-- Pilih Perusahaan --</option>
                                 @foreach ($data_company as $company)
-                                    <option value="{{ $company->company_code }}"
-                                        {{ $company->company_code == Auth::user()->company_code ? 'selected' : '' }}>
+                                    <option value="{{ $company->company_code }}">
                                         {{ $company->company_name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+
                         <!-- Status Inovasi Filter -->
                         <div class="mb-3">
                             <label for="filter-status-inovasi" class="form-label fw-semibold">Status Inovasi</label>
@@ -252,8 +248,20 @@
                                 <option value="Implemented">Implemented</option>
                             </select>
                         </div>
-                    </form>
+
+                        <!-- Filter by Category -->
+                        <div class="mb-3">
+                            <label for="filter_category" class="form-label fw-semibold">Kategori</label>
+                            <select id="filter_category" name="filter_category" class="form-select">
+                                <option value="" selected>-- Pilih Kategori --</option>
+                                @foreach ($data_category as $category)
+                                    <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form> <!-- ✅ Penutup form di tempat yang benar -->
                 </div>
+
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -262,6 +270,7 @@
             </div>
         </div>
     </div>
+    
     <x-paper.approve-fasil-modal />
 
     <x-paper.approve-benefit-modal-by-fasil />
@@ -530,12 +539,12 @@
                 "dataSrc": function(data) {
                     return data.data;
                 },
-                data: function(d) {
-                    d.filterCompany = $('#filter-company').val();
-                    d.filterRole = $('#filter-role').val();
-                    d.status_inovasi = $('#filter-status-inovasi')
-                        .val(); //ambil nilai yg dipilih ke server
-                    return d;
+                data: function (d) {
+                     d.filterCompany = $('#filter-company').val();
+                     d.filterRole = $('#filter-role').val();
+                     d.status_inovasi = $('#filter-status-inovasi').val(); 
+                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
+                     return d;
                 }
             },
             "columns": [{
@@ -654,7 +663,8 @@
                 data: function (d) {
                      d.filterCompany = $('#filter-company').val();
                      d.filterRole = $('#filter-role').val();
-                     d.status_inovasi = $('#filter-status-inovasi').val(); //ambil nilai yg dipilih ke server
+                     d.status_inovasi = $('#filter-status-inovasi').val(); 
+                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
                      return d;
                 }
             },
@@ -726,7 +736,7 @@
                 team_id: IdTeam
             },
             success: function(data) {
-                console.log(data);
+                // console.log(data);
 
                 if(typeof data.data.member !== 'undefined'){
                     new_div_member = `
@@ -822,7 +832,7 @@
             },
             error: function(error) {
                 // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
-                console.log(error.responseJSON);
+                // console.log(error.responseJSON);
                 alert(error.responseJSON.message);
             }
         });
@@ -970,7 +980,7 @@
 
 
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
             }
         });
     }
@@ -995,7 +1005,7 @@
                 result_data = response[0]
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
                 result_data = []
             }
         })
@@ -1074,7 +1084,7 @@
 
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                // console.error(xhr.responseText);
             }
         });
 
@@ -1135,10 +1145,7 @@
                 feather.replace()
             },
             error: function() {
-                // Handle kesalahan jika terjadi
-                console.log(error.responseJSON);
                 alert(error.responseJSON.message);
-                // console.error('Terjadi kesalahan saat mengambil data.');
             }
         });
     }

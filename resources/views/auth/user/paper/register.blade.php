@@ -102,10 +102,6 @@
                                 <select class="form-select" aria-label="Default select example" name="leader"
                                     id="id_leader" value="{{ old('leader') }}" placeholder="Pilih Ketua Tim"
                                     onChange="show_identity(this); check_select(this);" required>
-                                    <!-- <option selected disabled>Select a leader :</option> -->
-                                    <!-- @foreach ($datas_user as $r_fasil)
-    <option value="{{ $r_fasil->id }}">{{ $r_fasil->employee_id }} - {{ $r_fasil->name }}</option>
-    @endforeach    -->
                                 </select>
                             </div>
                             <div class="mb-4">
@@ -326,39 +322,39 @@
 
         // fungsi untuk menampilkan dan mengset input value company beradasarkan leader
         function show_identity(element) {
-    var leader_value = element.value;
-    var companyField = document.getElementById("company");
-    var unitField = document.getElementById("unit");
-    var departmentField = document.getElementById("department");
-    var directorateField = document.getElementById("directorate");
-    console.log(leader_value)
+            var leader_value = element.value;
+            var companyField = document.getElementById("company");
+            var unitField = document.getElementById("unit");
+            var departmentField = document.getElementById("department");
+            var directorateField = document.getElementById("directorate");
+            console.log(leader_value)
 
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        type: 'GET',
-        url: '{{ route('getUsersWithCompany') }}',
-        dataType: 'json',
-        data: {
-            employee_id: leader_value
-        },
-        success: function(response) {
-            if (response.success) {
-                console.log(response.data)
-                companyField.value = response.data.co_name
-                unitField.value = response.data.unit_name
-                departmentField.value = response.data.department_name
-                directorateField.value = response.data.directorate_name
-            } else {
-                console.error(response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error(xhr.responseText);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'GET',
+                url: '{{ route('getUsersWithCompany') }}',
+                dataType: 'json',
+                data: {
+                    employee_id: leader_value
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log(response.data)
+                        companyField.value = response.data.co_name
+                        unitField.value = response.data.unit_name
+                        departmentField.value = response.data.department_name
+                        directorateField.value = response.data.directorate_name
+                    } else {
+                        console.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
         }
-    });
-}
 
         function addRow(element) {
             var anggota_array = document.querySelectorAll('select[name="anggota[]"]');
@@ -369,12 +365,6 @@
                 console.log('Selected Max User:', selectedData.max_user);
                 jumlah = selectedData.max_user;
             });
-            // if (value == 8 || value == 9) {
-            //     jumlah = 1
-            // } else if (value != 0) {
-            //     console.log(value);
-            //     jumlah = 4
-            // }
             if (anggota_selectField_count < jumlah)
                 addInputRow(jumlah - anggota_selectField_count, anggota_selectField_count)
             else if (anggota_selectField_count > jumlah)
@@ -476,6 +466,7 @@
                 }
             });
         }
+
         // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
         function search_facilitator(select_element_id) {
 

@@ -11,7 +11,7 @@ class AssessmentMatrixController extends Controller
 {
     public function index()
     {
-        $images = AssessmentMatrixImage::latest()->paginate(10);
+        $images = AssessmentMatrixImage::select('path', 'id')->paginate(10);
         return view('admin.assessment-matrix.index', compact('images'));
     }
 
@@ -23,7 +23,7 @@ class AssessmentMatrixController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $fileName = Str::random(10) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('assessment-matrix', $fileName, 'public');
 
             AssessmentMatrixImage::create([
@@ -46,15 +46,17 @@ class AssessmentMatrixController extends Controller
 
         $image = AssessmentMatrixImage::findOrFail($request->id);
 
-        // Hapus file dari storage
-        if (Storage::disk('public')->exists($image->path)) {
-            Storage::disk('public')->delete($image->path);
+        // Pastikan path relatif terhadap storage/app/public
+        $path = $image->path;
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
 
-        // Hapus record dari database
         $image->delete();
 
-        return redirect()->route('management-system.assessment-matrix.index')
-            ->with('success', 'Gambar berhasil dihapus');
+        // Jika bukan AJAX
+        return redirect()->back()->with('success', 'Gambar berhasil dihapus');
     }
+
 }

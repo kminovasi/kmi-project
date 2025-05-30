@@ -9,24 +9,20 @@
             @php
                 $colors = [
                     [
-                        'bg' => 'bg-custom-red',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%)',
+                        'bg' => '#8e1616',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => 'bg-custom-green',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)',
+                        'bg' => '#d84040',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => 'bg-custom-blue',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
+                        'bg' => '#8e1616',
+                        'text' => '#eeeeee',
                     ],
                     [
-                        'bg' => 'bg-custom-orange',
-                        'text' => 'text-white',
-                        'gradient' => 'linear-gradient(135deg, #f39c12 0%, #d35400 100%)',
+                        'bg' => '#d84040',
+                        'text' => '#eeeeee',
                     ],
                 ];
             @endphp

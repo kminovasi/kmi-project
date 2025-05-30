@@ -60,6 +60,19 @@ class Team extends Model
         return $this->belongsTo(Company::class, 'company_code', 'company_code'); // Pastikan kolom yang digunakan sesuai
     }
 
+    // Team.php
+    public function getCompanyAttribute()
+    {
+        // Ambil semua events dari team ini → lalu ambil semua company dari tiap event
+        return $this->events
+            ->flatMap(function ($event) {
+                return $event->companies;
+            })
+            ->unique('id') // Optional: hilangkan duplikat
+            ->first();     // Ambil satu (atau bisa return semuanya kalau mau)
+    }
+
+
     public function events()
     {
         return $this->belongsToMany(Event::class, 'pvt_event_teams')
@@ -82,5 +95,22 @@ class Team extends Model
     public function pvtEventTeams()
     {
         return $this->hasMany(PvtEventTeam::class, 'team_id');
+    }
+
+    public function coachingClinics()
+    {
+        return $this->hasMany(CoachingClinic::class, 'team_id', 'id');
+    }
+
+    public function members()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            PvtMember::class,
+            'team_id',       // Foreign key di tabel PvtMember
+            'employee_id',   // Foreign key di tabel User
+            'id',            // Local key di tabel Team
+            'employee_id'    // Local key di tabel PvtMember
+        );
     }
 }

@@ -160,7 +160,6 @@ class PaperController extends Controller
                     'companies.company_name'
                 )
                 ->first();
-            // dd($datas_member);
             return view('auth.user.paper.external_event', [
                 'datas_category' => $datas_category,
                 'datas_theme' => $datas_theme,
@@ -493,6 +492,10 @@ class PaperController extends Controller
     public function storeStages(Request $request, $id, $stage)
     {
         try {
+            $request->validate([
+                'step' => 'file|max:30720',
+            ]);
+
             $paper = Paper::with('metodologiPaper')->findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
 
@@ -584,9 +587,9 @@ class PaperController extends Controller
     public function storeFileStages(Request $request, $id, $stage)
     {
         try {
-            if ($this->checkIsCompressed($request)) {
-                return redirect()->back()->withErrors('Gagal mengunggah Paper! Pastikan berkas tidak terkompres dan coba lagi.');
-            }
+            $request->validate([
+                'file_stage' => 'required|file|mimes:pdf|max:30720',
+            ]);
 
             $paper = Paper::findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
@@ -629,7 +632,9 @@ class PaperController extends Controller
 
             return redirect()->route('paper.index')->with('success', 'Full Paper berhasil diunggah dan diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->route('paper.index')->withErrors('Error: Terjadi kesalahan saat menyimpan berkas. Silakan coba lagi nanti.');
+            return redirect()
+                ->route('paper.index')
+                ->withErrors('Error: ' . $e->getMessage());
         }
     }
 
@@ -1606,7 +1611,7 @@ class PaperController extends Controller
                     $fileSize = $value->getSize() / 1024; // ukuran dalam KB
 
                     // Validasi berdasarkan tipe file
-                    if (str_contains($fileType, 'pdf') && $fileSize > 10240) { // PDF maksimal 10MB (10240 KB)
+                    if (str_contains($fileType, 'pdf') && $fileSize > 30720) { // PDF maksimal 30MB (30720 KB)
                         $fail("The {$attribute} must not exceed 10MB.");
                     } elseif (str_contains($fileType, 'image') && $fileSize > 5120) { // Gambar maksimal 5MB (5120 KB)
                         $fail("The {$attribute} must not exceed 5MB.");
@@ -1665,7 +1670,7 @@ class PaperController extends Controller
         try {
             // Validate the file input
             $request->validate([
-                'file_stage' => 'required|file|mimes:pdf|max:10240', // Adjust the max size as needed
+                'file_stage' => 'required|file|mimes:pdf|max:20480', // Adjust the max size as needed
             ]);
 
             // Get the uploaded file
@@ -1677,10 +1682,6 @@ class PaperController extends Controller
             // Initialize FPDI with the StreamReader
             $pdf = new Fpdi();
             $pdf->setSourceFile($stream);
-
-            // Add a page and import content to trigger reading of the PDF
-            $pdf->AddPage();
-            $pageCount = $pdf->setSourceFile($stream);
 
             // If it reaches here, the file is likely not compressed in a way that FPDI can't handle
             return false;
@@ -1835,5 +1836,16 @@ class PaperController extends Controller
         }
 
         return response()->download($filePath, basename($methodology . '-' . $step . '.docx'));
+    }
+
+    public function getTeamData($teamId)
+    {
+        try {
+            $teamData = Team::with(['members', 'papers'])->findOrFail($teamId)->first();
+
+            return response()->json(['success' => true, 'data' => $teamData]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Team not found.'], 404);
+        }
     }
 }

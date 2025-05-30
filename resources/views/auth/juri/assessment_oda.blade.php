@@ -83,8 +83,7 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="small mb-1 fw-600" for="inputFirstName">Judul Inovasi</label>
-                                <input class="form-control" id="inputFirstName" type="text"
-                                    placeholder="Enter your first name" value="{{ $datas->innovation_title }}" readonly>
+                                <textarea class="form-control" id="inputFirstName" readonly rows="3" style="resize: none;">{{ $datas->innovation_title }}</textarea>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="small mb-1 fw-600" for="inputFirstName">Kategori Inovasi</label>
@@ -119,9 +118,12 @@
                 </div>
                 <div class="row mb-3">
                     <div class="d-flex flex-column align-items-start">
-                        @if ($datas->full_paper)
+                        @if ($datas->full_paper || $datas->file_review)
                             <a href="{{ route('paper.watermarks', ['paper_id' => $datas->paper_id]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
                                 Lihat Makalah
+                            </a>
+                            <a href="{{ route('assessment.benefitView', ['paperId' => $datas->paper_id]) }}" class="btn btn-sm text-white mt-2" style="background-color: #e84637" target="_blank">
+                                Lihat Berita Acara Benefit
                             </a>
 
                             @if ($datas->full_paper_updated_at)
@@ -337,61 +339,43 @@
     $(document).ready(function() {
 
         let column = updateColumnDataTable();
-        // column = []
         let dataTable = initializeDataTable(column);
     });
 
     // In your Javascript (external .js resource or <script> tag)
-    $(document).ready(function() {
-        $('#select2-juri').select2({
-            // allowClear: true,
-            // theme: "classic",
-            dropdownParent: $("#addJuri"),
-            allowClear: true,
-            width: "100%",
-            placeholder: "Pilih Employee untuk dijadikan juri",
-            ajax: {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET', // Metode HTTP POST
-                url: '{{ route('query.custom') }}',
-                dataType: 'json',
-                delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
-                data: {
-                    table: "judges",
-                    where: {
-                        'event_id': {{ $datas->event_id }},
-                        'status': 'active'
-                    },
-                    limit: 100,
-                    join: {
-                        'users':{
-                            'users.employee_id': 'judges.employee_id'
-                        }
-                    },
-                    select:[
-                        'judges.id as judges_id',
-                        'users.employee_id as employee_id',
-                        'users.name as name'
-                    ]
-                },
-                processResults: function(data) {
-                    // Memformat data yang diterima untuk format yang sesuai dengan Select2
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                text: item.employee_id + ' - ' + item
-                                    .name, // Nama yang akan ditampilkan di kotak seleksi
-                                id: item.judges_id // Nilai yang akan dikirimkan saat opsi dipilih
-                            };
-                        })
-                    };
-                },
-                cache: true,
-            }
-        });
+    $('#select2-juri').select2({
+        dropdownParent: $("#addJuri"),
+        allowClear: true,
+        width: "100%",
+        placeholder: "Pilih Employee untuk dijadikan juri",
+        ajax: {
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: '{{ route('approveadminuery.getJudges') }}', // <= Sesuaikan dengan nama route
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    query: params.term,
+                    event_id: {{ $datas->event_id }} // Pastikan ini di blade file
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return {
+                            id: item.judges_id,
+                            text: item.employee_id + ' - ' + item.name
+                        };
+                    })
+                };
+            },
+            cache: true
+        }
     });
+
 
     count_exceed_max_score = new Set()
     function validate_score(elemen){

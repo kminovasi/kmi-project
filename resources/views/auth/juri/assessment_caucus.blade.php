@@ -187,6 +187,8 @@
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12">
+                            <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
+                            <input type="hidden" name="stage" value="caucus">
                             <label for="dataJudge">Pilih Juri</label>
                             <select name="judge_id" class="form-select" id="">
                                 @foreach ($datas_juri as $data_juri)

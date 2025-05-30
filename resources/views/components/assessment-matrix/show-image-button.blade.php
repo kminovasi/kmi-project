@@ -25,9 +25,9 @@
                 <div class="col-md-3 mb-3">
                     <div class="image-container">
                         <!-- GLightbox Link -->
-                        <a href="{{ asset('storage/' . $image->path) }}" class="glightbox" data-gallery="matrix-gallery"
+                        <a href="{{ route('query.getFile') }}?directory={{ urlencode($image->path) }}" class="glightbox" data-gallery="matrix-gallery"
                             data-title="Gambar Penilaian Matriks">
-                            <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded"
+                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($image->path) }}" class="img-fluid rounded"
                                 alt="Gambar Penilaian Matriks">
                         </a>
                     </div>

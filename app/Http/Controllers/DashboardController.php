@@ -35,11 +35,8 @@ class DashboardController extends Controller
 
         $categories = Category::select('id', 'category_name')->with([
             'teams' => function ($query) {
-                $query->whereHas('papers', function ($q) {
-                    $q->where('status', 'accepted by innovation admin');
-                });
                 $query->select('id', 'category_id'); // pastikan kolom yang dibutuhkan tetap dipilih
-                $query->with(['papers:id,team_id,status_inovasi']);
+                $query->with(['papers:id,team_id,status_inovasi,status']);
             }
         ])->get();
 
@@ -58,11 +55,11 @@ class DashboardController extends Controller
 
             foreach ($category->teams as $team) {
                 foreach ($team->papers as $paper) {
-                    if (in_array($paper->status_inovasi, $implementedStatuses)) {
+                    if (in_array($paper->status_inovasi, $implementedStatuses) && $paper->status !== 'not finish') {
                         $implementedTeamIds[] = $team->id;
                         $implementedCount++; // Tambah total inovasi
                         break;
-                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses)) {
+                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses) || $paper->status == 'not finish') {
                         $ideaBoxTeamIds[] = $team->id;
                         $ideaBoxCount++; // Tambah total inovasi
                         break;
@@ -138,6 +135,47 @@ class DashboardController extends Controller
             'totalImplementedInnovations',
             'totalIdeaBoxInnovations'
         ));
+    }
+
+    public function showDashboardPaperList($category, $status)
+    {
+        // Take category and status from the request
+        // and use them to filter the papers
+        // based on the category and status
+        $innovationStatus = match ($status) {
+            'implemented' => ['Implemented'],
+            'idea box' => ['Progress', 'Not Implemented'],
+        };
+
+        // Ambil data papers berdasarkan kategori dan status inovasi
+        $categories = Category::with([
+            'teams' => function ($query) {
+                $query->select('id', 'team_name', 'category_id', 'status_lomba');
+            },
+            'teams.papers' => function ($query) use ($innovationStatus) {
+                $query->select('id', 'innovation_title', 'team_id', 'status')
+                    ->whereIn('status_inovasi', $innovationStatus);
+            },
+            'teams.company' => function ($query) {
+                $query->select('company_code', 'company_name');
+            }
+        ])
+        ->where('category_name', $category)
+        ->get();
+
+        // di controller atau sebelum blade
+        $hasData = false;
+        foreach ($categories as $item) {
+            foreach ($item->teams as $team) {
+                if ($team->papers->count() > 0) {
+                    $hasData = true;
+                    break 2; // keluar dari kedua loop
+                }
+            }
+        }
+
+
+        return view('components.dashboard.list-paper', compact('categories', 'category', 'status', 'hasData'));
     }
 
     public function showTotalTeamChart()

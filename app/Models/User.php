@@ -23,6 +23,7 @@ class User extends Authenticatable
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'uuid',
         'employee_id',
         'username',
         'password',
@@ -128,16 +129,21 @@ class User extends Authenticatable
 
     public function atasan()
     {
-        return $this->belongsTo(User::class, 'manager_id');
+        return $this->belongsTo(User::class, 'manager_id', 'employee_id')
+            ->withDefault([
+                'name' => 'No Manager',
+                'position_title' => '-'
+            ]);
     }
     public function bawahan()
     {
-        return $this->hasMany(User::class, 'manager_id');
+        return $this->hasMany(User::class, 'manager_id', 'employee_id')
+            ->whereRaw('manager_id::integer = ?', [$this->id]);
     }
 
     public function atasan__()
     {
-        return $this->belongsTo(User::class, 'manager_id')
+        return $this->belongsTo(User::class, 'manager_id', 'employee_id')
             ->withDefault([
                 'name' => 'No Manager',
                 'position_title' => '-'
@@ -146,7 +152,7 @@ class User extends Authenticatable
 
     public function bawahan__()
     {
-        return $this->hasMany(User::class, 'manager_id')
+        return $this->hasMany(User::class, 'manager_id', 'employee_id')
             ->whereRaw('manager_id::integer = ?', [$this->id]);
     }
     public function teams()
@@ -167,14 +173,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserHierarchyHistory::class);
     }
+
+    // This function is used to get the posts associated with this user
+    // It defines a one-to-many relationship between the User and Post models
     public function posts()
     {
         return $this->hasMany(Post::class, 'user_id', 'id');
     }
 
+    // This function is used to get the company associated with this user
+    // It defines a one-to-many relationship between the User and Company models
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id', 'id');
+    }
+
+    // This function is used to get the paten associated with this user
+    // It defines a one-to-many relationship between the User and Paten models
+    public function patens()
+    {
+        return $this->hasMany(Patent::class, 'person_in_charge', 'id');
+    }
+
+    public function replications()
+    {
+        return $this->hasMany(ReplicationInnovation::class, 'person_in_charge', 'id');
+    }
+
+    public function coachingClinics()
+    {
+        return $this->hasMany(CoachingClinic::class, 'person_in_charge', 'employee_id');
     }
 
 }

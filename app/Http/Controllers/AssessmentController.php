@@ -275,6 +275,21 @@ class AssessmentController extends Controller
         }
     }
 
+    public function showBeritaAcaraBenefit($paperId)
+    {
+        $benefit = Paper::find($paperId);
+        if ($benefit) {
+            $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck('file_review')[0], '/'));
+            if (file_exists($filePath)) {
+                return response()->file($filePath);
+            } else {
+                throw new FileNotFoundException($filePath);
+            }
+        } else {
+            return redirect()->back()->withErrors('File not found.');
+        }
+    }
+
     public function assessmentValue_oda($id)
     {
         // code untuk menampilkan detail team
@@ -284,7 +299,6 @@ class AssessmentController extends Controller
             ->where('pvt_event_teams.id', $id)
             ->select('team_name', 'papers.id as paper_id', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea', 'full_paper', 'full_paper_updated_at')
             ->first();
-        // dd($datas);
 
         $datas_juri = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
             ->join('users', 'users.employee_id', '=', 'judges.employee_id')
@@ -321,9 +335,8 @@ class AssessmentController extends Controller
             ->join('papers', 'papers.team_id', '=', 'teams.id')
             ->join('categories', 'categories.id', '=', 'teams.category_id')
             ->where('pvt_event_teams.id', $id)
-            ->select('team_name', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event')
+            ->select('team_name', 'papers.id as paper_id', 'innovation_title', 'category_name', 'pvt_event_teams.event_id', 'pvt_event_teams.id as event_team_id', 'pvt_event_teams.status as status_event', 'proof_idea', 'full_paper', 'full_paper_updated_at')
             ->first();
-        // dd($datas);
 
         $datas_juri = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
             ->join('users', 'users.employee_id', '=', 'judges.employee_id')
@@ -479,12 +492,13 @@ class AssessmentController extends Controller
 
             $data_assessment_event = PvtEventTeam::join('pvt_assessment_events', function ($join) {
                 $join->on('pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id');
-                // ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
             })
                 ->where('pvt_event_teams.id', $request->event_team_id)
                 ->where('pvt_assessment_events.category', $category)
                 ->where('pvt_assessment_events.status_point', 'active')
-                ->where('pvt_assessment_events.stage', $request->input('stage'))
+                ->when($request->input('stage') == 'on desk', function ($query) use ($request) {
+                    $query->where('pvt_assessment_events.stage', $request->input('stage'));
+                })
                 ->pluck(
                     'pvt_assessment_events.id as assessment_event_id',
                 )
@@ -524,6 +538,8 @@ class AssessmentController extends Controller
     {
         try {
             pvtAssesmentTeamJudge::where('judge_id', $request->judge_id)
+                ->where('event_team_id', $request->input('event_team_id'))
+                ->where('stage', $request->input('stage'))
                 ->delete();
 
             return redirect()->back()->with('success', 'Juri Berhasil Dihapus');
@@ -623,7 +639,7 @@ class AssessmentController extends Controller
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'on desk')
             ->where('pvt_assessment_events.stage', 'on desk')
-            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')->orderByRaw("CASE
+            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id', 'point')->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
                         WHEN 'pdca' = 'Do' THEN 2
                         WHEN 'pdca' = 'Check' THEN 3
@@ -708,7 +724,7 @@ class AssessmentController extends Controller
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'presentation')
-            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')
+            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id', 'pvt_assessment_events.pdca', 'point')
             ->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
                         WHEN 'pdca' = 'Do' THEN 2
@@ -815,7 +831,7 @@ class AssessmentController extends Controller
         $mpdf->WriteHTML($html);
 
         $content = $mpdf->Output('', 'S');
-        return response($content)
+        return response($content) 
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="sofi-pa.pdf"');
     }
@@ -1335,22 +1351,28 @@ class AssessmentController extends Controller
                 DB::commit();
                 return redirect()->back()->with('success', 'Nilai Presentasi Telah Berhasil Ditetapkan');
             } elseif (isset($request->pvt_event_team_id)) {
-                $category = Category::where('id', $request->category)->pluck('category_parent') == "IDEA BOX" ? "IDEA" : "BI/II";
-                $event_id = PvtEventTeam::where('id', $request->pvt_event_team_id[0])->pluck('event_id');
-                $score_oda = (int)MinimumscoreEvent::where('event_id', $event_id[0])
+                // Ambil category_parent dan tentukan jenis category
+                $category_parent = Category::where('id', $request->category)->pluck('category_parent')->first();
+                $category = $category_parent === "IDEA BOX" ? "IDEA" : "BI/II";
+
+                // Ambil event_id dari salah satu event_team_id
+                $event_id = PvtEventTeam::where('id', $request->pvt_event_team_id[0])->pluck('event_id')->first();
+
+                // Ambil nilai minimum score
+                $score_oda = (int) MinimumscoreEvent::where('event_id', $event_id)
                     ->where('category', $category)
-                    ->pluck('score_minimum_pa')
-                    ->toArray()[0];
+                    ->value('score_minimum_pa');
 
                 foreach ($request->pvt_event_team_id as $index => $event_team_id) {
                     $event_team = PvtEventTeam::findOrFail($event_team_id);
-                    
-                    // Ambil Informasi Tim Untuk History
+
+                    // Ambil informasi tim untuk history
                     $team = PvtEventTeam::with('team')->findOrFail($event_team->id);
 
-                    if(!$team) {
-                        Log::debug($team->team->team_name);
-                    }                    
+                    if (!$team || !$team->team) {
+                        Log::debug("Team tidak ditemukan untuk event_team_id: " . $event_team->id);
+                        continue;
+                    }
 
                     if ($event_team->total_score_presentation >= $score_oda) {
                         $event_team->status = 'Caucus';
@@ -1371,73 +1393,59 @@ class AssessmentController extends Controller
                     }
 
                     $event_team->save();
-                    $team_status = PvtEventTeam::where('id', $event_team_id)
-                        ->pluck('status')
-                        ->toArray();
 
-                    if ($team_status[0] == 'Caucus') {
+                    $team_status = PvtEventTeam::where('id', $event_team_id)->value('status');
+
+                    if ($team_status === 'Caucus') {
+                        // Ambil data juri yang sebelumnya menilai di stage "presentation"
                         $data_assessment_team_judge = pvtAssesmentTeamJudge::where('event_team_id', $event_team_id)
                             ->where('stage', 'presentation')
                             ->select('assessment_event_id', 'judge_id')
                             ->get();
-                        $event_id = pvtEventTeam::where('id', $event_team_id)
-                            ->pluck('event_id')
-                            ->toArray();
+
+                        $event_id = PvtEventTeam::where('id', $event_team_id)->pluck('event_id')->first();
 
                         $set_judge = [];
                         foreach ($data_assessment_team_judge as $assessment_team_judge) {
                             pvtAssesmentTeamJudge::updateOrCreate([
-                                'judge_id'  => $assessment_team_judge->judge_id,
+                                'judge_id' => $assessment_team_judge->judge_id,
                                 'event_team_id' => $event_team_id,
-                                'assessment_event_id'   => $assessment_team_judge->assessment_event_id,
-                                'stage'     => 'caucus'
+                                'assessment_event_id' => $assessment_team_judge->assessment_event_id,
+                                'stage' => 'caucus'
                             ]);
-
 
                             $set_judge[$assessment_team_judge->judge_id] = true;
                         }
 
-                        $cat_assessment_point = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                        // Ambil kembali category_parent untuk menentukan jenis assessment
+                        $cat_assessment_point_val = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                             ->join('categories', 'categories.id', '=', 'teams.category_id')
-                            ->pluck('category_parent') == "IDEA BOX" ? "IDEA" : "BI/II";
+                            ->where('pvt_event_teams.id', $event_team_id)
+                            ->pluck('category_parent')
+                            ->first();
 
-                        if ($cat_assessment_point == 'IDEA') {
-                            $data_assessment_idea_presentation = PvtAssessmentEvent::where('event_id', $event_id[0])
-                                ->where('category', 'IDEA')
-                                ->where('status_point', 'active')
-                                ->where('stage', 'caucus')
-                                ->get();
+                        $cat_assessment_point = $cat_assessment_point_val === "IDEA BOX" ? "IDEA" : "BI/II";
 
-                            foreach ($data_assessment_idea_presentation as $assessment_idea_presentation) {
-                                foreach ($set_judge as $judge => $isi) {
-                                    pvtAssesmentTeamJudge::updateOrCreate([
-                                        'judge_id'  => $judge,
-                                        'event_team_id' => $event_team_id,
-                                        'assessment_event_id'   => $assessment_idea_presentation->id,
-                                        'stage'     => 'caucus'
-                                    ]);
-                                }
-                            }
-                        } else {
-                            $data_assessment_idea_presentation = PvtAssessmentEvent::where('event_id', $event_id[0])
-                                ->where('category', 'BI/II')
-                                ->where('status_point', 'active')
-                                ->where('stage', 'caucus')
-                                ->get();
+                        // Ambil data assessment event untuk stage caucus
+                        $data_assessment_caucus = PvtAssessmentEvent::where('event_id', $event_id)
+                            ->where('category', $cat_assessment_point)
+                            ->where('status_point', 'active')
+                            ->where('stage', 'caucus')
+                            ->get();
 
-                            foreach ($data_assessment_idea_presentation as $assessment_idea_presentation) {
-                                foreach ($set_judge as $judge => $isi) {
-                                    pvtAssesmentTeamJudge::updateOrCreate([
-                                        'judge_id'  => $judge,
-                                        'event_team_id' => $event_team_id,
-                                        'assessment_event_id'   => $assessment_idea_presentation->id,
-                                        'stage'     => 'caucus'
-                                    ]);
-                                }
+                        foreach ($data_assessment_caucus as $assessment_caucus) {
+                            foreach ($set_judge as $judge => $isi) {
+                                pvtAssesmentTeamJudge::updateOrCreate([
+                                    'judge_id' => $judge,
+                                    'event_team_id' => $event_team_id,
+                                    'assessment_event_id' => $assessment_caucus->id,
+                                    'stage' => 'caucus'
+                                ]);
                             }
                         }
                     }
                 }
+
                 DB::commit();
                 return redirect()->back()->with('success', 'Nilai Presentasi telah Berhasil Ditetapkan');
             } else {

@@ -147,8 +147,7 @@
                                     <div class="file-review mb-0">
                                         @if ($file_content)
                                             <!-- Tampilkan gambar jika ada file -->
-                                            <embed src="data:application/pdf;base64,{{ base64_encode($file_content) }}"
-                                                width="100%" height="500px" />
+                                            <embed src="{{ route('benefit.preview.benefit', ['paper_id' => $row->paper_id]) }}" width="100%" height="500px" type="application/pdf">
                                         @else
                                             <p>No File Attached</p>
                                         @endif
@@ -259,8 +258,7 @@
                 // theme: "classic",
                 allowClear: true,
                 width: "100%",
-                placeholder: "Pilih " + select_element_id.split("_")[1] + (select_element_id.split("_")[2] ? " " +
-                    select_element_id.split("_")[2] + " : " : " : "),
+                placeholder: "Pilih Band 1",
                 ajax: {
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

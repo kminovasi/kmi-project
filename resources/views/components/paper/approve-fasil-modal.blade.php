@@ -112,6 +112,8 @@
             url = url.replace(':idPaper', idPaper);
             form.action = url;
             currentPaperId = idPaper;
+
+            $('#accFasilitator').modal('show');
         }
 
         const resetModalApproveFasil = () => {

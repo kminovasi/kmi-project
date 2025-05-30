@@ -89,13 +89,13 @@
     @endpush
 
     {{-- Total Innovation --}}
-    <div class="col-lg-4 col-xl-5 mb-4 mx-auto">
+    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
         <div class="card bg-innovations text-white h-100 shadow-lg">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
                         <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal">Total Inovasi Kategori Implemented</div>
+                            data-bs-toggle="modal" data-bs-target="#exampleModal">Inovasi Kategori Implemented</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             <!-- Menampilkan total jumlah inovasi berdasarkan kategori -->
                             {{ $totalImplementedInnovations }}
@@ -145,15 +145,17 @@
                                 $icon = $icons[$loop->index % count($icons)];
                             @endphp
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
-                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                                            {{ $item["count"] ?? 0 }}
-                                        </span>
+                                <a href="{{ route('dashboard.listPaper', ['category' => $item["category_name"], 'status' => 'implemented']) }}" class="text-decoration-none">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                            <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                            <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                                {{ $item["count"] ?? 0 }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -173,7 +175,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total Inovasi
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Inovasi
                             Kategori IDEA BOX
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
@@ -225,15 +227,17 @@
                                 $icon = $icons[$loop->index % count($icons)];
                             @endphp
                             <div class="col-md-6 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                        <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                                        <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
-                                        <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                                            {{ $item["count"] ?? 0 }}
-                                        </span>
+                                <a href="{{ route('dashboard.listPaper', ['category' => $item["category_name"], 'status' => 'idea box']) }}" class="text-decoration-none">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                            <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                            <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                                {{ $item["count"] ?? 0 }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -252,12 +256,12 @@
 
     {{-- Total Event Active --}}
     @if ($isSuperadmin || $isAdmin)
-        <div class="col-lg-11 col-xl-11 mb-9 mx-auto">
+        <div class="col-lg-6 col-xl-5 mb-9 mx-auto">
             <div class="card bg-event text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
-                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
                                 Event Aktif</div>
                             <div class="text-lg fw-bold d-flex align-items-center">
                                 {{ $totalActiveEvents }}
@@ -273,6 +277,33 @@
                 <div class="card-footer d-flex align-items-center justify-content-between small">
                     <a class="text-white stretched-link" href="{{ route('dashboard-event.list') }}">
                         Lihat Daftar Event
+                    </a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Card Coaching Clinic --}}
+        <div class="col-lg-6 col-xl-5 mb-9 mx-auto">
+            <div class="card bg-event text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-3 flex-grow-1">
+                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Coaching Clinic</div>
+                            <div class="text-lg fw-bold d-flex align-items-center">
+                                {{ $totalActiveEvents }}
+                                <small class="ms-2">(Coaching)</small>
+                            </div>
+                        </div>
+                        <div class="icon-circle bg-white-25 flex-shrink-0">
+                            <i class="bi bi-book-half fa-md"
+                                style="font-size: 40px; font-weight: bolder; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); color: #ffffff;"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between small">
+                    <a class="text-white stretched-link" href="{{ route('coaching-clinic.index') }}">
+                        Lihat Daftar Coaching
                     </a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
@@ -329,7 +360,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
                             Inovator Laki-laki
                         </div>
                         <div class="text-lg fw-bold d-flex align-items-center">
@@ -351,7 +382,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
-                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
+                        <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">
                             Inovator Perempuan</div>
                         <div class="text-lg fw-bold d-flex align-items-center">
                             {{ $totalInnovatorsFemale }}

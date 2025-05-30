@@ -148,7 +148,7 @@ class Paper extends Model
         return $this->hasMany(DocumentSupport::class);
     }
 
-    public function team() //baru
+    public function team()
     {
         return $this->belongsTo(Team::class);
     }
@@ -161,5 +161,12 @@ class Paper extends Model
     public function metodologiPaper()
     {
         return $this->belongsTo(MetodologiPaper::class);
+    }
+
+    // This function is used to get the paten associated with this paper
+    // It defines a one-to-one relationship between the Paper and Paten models
+    public function paten()
+    {
+        return $this->hasOne(Patent::class, 'paper_id', 'id');
     }
 }

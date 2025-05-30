@@ -109,6 +109,11 @@
                 </div>
             </div>
             <div class="card-body">
+                {{-- @if($data_event)
+                    <div class="mb-3">
+                        <x-assessment.ondesk-chart-team :event-id="$data_event[0]->id" />
+                    </div>
+                @endif --}}
                 <div class="mb-3">
                     <div class="row">
                         <div class="col-md-4 col-sm-4 col-xs-12">
@@ -118,11 +123,7 @@
                                 {{-- <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterCategoryModal">Filter Category</button> --}}
                             @endif
                         </div>
-                        <div class="col-md-8 col-sm-8 col-xs-12">
-                            <div id="event-title" class="h5 text-primary"></div>
-                        </div>
                     </div>
-
                 </div>
                 <form id="datatable-card" action="{{ route('assessment.fix.oda') }}" method="POST">
                     @csrf

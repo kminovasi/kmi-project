@@ -180,7 +180,7 @@
                      }
 
                      // Bangun URL secara dinamis dengan company_code dari data tim
-                     const url = `/user/events/${data_team.company_code}`;
+                     const url = `/user/events/${data_team.company_code}/${idTeam}`;
 
                      $.ajax({
                          headers: {

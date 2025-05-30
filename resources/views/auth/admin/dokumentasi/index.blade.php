@@ -32,7 +32,7 @@
             <div class="col-lg-12">
                 <div class="row">
                     <div class="col-xl-4 mb-4">
-                        <!-- Dashboard example card 2-->
+                        {{-- Card Evidence --}}
                         <a class="card h-100 lift border-start-lg border-start-primary"
                             href="{{ route('evidence.index') }}">
                             <div class="card-body d-flex flex-column">
@@ -45,14 +45,13 @@
                                             lainnya
                                         </div>
                                     </div>
-                                    {{-- <img src="assets/img/illustrations/processing.svg" alt="..." style="width: 8rem" />
-                                --}}
                                 </div>
                             </div>
                         </a>
                     </div>
+
                     <div class="col-xl-4 mb-4">
-                        <!-- Dashboard example card 1-->
+                        {{-- Card Berita Acara --}}
                         <a class="card h-100 lift border-start-lg border-start-success"
                             href="{{ route('dokumentasi.berita-acara.index') }}">
                             <div class="card-body d-flex flex-column">
@@ -70,7 +69,7 @@
                     </div>
 
                     <div class="col-xl-4 mb-4">
-                        <!-- CV card-->
+                        <!-- Card Riwayat Kompetisi Peserta-->
                         <a class="card lift border-start-lg border-start-warning" href="{{ route('cv.index') }}">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -86,7 +85,7 @@
                     </div>
 
                     <div class="col-xl-4 mb-4">
-                        <!-- Dashboard example card 2-->
+                        {{-- Card Informasi --}}
                         <a class="card lift border-start-lg border-start-secondary" href="#">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -103,19 +102,29 @@
                             </div>
                         </a>
                     </div>
+
                     <div class="col-xl-4 mb-4">
-                        <!-- Dashboard example card 2-->
+                        {{-- Card News --}}
                         <a class="card lift border-start-lg border-start-secondary" href="#">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="me-3">
                                         <i class="feather-lg text-secondary mb-3" data-feather="mail"></i>
                                         <h5 class="text-secondary">News</h5>
-                                        {{-- <div class="text-muted small">
-                                        Pengelola Inovasi masing-masing perusahaan yang akan memnentukan role pada
-                                        Inovator, Juri,
-                                        BOD serta menentukan aturan kegiatan kompetisi inovasi
-                                    </div> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-xl-4 mb-4">
+                        {{-- Card Couching Clinic --}}
+                        <a class="card lift border-start-lg border-start-primary" href="#">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="me-3">
+                                        <i class="feather-lg text-primary mb-3" data-feather="info"></i>
+                                        <h5 class="text-primary">Couching Clinic</h5>
                                     </div>
                                 </div>
                             </div>

@@ -51,8 +51,8 @@ class QueryController extends Controller
 
         // Lakukan pencarian berdasarkan query dan kembalikan hasil sebagai JSON
         $results = User::join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->where('name', 'like', "%$query%")
-            ->orWhere('employee_id', 'like', "%$query%")
+            ->where('name', 'LIKE', "%$query%")
+            ->orWhere('employee_id', 'LIKE', "%$query%")
             ->limit(10)
             ->get();
 
@@ -72,9 +72,9 @@ class QueryController extends Controller
                 ->join('companies', 'companies.company_code', '=', 'users.company_code');
 
             if ($role === "Superadmin" || $role === "Admin") {
-                $query = $query->where('users.role', 'like', "$role");
+                $query = $query->where('users.role', 'LIKE', "$role");
             } else {
-                $query = $query->where('users.role', 'like', "%$role%");
+                $query = $query->where('users.role', 'LIKE', "%$role%");
             }
 
             // Restrict to same company if the user is an admin
@@ -99,8 +99,8 @@ class QueryController extends Controller
         $query = $request->input('query');
 
         // Lakukan pencarian berdasarkan query dan kembalikan hasil sebagai JSON
-        $results = User::where('name', 'ilike', "%$query%")
-            ->orWhere('email', 'ilike', "%$query%")
+        $results = User::where('name', 'LIKE', "%$query%")
+            ->orWhere('email', 'LIKE', "%$query%")
             ->limit(1)
             ->get();
 
@@ -111,14 +111,11 @@ class QueryController extends Controller
     }
     public function get_fasilitator(Request $request)
     {
-        $unit = $request->input('unit');
-        $department = $request->input('department');
-        $directorate = $request->input('directorate');
         $query = $request->input('query');
         $results = User::with('company')
             ->where(function ($q) use ($query) {
-                $q->where('name', 'ilike', "%$query%")
-                    ->orWhere('email', 'ilike', "%$query%");
+                $q->where('name', 'LIKE', "%$query%")
+                    ->orWhere('email', 'LIKE', "%$query%");
             })
             ->whereIn('job_level', ["Band 2", "Band 1", "Band 3"])
             ->select('employee_id', 'name', 'company_name', 'job_level')
@@ -138,8 +135,8 @@ class QueryController extends Controller
             ->where('judges.status', 'active')
             ->where('judges.event_id', $eventId)
             ->where(function ($query) use ($searchTerm) {
-                $query->where('users.name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('users.employee_id', 'like', '%' . $searchTerm . '%');
+                $query->where('users.name', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('users.employee_id', 'LIKE', '%' . $searchTerm . '%');
             })
             ->select(
                 'judges.id as judges_id',
@@ -156,8 +153,8 @@ class QueryController extends Controller
     {
         // $unit = $request->input('unit');
         $query = $request->input('query');
-        $results = User::where('name', 'ilike', "%$query%")
-            ->where('email', 'ilike', "%$query%")
+        $results = User::where('name', 'LIKE', "%$query%")
+            ->where('email', 'LIKE', "%$query%")
             ->whereIn('job_level', ["Band 1"])
             ->join('companies', 'companies.company_code', '=', 'users.company_code')
             ->select('employee_id', 'name', 'companies.company_name', 'job_level')
@@ -171,8 +168,8 @@ class QueryController extends Controller
     {
         // $unit = $request->input('unit');
         $query = $request->input('query');
-        $results = User::where('name', 'ilike', "%$query%")
-            ->where('email', 'ilike', "%$query%")
+        $results = User::where('name', 'LIKE', "%$query%")
+            ->where('email', 'LIKE', "%$query%")
             ->whereIn('role', ["BOD"])
             ->join('companies', 'companies.company_code', '=', 'users.company_code')
             ->select('employee_id', 'name', 'companies.company_name', 'job_level')
@@ -230,7 +227,7 @@ class QueryController extends Controller
                     if (gettype($value) == "array")
                         $query->whereIn($column, $value);
                     else
-                        $query->where($column, 'like', '%' . $value . '%');
+                        $query->where($column, 'LIKE', '%' . $value . '%');
                 }
             }
 
@@ -299,7 +296,7 @@ class QueryController extends Controller
                     if (gettype($value) == "array")
                         $query->whereIn($column, $value);
                     else
-                        // $query->where($column, 'like', '%'.$value.'%');
+                        // $query->where($column, 'LIKE', '%'.$value.'%');
                         $query->where($column, '=', $value);
                 }
             }
@@ -784,8 +781,21 @@ class QueryController extends Controller
     public function get_data_member(Request $request)
     {
         try {
-            $dataPaper = Paper::where('team_id', $request->team_id)
-                ->select('innovation_title', 'inovasi_lokasi', 'abstract', 'problem', 'main_cause', 'solution', 'innovation_photo', 'proof_idea')
+            $dataPaper = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+                ->where('papers.team_id', $request->team_id)
+                ->select(
+            'papers.innovation_title',
+                    'papers.inovasi_lokasi',
+                    'papers.abstract',
+                    'papers.problem',
+                    'papers.main_cause',
+                    'papers.solution',
+                    'papers.innovation_photo',
+                    'papers.proof_idea',
+                    'teams.team_name',
+                    'papers.team_id',
+                    'papers.id as paper_id',
+                )
                 ->get();
 
             $data_anggotas = PvtMember::with('team')
@@ -974,9 +984,9 @@ class QueryController extends Controller
             $dataTable->addColumn('view', function ($data_row) {
                 if ($data_row['signed_file']) {
                     // Tampilkan tombol lihat jika file sudah diunggah
-                    return '<a href="' . asset('storage/' . $data_row['signed_file']) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>';
+                    return '<a href="' . route('berita-acara.viewUploadedPDF', ['path' => rawurlencode($data_row['signed_file'])]) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>';
                 }
-                return ''; // Jika tidak ada file, tidak ada tombol lihat
+                return '<a href="' . route('berita-acara.showPDF', ['id' => $data_row['id']]) . '" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>'; // Jika tidak ada file, tidak ada tombol lihat
             });
 
             $dataTable->rawColumns($rawColumns);
@@ -2762,14 +2772,15 @@ class QueryController extends Controller
             $categoryid = array_column($data_category, 'id');
 
             // Query untuk mengambil data tim dan skor
-            $arr_select_case = [
+             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
-                DB::raw('MIN(team_name) as Tim'),
+                DB::raw('MIN(team_name) as team_name'),
                 DB::raw('MIN(innovation_title) as Judul'),
                 DB::raw('MIN(category_name) as Kategori'),
                 'pvt_event_teams.id AS event_team_id(removed)',
                 'pvt_event_teams.is_best_of_the_best AS is_best_of_the_best',
-                DB::raw('pvt_event_teams.final_score as final_score'),
+                'pvt_event_teams.is_honorable_winner AS is_honorable_winner',
+                DB::raw('MAX(pvt_event_teams.final_score) as final_score'),
             ];
 
             // Query utama untuk mengambil data tim
@@ -2785,7 +2796,7 @@ class QueryController extends Controller
                 ->where('pvt_event_teams.status', 'Juara')
                 ->where('pvt_assessment_events.stage', 'presentation')
                 ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
-                ->groupBy('pvt_event_teams.id')
+                ->groupBy('pvt_event_teams.id', 'pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.is_honorable_winner')
                 ->select($arr_select_case);
 
             // Jika filterCategory tidak null, tambahkan filter untuk kategori
@@ -2808,27 +2819,39 @@ class QueryController extends Controller
 
             $rawColumns[] = 'Ranking';
             $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
+                // Query ranking per kategori
                 $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                     ->join('categories', 'categories.id', '=', 'teams.category_id')
-                    ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
-                    ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
-                    ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
-                    ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
+                    ->where('pvt_event_teams.event_id', $request->filterEvent)
+                    ->whereIn('categories.id', $categoryid)
+                    ->whereNotNull('pvt_event_teams.final_score')
+                    ->groupBy('pvt_event_teams.id', 'categories.id', 'pvt_event_teams.final_score')
                     ->select(
-                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""), // Menghitung ranking per kategori
+                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""),
                         'pvt_event_teams.id as id',
                         'pvt_event_teams.final_score',
                         'categories.id as category_id'
-                    )  // Menambahkan kategori ke dalam hasil
+                    )
                     ->get()
-                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
+                    ->keyBy('id')
                     ->toArray();
-
-                // Cek apakah total_score_presentation null atau 0
-                $eventTeamId = $data_row['event_team_id(removed)'];
-
-                // Kembalikan ranking untuk event_team_id saat ini
-                return $data_total[$eventTeamId]['Ranking'];
+            
+                // Ambil ID dan data status
+                $eventTeamId = $data_row['event_team_id(removed)'] ?? $data_row['event_team_id'] ?? null;
+                $isBest = $data_row['is_best_of_the_best'] ?? false;
+                $isHonorable = $data_row['is_honarable_winner'] ?? false;
+            
+                // Default ranking string
+                $ranking = $data_total[$eventTeamId]['Ranking'] ?? '-';
+            
+                // Tambahkan badge jika perlu
+                if ($isBest) {
+                    return "Best of the Best";
+                } elseif ($isHonorable) {
+                    return "Juara Harapan";
+                } else {
+                    return "Juara $ranking";
+                }
             });
 
             // Menghapus kolom yang mengandung kata "removed"

@@ -113,8 +113,7 @@
                 // theme: "classic",
                 allowClear: true,
                 width: "100%",
-                placeholder: "Pilih " + select_element_id.split("_")[1] + (select_element_id.split("_")[2] ? " " +
-                    select_element_id.split("_")[2] + " : " : " : "),
+                placeholder: "Pilih BOD",
                 ajax: {
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -100,6 +100,11 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{id}', [PaperController::class, 'update'])->name('update');
         Route::post('/store-event-external', [PaperController::class, 'storeEventExternal'])->name('register.external');
         Route::post('/fixate-paper/{id}', [PaperController::class, 'fixatePaper'])->name('fixatePaper');
+
+        // Update Paper
+        Route::put('/update-detail-team/{team}', [PaperController::class, 'updateDetailDataTeam'])->name('updateDetailTeam');
+        Route::put('/update-detail-paper/{paper}', [PaperController::class, 'updateDetailDataPaper'])->name('updateDetailPaper');
+        Route::put('/update-detail-photo/{paper}', [PaperController::class, 'updatePaperPhoto'])->name('updatePaperPhoto');
         
         //Route step Paper
         Route::get('/create-stages/{id}/{stage}', [PaperController::class, 'createStages'])->name('create.stages');
@@ -267,6 +272,7 @@ Route::middleware('auth')->group(function () {
         Route::post('store', [BeritaAcaraController::class, 'store'])->name('store');
         Route::get('/downloadPDF/{id}', [BeritaAcaraController::class, 'downloadPDF'])->name('downloadPDF');
         Route::get('/showPDF/{id}', [BeritaAcaraController::class, 'showPDF'])->name('showPDF');
+        Route::get('/view-file/{path}', [BeritaAcaraController::class, 'viewUploadedPDF'])->name('viewUploadedPDF');
     });
 
     Route::prefix('event')->name('event.')->group(function () {
@@ -435,6 +441,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/update-template-document', [PatentController::class, 'updateTemplateDocument'])->name('updateTemplateDocument');
         Route::get('/download-document/{documentType}', [PatentController::class, 'downloadTemplateDownload'])->name('downloadTemplateDownload');
         Route::post('/upload-payment', [PatentController::class, 'uploadPatentPaymentProof'])->name('uploadPayment');
+        Route::get('/view-application/{patentId}', [PatentController::class, 'viewApplication'])->name('viewApplicationFile');
     });
 
     // Replication

@@ -20,8 +20,9 @@ class PvtEventTeam extends Model
         'total_score_on_desk',
         'total_score_presentation',
         'total_score_caucus',
-        'final_score', // Jika kamu menggunakan final_score juga
+        'final_score', 
         'is_best_of_the_best',
+        'is_honorable_winner',
         'created_at'
     ];
 

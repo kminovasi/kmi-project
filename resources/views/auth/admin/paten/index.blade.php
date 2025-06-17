@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Paten Inovasi')
 @section('content')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <style>
     .ui-autocomplete {
         z-index: 999999 !important;
@@ -63,15 +64,15 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="draft_paten" class="form-label">Draft Patent</label>
-                            <input type="file" class="form-control" id="draft_paten" name="draft_paten">
+                            <input type="file" class="form-control" id="draft_paten" name="draft_paten" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                         </div>
                         <div class="mb-3">
                             <label for="ownership_letter" class="form-label">Surat Kepemilikan</label>
-                            <input type="file" class="form-control" id="ownership_letter" name="ownership_letter">
+                            <input type="file" class="form-control" id="ownership_letter" name="ownership_letter" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                         </div>
                         <div class="mb-3">
                             <label for="statement_of_transfer_rights" class="form-label">Surat Pengalihan Hak</label>
-                            <input type="file" class="form-control" id="statement_of_transfer_rights" name="statement_of_transfer_rights">
+                            <input type="file" class="form-control" id="statement_of_transfer_rights" name="statement_of_transfer_rights" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                         </div>
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -124,7 +125,7 @@
 @endsection
 
 @push('js')
-<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script>
     $("#inputInnovationTittle").autocomplete({
         source: function(request, response) {

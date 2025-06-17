@@ -2,6 +2,7 @@
 
 namespace App\View\Components\DetailCompanyChart;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\Event;
 use App\Models\Paper;
@@ -24,13 +25,23 @@ class PaperCount extends Component
             ->toArray();
 
         $yearlyPapers = [];
+        
+        $targetCompanyCode = $company->company_code;
+
+        if (in_array($targetCompanyCode, [2000, 7000])) {
+            $filteredCodes = [2000, 7000];
+        } else {
+            $filteredCodes = [$targetCompanyCode];
+        }
 
         foreach ($availableYears as $year) {
-            $totalPapers = Paper::whereHas('team', function ($query) use ($company) {
-                $query->where('company_code', $company->company_code);
-            })
+            $totalPapers = DB::table('papers')
+                ->join('teams', 'teams.id', '=', 'papers.team_id')
+                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                ->whereIn('teams.company_code', $filteredCodes)
                 ->where('papers.status', 'accepted by innovation admin')
-                ->whereYear('created_at', $year)
+                ->whereYear('events.year', $year)
                 ->count();
 
             $yearlyPapers[$year] = $totalPapers;

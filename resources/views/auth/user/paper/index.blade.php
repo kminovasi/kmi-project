@@ -37,6 +37,26 @@
         .dt-button:hover {
             background-color: #0b5ed7 !important;
         }
+
+        .editable-field {
+            background-color: #fff;
+            border: 2px solid #ced4da;
+        }
+
+        .editable-field[readonly] {
+            background-color: #f8f9fa;
+            border: 1px solid transparent;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 45px !important; /* Sesuaikan dengan kebutuhan */
+            padding-top: .6rem;
+        }
+
+        /* Pastikan dropdown muncul di atas modal */
+        .select2-container {
+        z-index: 9999;
+        }
     </style>
 @endpush
 
@@ -111,95 +131,121 @@
                     <div class="row mb-3">
                         <div class="col-md-4 mb-3">
                             <div class="card shadow-sm mb-3">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Detail Tim</h5>
-                                </div>
-                                <div class="card-body">
-                                    <form id="modal-card-form">
+                                <form id="modal-card-form" method="POST" action="">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0">Detail Tim</h5>
+                                        <button type="button" class="btn btn-sm btn-primary btn-edit-team-member">Edit Anggota Tim</button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="team-name">Nama Tim</label>
+                                            <input class="form-control form-control-lg detail-team-input editable-field" name="team_name" id="team-name" type="text"
+                                                value="" disabled />
+                                        </div>
                                         <div class="mb-3">
                                             <label class="form-label" for="facilitator">Fasilitator</label>
-                                            <input class="form-control form-control-lg" id="facilitator" type="text"
-                                                value="" readonly />
+                                            <select class="form-control form-control-lg detail-team-input editable-field" name="facilitator" id="facilitator" disabled></select>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label" for="leader">Ketua</label>
-                                            <input class="form-control form-control-lg" id="leader" type="text"
-                                                value="" readonly />
+                                            <select class="form-control form-control-lg detail-team-input editable-field" name="leader" id="leader" disabled> </select>
                                         </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
                             </div>
 
 
-                            <div class="card shadow-sm mb-3">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Foto Tim</h5>
+                            <form action="" id="detail-team-photo" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
+                                <div class="card shadow-sm mb-3">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0">Foto Tim</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <img src="" id="idFotoTim" alt="Foto Tim"
+                                            class="img-fluid rounded-3 shadow-sm" />
+                                    </div>
+                                    <div class="mb-3 d-none px-2" id="inputTeamPhotoContainer">
+                                        <label for="" class="form-label"></label>
+                                        <input type="file" class="form-control" id="inputFotoTim"
+                                            name="team_photo" accept=".jpg, .jpeg, .png" />
+                                        <small class="text-muted">File png,jpg,jpeg Maks 5MB.</small>
+                                    </div>
                                 </div>
-                                <div class="card-body text-center">
-                                    <img src="" id="idFotoTim" alt="Foto Tim"
-                                        class="img-fluid rounded-3 shadow-sm" />
+    
+                                <div class="card shadow-sm mb-3">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0">Foto Inovasi Produk</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <img src="" id="idFotoInovasi" alt="Foto Inovasi Produk"
+                                            class="img-fluid rounded-3 shadow-sm" />
+                                    </div>
+                                    <div class="mb-3 d-none px-2" id="inputInnovationPhotoContainer">
+                                        <label for="" class="form-label"></label>
+                                        <input type="file" class="form-control" id="inputFotoInovasi"
+                                            name="innovation_photo" accept=".jpg, .jpeg, .png" />
+                                        <small class="text-muted">File png,jpg,jpeg Maks 5MB.</small>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="card shadow-sm mb-3">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Foto Inovasi Produk</h5>
-                                </div>
-                                <div class="card-body text-center">
-                                    <img src="" id="idFotoInovasi" alt="Foto Inovasi Produk"
-                                        class="img-fluid rounded-3 shadow-sm" />
-                                </div>
-                            </div>
+                                <button type="button" class="btn btn-sm btn-primary btn-edit-photo">Edit Gambar</button>
+                            </form>
 
                         </div>
                         <div class="col-md-8">
                             <div class="card shadow-sm mb-3">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                                    <h5 class="m-0">Detail Makalah</h5>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Judul -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Judul</div>
-                                        <div class="small mb-0" id="judul"></div>
+                                <form action="" id="detail-paper-form" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <h5 class="m-0">Detail Makalah</h5>
+                                        <button type="button" class="btn btn-sm btn-primary btn-edit-detail-paper">Edit Detail Paper</button>
                                     </div>
-                                    <hr>
-                                    <!-- Lokasi Implementasi Inovasi -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Lokasi Implementasi Inovasi</div>
-                                        <div class="small mb-0" id="inovasi_lokasi"></div>
+                                    <div class="card-body">
+                                        <!-- Judul -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Judul</div>
+                                            <textarea class="form-control editable-field input-detail-paper" id="judul" name="innovation_title" rows="3" readonly></textarea>
+                                        </div>
+                                        <hr>
+                                        <!-- Lokasi Implementasi Inovasi -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Lokasi Implementasi Inovasi</div>
+                                            <input class="form-control editable-field input-detail-paper" id="inovasi_lokasi" name="innovation_location" readonly/>
+                                        </div>
+                                        <hr>
+                                        <!-- Abstrak -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Abstrak</div>
+                                            <textarea class="form-control editable-field input-detail-paper" id="abstrak" name="abstract" rows="6" readonly></textarea>
+                                        </div>
+                                        <hr>
+                                        <!-- Permasalahan -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Permasalahan</div>
+                                            <textarea class="form-control editable-field input-detail-paper" id="problem" name="problem" rows="6" readonly></textarea>
+                                        </div>
+                                        <hr>
+                                        <!-- Penyebab Utama -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Penyebab Utama</div>
+                                            <textarea class="form-control editable-field input-detail-paper" id="main_cause" name="main_cause" rows="6" readonly></textarea>
+                                        </div>
+                                        <hr>
+                                        <!-- Solusi -->
+                                        <div class="mb-3">
+                                            <div class="fw-bold">Solusi</div>
+                                            <textarea class="form-control editable-field input-detail-paper" id="solution" name="solution" rows="6" readonly></textarea>
+                                        </div>
+                                        <hr>
                                     </div>
-                                    <hr>
-                                    <!-- Abstrak -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Abstrak</div>
-                                        <div class="small mb-0" id="abstrak"></div>
-                                    </div>
-                                    <hr>
-                                    <!-- Permasalahan -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Permasalahan</div>
-                                        <div class="small mb-0" id="problem"></div>
-                                    </div>
-                                    <hr>
-                                    <!-- Penyebab Utama -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Penyebab Utama</div>
-                                        <div class="small mb-0" id="main_cause"></div>
-                                    </div>
-                                    <hr>
-                                    <!-- Solusi -->
-                                    <div class="mb-3">
-                                        <div class="fw-bold">Solusi</div>
-                                        <div class="small mb-0" id="solution"></div>
-                                    </div>
-                                    <hr>
-                                </div>
+                                </form>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -636,6 +682,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
     <script type="">
     $(document).ready(function() {
        $('#accFasilitator').on('hidden.bs.modal', function() {
@@ -738,10 +787,10 @@
             success: function(data) {
                 // console.log(data);
 
-                if(typeof data.data.member !== 'undefined'){
+                if(typeof data.data.member){
                     new_div_member = `
                     <div class="mb-3" id="member-card">
-                        <label class="mb-1" for="dataName">Team Member</label>
+                        <label class="mb-1 ms-3" for="dataName">Team Member</label>
                         <div class="card-body p-0">
                             <ul class="list-group list-group-flush" id="List">
                             </ul>
@@ -752,10 +801,10 @@
                     var ul = document.getElementById('List')
                 }
 
-                if(typeof data.data.outsource !== 'undefined'){
+                if(typeof data.data.outsource){
                     new_div_outsource = `
                     <div class="mb-3" id="outsource-card">
-                        <label class="mb-1" for="dataName">Team Member Outsource</label>
+                        <label class="mb-1 ms-3" for="dataName">Team Member Outsource</label>
                         <div class="card-body p-0">
                             <ul class="list-group list-group-flush" id="outsource-List">
 
@@ -767,92 +816,355 @@
                     var ul_outsource = document.getElementById('outsource-List')
                 }
 
-                Object.keys(data.data).forEach(function(indeks) {
-                    if(indeks == 'member'){
+                function buatElemenList(id, isSelect, value = "", text = "", isDisabled = true) {
+                    let li = document.createElement("li");
+                    li.className = "list-group-item d-flex align-items-center gap-2";
+                    li.id = id;
 
-                        Object.keys(data.data[indeks]).forEach(function(indeks2) {
-                            var elemenLi = document.createElement("li");
+                    let input;
+                    if (isSelect) {
+                        input = document.createElement("select");
+                        input.className = "form-control detail-team-input editable-field select2";
+                        input.name = "member[]";
+                        input.id = id + "_select";
 
-                            elemenLi.className = "list-group-item";
-                            elemenLi.id = indeks + (parseInt(indeks2) + 1);
+                        let option = document.createElement("option");
+                        option.value = value;
+                        option.text = text;
+                        input.appendChild(option);
 
-                            var elemenA = document.createElement("a");
-                            elemenA.textContent = data.data[indeks][indeks2].name;
-
-                            elemenLi.appendChild(elemenA)
-                            ul.appendChild(elemenLi)
-                        })
-                    }else if(indeks == 'outsource'){
-
-                        Object.keys(data.data[indeks]).forEach(function(indeks2) {
-                            var elemenLi = document.createElement("li");
-
-                            elemenLi.className = "list-group-item";
-                            elemenLi.id = indeks + (parseInt(indeks2) + 1);
-
-                            var elemenA = document.createElement("a");
-                            elemenA.textContent = data.data[indeks][indeks2].name;
-
-                            elemenLi.appendChild(elemenA)
-                            ul_outsource.appendChild(elemenLi)
-                        })
-                    }else{
-                    if(document.getElementById(indeks) !== null){
-
-                        document.getElementById(indeks).value = data.data[indeks].name
+                        if (isDisabled) input.disabled = true;
+                    } else {
+                        input = document.createElement("input");
+                        input.className = "form-control detail-team-input editable-field";
+                        input.name = "outsource[]";
+                        input.placeholder = "Masukkan nama anggota outsource";
+                        input.value = value;
+                        input.disabled = isDisabled;
                     }
 
+                    let btnDelete = document.createElement("button");
+                    btnDelete.type = "button";
+                    btnDelete.className = `btn btn-sm btn-danger ${isDisabled ? 'd-none' : ''} ${isSelect ? 'btn-delete-member' : 'btn-delete-outsource'}`;
+                    btnDelete.textContent = "Hapus";
+                    btnDelete.onclick = () => li.remove();
+
+                    li.appendChild(input);
+                    li.appendChild(btnDelete);
+
+                    return { li, input };
+                }
+
+                Object.keys(data.data).forEach(function(indeks) {
+                    if (indeks === 'member') {
+                        data.data[indeks].forEach((item, i) => {
+                            let id = `member${i + 1}`;
+                            let { li, input } = buatElemenList(id, true, item.employee_id, item.name);
+                            ul.appendChild(li);
+                            search_select2(input.id);
+                        });
+
+                        // Tombol Tambah Member
+                        let tambahBtn = document.createElement("button");
+                        tambahBtn.type = "button";
+                        tambahBtn.className = "btn btn-sm btn-primary ms-3 mt-2 d-none";
+                        tambahBtn.id = "add-member-btn";
+                        tambahBtn.textContent = "Tambah Anggota";
+                        tambahBtn.onclick = function () {
+                            let newIndex = ul.children.length + 1;
+                            let id = `member${newIndex}`;
+                            let { li, input } = buatElemenList(id, true, "", "", false);
+                            ul.appendChild(li);
+                            search_select2(input.id);
+                        };
+                        ul.parentNode.appendChild(tambahBtn);
+                    } else if (indeks === 'outsource') {
+                        data.data[indeks].forEach((item, i) => {
+                            let id = `outsource${i + 1}`;
+                            let { li } = buatElemenList(id, false, item.name);
+                            ul_outsource.appendChild(li);
+                        });
+                    } else {
+                        if (document.getElementById(indeks)) {
+                            document.getElementById(indeks).value = data.data[indeks].name;
+                        }
+                        if (!document.getElementById('add-member-btn')) {
+                            let tambahBtn = document.createElement("button");
+                            tambahBtn.type = "button";
+                            tambahBtn.className = "btn btn-sm btn-primary ms-3 mt-2 d-none";
+                            tambahBtn.id = "add-member-btn";
+                            tambahBtn.textContent = "Tambah Anggota";
+                            tambahBtn.onclick = function () {
+                                let newIndex = ul.children.length + 1;
+                        
+                                let li = document.createElement("li");
+                                li.className = "list-group-item d-flex align-items-center gap-2";
+                                li.id = 'member' + newIndex;
+                        
+                                let select = document.createElement("select");
+                                select.className = "form-control detail-team-input editable-field select2";
+                                select.id = 'member' + newIndex + "_select";
+                                select.name = "member[]";
+                        
+                                let btnDelete = document.createElement("button");
+                                btnDelete.type = "button";
+                                btnDelete.className = "btn btn-sm btn-danger btn-delete-member";
+                                btnDelete.innerText = "Hapus";
+                                btnDelete.onclick = function () {
+                                    li.remove();
+                                };
+                        
+                                li.appendChild(select);
+                                li.appendChild(btnDelete);
+                                ul.appendChild(li);
+                        
+                                search_select2(select.id);
+                            };
+                            ul.parentNode.appendChild(tambahBtn);
+                        }
                     }
                 });
-                var judulElement = document.getElementById('judul');
-                judulElement.textContent = data.paper[0].innovation_title;
 
-                var lokasiElement = document.getElementById('inovasi_lokasi');
-                lokasiElement.textContent = data.paper[0].inovasi_lokasi;
+                // Tombol Tambah Outsource (dipasang 1x saja di luar blok if-else)
+                let tambahOutsourceBtn = document.createElement("button");
+                tambahOutsourceBtn.type = "button";
+                tambahOutsourceBtn.className = "btn btn-sm btn-primary ms-3 mt-2 d-none";
+                tambahOutsourceBtn.id = "add-outsource-btn";
+                tambahOutsourceBtn.textContent = "Tambah Outsource";
+                tambahOutsourceBtn.onclick = function () {
+                    let newIndex = ul_outsource.children.length + 1;
+                    let id = `outsource${newIndex}`;
+                    let { li } = buatElemenList(id, false, "", "", false);
+                    ul_outsource.appendChild(li);
+                };
+                ul_outsource.parentNode.appendChild(tambahOutsourceBtn);
 
 
-                var abstractElement = document.getElementById('abstrak');
-                abstractElement.textContent = data.paper[0].abstract;
+                // Set action form
+                document.getElementById('modal-card-form').setAttribute('action', 'paper/update-detail-team/' + data.paper[0].team_id);
+                document.getElementById('detail-paper-form').setAttribute('action', 'paper/update-detail-paper/' + data.paper[0].paper_id);
+                document.getElementById('detail-team-photo').setAttribute('action', 'paper/update-detail-photo/' + data.paper[0].paper_id);
 
-                var problemElement = document.getElementById('problem');
-                problemElement.textContent = data.paper[0].problem;
+                // Set simple field values
+                const fields = {
+                    'team-name': data.paper[0].team_name,
+                    'judul': data.paper[0].innovation_title,
+                    'inovasi_lokasi': data.paper[0].inovasi_lokasi,
+                    'abstrak': data.paper[0].abstract,
+                    'problem': data.paper[0].problem,
+                    'main_cause': data.paper[0].main_cause,
+                    'solution': data.paper[0].solution
+                };
 
-                var main_causeElement = document.getElementById('main_cause');
-                main_causeElement.textContent = data.paper[0].main_cause;
+                for (let id in fields) {
+                    let el = document.getElementById(id);
+                    if (el) el.value = fields[id];
+                }
 
-                var solutionElement = document.getElementById('solution');
-                solutionElement.textContent = data.paper[0].solution;
+                // Set facilitator option
+                let facilitator = document.getElementById('facilitator');
+                if (facilitator && data.data.facilitator) {
+                    let opt = new Option(data.data.facilitator.name, data.data.facilitator.employee_id);
+                    facilitator.appendChild(opt);
+                }
 
-                fotoTim =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].proof_idea);
-                fotoInovasi =  '{{route('query.getFile')}}' + '?directory=' + encodeURIComponent(data.paper[0].innovation_photo);
+                // Set leader option
+                let leader = document.getElementById('leader');
+                if (leader && data.data.leader) {
+                    let opt = new Option(data.data.leader.name, data.data.leader.employee_id);
+                    leader.appendChild(opt);
+                }
 
-                // Set the URL as the source for the iframe
-                document.getElementById("idFotoTim").src = fotoTim;
-                document.getElementById("idFotoInovasi").src = fotoInovasi;
+                // Set iframe source for foto tim dan inovasi
+                const routeGetFile = '{{ route('query.getFile') }}';
+                document.getElementById('idFotoTim').src = `${routeGetFile}?directory=${encodeURIComponent(data.paper[0].proof_idea)}`;
+                document.getElementById('idFotoInovasi').src = `${routeGetFile}?directory=${encodeURIComponent(data.paper[0].innovation_photo)}`;
             },
             error: function(error) {
-                // Menampilkan pesan kesalahan jika terjadi kesalahan dalam permintaan Ajax
-                // console.log(error.responseJSON);
                 alert(error.responseJSON.message);
             }
         });
 
     }
 
-    // digunakan untuk menghapus detail member ketika modal ditutup
-    function remove_detail(){
-        document.getElementById('facilitator').value = ''
-        document.getElementById('leader').value = ''
+    // Fungsi untuk mencari fasilitator menggunakan Select2
+    function search_facilitator(select_element_id) {
+            $('#' + select_element_id).select2({
+                dropdownParent: $('#detailTeamMember'),
+                allowClear: true,
+                width: "100%",
+                placeholder: "Pilih Fasilitator",
+                ajax: {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'GET', // Metode HTTP POST
+                    url: '{{ route('query.get_fasilitator') }}',
+                    dataType: 'json',
+                    delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
+                    data: function(params) {
+                        // Data yang akan dikirim dalam permintaan POST
+                        return {
+                            query: params.term // Menggunakan nilai input "query" sebagai parameter
+                        };
+                    },
+                    processResults: function(data) {
+                        // Memformat data yang diterima untuk format yang sesuai dengan Select2
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    text: item.name, // Nama yang akan ditampilkan di kotak seleksi
+                                    id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+        }
+    
+    // Fungsi untuk mencari anggota tim menggunakan Select2
+    function search_select2(select_element_id) {
+            $('#' + select_element_id).select2({
+                allowClear: true,
+                dropdownParent: $('#detailTeamMember'),
+                width: "100%",
+                placeholder: "Pilih " + select_element_id.split("_")[1] + (select_element_id.split("_")[2] ? " " +
+                    select_element_id.split("_")[2] + " : " : " : "),
+                ajax: {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST', // Metode HTTP POST
+                    url: '{{ route('query.autocomplete') }}',
+                    dataType: 'json',
+                    delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
+                    data: function(params) {
+                        // Data yang akan dikirim dalam permintaan POST
+                        return {
+                            query: params.term // Menggunakan nilai input "query" sebagai parameter
+                        };
+                    },
+                    processResults: function(data) {
+                        // Memformat data yang diterima untuk format yang sesuai dengan Select2
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    text: item.name, // Nama yang akan ditampilkan di kotak seleksi
+                                    id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+        }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        search_facilitator('facilitator');
+        search_select2('leader');
+    });
 
-        var elemenMember = document.getElementById('member-card')
-        if(elemenMember != null){
-            elemenMember.remove()
+    document.querySelector('.btn-edit-team-member').addEventListener('click', function () {
+        let inputs = document.querySelectorAll('.detail-team-input');
+        let sedangEdit = false;
+
+        inputs.forEach(function (input) {
+            if (input.disabled) {
+                sedangEdit = true;
+            }
+        });
+
+        if (sedangEdit) {
+            // Aktifkan mode edit
+            inputs.forEach(function (input) {
+                input.disabled = false;
+            });
+
+            // Tampilkan tombol tambah
+            document.querySelector('#add-member-btn')?.classList.remove('d-none');
+            document.querySelector('#add-outsource-btn')?.classList.remove('d-none');
+
+            // Tampilkan semua tombol hapus yang tersembunyi
+            document.querySelectorAll('.btn-delete-member, .btn-delete-outsource').forEach(function (btn) {
+                btn.classList.remove('d-none');
+            });
+
+            this.textContent = 'Simpan Perubahan';
+        } else {
+            // Submit form
+            document.querySelector('#modal-card-form').submit();
         }
-        var elemenOutsource = document.getElementById('outsource-card');
-        if(elemenOutsource != null){
-            elemenOutsource.remove()
+    });
+
+    document.querySelector('.btn-edit-detail-paper').addEventListener('click', function() {
+        let inputs = document.querySelectorAll('.input-detail-paper');
+        inputs.forEach(function(input) {
+            if(input.readOnly){
+                input.readOnly = false;
+                document.querySelector('.btn-edit-detail-paper').textContent = 'Simpan Perubahan';
+            } else {
+                document.querySelector('#detail-paper-form').submit();
+            }
+        });
+    });
+
+    document.querySelector('.btn-edit-photo').addEventListener('click', function () {
+        const inputTeam = document.querySelector('#inputTeamPhotoContainer');
+        const inputInnovation = document.querySelector('#inputInnovationPhotoContainer');
+        const btn = document.querySelector('.btn-edit-photo');
+
+        // Jika sedang dalam mode edit (hidden)
+        if (inputTeam.classList.contains('d-none') || inputInnovation.classList.contains('d-none')) {
+            inputTeam.classList.remove('d-none');
+            inputInnovation.classList.remove('d-none');
+            btn.textContent = 'Simpan Perubahan';
+        } else {
+            document.querySelector('#detail-team-photo').submit();
         }
+    });
+
+    // digunakan untuk menghapus detail member ketika modal ditutup
+    function remove_detail() {
+        // Helper: reset dan set disabled/readOnly
+        function resetField(id, option = 'disabled') {
+            let el = document.getElementById(id);
+            if (el) {
+                el.value = '';
+                el[option] = true;
+            }
+        }
+
+        // Reset field dengan "disabled"
+        ['team-name', 'facilitator', 'leader'].forEach(id => resetField(id, 'disabled'));
+
+        // Reset field dengan "readOnly"
+        ['judul', 'inovasi_lokasi', 'abstrak', 'problem', 'main_cause', 'solution'].forEach(id => resetField(id, 'readOnly'));
+
+        // Hapus elemen member & outsource jika ada
+        ['member-card', 'outsource-card'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.remove();
+        });
+
+        ['inputTeamPhotoContainer', 'inputInnovationPhotoContainer'].forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.classList.add('d-none');
+        });
+
+        // Ubah teks tombol
+        const btnEditTeam = document.querySelector('.btn-edit-team-member');
+        if (btnEditTeam) btnEditTeam.textContent = 'Edit Anggota Tim';
+
+        const btnEditPaper = document.querySelector('.btn-edit-detail-paper');
+        if (btnEditPaper) btnEditPaper.textContent = 'Edit Detail Paper';
+
+        const btnEditPhoto = document.querySelector('.btn-edit-photo');
+        if (btnEditPhoto) btnEditPhoto.textContent = 'Edit Foto';
     }
+
     // menjalnkan fungsi ketika modal ditutup
     $('#detailTeamMember').on('hidden.bs.modal', function () {
         remove_detail()
@@ -984,6 +1296,15 @@
             }
         });
     }
+
+    function remove_document_modal() {
+        // Hapus semua konten di dalam resultContainer
+        $('#resultContainer').empty();
+    }
+    
+    $('#showDocument').on('hidden.bs.modal', function () {
+        remove_document_modal();
+    });
 
     function get_single_data_from_ajax(table, data_where, limit_page=1) {
         let result_data

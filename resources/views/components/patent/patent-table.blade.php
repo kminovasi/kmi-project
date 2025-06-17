@@ -44,7 +44,7 @@
                           @if($patent->registration_number == null)
                               <p class="text-md fw-500">-</p>
                           @else
-                              <a href="https://www.dgip.go.id/" target="_blank">{{ $patent->registration_number }}</a>
+                              <a href="{{ route('patent.viewApplicationFile', ['patentId' => $patent->id]) }}" target="_blank">{{ $patent->registration_number }}</a>
                           @endif
                       </td>
                       <td class="text-center align-middle">
@@ -92,6 +92,10 @@
           @csrf
           @method('PUT')
           <div class="mb-3">
+            <label for="patent_title" class="form-control">Judul Paten</label>
+            <input type="text" class="form-control" id="patent_title" name="patent_title" placeholder="Masukkan Judul Paten">
+          </div>
+          <div class="mb-3">
             <input type="hidden" name="patent_id" id="patent_id">
             <label for="status" class="form-label">Status Pengajuan</label>
             <select class="form-control" id="status" name="status">
@@ -104,6 +108,10 @@
           <div class="mb-3">
             <label for="registration_number" class="form-label">Nomor Registrasi</label>
             <input type="text" class="form-control" id="registration_number" name="registration_number" placeholder="Masukkan Registration Number">
+          </div>
+          <div class="mb-3">
+            <label for="application_file" class="form-label">Bukti Pengajuan</label>
+            <input type="file" class="form-control" id="application_file" name="application_file" accept=".pdf,application/pdf">
           </div>
           <div class="text-end">
             <button type="submit" class="btn btn-primary">Update Status</button>

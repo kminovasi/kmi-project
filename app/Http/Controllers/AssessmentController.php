@@ -578,7 +578,7 @@ class AssessmentController extends Controller
             // Role BOD hanya dapat melihat data
             $data_event = Event::where('status', '=', 'active')->get();
         }
-        $data_category = Category::all();
+        $data_category = Category::orderBy('category_name','ASC')->get();
 
         return view('auth.user.assessment.ondesk', [
             "data_event" => $data_event,
@@ -612,7 +612,8 @@ class AssessmentController extends Controller
             // Role BOD hanya dapat melihat data
             $data_event = Event::where('status', '=', 'active')->get();
         }
-        $data_category = Category::all();
+        
+        $data_category = Category::orderBy('category_name','ASC')->get();
 
         return view('auth.user.assessment.presentation', [
             "data_event" => $data_event,
@@ -1528,7 +1529,8 @@ class AssessmentController extends Controller
                 ->get();
         }
 
-        $data_category = Category::all();
+        $data_category = Category::orderBy('category_name','ASC')->get();
+
         return view('auth.user.assessment.caucus', [
             "data_event" => $data_event,
             'data_category' => $data_category,
@@ -1876,7 +1878,8 @@ class AssessmentController extends Controller
             ->where('status', 'active')
             ->get();
 
-        $data_category = Category::all();
+        $data_category = Category::orderBy('category_name','ASC')->get();
+
         return view('auth.user.assessment.presentasi_bod', [
             "data_event" => $data_event,
             'data_category' => $data_category,
@@ -1893,7 +1896,9 @@ class AssessmentController extends Controller
             })
             ->where('status', 'active')
             ->get();
-        $data_category = Category::all();
+        
+            $data_category = Category::orderBy('category_name','ASC')->get();
+
         $data = BeritaAcara::join('events', 'berita_acaras.event_id', '=', 'events.id')
             ->join('company_event', 'events.id', '=', 'company_event.event_id')
             ->join('companies', 'company_event.company_id', '=', 'companies.id')

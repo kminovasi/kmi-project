@@ -295,47 +295,48 @@
         return dataTable;
     }
 
-   function updateColumnDataTable() {
-    newColumn = []
-    $.ajax({
-        url: "{{ route('query.get_input_oda_assessment_team') }}",
-        method: 'GET',
-        cache:true,
-        data: {
-            filterEventTeamId: {{ Request::segments()[2] }}
-        },
-        async: false,
-        success: function (data) {
-            if(data.data.length){
-                let row_column = {
-                    data: "DT_RowIndex",
-                    title: "No",
-                    className: "text-center align-middle" // Tambahkan kelas di sini
-                };
-                newColumn.push(row_column);
-                for (var key in data.data[0]) {
-                    if (key != "DT_RowIndex") {
-                        let row_column = {
-                            data: key,
-                            title: key
-                        };
-                        newColumn.push(row_column);
+    function updateColumnDataTable() {
+        newColumn = []
+        $.ajax({
+            url: "{{ route('query.get_input_oda_assessment_team') }}",
+            method: 'GET',
+            cache:true,
+            data: {
+                filterEventTeamId: {{ Request::segments()[2] }}
+            },
+            async: false,
+            success: function (data) {
+                if(data.data.length){
+                    let row_column = {
+                        data: "DT_RowIndex",
+                        title: "No",
+                        className: "text-center align-middle" // Tambahkan kelas di sini
+                    };
+                    newColumn.push(row_column);
+                    for (var key in data.data[0]) {
+                        if (key != "DT_RowIndex") {
+                            let row_column = {
+                                data: key,
+                                title: key
+                            };
+                            newColumn.push(row_column);
+                        }
                     }
+                } else {
+                    let row_column = {
+                        data: '',
+                        title: ''
+                    };
+                    newColumn.push(row_column);
                 }
-            } else {
-                let row_column = {
-                    data: '',
-                    title: ''
-                };
-                newColumn.push(row_column);
+            },
+            error: function (xhr, status, error) {
+                console.error('Gagal mengambil kolom: ' + error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Gagal mengambil kolom: ' + error);
-        }
-    });
-    return newColumn;
-}
+        });
+        return newColumn;
+    }
+    
     $(document).ready(function() {
 
         let column = updateColumnDataTable();

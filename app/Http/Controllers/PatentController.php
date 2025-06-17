@@ -51,8 +51,8 @@ class PatentController extends Controller
         $query = $request->get('query');
         $data = Paper::where('innovation_title', 'like', '%' . $query . '%')
             ->select('id', 'innovation_title')
-            ->get()
-            ->take(5);
+            ->take(5)
+            ->get();
 
         return response()->json($data);
     }
@@ -103,12 +103,30 @@ class PatentController extends Controller
         $validated = $request->validate([
             'status' => 'required|string',
             'patent_id' => 'required|exists:patent,id',
-            'registration_number' => 'required|string',
+            'registration_number' => 'nullable|string',
+            'application_file' => 'nullable|file|mimes:pdf|max:5120',
+            'patent_title' => 'nullable|string|max:255',
         ]);
+        
+        $randomNumber = mt_rand(1000, 9999);
 
         $patent = Patent::findOrFail($validated['patent_id']);
         $patent->registration_number = $validated['registration_number'];
+        $patent->patent_title = $validated['patent_title'] ?? $patent->paper->innovation_title;
         $patent->application_status = $validated['status'];
+        
+        if ($request->hasFile('application_file')) {
+            if ($patent->patent_application_file && Storage::exists($patent->patent_application_file)) {
+                Storage::delete($patent->patent_application_file);
+            }
+
+            $extension = $request->file('application_file')->getClientOriginalExtension();
+            $fileName = $patent->registration_number . '_application_' . $randomNumber . '.' . $extension;
+            $filePath = $request->file('application_file')->storeAs('private/patent/application_file/', $fileName);
+
+            $patent->patent_application_file = $filePath;
+        }
+
         $patent->save();
 
         return redirect()->route('patent.index')->with('success', 'Status berhasil diperbarui.');
@@ -132,6 +150,9 @@ class PatentController extends Controller
         try {
             // Draft
             if ($request->hasFile('draft')) {
+                if ($patent->draft_paten && Storage::exists($patent->draft_paten)) {
+                    Storage::delete($patent->draft_paten);
+                }
                 $extension = $request->file('draft')->getClientOriginalExtension();
                 $fileName = $picName . '_draft_' . $randomNumber . '.' . $extension;
                 $fileDraftPath = $request->file('draft')->storeAs('private/patent/draft_paten/', $fileName);
@@ -142,6 +163,9 @@ class PatentController extends Controller
 
             // Owner Letter
             if ($request->hasFile('owner_letter')) {
+                if ($patent->ownership_letter && Storage::exists($patent->ownership_letter)) {
+                    Storage::delete($patent->ownership_letter);
+                }
                 $extension = $request->file('owner_letter')->getClientOriginalExtension();
                 $fileName = $picName . '_owner_letter_' . $randomNumber . '.' . $extension;
                 $fileOwnerLetterPath = $request->file('owner_letter')->storeAs('private/patent/ownership_letter/', $fileName);
@@ -152,6 +176,9 @@ class PatentController extends Controller
 
             // Statement of Transfer Rights
             if ($request->hasFile('statement_of_transfer_rights')) {
+                if ($patent->statement_of_transfer_rights && Storage::exists($patent->statement_of_transfer_rights)) {
+                    Storage::delete($patent->statement_of_transfer_rights);
+                }
                 $extension = $request->file('statement_of_transfer_rights')->getClientOriginalExtension();
                 $fileName = $picName . '_statement_of_transfer_rights_' . $randomNumber . '.' . $extension;
                 $fileStatementOfTransferRightsPath = $request->file('statement_of_transfer_rights')->storeAs('private/patent/statement_of_transfer_rights/', $fileName);
@@ -299,5 +326,23 @@ class PatentController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('patent.detailInfo', ['patentId' => $validated['patent_id']])->with('error', 'Upload Bukti Pembayaran Tidak Berhasil');
         }
+    }
+
+    public function viewApplication($patentId)
+    {
+        $patent = Patent::findOrFail($patentId);
+        if (!$patent->patent_application_file) {
+            return redirect()->back()->with('error', 'File aplikasi paten tidak ditemukan.');
+        }
+
+        $filePath = storage_path('app/' . ltrim($patent->patent_application_file, '/'));
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File tidak ditemukan.');
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+        ]);
     }
 }

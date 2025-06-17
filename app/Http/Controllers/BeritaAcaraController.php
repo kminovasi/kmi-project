@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\BeritaAcara;
-use App\Models\Event;
-use App\Models\Team;
-use App\Models\Category;
-use App\Models\PvtEventTeam;
-use App\Models\PvtMember;
-use App\Models\PvtAssessmentEvent;
-use App\Models\Evidence;
-use App\Models\BodEvent;
+use Log;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
+use App\Models\Team;
+use App\Models\Event;
+use App\Models\BodEvent;
+use App\Models\Category;
+use App\Models\Evidence;
+use App\Models\PvtMember;
+use App\Models\BeritaAcara;
+use App\Models\PvtEventTeam;
+use Illuminate\Http\Request;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
+use App\Models\PvtAssessmentEvent;
 use Illuminate\Support\Facades\DB;
-use Log;
+use App\Http\Controllers\Controller;
 
 class BeritaAcaraController extends Controller
 {
@@ -95,7 +96,35 @@ class BeritaAcaraController extends Controller
         }
     }
 
+    public function viewUploadedPDF($path)
+    {
+        $relativePath = urldecode($path); // contoh: dokumen/file.pdf
 
+        // Path full ke file PDF
+        $storagePath = storage_path('app/public/' . $relativePath);
+
+        if (!file_exists($storagePath)) {
+            abort(404, 'File not found.');
+        }
+
+        // Inisialisasi FPDI
+        $pdf = new Fpdi();
+
+        $pageCount = $pdf->setSourceFile($storagePath);
+
+        // Impor semua halaman
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $templateId = $pdf->importPage($pageNo);
+            $size = $pdf->getTemplateSize($templateId);
+
+            $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+            $pdf->useTemplate($templateId);
+        }
+
+        // Output langsung ke browser
+        return response($pdf->Output('S'), 200)
+            ->header('Content-Type', 'application/pdf');
+    }
 
     public function showPDF($id)
     {
@@ -147,6 +176,7 @@ class BeritaAcaraController extends Controller
                     ->where('pvt_event_teams.status', '=', 'Juara')
                     ->where('pvt_event_teams.event_id', '=', $idEvent)
                     ->where('pvt_assesment_team_judges.stage', '=', 'presentation')
+                    ->where('pvt_event_teams.is_honorable_winner', '!=', true)
                     ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
                     ->select(
                         'teams.team_name as teamname', 
@@ -191,6 +221,23 @@ class BeritaAcaraController extends Controller
 
         // Best Of The Best
         if ($assessment_event_poin_bi) {
+            $juara['Juara Harapan'] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+                ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->join('papers', 'papers.team_id', '=', 'teams.id')
+                ->join('companies', 'companies.company_code', '=', 'teams.company_code')
+                ->where('pvt_event_teams.event_id', $idEvent)
+                ->where('pvt_event_teams.is_honorable_winner', '=', true)
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->select(
+                    'teams.team_name as teamname', 
+                    'papers.innovation_title', 
+                    'companies.company_name',
+                    'pvt_event_teams.final_score',
+                    DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
+                )
+                ->get()
+                ->toArray();
+
             $juara['Best Of The Best'] = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                 ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                 ->join('papers', 'papers.team_id', '=', 'teams.id')

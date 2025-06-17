@@ -279,7 +279,7 @@
                             results: $.map(data, function(item) {
                                 return {
                                     text: item.employee_id + ' - ' + item.name + ' - ' + item
-                                        .company_name, // Nama yang akan ditampilkan di kotak seleksi
+                                        .company_name, 
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })

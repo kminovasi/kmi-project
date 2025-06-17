@@ -95,11 +95,7 @@ class DashboardController extends Controller
             })
             ->whereYear('pvt_members.created_at', $year)
             ->where('users.gender', 'Male')
-            ->where(function ($query) {
-                $query->where('pvt_members.status', 'leader')
-                    ->orWhere('pvt_members.status', 'member');
-            })
-            ->distinct('pvt_members.employee_id')
+            ->distinct()
             ->count();
 
         $totalInnovatorsFemale = DB::table('pvt_members')
@@ -110,11 +106,7 @@ class DashboardController extends Controller
             })
             ->whereYear('pvt_members.created_at', $year)
             ->where('users.gender', 'Female')
-            ->where(function ($query) {
-                $query->where('pvt_members.status', 'leader')
-                    ->orWhere('pvt_members.status', 'member');
-            })
-            ->distinct('pvt_members.employee_id')
+            ->distinct()
             ->count();
 
         $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale;
@@ -144,7 +136,7 @@ class DashboardController extends Controller
         // based on the category and status
         $innovationStatus = match ($status) {
             'implemented' => ['Implemented'],
-            'idea box' => ['Progress', 'Not Implemented'],
+            'idea box' => ['Progress', 'Not Implemented', 'not finish'],
         };
 
         // Ambil data papers berdasarkan kategori dan status inovasi
@@ -154,7 +146,8 @@ class DashboardController extends Controller
             },
             'teams.papers' => function ($query) use ($innovationStatus) {
                 $query->select('id', 'innovation_title', 'team_id', 'status')
-                    ->whereIn('status_inovasi', $innovationStatus);
+                    ->whereIn('status_inovasi', $innovationStatus)
+                    ->orWhereIn('status', $innovationStatus);
             },
             'teams.company' => function ($query) {
                 $query->select('company_code', 'company_name');

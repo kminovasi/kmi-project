@@ -112,6 +112,11 @@
                 </div>
             </div>
             <div class="card-body">
+                @if($data_event->isNotEmpty())
+                    <div class="mb-3">
+                        <x-assessment.presentation-team-total :event-id="$data_event->first()->id" />
+                    </div>
+                @endif
                 <div class="mb-3">
                     <div class="row">
                         <div class="col-md-4 col-sm-4 col-xs-12">
@@ -182,7 +187,6 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </div>
         </div>

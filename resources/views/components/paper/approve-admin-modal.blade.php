@@ -17,7 +17,8 @@
                          <select class="form-select" aria-label="Default select example" name="status"
                              id="status_by_admin" require>
                              <option selected>-</option>
-                             <option value="accept">Accept</option>
+                             <option value="accept_assessment">Accept (Lolos Penilaian)</option>
+                             <option value=accept_innovation>Accept (Titak Lolos Penilaian)</option>
                              <option value="revision">Revisi</option>
                              <option value="reject">Reject</option>
                          </select>
@@ -72,7 +73,7 @@
              if (selectedValueAdmin === 'revision') {
                  revisionTypeContainerAdmin.show();
                  commentFieldAdmin.attr('required', 'required');
-             } else if (selectedValueAdmin === 'accept') {
+             } else if (selectedValueAdmin === 'accept_assessment' || selectedValueAdmin === 'accept_innovation') {
                  revisionTypeContainerAdmin.hide();
                  await check_admin_approve(currentTeamId);
              } else {
@@ -163,7 +164,7 @@
                  const registEventDiv = $('#registEvent'); // Gunakan jQuery untuk memilih elemen
                  const statusSelectField = $('#status_by_admin'); // Gunakan jQuery untuk memilih elemen
 
-                 if (statusSelectField.val() === 'accept') {
+                 if (statusSelectField.val() === 'accept_assessment' || statusSelectField.val() === 'accept_innovation') {
                      // Ambil data tim menggunakan fungsi AJAX yang sudah ada
                      const data_team = get_single_data_from_ajax('teams', {
                          id: idTeam

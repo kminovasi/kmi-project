@@ -52,25 +52,22 @@ class PvtEventTeamController extends Controller
             })
             ->where('status', 'active')
             ->get();
-        $data_category = Category::all();
+        $data_category = Category::orderBy('category_name', 'ASC')->get();
         return view('auth.user.assessment.best_of_the_best', [
             "data_event" => $data_event,
             'data_category' => $data_category,
             'is_judge' => $is_judge
         ]);
     }
+    
     public function getBestOfTheBest(Request $request)
     {
         try {
-            // Cek apakah filterCategory ada atau null
-            $data_category = Category::select('id', 'category_name', 'category_parent');
-            $data_category = $data_category->get()
-                ->toArray();
-
+            $data_category = Category::select('id', 'category_name', 'category_parent')->get()->toArray();
+    
             $data_category_first = Category::where('id', $request->filterCategory)
                 ->select('category_name', 'category_parent', 'id')->first();
-
-            // Jika tidak ada category yang dipilih (null), ambil semua data
+    
             if ($data_category_first) {
                 $category_type = ($data_category_first->category_parent == 'IDEA BOX') ? 'IDEA' : 'BI/II';
                 $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
@@ -81,7 +78,6 @@ class PvtEventTeamController extends Controller
                     ->get()
                     ->toArray();
             } else {
-                // Jika category null, ambil semua kategori
                 $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                     ->where('status_point', 'active')
                     ->where('stage', 'presentation')
@@ -89,182 +85,195 @@ class PvtEventTeamController extends Controller
                     ->get()
                     ->toArray();
             }
-
+    
             $categoryid = array_column($data_category, 'id');
-
-            // Query untuk mengambil data tim dan skor
-            $arr_select_case = [
-                DB::raw('MIN(teams.id) as team_id'),
-                DB::raw('MIN(team_name) as Tim'),
-                DB::raw('MIN(innovation_title) as Judul'),
-                DB::raw('MIN(category_name) as Kategori'),
-                'pvt_event_teams.id AS event_team_id(removed)',
-                'pvt_event_teams.is_best_of_the_best AS is_best_of_the_best',
-                DB::raw('pvt_event_teams.final_score as Score'),
-            ];
-
-            // Subquery untuk mendapatkan final_score tertinggi per kategori
-            $subquery = DB::table('pvt_event_teams')
-                ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                ->select('teams.category_id', DB::raw('MAX(pvt_event_teams.final_score) as max_score'))
+    
+            // Ambil data ranking sekali saja
+            $rankingData = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->where('pvt_event_teams.event_id', $request->filterEvent)
-                ->groupBy('teams.category_id');
-
-            // Query utama untuk mengambil data tim dengan final_score tertinggi
-            $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
+                ->whereIn('categories.id', $categoryid)
+                ->whereNotNull('pvt_event_teams.final_score')
+                ->select(
+                    DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS Ranking"),
+                    'pvt_event_teams.id as id',
+                    'pvt_event_teams.final_score',
+                    'categories.id as category_id'
+                )
+                ->get()
+                ->keyBy('id');
+    
+            $subquery = DB::table('pvt_event_teams')
+                ->selectRaw('
+                    DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS Ranking,
+                    pvt_event_teams.id as id,
+                    pvt_event_teams.final_score as max_score,
+                    categories.id as category_id
+                ')
+                ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->join('categories', 'categories.id', '=', 'teams.category_id')
+                ->where('pvt_event_teams.event_id', $request->filterEvent)
+                ->whereNotNull('pvt_event_teams.final_score')
+                ->whereIn('categories.id', $categoryid);
+    
+            $arr_select_case = [
+                'teams.id as team_id',
+                'teams.team_name as Tim',
+                'papers.innovation_title as Judul',
+                'categories.category_name as Kategori',
+                'pvt_event_teams.id as event_team_id_removed',
+                'pvt_event_teams.is_best_of_the_best',
+                'pvt_event_teams.is_honorable_winner',
+                'pvt_event_teams.final_score as Score',
+                'categories.id as category_id_removed'
+            ];
+    
+            $data_row = Team::query()
+                ->select($arr_select_case)
+                ->join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
-                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('pvt_event_teams', function($join) use ($request) {
+                    $join->on('pvt_event_teams.team_id', '=', 'teams.id')
+                        ->where('pvt_event_teams.event_id', $request->filterEvent)
+                        ->where('pvt_event_teams.status', 'Juara');
+                })
                 ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                ->join('pvt_assessment_events', function ($join) {
-                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+                ->join('pvt_assessment_events', function($join) {
+                    $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
+                        ->where('pvt_assessment_events.stage', 'presentation');
                 })
-                ->joinSub($subquery, 'max_scores', function ($join) {
+                ->joinSub($subquery, 'max_scores', function($join) {
                     $join->on('teams.category_id', '=', 'max_scores.category_id')
-                        ->on('pvt_event_teams.final_score', '=', 'max_scores.max_score');
+                         ->on('pvt_event_teams.final_score', '=', 'max_scores.max_score');
                 })
-                ->where('pvt_event_teams.event_id', $request->filterEvent)
-                ->where('pvt_event_teams.status', 'Juara')
-                ->where('pvt_assessment_events.stage', 'presentation')
                 ->whereNotIn('papers.status_event', ['reject_group', 'reject_national', 'reject_international'])
-                ->select($arr_select_case)
-                ->groupBy('teams.id', 'teams.team_name', 'innovation_title', 'categories.category_name', 'pvt_event_teams.id', 'pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score');
-
-
-            // Jika filterCategory tidak null, tambahkan filter untuk kategori
+                ->groupBy([
+                    'teams.id',
+                    'teams.team_name',
+                    'papers.innovation_title',
+                    'categories.category_name',
+                    'pvt_event_teams.id',
+                    'pvt_event_teams.is_best_of_the_best',
+                    'pvt_event_teams.is_honorable_winner',
+                    'pvt_event_teams.final_score',
+                    'categories.id'
+                ])
+                ->orderBy('categories.category_name')
+                ->orderByDesc('pvt_event_teams.final_score');
+    
             if ($request->filterCategory) {
                 $data_row->where('categories.id', $request->filterCategory);
             }
-
-            // Urutkan berdasarkan MIN(category_name) dan final_score
-            $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) // Gunakan alias dari SELECT
-                ->orderBy('final_score', 'desc') // Kemudian urutkan berdasarkan final_score
-                ->get())->addIndexColumn();
-
-
-            $rawColumns[] = 'Ranking';
-            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
-                $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                    ->join('categories', 'categories.id', '=', 'teams.category_id')
-                    ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
-                    ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
-                    ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
-                    ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
-                    ->select(
-                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""), // Menghitung ranking per kategori
-                        'pvt_event_teams.id as id',
-                        'pvt_event_teams.final_score',
-                        'categories.id as category_id'
-                    )  // Menambahkan kategori ke dalam hasil
-                    ->get()
-                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
-                    ->toArray();
-
-                // Cek apakah total_score_presentation null atau 0
-                $eventTeamId = $data_row['event_team_id(removed)'];
-
-                // Kembalikan ranking untuk event_team_id saat ini
-                return $data_total[$eventTeamId]['Ranking'];
+    
+            $dataTable = DataTables::of($data_row->get())
+                ->addIndexColumn();
+    
+            // Tambahkan kolom Ranking
+            $dataTable->addColumn('Ranking', function ($data_row) use ($rankingData) {
+                $eventTeamId = $data_row->event_team_id_removed;
+                return $rankingData[$eventTeamId]->Ranking ?? '-';
             });
-
-            $rawColumns[] = 'Pilih Tim';
-            $dataTable->addColumn('Pilih Tim', function ($data_row) use ($request, $categoryid) {
-                // Ambil ranking tim berdasarkan event_team_id saat ini
-                $eventTeamId = $data_row['event_team_id(removed)'];
-
-                // Dapatkan data ranking tim
-                $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                    ->join('categories', 'categories.id', '=', 'teams.category_id')
-                    ->where('pvt_event_teams.event_id', $request->filterEvent)  // Filter berdasarkan event
-                    ->whereIn('categories.id', $categoryid)                     // Filter berdasarkan kategori
-                    ->whereNotNull('pvt_event_teams.final_score')  // Mengecualikan yang null
-                    ->groupBy('pvt_event_teams.id', 'categories.id')            // Kelompokkan berdasarkan kategori
-                    ->select(
-                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""), // Menghitung ranking per kategori
-                        'pvt_event_teams.id as id',
-                        'pvt_event_teams.final_score',
-                        'categories.id as category_id'
-                    )  // Menambahkan kategori ke dalam hasil
-                    ->get()
-                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
-                    ->toArray();
-
-                // Cek ranking untuk event_team_id saat ini
-                $ranking = isset($data_total[$eventTeamId]) ? $data_total[$eventTeamId]['Ranking'] : null;
-
-                // Hanya tampilkan checkbox jika ranking adalah 1
-                if ($ranking === 1) {
-                    $checked = $data_row['is_best_of_the_best'] ? 'checked' : ''; // Check if true and set checked
-
+    
+            // Tambahkan kolom Pilih Tim
+            $dataTable->addColumn('Best Of The Best', function ($data_row) use ($rankingData) {
+                $eventTeamId = $data_row->event_team_id_removed;
+                $ranking = $rankingData[$eventTeamId]->Ranking ?? null;
+                    $checked = $data_row->is_best_of_the_best ? 'checked' : '';
+    
                     if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
                         return '
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" id="radio-' . $eventTeamId . '" name="pvt_event_team_id[]" value="' . $eventTeamId . '" ' . $checked . '>
-                                    <label class="form-check-label" for="radio-' . $eventTeamId . '">
-                                        Pilih
-                                    </label>
-                                </div>
-                                ';
-                    } else {
-                        return '-';
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="radio-' . $eventTeamId . '" name="pvt_event_team_id[]" value="' . $eventTeamId . '" ' . $checked . '>
+                                <label class="form-check-label" for="radio-' . $eventTeamId . '">
+                                    Pilih
+                                </label>
+                            </div>
+                        ';
                     }
-                } else {
-                    return '-'; // Jika ranking bukan 1, kembalikan tanda '-'
-                }
             });
-            $dataTable->rawColumns($rawColumns);
+            
+            // Tambahkan kolom Pilih Juara Harapan
+            $dataTable->addColumn('Juara Harapan', function ($data_row) {
+                $eventTeamId = $data_row->event_team_id_removed;
+            
+                // Contoh: tambahkan logika jika kamu punya flag khusus seperti is_juara_harapan
+                $checked = isset($data_row->is_honorable_winner) && $data_row->is_honorable_winner ? 'checked' : '';
+            
+                if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
+                    return '
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="checkbox-harapan-' . $eventTeamId . '" name="juara_harapan_id[]" value="' . $eventTeamId . '"' . $checked . '>
+                            <label class="form-check-label" for="checkbox-harapan-' . $eventTeamId . '">
+                                Pilih
+                            </label>
+                        </div>
+                    ';
+                }
+            
+                return '-';
+            });
 
-            // Menghapus kolom yang mengandung kata "removed"
+    
+            // Tentukan kolom yang mengandung HTML
+            $dataTable->rawColumns(['Ranking', 'Best Of The Best', 'Juara Harapan']);
+    
+            // Hapus kolom yang tidak diperlukan dari output JSON
+            $dataTable->removeColumn('team_id');
+            $dataTable->removeColumn('is_best_of_the_best');
+            $dataTable->removeColumn('is_honorable_winner');
+            
             $remove_column = [];
-            foreach ($dataTable->original as $data_column) {
-                foreach ($data_column->getAttributes() as $column => $value) {
-                    if (strstr($column, "removed") !== false || $column === 'team_id' || $column === 'is_best_of_the_best') {
-                        $remove_column[] = $column;
+                foreach ($dataTable->original as $data_column) {
+                    foreach ($data_column->getAttributes() as $column => $value) {
+                        if (strstr($column, "removed") !== false) {
+                            $remove_column[] = $column;
+                        }
                     }
                 }
-            }
-            $dataTable->removeColumn($remove_column);
-
+                $dataTable->removeColumn($remove_column);
+    
             return $dataTable->toJson();
+    
         } catch (Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
             ], 422);
         }
     }
+
+    
     public function determiningTheBestOfTheBestTeam(Request $request)
     {
         // Get the selected team IDs from the request
-        $selectedTeams = $request->input('pvt_event_team_id');
+        $selectedBestOfTheBest = $request->input('pvt_event_team_id');
+        $selectedHonorableWiner = $request->input('juara_harapan_id');
 
         // Check if there are selected teams
-        if (empty($selectedTeams) || count($selectedTeams) !== 1) {
-            return response()->json(['message' => 'Please select exactly one team.'], 400);
+        if (empty($selectedBestOfTheBest) || count($selectedBestOfTheBest) !== 1) {
+            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('error', 'Silahkan Pilih Satu Tim Untuk Dinominasikan');
         }
 
         try {
             // First, set all existing "Best of the Best" teams to false
             PvtEventTeam::where('is_best_of_the_best', true)
                 ->update(['is_best_of_the_best' => false]);
-
+    
             // Now, update the selected team to mark it as the best of the best
-            PvtEventTeam::whereIn('id', $selectedTeams)
+            PvtEventTeam::whereIn('id', $selectedBestOfTheBest)
                 ->update(['is_best_of_the_best' => true]);
             
-            // Ambil informasi tim untuk history
-            $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                ->where('pvt_event_teams.id', $selectedTeams)
-                ->select('teams.team_name', 'teams.id as team_id')
-                ->first();
+            if(!empty($selectedHonorableWiner)){
+                // Reset dulu semuanya (cukup sekali, di luar loop)
+                PvtEventTeam::where('is_honorable_winner', true)
+                    ->update(['is_honorable_winner' => false]);
                 
-            // Tambahkan history bahwa tim lolos ke tahap Presentasi
-            History::create([
-                'team_id' => $team->team_id,
-                'activity' => "Selamat Tim " . $team->team_name . " Berhasil Menjadi Best Of The Best",
-                'status' => 'passed'
-            ]);
+                // update Honorable Winner
+                 PvtEventTeam::whereIn('id', $selectedHonorableWiner)
+                    ->update(['is_honorable_winner' => true]);
+            }
 
-            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Best Of The Best Telah Ditetapkan');
+            return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Penetapan Akhir Telah Berhasil');
         } catch (\Exception $e) {
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->withErrors('Error: ' . $e->getMessage());
         }

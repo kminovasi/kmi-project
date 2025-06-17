@@ -428,7 +428,6 @@
 
         // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
         function search_select2(select_element_id) {
-
             $('#' + select_element_id).select2({
                 // allowClear: true,
                 // theme: "classic",
@@ -469,7 +468,6 @@
 
         // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
         function search_facilitator(select_element_id) {
-
             $('#' + select_element_id).select2({
                 allowClear: true,
                 width: "100%",
@@ -508,6 +506,7 @@
                 }
             });
         }
+        
         // mengecek setiap select agar tidak terjadi karyawan yang terpilih 2 kali
         function check_select(element) {
             // fungsi untuk mengecek apakah ada karyawan yang dipilih yang sama

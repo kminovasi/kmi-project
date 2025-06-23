@@ -73,7 +73,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
     Route::get('/total-team-chart/{company_code}', [DashboardController::class, 'showTotalTeamChartCompany'])->middleware(['auth'])->name('showTotalTeamChartCompany');
-    Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompany'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
+    Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompanyData'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
     Route::get('/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('benefitChartData');
 });
 
@@ -222,6 +222,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/update-point/{id}', [AssessmentController::class, 'updateAssessmentPoint'])->name('update.point');
         Route::delete('/delete-point/{id}', [AssessmentController::class, 'deleteAssessmentPoint'])->name('delete.point');
         Route::put('/update-status', [AssessmentController::class, 'changeStatusAssessmentPoint'])->name('update.status');
+
+        Route::get('/show-executive-summary/{eventTeamId}', [AssessmentController::class, 'viewExecutiveSummary'])->name('executiveSummary');
 
         // Lihat Berita Acara Benefit
         Route::get('/berita-acara-benefit/{paperId}', [AssessmentController::class, 'showBeritaAcaraBenefit'])->name('benefitView');

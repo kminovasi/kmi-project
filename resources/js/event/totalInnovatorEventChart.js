@@ -104,3 +104,5 @@ export function initializeTotalInnovatorEventChart(chartData, canvasId, organiza
         },
     });
 }
+
+window.initializeTotalInnovatorEventChart = initializeTotalInnovatorEventChart;

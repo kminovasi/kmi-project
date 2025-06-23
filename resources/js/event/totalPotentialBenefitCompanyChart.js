@@ -148,3 +148,5 @@ export async function renderTotalBenefitChart(companies) {
         plugins: [imagePlugin, autocolors, ChartDataLabels], // Gunakan plugin autocolors
     });
 }
+
+window.renderTotalBenefitChart = renderTotalBenefitChart;

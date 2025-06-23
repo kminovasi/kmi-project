@@ -24,7 +24,13 @@ class TotalTeamCard extends Component
 
         // Ambil 4 tahun terakhir
         $years = range(Carbon::now()->year - 3, Carbon::now()->year);
-        $paperStatus = ['accepted by innovation admin', 'rejected by innovation admin'];
+        $paperStatus = 'accepted by innovation admin';
+        
+        if(in_array($companyCode, [2000, 7000])) {
+            $filteredCompanyCode = [2000, 7000];
+        } else {
+            $filteredCompanyCode = [$companyCode];
+        }
 
         $teamCounts = DB::table('teams')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -34,8 +40,8 @@ class TotalTeamCard extends Component
                 'events.year as year',
                 DB::raw('COUNT(DISTINCT teams.id) as total_teams')
             )
-            ->whereIn('papers.status', $paperStatus)
-            ->where('teams.company_code', $companyCode)
+            ->where('papers.status', $paperStatus)
+            ->whereIn('teams.company_code', $filteredCompanyCode)
             ->whereIn('events.year', $years)
             ->groupBy('events.year')
             ->orderBy('year')

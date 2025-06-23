@@ -128,14 +128,14 @@ public function getEvents(Request $request)
                 if (isset($item->team->paper)) {
                     $fullPaperPath = $item->team->paper->full_paper;
                     // Check if the full_paper path contains '/group/' instead of '/AP/'
-                    $hasFullPaper = !empty($fullPaperPath) && strpos($fullPaperPath, '/group/') !== false;
+                    $hasFullPaper = !empty($fullPaperPath) !== false;
                 }
 
                 return [
                     'team_name' => $item->team->team_name,
                     'innovation_title' => $item->team->paper->innovation_title ?? '-',
                     'company_name' => $item->team->company->company_name ?? '-',
-                    'status_lolos' => $item->team->paper->status_event === 'accept_group',
+                    'status_lolos' => $item->paper->status === 'accepted by innovation admin',
                     'event_type' => $item->event->type,
                     'has_full_paper' => $hasFullPaper,
                     'view_url' => route('event-team.show', $item->team_id),

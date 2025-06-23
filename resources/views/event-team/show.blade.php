@@ -162,8 +162,10 @@
                         data: 'status_lolos',
                         render: function(data, type, row) {
                             if (!data && !row.has_full_paper) {
+                                console.log('Status Lolos:', data, 'Has Full Paper:', row.has_full_paper);
                                 return '<span class="badge bg-danger">Belum di verifikasi</span>';
                             } else {
+                                console.log('Status Lolos:', data, 'Has Full Paper:', row.has_full_paper);
                                 return data ?
                                     '<span class="badge bg-success">Masuk Grup</span>' :
                                     '<span class="badge bg-danger">Belum Terverifikasi oleh Superadmin</span>';

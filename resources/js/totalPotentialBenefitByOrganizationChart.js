@@ -110,3 +110,5 @@ const formatRupiah = (value) => {
         minimumFractionDigits: 0,
     }).format(value);
 };
+
+window.initializeTotalPotentialChart = initializeTotalPotentialChart;

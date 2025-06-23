@@ -50,3 +50,5 @@ export function renderTotalTeamCompanyChart(chartDataTotalTeamCompany) {
         },
     });
 }
+
+window.renderTotalTeamCompanyChart = renderTotalTeamCompanyChart;

@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".company-card").forEach(t=>{t.addEventListener("click",function(){const n=this.getAttribute("data-company-id");this.getAttribute("data-company-code"),window.location.href=`/detail-company-chart/${n}`})})});

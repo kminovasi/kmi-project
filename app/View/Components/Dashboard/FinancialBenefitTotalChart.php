@@ -30,18 +30,28 @@ class FinancialBenefitTotalChart extends Component
 
     private function getChartData()
     {
+        $companyCode = $this->userCompanyCode;
+        
+        if(in_array($companyCode, [2000, 7000])) {
+            $filteredCompanyCode = [2000, 7000];
+        } else {
+            $filteredCompanyCode = [$companyCode];
+        }
+        
         $query = Paper::select(
-            DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
+            'event.year as year',
             DB::raw('SUM(papers.financial) as total_financial')
         )
-            ->join('teams', 'papers.team_id', '=', 'teams.id');
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id');
 
         // Filter berdasarkan company code jika bukan superadmin
         if (!$this->isSuperadmin) {
-            $query->where('teams.company_code', $this->userCompanyCode);
+            $query->whereIn('teams.company_code', $filteredCompanyCode);
         }
 
-        $yearlyTotals = $query->groupBy(DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
+        $yearlyTotals = $query->groupBy('event.year as year')
             ->orderBy('year')
             ->get();
 

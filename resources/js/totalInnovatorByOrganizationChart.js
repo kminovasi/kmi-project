@@ -115,3 +115,5 @@ export function initializeTotalInnovatorChart(chartData, year) {
         chart.update();
     });
 }
+
+window.initializeTotalInnovatorChart = initializeTotalInnovatorChart;

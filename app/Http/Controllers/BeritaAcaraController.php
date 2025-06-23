@@ -99,31 +99,15 @@ class BeritaAcaraController extends Controller
     public function viewUploadedPDF($path)
     {
         $relativePath = urldecode($path); // contoh: dokumen/file.pdf
-
-        // Path full ke file PDF
         $storagePath = storage_path('app/public/' . $relativePath);
-
+    
         if (!file_exists($storagePath)) {
             abort(404, 'File not found.');
         }
-
-        // Inisialisasi FPDI
-        $pdf = new Fpdi();
-
-        $pageCount = $pdf->setSourceFile($storagePath);
-
-        // Impor semua halaman
-        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-            $templateId = $pdf->importPage($pageNo);
-            $size = $pdf->getTemplateSize($templateId);
-
-            $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-            $pdf->useTemplate($templateId);
-        }
-
-        // Output langsung ke browser
-        return response($pdf->Output('S'), 200)
-            ->header('Content-Type', 'application/pdf');
+    
+        return response()->file($storagePath, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     public function showPDF($id)
@@ -149,7 +133,7 @@ class BeritaAcaraController extends Controller
         $carbonInstance_endDate = Carbon::parse($data->date_end);
 
         // Ambil daftar kategori yang bukan IDEA BOX
-        $categoryID_list = Category::whereNot('category_parent', 'IDEA BOX')->pluck('id')->toArray();
+        $categoryID_list = Category::whereNot('category_parent', 'IDEA BOX')->orderBy('category_name', 'ASC')->pluck('id')->toArray();
 
         // Cek apakah ada event assessment BI dan IDEA yang aktif
         $assessment_event_poin_bi = PvtAssessmentEvent::where('event_id', $idEvent)
@@ -177,14 +161,15 @@ class BeritaAcaraController extends Controller
                     ->where('pvt_event_teams.event_id', '=', $idEvent)
                     ->where('pvt_assesment_team_judges.stage', '=', 'presentation')
                     ->where('pvt_event_teams.is_honorable_winner', '!=', true)
-                    ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                    ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.is_honorable_winner','pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score')
                     ->select(
                         'teams.team_name as teamname', 
                         'papers.innovation_title', 
                         'companies.company_name',
                         'pvt_event_teams.final_score',
-                        DB::raw('RANK() OVER (ORDER BY pvt_event_teams.final_score DESC) as rank')
+                        DB::raw('RANK() OVER (ORDER BY pvt_event_teams.final_score) as rank')
                     )
+                    ->orderBy('rank', 'ASC')
                     ->take(3)
                     ->get()
                     ->toArray();
@@ -204,11 +189,13 @@ class BeritaAcaraController extends Controller
                 ->where('pvt_event_teams.status', '=', 'Juara')
                 ->where('pvt_event_teams.event_id', '=', $idEvent)
                 ->where('pvt_assesment_team_judges.stage', '=', 'presentation')
-                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.is_honorable_winner','pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score')
                 ->select(
                     'teams.team_name as teamname', 
                     'papers.innovation_title', 
                     'companies.company_name',
+                    'pvt_event_teams.is_honorable_winner',
+                    'pvt_event_teams.is_best_of_the_best',
                     'pvt_event_teams.final_score',
                     DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
                 )
@@ -227,11 +214,13 @@ class BeritaAcaraController extends Controller
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->where('pvt_event_teams.event_id', $idEvent)
                 ->where('pvt_event_teams.is_honorable_winner', '=', true)
-                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.is_honorable_winner','pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score')
                 ->select(
                     'teams.team_name as teamname', 
                     'papers.innovation_title', 
                     'companies.company_name',
+                    'pvt_event_teams.is_honorable_winner',
+                    'pvt_event_teams.is_best_of_the_best',
                     'pvt_event_teams.final_score',
                     DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
                 )
@@ -244,11 +233,13 @@ class BeritaAcaraController extends Controller
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->where('pvt_event_teams.event_id', $idEvent)
                 ->where('pvt_event_teams.is_best_of_the_best', '=', true)
-                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.final_score')
+                ->groupBy('pvt_event_teams.id', 'teams.team_name', 'papers.innovation_title', 'companies.company_name', 'pvt_event_teams.is_honorable_winner','pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.final_score')
                 ->select(
                     'teams.team_name as teamname', 
                     'papers.innovation_title', 
                     'companies.company_name',
+                    'pvt_event_teams.is_honorable_winner',
+                    'pvt_event_teams.is_best_of_the_best',
                     'pvt_event_teams.final_score',
                     DB::raw('RANK() OVER (ORDER BY COALESCE(pvt_event_teams.final_score, 0) DESC) as rank') // Tambahkan ranking
                 )

@@ -69,8 +69,19 @@ class EvidenceController extends Controller
 
         // mendapatkan data member berdasarkan id team
         $teamMember = $team->pvtMembers()->with('user')->get();
+        
+        $outsourceMember = DB::table('ph2_members')
+            ->where('team_id', $teamId)
+            ->get()
+            ->toArray();
 
-        return view('auth.admin.dokumentasi.evidence.detail-team', compact('teamMember', 'papers', 'teamId'));
+        return view('auth.admin.dokumentasi.evidence.detail-team', compact(
+            'teamMember', 
+            'papers', 
+            'teamId', 
+            'team',
+            'outsourceMember'
+        ));
     }
 
     public function download($id)

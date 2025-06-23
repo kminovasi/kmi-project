@@ -69,7 +69,8 @@ class EvidenceTable extends Component
                 'events.year',
                 'themes.theme_name',
                 'papers.id as paper_id'
-            );
+            )
+            ->orderBy('pvt_event_teams.final_score', 'desc');
 
         // Filter berdasarkan judul paper (pencarian)
         if ($this->search) {

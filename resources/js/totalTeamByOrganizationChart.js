@@ -89,3 +89,5 @@ export function initializeTotalTeamChart(chartData) {
         },
     });
 }
+
+window.initializeTotalTeamChart = initializeTotalTeamChart;

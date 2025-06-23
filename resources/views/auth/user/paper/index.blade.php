@@ -256,12 +256,12 @@
 
     {{-- modal untuk filter khusus superadmin --}}
     {{-- modal untuk filter khusus superadmin --}}
-    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="detailTeamMemberTitle" aria-hidden="true">
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content shadow">
                 <!-- Header -->
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="detailTeamMemberTitle">Filter</h5>
+                    <h5 class="modal-title fw-bold text-white" id="Filter">Filter</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Body -->
@@ -964,6 +964,7 @@
                 // Set facilitator option
                 let facilitator = document.getElementById('facilitator');
                 if (facilitator && data.data.facilitator) {
+                    facilitator.innerHTML = '';
                     let opt = new Option(data.data.facilitator.name, data.data.facilitator.employee_id);
                     facilitator.appendChild(opt);
                 }
@@ -971,6 +972,7 @@
                 // Set leader option
                 let leader = document.getElementById('leader');
                 if (leader && data.data.leader) {
+                    leader.innerHTML = '';
                     let opt = new Option(data.data.leader.name, data.data.leader.employee_id);
                     leader.appendChild(opt);
                 }
@@ -1133,6 +1135,7 @@
             let el = document.getElementById(id);
             if (el) {
                 el.value = '';
+                el.innerHTML = '';
                 el[option] = true;
             }
         }
@@ -1166,9 +1169,12 @@
     }
 
     // menjalnkan fungsi ketika modal ditutup
-    $('#detailTeamMember').on('hidden.bs.modal', function () {
-        remove_detail()
-    });
+    const detailModal = document.getElementById('detailTeamMember');
+        if (detailModal) {
+            detailModal.addEventListener('hidden.bs.modal', function () {
+                remove_detail();
+            });
+        }
 
     function upload_document_modal(idPaper){
 

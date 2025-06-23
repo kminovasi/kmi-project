@@ -96,7 +96,7 @@
     <div class="header">
         <p>
             <span class="h3">BERITA ACARA PENETAPAN JUARA {{$data->jenis_event}}</span><br>
-            <span class="H2">{{$data->event_name}}</span><br>
+            <span class="H2">{{$data->event_name}} Tahun {{$data->year}}</span><br>
             <span class="h6">Nomor: {{$data->no_surat}}</span>
         </p>
     </div>
@@ -133,7 +133,13 @@
                     <td>{{ $dt['teamname'] }}</td>
                     <td>{{ $dt['innovation_title'] }}</td>
                     <td>{{ $dt['company_name'] }}</td>
+                    @if (!isset($dt['is_honorable_winner']) && !isset($dt['is_best_of_the_best']))
                     <td class="ranking">Juara {{ $dt['rank'] }}</td>
+                    @elseif ($dt['is_best_of_the_best'])
+                    <td class="ranking">Best Of The Best</td>
+                    @elseif ($dt['is_honorable_winner'])
+                    <td class="ranking">Juara Harapan</td>
+                    @endif
                 </tr>
                 <?php $no++; ?>
             @endforeach

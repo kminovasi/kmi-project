@@ -68,3 +68,5 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
         }
     });
 }
+
+window.renderTotalInnovatorStagesChart = renderTotalInnovatorStagesChart;

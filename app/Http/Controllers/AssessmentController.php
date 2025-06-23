@@ -2059,4 +2059,31 @@ class AssessmentController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function viewExecutiveSummary($eventTeamId)
+    {
+        try {
+            $summary = SummaryExecutive::where('event_id', $eventTeamId)->first();
+            if ($summary->file_ppt == null) {
+                return redirect()->back()->withErrors('Error: Tidak ada ringkasan eksekutif untuk event ini.');
+            }
+
+            $filePath = storage_path('app/public/' . ltrim($summary->file_ppt, '/'));
+            if (!file_exists($filePath)) {
+                return redirect()->back()->withErrors('Error: File tidak ditemukan.');
+            }
+
+            $fpdi = new Fpdi();
+            $pageCount = $fpdi->setSourceFile($filePath);
+            for ($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
+                $tplIdx = $fpdi->importPage($pageNum);
+                $fpdi->AddPage();
+                $fpdi->useTemplate($tplIdx, 0, 0);
+            }
+            return response($fpdi->Output($filePath, 'I'), 200)->header('Content-Type', 'application/pdf');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error: ' . $e->getMessage());
+        }
+    }
 }

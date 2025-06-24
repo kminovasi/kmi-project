@@ -42,8 +42,8 @@
 
 @section('content')
     <div class="container mt-4">
-        <div class="row d-flex justify-content-center">
-            <div class="col-md-6">
+        <div class="row d-flex justify-content-between">
+            <div class="col-md-8">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">Informasi Status Paten Inovasi</div>
                     <div class="card-body">
@@ -76,7 +76,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <div class="amount text-capitalize card px-3 text-center bg-gray-200 text-black">
                                 <p class="mb-0 fw-500">Jumlah pembayaran</p>
-                                <p class="mt-0">Rp{{ number_format($patent->amount, 0, ',', '.') }}</p>
+                                <p class="mt-0">Rp{{ number_format($patentMaintenance->amount, 0, ',', '.') }}</p>
                             </div>
                             <div class="payment-btn">
                                 <button class="btn btn-md btn-primary" data-bs-target="#inputPaymentInfo" data-bs-toggle="modal">Bayar</button>
@@ -86,27 +86,59 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">Informasi Sertikat Paten</div>
-                    <div class="card-body">
-                        <div>
-                            <h6>Nomor Serifikat Paten</h6>
-                            <p>{{ $patent->certification_number }}sdfw</p>
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="text-white">Informasi Sertikat Paten</h5>
                         </div>
-                        <div>
-                            <h6>Download Sertifikat Paten</h6>
-                            <a href="#" class="btn btn-sm btn-primary"
-                                target="_blank"><i class="bi bi-file-arrow-down"></i>Download</a>
+                        <div class="card-body">
+                            <div>
+                                <h6>Nomor Serifikat Paten</h6>
+                                @if($patent->application_status != 'Paten')
+                                <p>Inovasi Belum Mendapatkan Sertifikat Paten</p>
+                                @else
+                                <p>{{ $patent->certification_number }}</p>
+                                @endif
+                            </div>
+                            <div>
+                                <h6>Download Sertifikat Paten</h6>
+                                <a href="{{ route('patent.viewPatentDocument', ['patentId' => $patent->id, 'file' => 'certificate']) }}" class="btn btn-sm btn-primary"
+                                    target="_blank"><i class="bi bi-file-arrow-down"></i>Download</a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="text-white">Dokumen Pengajuan Paten</h5>
+                        </div>
+                        
+                        @php
+                        $files = [
+                            'application_file' => 'Dokumen Permohoman',
+                            'administrative_file' => 'Dokumen Pemeriksaan Administratif',
+                            'publication_file' => 'Dokumen Publikasi',
+                            'appeal_file' => 'Dokumen Pengajuan Banding',
+                            'reject_file' => 'Dokumen Penolakan'
+                        ];
+                        @endphp
+                        
+                        <div class="card-body">
+                            @foreach ($files as $key => $label)
+                                @if($patent->$key)
+                                    <div class="mb-3">
+                                        <h6>{{ $label }}</h6>
+                                        <a href="{{ route('patent.viewPatentDocument', ['patentId' => $patent->id, 'file' => $key]) }}" class="btn btn-sm btn-primary"
+                                            target="_blank"><i class="bi bi-file-arrow-down"></i>Download</a>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Edit Status -->
+    <!-- Modal Edit Pembayaran -->
     <div class="modal fade" id="inputPaymentInfo" tabindex="-1" aria-labelledby="inputPaymentInfoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -123,8 +155,12 @@
                             <input type="date" class="form-control" id="payment_date" name="payment_date" placeholder="Masukkan Tanggal Pembayaran" required>
                         </div>
                         <div class="mb-3">
+                            <label for="payment_amount">Jumlah Pembayaran</label>
+                            <input type="number" class="form-control" id="payment_amount" name="payment_amount" placeholder="Masukkan Jumlah Pembayaran" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="payment_proof" class="form-label">Bukti Pembayaran<label>
-                            <input type="file" class="form-control" id="payment_proof" name="payment_proof" placeholder="Masukkan Registration Number" required>
+                            <input type="file" class="form-control" id="payment_proof" name="payment_proof" placeholder="Masukkan Bukti Pembayaran" required>
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">Submit</button>

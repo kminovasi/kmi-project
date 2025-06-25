@@ -37,7 +37,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                            Input Penilaian Preentasi
+                            Input Penilaian Presentasi
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -56,7 +56,6 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
                     {{ session('success') }}
-
                     <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -95,7 +94,35 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-6 col-xs-6">
+                <div class="row mb-3">
+                    <div class="d-flex flex-column align-items-start">
+                        @if ($datas->full_paper || $datas->file_review)
+                            <a href="{{ route('paper.watermarks', ['paper_id' => $datas->paper_id]) }}" class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
+                                Lihat Makalah
+                            </a>
+                            <a href="{{ route('assessment.benefitView', ['paperId' => $datas->paper_id]) }}" class="btn btn-sm text-white mt-2" style="background-color: #e84637" target="_blank">
+                                Lihat Berita Acara Benefit
+                            </a>
+
+                            @if ($datas->full_paper_updated_at)
+                                <small class="text-muted mt-2">
+                                    <small class="text-muted mt-2">
+                                        Makalah Terakhir diubah pada:
+                                        {{ \Carbon\Carbon::parse($datas->full_paper_updated_at)->translatedFormat('d F Y H:i') }}
+                                    </small>
+
+                                </small>
+                            @else
+                                <small class="text-muted mt-2">
+                                    Terakhir diubah pada: Tidak tersedia
+                                </small>
+                            @endif
+                        @else
+                            <p class="text-muted">File paper belum tersedia.</p>
+                        @endif
+                    </div>
+                </div>
+                <div class="row col-md-6 col-sm-6 col-xs-6">
                     <x-assessment-matrix.show-image-button />
                 </div>
             </div>
@@ -107,6 +134,12 @@
                 @method('put')
                 <div class="card-body">
                     <table id="datatable-penilaian"></table>
+                    <hr>
+                    <div class="mb-3 mx-auto">
+                        <x-assessment.deviation-information 
+                            :event-team-id="Request::segments()[2]" 
+                            :assessment-stage="'presentation'" />
+                    </div>
                     <hr>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
@@ -190,7 +223,7 @@
                     <div class="modal-body">
                         <div class="col-md-12">
                             <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
-                            <input type="hidden" name="stage" value="caucus">
+                            <input type="hidden" name="stage" value="presentation">
                             <label for="dataJudge">Pilih Juri</label>
                             <select name="judge_id" class="form-select" id="">
                                 @foreach ($datas_juri as $data_juri)
@@ -288,12 +321,9 @@
             let column = updateColumnDataTable();
             let dataTable = initializeDataTable(column);
         });
-
+        
         // In your Javascript (external .js resource or <script> tag)
-    $(document).ready(function() {
-        $('#select2-juri').select2({
-            // allowClear: true,
-            // theme: "classic",
+         $('#select2-juri').select2({
             dropdownParent: $("#addJuri"),
             allowClear: true,
             width: "100%",
@@ -302,44 +332,29 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: 'GET', // Metode HTTP POST
-                url: '{{ route('query.custom') }}',
+                url: '/approveadminuery/get-judge',
+                type: 'GET',
                 dataType: 'json',
-                delay: 250, // Penundaan dalam milidetik sebelum permintaan AJAX dikirim
-                data: {
-                    table: "judges",
-                    where: {
-                        'event_id': {{ $datas->event_id }},
-                        'status': 'active'
-                    },
-                    limit: 100,
-                    join: {
-                        'users':{
-                            'users.employee_id': 'judges.employee_id'
-                        }
-                    },
-                    select:[
-                        'judges.id as judges_id',
-                        'users.employee_id as employee_id',
-                        'users.name as name'
-                    ]
-                },
-                processResults: function(data) {
-                    // Memformat data yang diterima untuk format yang sesuai dengan Select2
+                delay: 250,
+                data: function (params) {
                     return {
-                        results: $.map(data, function(item) {
+                        query: params.term,
+                        event_id: {{ $datas->event_id }} // Pastikan ini di blade file
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
                             return {
-                                text: item.employee_id + ' - ' + item
-                                    .name, // Nama yang akan ditampilkan di kotak seleksi
-                                id: item.judges_id // Nilai yang akan dikirimkan saat opsi dipilih
+                                id: item.judges_id,
+                                text: item.employee_id + ' - ' + item.name
                             };
                         })
                     };
                 },
-                cache: true,
+                cache: true
             }
         });
-    });
 
         count_exceed_max_score = new Set()
         function validate_score(elemen){

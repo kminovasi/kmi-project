@@ -110,10 +110,11 @@
                             @endif
                         </div>
                     </div>
-                    <div class="col-md-5 mb-3 text-center">
+                    <div class="col-md-5 mb-3 text-center border rounded">
                         <label class="small mb-1 d-block fw-600" for="fotoTim">Foto Tim</label>
                         <img src="{{ route('query.getFile') }}?directory={{ urlencode($datas->proof_idea) }}"
-                            id="fotoTim" class="rounded">
+                             id="fotoTim" class="img-fluid rounded"
+                             style="max-width: 30rem;">
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -158,6 +159,12 @@
                 @method('put')
                 <div class="card-body">
                     <table id="datatable-penilaian"></table>
+                    <hr>
+                    <div class="mb-3 mx-auto">
+                        <x-assessment.deviation-information 
+                            :event-team-id="Request::segments()[2]" 
+                            :assessment-stage="'on desk'" />
+                    </div>
                     <hr>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
@@ -245,6 +252,8 @@
                     <div class="modal-body">
                         <div class="col-md-12">
                             <label for="dataJudge">Pilih Juri</label>
+                            <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
+                            <input type="hidden" name="stage" value="on desk">
                             <select name="judge_id" class="form-select" id="">
                                 @foreach ($datas_juri as $data_juri)
                                     <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} -
@@ -295,51 +304,51 @@
         return dataTable;
     }
 
-    function updateColumnDataTable() {
-        newColumn = []
-        $.ajax({
-            url: "{{ route('query.get_input_oda_assessment_team') }}",
-            method: 'GET',
-            cache:true,
-            data: {
-                filterEventTeamId: {{ Request::segments()[2] }}
-            },
-            async: false,
-            success: function (data) {
-                if(data.data.length){
-                    let row_column = {
-                        data: "DT_RowIndex",
-                        title: "No",
-                        className: "text-center align-middle" // Tambahkan kelas di sini
-                    };
-                    newColumn.push(row_column);
-                    for (var key in data.data[0]) {
-                        if (key != "DT_RowIndex") {
-                            let row_column = {
-                                data: key,
-                                title: key
-                            };
-                            newColumn.push(row_column);
-                        }
+   function updateColumnDataTable() {
+    newColumn = []
+    $.ajax({
+        url: "{{ route('query.get_input_oda_assessment_team') }}",
+        method: 'GET',
+        cache:true,
+        data: {
+            filterEventTeamId: {{ Request::segments()[2] }}
+        },
+        async: false,
+        success: function (data) {
+            if(data.data.length){
+                let row_column = {
+                    data: "DT_RowIndex",
+                    title: "No",
+                    className: "text-center align-middle" // Tambahkan kelas di sini
+                };
+                newColumn.push(row_column);
+                for (var key in data.data[0]) {
+                    if (key != "DT_RowIndex") {
+                        let row_column = {
+                            data: key,
+                            title: key
+                        };
+                        newColumn.push(row_column);
                     }
-                } else {
-                    let row_column = {
-                        data: '',
-                        title: ''
-                    };
-                    newColumn.push(row_column);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error('Gagal mengambil kolom: ' + error);
+            } else {
+                let row_column = {
+                    data: '',
+                    title: ''
+                };
+                newColumn.push(row_column);
             }
-        });
-        return newColumn;
-    }
-    
+        },
+        error: function (xhr, status, error) {
+            console.error('Gagal mengambil kolom: ' + error);
+        }
+    });
+    return newColumn;
+}
     $(document).ready(function() {
 
         let column = updateColumnDataTable();
+        // column = []
         let dataTable = initializeDataTable(column);
     });
 
@@ -353,7 +362,7 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            url: '{{ route('approveadminuery.getJudges') }}', // <= Sesuaikan dengan nama route
+            url: '/approveadminuery/get-judge',
             type: 'GET',
             dataType: 'json',
             delay: 250,
@@ -376,7 +385,6 @@
             cache: true
         }
     });
-
 
     count_exceed_max_score = new Set()
     function validate_score(elemen){

@@ -108,6 +108,12 @@
                 <div class="card-body">
                     <table id="datatable-penilaian"></table>
                     <hr>
+                    <div class="mb-3 mx-auto">
+                        <x-assessment.deviation-information 
+                            :event-team-id="Request::segments()[2]" 
+                            :assessment-stage="'caucus'" />
+                    </div>
+                    <hr>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1" for="inputRecomCategory">Rekomendasi Kategori</label>
                         <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control">{{ $sofiData->recommend_category }}</textarea>
@@ -137,10 +143,11 @@
                                     data-bs-target="#deleteJuri">Hapus Juri</button>
                             </div>
                         </div>
+                    @elseif(Auth::user()->role == 'Juri')
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
+                        </div>
                     @endif
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
-                    </div>
                 </div>
             </form>
         </div>
@@ -157,7 +164,7 @@
                 <form action="{{ route('assessment.addJuri') }}" method="post">
                     @csrf
                     <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
-                    <input type="text" name="stage" value="presentation" hidden>
+                    <input type="text" name="stage" value="caucus" hidden>
                     <div class="modal-body">
                         <div class="col-md-12">
                             <label for="dataJudge">Pilih Juri</label>
@@ -174,7 +181,7 @@
         </div>
     </div>
 
-    {{-- modal dekete juri --}}
+    {{-- modal dekele juri --}}
     <div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">

@@ -105,11 +105,21 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        @if($data_event->isNotEmpty() && $data_event->first()?->id)
+                            <div class="mb-3">
+                                <x-assessment.caucus-total-team :event-id="$data_event->first()->id" />
+                            </div>
+                        @endif
                         <div class="mb-3">
-                            @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri')
-                                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#filterModal">Filter</button>
-                            @endif
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    @if (Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin' || Auth::user()->role == 'Juri' || $is_judge)
+                                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#filterModal">Filter</button>
+                                        {{-- <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#filterCategoryModal">Filter Category</button> --}}
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                         <form id="datatable-card" action="{{ route('assessment.addBODvalue') }}" method="post">
                             @csrf
@@ -169,7 +179,6 @@
                     <!-- Modal Footer -->
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </div>
@@ -196,8 +205,7 @@
                             </div>
                             <!-- Judul Inovasi -->
                             <div class="form-floating mb-4">
-                                <input type="text" name="" id="InnovationTitle" class="form-control"
-                                    value="" readonly>
+                                <textarea class="form-control" id="InnovationTitle" style="height: 80px" readonly></textarea>
                                 <label for="InnovationTitle">Judul Inovasi</label>
                             </div>
                             <!-- Perusahaan -->
@@ -207,17 +215,17 @@
                             </div>
                             <!-- Latar Belakang Masalah -->
                             <div class="form-floating mb-4">
-                                <textarea name="problem_background" id="inputProblemBackground" class="form-control" rows="4"></textarea>
+                                <textarea name="problem_background" id="inputProblemBackground" class="form-control" style="height: 80px"></textarea>
                                 <label for="inputProblemBackground">Latar Belakang Masalah</label>
                             </div>
                             <!-- Ide Inovasi -->
                             <div class="form-floating mb-4">
-                                <textarea name="innovation_idea" id="inputInnovationIdea" class="form-control" rows="4"></textarea>
+                                <textarea name="innovation_idea" id="inputInnovationIdea" class="form-control" style="height: 80px"></textarea>
                                 <label for="inputInnovationIdea">Ide Inovasi</label>
                             </div>
                             <!-- Manfaat -->
                             <div class="form-floating mb-4">
-                                <textarea name="benefit" id="inputBenefit" class="form-control" rows="4"></textarea>
+                                <textarea name="benefit" id="inputBenefit" class="form-control" style="height: 80px"></textarea>
                                 <label for="inputBenefit">Manfaat</label>
                             </div>
                         </div>
@@ -230,6 +238,7 @@
             </div>
         </div>
 
+        <!-- Modal Fix All Caucus -->
         <div class="modal fade" id="fixModalPA" tabindex="-1" role="dialog" aria-labelledby="rolbackTitle"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-md" role="document">
@@ -412,47 +421,17 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                console.log("tim", response)
                 document.getElementById("TeamName").value = response.team_name;
                 document.getElementById("InnovationTitle").value = response.innovation_title;
                 document.getElementById("Company").value = response.company_name;
                 document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
+                document.getElementById("inputProblemBackground").value = response.problem_background;
+                document.getElementById("inputInnovationIdea").value = response.innovation_idea;
+                document.getElementById("inputBenefit").value = response.benefit;
                 pvtEventTeamId = response.pvt_event_teams_id;
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching summary:", error);
-            }
-        });
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '{{ route('query.custom') }}',
-            dataType: 'json',
-            async: false,
-            data: {
-                table: "summary_executives",
-                where: {
-                    "summary_executives.pvt_event_teams_id": pvtEventTeamId
-                },
-                limit: 1,
-                select:[
-                        'problem_background',
-                        'innovation_idea',
-                        'benefit'
-                    ]
-            },
-            // dataType: 'json',
-            success: function(response) {
-                console.log(response)
-
-                document.getElementById("inputProblemBackground").value = response[0].problem_background;
-                document.getElementById("inputInnovationIdea").value = response[0].innovation_idea;
-                document.getElementById("inputBenefit").value = response[0].benefit;
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
             }
         });
     }

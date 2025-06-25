@@ -8,6 +8,7 @@
         text-align: center;
     }
 </style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 @extends('layouts.app')
 @section('title', 'Profil')
@@ -27,6 +28,15 @@
             </div>
         </div>
     </header>
+    
+    <div class="mb-3">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                {{ session('success') }}
+                <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+    </div>
 
     <div class="container mt-4">
         <div class="row justify-content-around">
@@ -147,9 +157,70 @@
                                 <input class="form-control" id="dataManager" value="{{ $manager }}" disabled />
                             </div>
                         </form>
+                        <form id="changePassword" action="{{ route('profile.updatePassword', ['employeeId' => $userId]) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-3 position-relative">
+                                <label class="small mb-1">Input Password</label>
+                                <input 
+                                    id="passwordInput" 
+                                    type="password" 
+                                    name="password" 
+                                    class="form-control pe-5" 
+                                    placeholder="Inputkan Password Baru"
+                                    readonly
+                                />
+                                <span 
+                                    class="position-absolute top-50 end-0 translate-middle-y mt-2 me-3" 
+                                    style="cursor: pointer;" 
+                                    id="togglePassword"
+                                >
+                                    <i class="bi bi-eye-slash-fill fs-1 d-none" id="togglePasswordIcon"></i>
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" id="toggleInput" class="btn btn-sm btn-danger">Edit Password</button>
+                                <button type="submit" id="submitButton" class="btn btn-sm btn-primary" disabled>Simpan Password</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('toggleInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitButton');
+            const icon = document.getElementById('togglePasswordIcon');
+        
+            toggleBtn.addEventListener('click', function () {
+                const isReadonly = passwordInput.hasAttribute('readonly');
+        
+                if (isReadonly) {
+                    passwordInput.removeAttribute('readonly');
+                    passwordInput.focus();
+                    toggleBtn.textContent = 'Kunci Password';
+                    icon.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                } else {
+                    passwordInput.setAttribute('readonly', true);
+                    toggleBtn.textContent = 'Edit Password';
+                    icon.classList.add('d-none');
+                    submitBtn.disabled = true;
+                }
+            });
+            
+            const toggle = document.getElementById('togglePassword');
+            const input = document.getElementById('passwordInput');
+            
+            toggle.addEventListener('click', function () {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.className = isPassword ? 'fs-1 bi bi-eye-fill' : 'fs-1 bi bi-eye-slash-fill';
+            });
+        });
+    </script>
 @endsection

@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::get('/my-paper/{teamId}', [ProfileController::class, 'showPaperDetail'])->name('showPaperDetail');
         Route::post('/my-paper/paper-revision/{teamId}', [ProfileController::class, 'revision'])->name('showPaperDetail.paper-revision');
+        Route::put('/update-password/{employeeId}', [ProfileController::class, 'updatePasswordUser'])->name('updatePassword');
     });
 
     Route::prefix('paper')->name('paper.')->group(function () {

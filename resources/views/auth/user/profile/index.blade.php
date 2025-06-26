@@ -43,12 +43,24 @@
             <!-- Bagian Profil -->
             <div class="col-md-6 col-sm-10 col-xs-12">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header text-center bg-gradient-primary text-white">
-                        <h5 class="mb-0 text-white">Profil Anda</h5>
+                    <div class="card-header bg-primary bg-gradient d-flex justify-content-between">
+                        <h5 class="mb-0 text-white text-center">Profil Anda</h5>
+                        <div>
+                            <button class="text-end btn btn-sm btn-danger d-none" id="btnCancelEditProfile">Batal</button>
+                            <button class="text-end btn btn-sm btn-secondary" id="btnEditProfile">Edit Poto Profile</button>
+                        </div>
                     </div>
                     <div class="card-body text-center">
-                        <img src="{{ asset('images/default-profile.png') }}" alt="Foto Profil" class="img-thumbnail mb-3"
-                            style="width: 100px; height: 100px;">
+                        <div style="max-width: 100px; height: auto;" class="text-center w-100 mx-auto">
+                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($profilePicture) }}" alt="Foto Profil" class="rounded mx-auto d-block mb-3"
+                                style="max-width: 100%; height: auto;">
+                        </div>
+                        <form id="updatePhotoProfile" method="POST" class="d-none" action="{{ route('profile.updateProfilePicture', ['employeeId' => $user->employee_id]) }}" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            
+                            <input type="file" class="form-control w-50 mx-auto" name="photo_profile" required accept=".jpg,.png,.jpeg" />
+                        </form>
                         <h5 class="card-title">{{ $user->name }}</h5>
                         <p class="card-text"><strong>Posisi:</strong> {{ $user->position_title }}</p>
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
@@ -86,7 +98,7 @@
             <div class="col-xl-12">
                 <!-- Account details card-->
                 <div class="card mb-4">
-                    <div class="card-header">Detail Pengguna</div>
+                    <div class="card-header bg-primary bg-gradient text-white">Detail Pengguna</div>
                     <div class="card-body">
                         <form>
                             <!-- Form Group (email address)-->
@@ -220,6 +232,37 @@
                 const isPassword = input.type === 'password';
                 input.type = isPassword ? 'text' : 'password';
                 icon.className = isPassword ? 'fs-1 bi bi-eye-fill' : 'fs-1 bi bi-eye-slash-fill';
+            });
+            
+            const btnEditPhotoProfile = document.getElementById('btnEditProfile');
+            const formUpdatePhotoProfile = document.getElementById('updatePhotoProfile');
+            const cancelEditPhotoProfile = document.getElementById('btnCancelEditProfile');
+            
+            btnEditPhotoProfile.addEventListener('click', function () {
+                const isHidden = formUpdatePhotoProfile.classList.contains('d-none');
+            
+                if (isHidden) {
+                    formUpdatePhotoProfile.classList.remove('d-none');
+                    cancelEditPhotoProfile.classList.remove('d-none');
+                    btnEditPhotoProfile.textContent = 'Simpan Foto Profile';
+                } else {
+                    
+                    if (!formUpdatePhotoProfile.querySelector('input[type="file"]').files.length) {
+                        alert('Silakan pilih file terlebih dahulu.');
+                        return;
+                    }
+
+                    formUpdatePhotoProfile.submit();
+                    btnEditPhotoProfile.textContent = 'Edit Foto Profile';
+                    formUpdatePhotoProfile.classList.add('d-none');
+                    cancelEditPhotoProfile.classList.add('d-none');
+                }
+            });
+            
+            cancelEditPhotoProfile.addEventListener('click', function () {
+                formUpdatePhotoProfile.classList.add('d-none');
+                cancelEditPhotoProfile.classList.add('d-none');
+                btnEditPhotoProfile.textContent = 'Edit Foto Profile';
             });
         });
     </script>

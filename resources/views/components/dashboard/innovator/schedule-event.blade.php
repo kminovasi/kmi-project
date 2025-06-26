@@ -1,5 +1,5 @@
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-gradient-primary text-white text-center">
+    <div class="card-header bg-gradient bg-primary text-white text-center">
         <h5 class="mb-0 font-weight-bold text-white">Jadwal Event Aktif</h5>
     </div>
     <div class="card-body">

@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use DataTables;
 use App\Models\Team;
 use App\Models\Event;
 use App\Models\Paper;
@@ -16,12 +13,15 @@ use Illuminate\Http\Request;
 use App\Mail\PaperStatusUpdated;
 use App\Models\PvtCustomBenefit;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CustomBenefitFinancial;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaperNotification;
 use App\Services\PaperFileUploadService;
+use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\UpdatePaperRequest;
 
 class EventTeamController extends Controller
@@ -32,69 +32,66 @@ class EventTeamController extends Controller
         return view('event-team.index', compact('companies'));
     }
 
-public function getEvents(Request $request)
-{
-    // Ambil user yang sedang login
-    $user = Auth::user();
-
-    // Buat query untuk mengambil event
-    $query = Event::with('companies'); // Ambil semua event dengan relasi companies
-
-    // Jika user bukan Superadmin, ambil tim yang diikuti oleh user
-    if ($user->role !== 'Superadmin') {
-        // Jika user adalah Admin, ambil event yang berkaitan dengan company asal dari admin tersebut
-        if ($user->role === 'Admin') {
-            $companyCode = $user->company_code;
-            $query->whereHas('companies', function ($q) use ($companyCode) {
-                $q->where('company_code', $companyCode);
-            });
-        } else {
-            // Ambil tim yang diikuti oleh user
-            $teams = PvtMember::where('employee_id', $user->employee_id)
-                ->pluck('team_id');
-
-            // Ambil event yang diikuti oleh tim
-            $eventIds = PvtEventTeam::whereIn('team_id', $teams)
-                ->pluck('event_id')
-                ->unique();
-
-            // Filter berdasarkan event yang diikuti oleh tim
-            if ($eventIds->isNotEmpty()) {
-                $query->whereIn('id', $eventIds);
+    public function getEvents(Request $request)
+    {
+        $user = Auth::user();
+    
+        $query = Event::with('companies');
+    
+        if ($user->role !== 'Superadmin') {
+            if ($user->role === 'Admin') {
+                if (in_array($user->company_code, [2000, 7000])) {
+                    $filteredCompanyCode = [2000, 7000];
+                } else {
+                    $filteredCompanyCode = [$user->company_code];
+                }
+                $query->whereHas('companies', function ($q) use ($filteredCompanyCode) {
+                    $q->whereIn('company_code', $filteredCompanyCode);
+                });
             } else {
-                // Jika user tidak mengikuti event, kembalikan data kosong
-                return DataTables::of([])->toJson();
+                $teams = PvtMember::where('employee_id', $user->employee_id)
+                    ->pluck('team_id');
+    
+                $eventIds = PvtEventTeam::whereIn('team_id', $teams)
+                    ->pluck('event_id')
+                    ->unique();
+    
+                if ($eventIds->isNotEmpty()) {
+                    $query->whereIn('id', $eventIds);
+                } else {
+                    return DataTables::of([])->toJson();
+                }
             }
         }
+    
+        if ($request->has('type') && $request->type != '') {
+            $query->where('type', $request->type);
+        }
+    
+        if ($request->has('company_code') && $request->company_code != '') {
+            $query->whereHas('companies', function ($q) use ($request) {
+                $q->where('company_code', $request->company_code);
+            });
+        }
+    
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+    
+        $query->orderByRaw("CASE WHEN status = 'active' THEN 1 ELSE 2 END")
+            ->orderBy('date_start', 'desc');
+    
+        return DataTables::of($query)
+            ->addColumn('company', function ($event) {
+                return $event->companies->pluck('company_name')->implode(', ') ?: 'N/A';
+            })
+            ->editColumn('event_name', function ($event) {
+                $year = \Carbon\Carbon::parse($event->date_start)->format('Y');
+                return $event->event_name . ' Tahun ' . $year;
+            })
+            ->toJson();
     }
 
-    // Filter berdasarkan type
-    if ($request->has('type') && $request->type != '') {
-        $query->where('type', $request->type);
-    }
-
-    // Filter berdasarkan perusahaan
-    if ($request->has('company_code') && $request->company_code != '') {
-        $query->whereHas('companies', function ($q) use ($request) {
-            $q->where('company_code', $request->company_code);
-        });
-    }
-
-    // Filter berdasarkan status
-    if ($request->has('status') && $request->status != '') {
-        $query->where('status', $request->status);
-    }
-
-    // Urutkan berdasarkan status (active first) dan tanggal mulai terbaru
-    $query->orderByRaw("CASE WHEN status = 'active' THEN 1 ELSE 2 END")
-        ->orderBy('date_start', 'desc');
-
-    return DataTables::of($query)
-        ->addColumn('company', function ($event) {
-            return $event->companies->pluck('company_name')->implode(', ') ?: 'N/A';
-        })
-        ->toJson();
-}
     public function show($id)
     {
         $event = Event::findOrFail($id);
@@ -106,8 +103,8 @@ public function getEvents(Request $request)
     public function buildPaperQueryByEvent($id)
     {
         $currentUser = auth()->user();
-        $role = Auth::user()->role;
-
+        $role = $currentUser->role;
+    
         $data = PvtEventTeam::with(['team.paper', 'team.company', 'team.pvtMembers.user', 'event'])
             ->where('event_id', $id)
             ->get()
@@ -115,42 +112,65 @@ public function getEvents(Request $request)
                 $userMembership = $item->team->pvtMembers
                     ->where('employee_id', $currentUser->employee_id)
                     ->first();
-
+    
                 $userRole = null;
                 $isUserTeamMember = false;
-                if ($userMembership) {
+    
+                if ($role === 'Superadmin' || $role === 'Admin') {
+                    $isUserTeamMember = true;
+                } else if ($userMembership) {
                     $isUserTeamMember = true;
                     $userRole = $userMembership->status;
                 }
-
-                // Check if full paper exists and is uploaded
+    
                 $hasFullPaper = false;
                 if (isset($item->team->paper)) {
-                    $fullPaperPath = $item->team->paper->full_paper;
-                    // Check if the full_paper path contains '/group/' instead of '/AP/'
-                    $hasFullPaper = !empty($fullPaperPath) !== false;
+                    $hasFullPaper = !empty($item->team->paper->full_paper);
                 }
-
+    
                 return [
+                    'team_id' => $item->team_id,
                     'team_name' => $item->team->team_name,
                     'innovation_title' => $item->team->paper->innovation_title ?? '-',
                     'company_name' => $item->team->company->company_name ?? '-',
-                    'status_lolos' => $item->paper->status === 'accepted by innovation admin',
+                    'status_inovasi' => $item->team->paper->status === 'accepted by innovation admin',
                     'event_type' => $item->event->type,
                     'has_full_paper' => $hasFullPaper,
                     'view_url' => route('event-team.show', $item->team_id),
-                    'edit_url' => route('event-team.paper.edit', ['id' => $item->team->paper->id ?? 0, 'eventId' => $id]),
-                    'edit_benefit_url' => route('event-team.benefit.edit', ['id' => $item->team->paper->id ?? 0, 'eventId' => $id]),
-                    'check_paper' => route('event-team.showCheckPaper', ['id' => $item->team->paper->id ?? 0, 'eventId' => $id]),
+                    'edit_url' => route('event-team.paper.edit', [
+                        'id' => $item->team->paper->id ?? 0,
+                        'eventId' => $id
+                    ]),
+                    'edit_benefit_url' => route('event-team.benefit.edit', [
+                        'id' => $item->team->paper->id ?? 0,
+                        'eventId' => $id
+                    ]),
+                    'check_paper' => route('event-team.showCheckPaper', [
+                        'id' => $item->team->paper->id ?? 0,
+                        'eventId' => $id
+                    ]),
                     'is_user_team' => $isUserTeamMember,
                     'user_role' => $userRole,
                     'role' => $role,
                     'has_paper' => isset($item->team->paper),
+                    'event_status' => $item->event->status ?? '-'
                 ];
-            });
-
+            })
+            ->unique('team_id')
+            ->values();
+    
+        // FILTERING khusus untuk non-admin
+        $data = $data->filter(function ($item) use ($role) {
+            if ($role === 'Superadmin' || $role === 'Admin') {
+                return true; // admin tetap lihat semua
+            }
+    
+            return $item['is_user_team'] === true;
+        })->values(); // reset index setelah filter
+    
         return response()->json(['data' => $data]);
     }
+
     public function editPaper($id, $eventId)
     {
         $paper = Paper::findOrFail($id);

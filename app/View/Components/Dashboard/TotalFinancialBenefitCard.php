@@ -21,7 +21,9 @@ class TotalFinancialBenefitCard extends Component
     public function __construct($isSuperadmin, $userCompanyCode)
     {
         $this->isSuperadmin = $isSuperadmin;
-        $this->userCompanyCode = $userCompanyCode;
+        $this->userCompanyCode = in_array($userCompanyCode, [2000, 7000])
+            ? [2000, 7000]
+            : [$userCompanyCode];
         $this->financialBenefits = $this->getTotalBenefitPerYear('financial');
         $this->potentialBenefits = $this->getTotalBenefitPerYear('potential_benefit');
     }
@@ -48,7 +50,7 @@ class TotalFinancialBenefitCard extends Component
             // Filter data based on user's company code if not a superadmin
             if (!$this->isSuperadmin) {
                 $query->whereHas('team', function ($q) {
-                    $q->where('company_code', $this->userCompanyCode);
+                    $q->whereIn('company_code', $this->userCompanyCode);
                 });
             }
 

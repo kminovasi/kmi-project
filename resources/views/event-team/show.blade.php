@@ -35,11 +35,12 @@
                 <table id="datatablesSimple" class="table table-striped">
                     <thead>
                         <tr>
+                            <th>No</th>
                             <th>Team</th>
                             <th>Judul Inovasi</th>
                             <th>Perusahaan</th>
                             @if (Auth::user()->role === 'Superadmin')
-                                <th>Status Lolos</th>
+                                <th>Status Inovasi</th>
                                 <th>Status Full Paper</th>
                             @endif
                             <th>Action</th>
@@ -124,6 +125,15 @@
         <script>
             $(document).ready(function() {
                 var columns = [{
+                        data: null,
+                        name: 'rownum',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
                         data: 'team_name',
                         render: function(data, type, row) {
                             let html = data;
@@ -159,16 +169,15 @@
                 // Add status column if user is superadmin
                 @if (Auth::user()->role === 'Superadmin')
                     columns.push({
-                        data: 'status_lolos',
+                        data: 'status_inovasi',
                         render: function(data, type, row) {
                             if (!data && !row.has_full_paper) {
                                 console.log('Status Lolos:', data, 'Has Full Paper:', row.has_full_paper);
                                 return '<span class="badge bg-danger">Belum di verifikasi</span>';
                             } else {
-                                console.log('Status Lolos:', data, 'Has Full Paper:', row.has_full_paper);
                                 return data ?
-                                    '<span class="badge bg-success">Masuk Grup</span>' :
-                                    '<span class="badge bg-danger">Belum Terverifikasi oleh Superadmin</span>';
+                                    '<span class="badge bg-success">Inovasi Sudah Terverivikasi</span>' :
+                                    '<span class="badge bg-danger">Inovasi Belum Terverifikasi</span>';
                             }
                         }
                     });
@@ -197,12 +206,12 @@
                                 row.event_type !== 'AP')) {
                             // Tidak perlu menampilkan tombol jika event_type adalah 'AP'
                             if (row.event_type !== 'AP') {
-                                buttons += ` <a href="${row.edit_url}" class="btn btn-warning btn-sm ms-1">
+                                buttons += ` <a href="${row.event_status == 'finish' ? '#' : row.edit_url}" class="btn btn-warning btn-sm ms-1 ${row.event_status == 'finish' ? 'disabled' : ''}">
                                 <i class="fas fa-edit"></i> Edit Paper ${row.event_type}
                             </a>`;
                             }
-                            buttons += `<a href="${row.edit_benefit_url}"
-                                class="btn btn-info btn-sm ms-1"
+                            buttons += `<a href="${row.event_status == 'finish' ? '#' : row.edit_url}"
+                                class="btn btn-info btn-sm ms-1 ${row.event_status == 'finish' ? 'disabled' : ''}"
                                 data-bs-toggle="tooltip" title="Edit Team Benefits">
                                 <i class="fas fa-chart-line"></i> Edit Benefit
                             </a>`;

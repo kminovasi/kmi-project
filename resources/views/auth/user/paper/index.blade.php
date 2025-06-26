@@ -944,6 +944,19 @@
                 document.getElementById('modal-card-form').setAttribute('action', 'paper/update-detail-team/' + data.paper[0].team_id);
                 document.getElementById('detail-paper-form').setAttribute('action', 'paper/update-detail-paper/' + data.paper[0].paper_id);
                 document.getElementById('detail-team-photo').setAttribute('action', 'paper/update-detail-photo/' + data.paper[0].paper_id);
+                
+                const toggleElements = [
+                    '.btn-edit-photo',
+                    '.btn-edit-detail-paper',
+                    '.btn-edit-team-member'
+                ];
+                
+                toggleElements.forEach(selector => {
+                    const el = document.querySelector(selector);
+                    if (el) {
+                        el.classList.toggle('d-none', !data.isEventActive);
+                    }
+                });
 
                 // Set simple field values
                 const fields = {

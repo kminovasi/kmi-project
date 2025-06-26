@@ -380,6 +380,8 @@ class QueryController extends Controller
     {
         try {
             $query_data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->join('themes', 'teams.theme_id', '=',  'themes.id')
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
@@ -390,6 +392,7 @@ class QueryController extends Controller
                 'papers.id as paper_id',
                 'teams.id as team_id',
                 'teams.gm_id as gm_id',
+                'events.status as event_status',
                 'innovation_title',
                 'team_name',
                 'company_name',
@@ -561,7 +564,7 @@ class QueryController extends Controller
                     if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator' || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision paper by innovation admin')) {
                         if ($isOwner || $isSuperadmin) {
                             $html .= "
-                                <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Fiksasi Makalah</button>
+                                <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Final Submit Makalah</button>
                             ";
                         } else {
                             $html .= "
@@ -570,7 +573,7 @@ class QueryController extends Controller
                         }
                     }
                     
-                    if($data_row->status === 'accepted by innovation admin'){
+                    if($data_row->status === 'accepted by innovation admin' && $data_row->event_status == 'active'){
                         $html .= '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )">Update Paper</button>';
                     }
                     
@@ -588,21 +591,25 @@ class QueryController extends Controller
             //link benefit
             $rawColumns[] = 'benefit';
             $dataTable->addColumn('benefit', function ($data_row) {
-                if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null) {
-                    if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Update</a>";
-                    } else {
-                        return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
-                    }
+                if($data_row->event_status == 'finish') {
+                    return "<a class=\"btn btn-success btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat Benefit</a>";
                 } else {
-                    if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
-                        if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper" || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision benefit by innovation admin') {
-                            return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
+                    if ($data_row->financial != null || $data_row->file_review != null || $data_row->potential_benefit != null) {
+                        if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
+                            return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Update</a>";
                         } else {
-                            return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                            return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
                         }
                     } else {
-                        return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
+                        if ($data_row->member_status === "leader" || $data_row->member_status === "member") {
+                            if ($data_row->status === "not finish" || $data_row->status === 'revision paper by facilitator' || $data_row->status === "upload full paper" || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision benefit by innovation admin') {
+                                return "<a class=\"btn btn-outline-dark btn-sm btn-\" href=\"#\"  >Add</a>";
+                            } else {
+                                return "<a class=\"btn btn-dark btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Add</a>";
+                            }
+                        } else {
+                            return "<a class=\"btn btn-primary btn-sm\" href=\" " . route('benefit.create.user', ['id' => $data_row->paper_id]) . "\">Lihat</a>";
+                        }
                     }
                 }
             });
@@ -794,6 +801,11 @@ class QueryController extends Controller
                     'papers.id as paper_id'
                 )
                 ->get();
+            
+            $isActive = PvtEventTeam::join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                ->where('pvt_event_teams.team_id', $request->team_id)
+                ->where('events.status', 'active')
+                ->exists();
 
             $data_anggotas = PvtMember::with('team')
                             ->where('team_id', $request->team_id)
@@ -833,6 +845,7 @@ class QueryController extends Controller
             return response()->json([
                 'data' => $data_karyawan,
                 'paper' => $dataPaper,
+                'isEventActive' => $isActive,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -1371,8 +1384,8 @@ class QueryController extends Controller
                 {
                     return implode('<br>', str_split($string, $length));
                 }
-                $rawColumns[] = 'fix';
-                $dataTable->addColumn('fix', function ($data_row) {
+                $rawColumns[] = 'Fix';
+                $dataTable->addColumn('Fix', function ($data_row) {
                     if ((auth()->user()->role === 'Superadmin' && $data_row['status_removed'] === 'On Desk')) {
                         return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
                     } else if ((auth()->user()->role === 'Admin' && $data_row['status_removed'] === 'On Desk')) {
@@ -1584,8 +1597,8 @@ class QueryController extends Controller
                 return $data_total[$eventTeamId]['Ranking'];
             });
 
-            $rawColumns[] = 'fix';
-            $dataTable->addColumn('fix', function ($data_row) {
+            $rawColumns[] = 'Fix';
+            $dataTable->addColumn('Fix', function ($data_row) {
                 if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status_removed'] === 'Presentation')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id_removed'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id_removed'] . '">';
                 else
@@ -2552,8 +2565,8 @@ class QueryController extends Controller
                 return $data_total[$eventTeamId]['Ranking'];
             });
 
-            $rawColumns[] = 'fix';
-            $dataTable->addColumn('fix', function ($data_row) {
+            $rawColumns[] = 'Fix';
+            $dataTable->addColumn('Fix', function ($data_row) {
                 if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin' && $data_row['status(removed)'] === 'Caucus')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else
@@ -2778,8 +2791,8 @@ class QueryController extends Controller
 
             });
 
-            $rawColumns[] = 'Fiks';
-            $dataTable->addColumn('Fiks', function ($data_row) {
+            $rawColumns[] = 'Fix';
+            $dataTable->addColumn('Fix', function ($data_row) {
                 if (auth()->user()->role === 'Admin' | auth()->user()->role === 'Superadmin' && $data_row['status'] === 'Presentation BOD')
                     return '<input class="form-check" type="checkbox" id="checkbox-' . $data_row['event_team_id(removed)'] . '" name="pvt_event_team_id[]" value="' . $data_row['event_team_id(removed)'] . '">';
                 else
@@ -2792,12 +2805,10 @@ class QueryController extends Controller
             $dataTable->addColumn('Summary', function ($data_row) {
                 $filePath = $data_row['file_ppt(removed)'];
 
-                // Generate the file URL
-
                 if ($filePath !== null && Storage::exists('public/' . $filePath)) {
                     $fileUrl = Storage::url('public/' . $filePath);
                     return '<button class="btn btn-green btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['event_team_id(removed)'] . ')"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;Edit Summary</button>'
-                        . '&nbsp; <p> <a href="' . $fileUrl . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Lihat PPT</a>';
+                        . '&nbsp; <p> <a href="' . route('query.viewFile', ['directory' => $data_row['file_ppt(removed)']]) . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Lihat PDF</a>';
                 } else {
                     return '<button class="btn btn-cyan btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['event_team_id(removed)'] . ')"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload PPT</button>';
                 }
@@ -3017,6 +3028,23 @@ class QueryController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+    
+    public function viewFile(Request $request)
+    {
+        $directory = $request->get('directory');
+        $path = storage_path('app/public/' . $directory);
+    
+        if (!file_exists($path)) {
+            abort(404, 'File not found');
+        }
+    
+        $mimeType = \File::mimeType($path);
+    
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"'
+        ]);
     }
 
     public function getMetodologiPapers(Request $request)

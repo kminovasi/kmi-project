@@ -46,9 +46,12 @@ class BenefitController extends Controller
     {
 
         $row = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->select(
                 'papers.id as paper_id',
                 'teams.id as team_id',
+                'events.status as event_status',
                 'teams.company_code as company_code',
                 'financial',
                 'file_review',
@@ -67,9 +70,9 @@ class BenefitController extends Controller
             )
             ->where('papers.id', $id)->first();
 
-        if (Auth::user()->role === 'Superadmin') {
+        if (Auth::user()->role === 'Superadmin' && $row->event_status == 'active') {
             $is_owner = true;
-        } else {
+        } else if($row->event_status == 'active') {
             $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
                 ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
                 ->whereIn('status', ['member', 'leader']) // Atau status lain yang menunjukkan pemilik benefit
@@ -131,7 +134,7 @@ class BenefitController extends Controller
                 $row->status == 'revision benefit by general manager' ||
                 $row->status == 'revision paper and benefit by general manager' ||
                 $row->status == 'revision paper and benefit by innovation admin' || $row->status == 'revision benefit by innovation admin') &&
-            $is_owner
+            $is_owner && $row->event_status == 'active'
         ) {
             $is_disabled = false;
         } else {

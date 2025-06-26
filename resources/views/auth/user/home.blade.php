@@ -60,11 +60,11 @@
                             </div>
                             <div class="p-2 pt-3 mx-auto">
                             <x-dashboard.card :implemented="$implemented" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
-                                :total-innovators-female="$totalInnovatorsFemale" :total-active-events="$totalActiveEvents" :idea-box="$ideaBox" :total-implemented-innovations="$totalImplementedInnovations" :total-idea-box-innovations="$totalIdeaBoxInnovations" />
+                                :total-innovators-female="$totalInnovatorsFemale" :total-innovatores-outsource="$totalInnovatoresOutsource" :total-active-events="$totalActiveEvents" :idea-box="$ideaBox" :total-implemented-innovations="$totalImplementedInnovations" :total-idea-box-innovations="$totalIdeaBoxInnovations" />
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="mb-3">
                         <x-dashboard.innovator.total-innovator-by-band-level :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode"/>
                     </div>
@@ -92,7 +92,12 @@
                     </div>
                 </div>
             </div>
-
+            
+            <div class="mt-3">
+                <x-dashboard.innovator.innovator-ranking :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />
+            </div>
+            
+            @if(Auth::user()->role == 'Superadmin')
             <!-- Bottom Section - Semen -->
             <div class="row mt-4">
                 <div class="col-12">
@@ -100,10 +105,11 @@
                     <x-dashboard.innovation.non-cement-innovation-chart />
                 </div>
             </div>
+            @endif
         </div>
     </div>
 @endsection
 
-@vite(['resources/js/benefitChart.js'])
+<script src="{{ asset('build/assets/benefitChart-c7442a10.js') }}" type="module"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 

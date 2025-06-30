@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use Illuminate\Http\Request;
 use Storage;
-use Str;
+use App\Models\Post;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -31,7 +31,7 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'cover_image' => 'nullable|image|max:2048',
+            'cover_image' => 'nullable|image|max:10240',
         ]);
 
         // Generate slug dari judul
@@ -45,7 +45,7 @@ class PostController extends Controller
 
         // Simpan gambar jika ada
         if ($request->hasFile('cover_image')) {
-            $validatedData['cover_image'] = $request->file('cover_image')->store('posts');
+            $validatedData['cover_image'] = $request->file('cover_image')->store('posts', 'public');
         }
 
         // Tambahkan slug ke data yang divalidasi

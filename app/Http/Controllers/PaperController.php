@@ -651,6 +651,13 @@ class PaperController extends Controller
                 if (!file_exists($filePath)) {
                     throw new Exception("Error, file tidak ada");
                 }
+                
+                if ($this->checkIsCompressedByPath($filePath)){
+                    return response()->file($filePath, [
+                        'Content-Type' => 'application/pdf',
+                        'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'
+                    ]);
+                }
             
                 // Ambil Data User Saat Ini
                 $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
@@ -678,7 +685,7 @@ class PaperController extends Controller
             
                     $fpdi->StartTransform();
             
-                    // Tempatkan watermark di tengah halaman dengan rotasi 45°
+                    // Tempatkan watermark di tengah halaman dengan rotasi 45째
                     $fpdi->StartTransform();
                     $centerX = $size['width'] / 2;
                     $centerY = $size['height'] / 2;
@@ -693,10 +700,11 @@ class PaperController extends Controller
                     $fpdi->SetAlpha(1); // Reset transparansi
                 }
             
-                return response($fpdi->Output($paper->innovation_title, 'I'), 200)
-                    ->header('Content-Type', 'application/pdf');
+                return response($fpdi->Output('S'), 200)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                    ->header('Pragma', 'no-cache');
             }
-
 
             $t = $paper->full_paper;
             if ($t) {
@@ -1656,8 +1664,8 @@ class PaperController extends Controller
                         $fail("The {$attribute} must not exceed 10MB.");
                     } elseif (str_contains($fileType, 'image') && $fileSize > 5120) { // Gambar maksimal 5MB (5120 KB)
                         $fail("The {$attribute} must not exceed 5MB.");
-                    } elseif (str_contains($fileType, 'video') && $fileSize > 51200) { // Video maksimal 50MB (51200 KB)
-                        $fail("The {$attribute} must not exceed 50MB.");
+                    } elseif (str_contains($fileType, 'video') && $fileSize > 204800) { // Video maksimal 50MB (51200 KB)
+                        $fail("The {$attribute} must not exceed 100MB.");
                     }
                 },
             ],
@@ -1691,9 +1699,6 @@ class PaperController extends Controller
         }
     }
 
-
-
-
     public function deleteDocument(Request $request)
     {
         $document = DocumentSupport::find($request->id);
@@ -1706,32 +1711,30 @@ class PaperController extends Controller
         return redirect()->back()->withSuccess("Document deleted successfully");
     }
 
-    public function checkIsCompressed(Request $request)
+    public function checkIsCompressedByPath(string $filePath): bool
     {
         try {
-            // Validate the file input
-            $request->validate([
-                'file_stage' => 'required|file|mimes:pdf|max:10240', // Adjust the max size as needed
-            ]);
-
-            // Get the uploaded file
-            $uploadedFile = $request->file('file_stage');
-
-            // Create a StreamReader from the uploaded file
-            $stream = StreamReader::createByFile($uploadedFile->getPathname());
-
-            // Initialize FPDI with the StreamReader
+            if (!file_exists($filePath)) {
+                throw new \Exception("File tidak ditemukan: $filePath");
+            }
+    
+            // Buat stream dari path file
+            $stream = StreamReader::createByFile($filePath);
+    
+            // Inisialisasi FPDI
             $pdf = new Fpdi();
-            $pdf->setSourceFile($stream);
-
-            // Add a page and import content to trigger reading of the PDF
+    
+            // Trigger proses baca PDF
             $pdf->AddPage();
-            $pageCount = $pdf->setSourceFile($stream);
-
-            // If it reaches here, the file is likely not compressed in a way that FPDI can't handle
-            return false;
+            $pdf->setSourceFile($stream);
+    
+            // Jika tidak error, berarti bisa diproses
+            return false; // TIDAK terkompresi atau masih bisa dibaca
+        } catch (PdfParserException $e) {
+            // Tangani error parsing dari FPDI (biasanya karena kompresi)
+            return true;
         } catch (\Exception $e) {
-            // If an exception is thrown, it might indicate a compressed PDF that FPDI couldn't process
+            // Tangani error lainnya (misal file tidak ada)
             return true;
         }
     }
@@ -1824,6 +1827,13 @@ class PaperController extends Controller
                 dump($filePath);
                 return response()->json(['error' => 'File tidak ditemukan.'], 404);
             }
+            
+            if ($this->checkIsCompressedByPath($filePath)){
+                return response()->file($filePath, [
+                    'Content-Type' => 'application/pdf',
+                    'Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0',
+                ]);
+            }
     
             $fpdi = new Fpdi();
     
@@ -1836,40 +1846,42 @@ class PaperController extends Controller
             $pageCount = $fpdi->setSourceFile($filePath);
             for ($pageNum = 1; $pageNum <= $pageCount; $pageNum++) {
                 $tplIdx = $fpdi->importPage($pageNum);
-                $size = $fpdi->getTemplateSize($tplIdx); // ukuran asli halaman PDF
-    
-                // Tentukan orientasi berdasarkan dimensi
+                $size = $fpdi->getTemplateSize($tplIdx); // ambil ukuran halaman asli
+            
+                // Tentukan orientasi: 'L' = landscape, 'P' = portrait
                 $orientation = $size['width'] > $size['height'] ? 'L' : 'P';
-    
-                // Tambahkan halaman baru dengan ukuran asli (width x height)
+            
+                // Tambahkan halaman baru dengan ukuran sesuai halaman asli
                 $fpdi->AddPage($orientation, [$size['width'], $size['height']]);
                 $fpdi->useTemplate($tplIdx, 0, 0, $size['width'], $size['height']);
-    
+            
                 // Tambahkan watermark
-                $fpdi->SetAlpha(0.1);
+                $fpdi->SetAlpha(0.1); // Transparansi watermark
                 $fpdi->SetFont('helvetica', 'B', 40);
                 $fpdi->SetTextColor(255, 0, 0);
-    
+            
                 $fpdi->StartTransform();
-                // Tempatkan watermark di tengah halaman
-                $fpdi->Rotate(45, $size['width'] / 2, $size['height'] / 2);
-                // Tentukan titik tengah halaman
+            
+                // Tempatkan watermark di tengah halaman dengan rotasi 45째
+                $fpdi->StartTransform();
                 $centerX = $size['width'] / 2;
                 $centerY = $size['height'] / 2;
-                
-                $fpdi->SetXY($centerX - 60, $centerY - 20); // Posisi awal teks, sedikit ke kiri atas dari pusat
-                $fpdi->Cell(120, 10, $currentDateTime, 0, 2, 'C');
-                $fpdi->Cell(120, 10, "Dilihat oleh $userEmail", 0, 2, 'C');
-                $fpdi->Cell(120, 10, "IP: $userIp", 0, 2, 'C');
-
+                $fpdi->Rotate(45, $centerX, $centerY);
+                $fpdi->SetXY($centerX - 60, $centerY - 20); // Posisikan agar tidak overflow
+                $fpdi->Cell(120, 10, "{$currentDateTime}", 0, 2, 'C');
+                $fpdi->Cell(120, 10, "Dilihat oleh {$userEmail}", 0, 2, 'C');
+                $fpdi->Cell(120, 10, "IP: {$userIp}", 0, 2, 'C');
                 $fpdi->StopTransform();
-    
+            
+                $fpdi->StopTransform();
                 $fpdi->SetAlpha(1); // Reset transparansi
             }
-    
-            return response($fpdi->Output($filePath, 'I'), 200)
-                ->header('Content-Type', 'application/pdf');
-    
+            
+            return response($fpdi->Output('S'), 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                ->header('Pragma', 'no-cache');
+
         } catch (FileNotFoundException $e) {
             return response()->json(['error' => 'File tidak ditemukan.'], 404);
         } catch (\Exception $e) {
@@ -2005,7 +2017,7 @@ class PaperController extends Controller
             return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
     }
-
+    
     public function updatePaperPhoto(Request $request, Paper $paper)
     {
         $request->validate([
@@ -2052,5 +2064,23 @@ class PaperController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
         }
+    }
+    
+    public function viewSupportingDocument($paperId)
+    {
+        $supportingData = DB::table('document_supportings')
+            ->where('paper_id', $paperId)
+            ->select(
+                'document_supportings.id as id',
+                'file_name',
+                'path'
+            )
+            ->get();
+        
+        if ($supportingData->isEmpty()) {
+            return response()->json(['message' => 'No documents found'], 404);
+        }
+        
+        return response()->json($supportingData);
     }
 }

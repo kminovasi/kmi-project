@@ -380,8 +380,8 @@ class QueryController extends Controller
     {
         try {
             $query_data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                ->leftJoin('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
                 ->join('themes', 'teams.theme_id', '=',  'themes.id')
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
@@ -472,43 +472,43 @@ class QueryController extends Controller
 
             ];
             
-            if(Auth::user()->role == 'Superadmin') {
+            if (Auth::user()->role == 'Superadmin') {
                 $query_data->distinct();
             } elseif ($request->filterRole == 'admin') {
-                // Gabungkan tabel pvt_members untuk memeriksa keikutsertaan admin sebagai member
                 $query_data->leftJoin('pvt_members', function ($join) use ($request) {
                     $join->on('teams.id', '=', 'pvt_members.team_id')
                         ->where('pvt_members.employee_id', Auth::user()->employee_id);
                 });
-
-                // Filter berdasarkan company_code kecuali admin adalah peserta/member dengan status tertentu
-                $query_data->where(function ($query) use ($request) {
-                    $query->where(function ($query) {
-                            $query->whereNotNull('pvt_members.id') // Admin adalah member
-                                ->whereIn('pvt_members.status', ['leader', 'member', 'facilitator', 'gm']); // Status tertentu
-                        });
+            
+                $query_data->where(function ($query) {
+                    $query->whereNotNull('pvt_members.id')
+                          ->whereIn('pvt_members.status', ['leader', 'member', 'facilitator', 'gm']);
                 });
-
-                // Tambahkan informasi status member
+            
                 $select[] = DB::raw("COALESCE(pvt_members.status, 'not_member') as member_status");
-
-                // Hindari duplikasi dengan DISTINCT atau GROUP BY
                 $query_data->distinct();
+            
             } else {
-                // Untuk role lainnya, langsung filter berdasarkan membership
                 $query_data->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
                     ->where('pvt_members.employee_id', Auth::user()->employee_id);
+            
                 $select[] = 'pvt_members.status as member_status';
             }
-
-            //filter untuk status inovasi
-            if ($request->has('status_inovasi') && $request->status_inovasi != '') {
+            
+            // === FILTER TAMBAHAN YANG BISA DITERAPKAN SEMUA ROLE ===
+            
+            // Filter by status inovasi
+            if ($request->filled('status_inovasi')) {
                 $query_data->where('papers.status_inovasi', $request->status_inovasi);
             }
-
-            //filter for category
-            if ($request->has('filter_category') && $request->filter_category != '') {
+            
+            // Filter by category
+            if ($request->filled('filter_category')) {
                 $query_data->where('teams.category_id', $request->filter_category);
+            }
+            
+            if ($request->filled('filterCompany')) {
+                $query_data->where('teams.company_code', $request->filterCompany);
             }
 
             $data_row = $query_data->select($select)->get();

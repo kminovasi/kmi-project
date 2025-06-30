@@ -130,6 +130,30 @@
                         <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1 fw-600" for="inputFinancialBenefit">Benefit Finansial</label>
+                        <input 
+                            type="text"
+                            name="financial_benefit" 
+                            id="inputFinancialBenefit" 
+                            class="form-control w-100" 
+                            value="{{ number_format($datas->financial, 0, ',', '.') }}" 
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                        >
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1 fw-600" for="inputPotentialBenefit">Benefit Potensial</label>
+                        <input 
+                            type="text"
+                            name="potential_benefit" 
+                            id="inputPotentialBenefit" 
+                            class="form-control w-100" 
+                            value="{{ number_format($datas->potential_benefit, 0, ',', '.') }}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                        >
+                    </div>
                 </div>
                 <div class="card-footer">
                     @if (Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')

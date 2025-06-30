@@ -77,24 +77,24 @@
                     <div class="col-md-7">
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1 fw-600" for="inputFirstName">Nama Tim</label>
-                                <input class="form-control" id="inputFirstName" type="text"
+                                <label class="small mb-1 fw-600" for="teamName">Nama Tim</label>
+                                <input class="form-control" id="teamName" type="text"
                                     value="{{ $datas->team_name }}" readonly>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1 fw-600" for="inputFirstName">Judul Inovasi</label>
-                                <textarea class="form-control" id="inputFirstName" readonly rows="3" style="resize: none;">{{ $datas->innovation_title }}</textarea>
+                                <label class="small mb-1 fw-600" for="innovationTitle">Judul Inovasi</label>
+                                <textarea class="form-control" id="innovationTitle" readonly rows="3" style="resize: none;">{{ $datas->innovation_title }}</textarea>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1 fw-600" for="inputFirstName">Kategori Inovasi</label>
-                                <input class="form-control" id="inputFirstName" type="text"
+                                <label class="small mb-1 fw-600" for="categoryInnovation">Kategori Inovasi</label>
+                                <input class="form-control" id="categoryInnovation" type="text"
                                     placeholder="Enter your first name" value="{{ $datas->category_name }}" readonly>
                             </div>
                             @if(count($datas_juri) == 0)
                             <div class="col-md-12 mb-3 d-none"></div>
                             @else
                             <div class="col-md-12 mb-3">
-                                <label class="small mb-1 fw-600" for="inputFirstName">Juri</label>
+                                <label class="small mb-1 fw-600" for="judgeName">Juri</label>
                                 <div class="table-responsive table-billing-history">
                                     <table class="table mb-0">
                                         <tbody>
@@ -126,6 +126,13 @@
                             <a href="{{ route('assessment.benefitView', ['paperId' => $datas->paper_id]) }}" class="btn btn-sm text-white mt-2" style="background-color: #e84637" target="_blank">
                                 Lihat Berita Acara Benefit
                             </a>
+                            <button class="btn btn-sm text-white mt-2"
+                                style="background-color: #e84637"
+                                data-bs-toggle="modal"
+                                data-bs-target="#showDocument"
+                                onclick="show_document_modal({{ $datas->event_team_id }})">
+                                Lihat Dokumen Pendukung
+                            </button>
 
                             @if ($datas->full_paper_updated_at)
                                 <small class="text-muted mt-2">
@@ -185,6 +192,28 @@
                         <label class="small mb-1 fw-600" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3"
                             {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->suggestion_for_benefit }}</textarea>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1 fw-600" for="inputFinancialBenefit">Benefit Finansial</label>
+                        <input 
+                            type="text"
+                            name="financial_benefit" 
+                            id="inputFinancialBenefit" 
+                            class="form-control w-100" 
+                            value="{{ number_format($datas->financial, 0, ',', '.') }}" 
+                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                        >
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="small mb-1 fw-600" for="inputPotentialBenefit">Benefit Potensial</label>
+                        <input 
+                            type="text"
+                            name="potential_benefit" 
+                            id="inputPotentialBenefit" 
+                            class="form-control w-100" 
+                            value="{{ number_format($datas->potential_benefit, 0, ',', '.') }}" 
+                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                        >
                     </div>
                 </div>
                 <div class="card-footer">
@@ -270,6 +299,26 @@
             </div>
         </div>
     </div>
+    
+    {{-- Modal show beberapa dokumen --}}
+    <div class="modal fade" id="showDocument" tabindex="-1" role="dialog" aria-labelledby="showDocumentTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white border-bottom-0">
+                    <h5 class="modal-title fw-bold text-white" id="showDocumentTitle">Dokumen Pendukung</h5>
+                    <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div id="resultContainer"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 @endsection
 @push('js')
     <script
@@ -305,51 +354,161 @@
     }
 
    function updateColumnDataTable() {
-    newColumn = []
-    $.ajax({
-        url: "{{ route('query.get_input_oda_assessment_team') }}",
-        method: 'GET',
-        cache:true,
-        data: {
-            filterEventTeamId: {{ Request::segments()[2] }}
-        },
-        async: false,
-        success: function (data) {
-            if(data.data.length){
-                let row_column = {
-                    data: "DT_RowIndex",
-                    title: "No",
-                    className: "text-center align-middle" // Tambahkan kelas di sini
-                };
-                newColumn.push(row_column);
-                for (var key in data.data[0]) {
-                    if (key != "DT_RowIndex") {
-                        let row_column = {
-                            data: key,
-                            title: key
-                        };
-                        newColumn.push(row_column);
+        newColumn = []
+        $.ajax({
+            url: "{{ route('query.get_input_oda_assessment_team') }}",
+            method: 'GET',
+            cache:true,
+            data: {
+                filterEventTeamId: {{ Request::segments()[2] }}
+            },
+            async: false,
+            success: function (data) {
+                if(data.data.length){
+                    let row_column = {
+                        data: "DT_RowIndex",
+                        title: "No",
+                        className: "text-center align-middle" // Tambahkan kelas di sini
+                    };
+                    newColumn.push(row_column);
+                    for (var key in data.data[0]) {
+                        if (key != "DT_RowIndex") {
+                            let row_column = {
+                                data: key,
+                                title: key
+                            };
+                            newColumn.push(row_column);
+                        }
                     }
+                } else {
+                    let row_column = {
+                        data: '',
+                        title: ''
+                    };
+                    newColumn.push(row_column);
                 }
-            } else {
-                let row_column = {
-                    data: '',
-                    title: ''
-                };
-                newColumn.push(row_column);
+            },
+            error: function (xhr, status, error) {
+                console.error('Gagal mengambil kolom: ' + error);
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Gagal mengambil kolom: ' + error);
-        }
-    });
-    return newColumn;
-}
+        });
+        return newColumn;
+    }
     $(document).ready(function() {
 
         let column = updateColumnDataTable();
         // column = []
         let dataTable = initializeDataTable(column);
+        
+        function show_document_modal(eventTeamId){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: 'GET',
+                url: '/assessment/view-supporting-document/' + eventTeamId, // Route langsung
+                dataType: 'json',
+                success: function(response) {
+                    $('#resultContainer').empty();
+                    var container = $('#resultContainer');
+        
+                    response.forEach(function(item) {
+                        var fileUrl = '{{ route('query.getFile') }}' + '?directory=' + item.path;
+        
+                        // Menampilkan gambar
+                        if (item.file_name.toLowerCase().endsWith('.jpg') || item.file_name.toLowerCase().endsWith('.jpeg') || item.file_name.toLowerCase().endsWith('.png')) {
+                            var img = $('<img>', {
+                                src: fileUrl,
+                                class: 'w-100 my-2',
+                                alt: item.file_name
+                            });
+                            container.append(img);
+                        }
+        
+                        // Menampilkan PDF
+                        else if (item.file_name.toLowerCase().endsWith('.pdf')) {
+                            var iframe = $('<iframe>', {
+                                src: fileUrl,
+                                width: '100%',
+                                height: '720px',
+                                class: 'my-2'
+                            });
+                            container.append(iframe);
+                        }
+        
+                        // Menampilkan video mp4
+                        else if (item.file_name.toLowerCase().endsWith('.mp4')) {
+                            var video = $('<video>', {
+                                src: fileUrl,
+                                class: 'w-100 my-2',
+                                controls: true
+                            });
+                            container.append(video);
+                        }
+        
+                        // Format tidak didukung (mkv, avi, dll)
+                        else {
+                            container.append('<p>Format tidak didukung untuk preview: ' + item.file_name + '</p>');
+                            var downloadLink = $('<a>', {
+                                href: fileUrl,
+                                class: 'btn btn-primary mb-2',
+                                download: item.file_name,
+                                text: 'Download ' + item.file_name
+                            });
+                            container.append(downloadLink);
+                        }
+        
+                        // Form delete
+                        var form = $('<form>', {
+                            method: 'POST',
+                            action: '{{ route('paper.deleteDocument') }}'
+                        });
+        
+                        form.append($('<input>', {
+                            type: 'hidden',
+                            name: '_method',
+                            value: 'DELETE'
+                        }));
+        
+                        form.append($('<input>', {
+                            type: 'hidden',
+                            name: 'id',
+                            value: item.id
+                        }));
+        
+                        form.append($('<input>', {
+                            type: 'hidden',
+                            name: '_token',
+                            value: '{{ csrf_token() }}'
+                        }));
+        
+                        var deleteBtn = $('<button>', {
+                            type: 'submit',
+                            class: 'btn btn-danger my-3',
+                            text: 'Delete'
+                        });
+        
+                        form.append(deleteBtn);
+                        container.append(form);
+                        container.append('<hr>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error response:", xhr.responseText);
+                }
+            });
+        }
+        
+        // Hapus isi modal saat ditutup
+        function remove_document_modal() {
+            $('#resultContainer').empty();
+        }
+        
+        $('#showDocument').on('hidden.bs.modal', function () {
+            remove_document_modal();
+        });
+        window.show_document_modal = show_document_modal;
+
     });
 
     // In your Javascript (external .js resource or <script> tag)

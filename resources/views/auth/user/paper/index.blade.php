@@ -346,7 +346,7 @@
                                 Video)</label>
                             <input type="file" name="document_support[]" class="form-control border-primary"
                                 accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv" id="inputBeberapaDokumen" multiple>
-                            <small class="text-muted">Maksimal 10MB per file.</small>
+                            <small class="text-muted">Maksimal 100MB per file.</small>
                         </div>
                     </div>
                     <!-- Footer -->
@@ -369,7 +369,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white border-bottom-0">
-                    <h5 class="modal-title fw-bold text-white" id="showDocumentTitle">Show Dokumen Pendukung</h5>
+                    <h5 class="modal-title fw-bold text-white" id="showDocumentTitle">Dokumen Pendukung</h5>
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -751,10 +751,6 @@
             }
         });
 
-        $('#filter-company').on('change', function () {
-            dataTable.ajax.reload();
-        });
-
         $('#filter-role').on('change', function () {
             dataTable.ajax.reload();
 
@@ -765,6 +761,15 @@
                 $("#filter-company").attr("disabled", "disabled");
             }
         });
+        
+        $('#filter-company').on('change', function () {
+            dataTable.ajax.reload();
+        });
+        
+        $('#filter_category').on('change', function () {
+            dataTable.ajax.reload();
+        });
+
 
         $('#filter-status-inovasi').on('change', function() {
             dataTable.ajax.reload();
@@ -1206,25 +1211,8 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             type: 'GET',
-            url: '{{ route('query.custom') }}',
+            url: '/paper/view-supporting-document/' + idPaper, // Gunakan route langsung
             dataType: 'json',
-            data: {
-                table: "document_supportings",
-                join: {
-                        'papers':{
-                            'papers.id': 'document_supportings.paper_id'
-                        },
-                    },
-                where: {
-                    "papers.id": idPaper
-                },
-                limit: 100,
-                select:[
-                        'document_supportings.id as id',
-                        'file_name',
-                        'path',
-                    ]
-            },
             // dataType: 'json',
             success: function(response) {
                 $('#resultContainer').empty();
@@ -1317,7 +1305,6 @@
     }
 
     function remove_document_modal() {
-        // Hapus semua konten di dalam resultContainer
         $('#resultContainer').empty();
     }
     

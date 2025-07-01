@@ -5,6 +5,7 @@ namespace App\View\Components\Dashboard\Event;
 use App\Models\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\DB;
 
 class TotalTeamCardCompany extends Component
 {
@@ -17,20 +18,34 @@ class TotalTeamCardCompany extends Component
      */
     public function __construct($eventId)
     {
-        // Cari event dengan relasi perusahaan
-        $event = Event::with('companies.teams')->find($eventId);
+        $event = Event::find($eventId);
 
-        if ($event) {
-            // Hitung total tim per perusahaan yang terhubung dengan event
-            $this->totalTeams = $event->companies->map(function ($company) {
-                return [
-                    'company_name' => $company->company_name,
-                    'total_teams' => $company->teams->count(),
-                ];
+        $teams = DB::table('teams')
+            ->join('companies', 'companies.company_code', '=', 'teams.company_code')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->where('pvt_event_teams.event_id', $eventId)
+            ->select('companies.company_code', 'companies.company_name', 'teams.id as team_id')
+            ->get()
+            ->map(function ($team) use ($event) {
+                // Jika tipe event adalah group dan company_code 7000, ubah ke 2000
+                if ($event && $event->type === 'group' && $team->company_code == 7000) {
+                    $team->company_code = 2000;
+                    $team->company_name = 'PT Semen Indonesia (Persero)Tbk';
+                }
+                return $team;
             });
-        } else {
-            $this->totalTeams = collect(); // Koleksi kosong jika event tidak ditemukan
-        }
+        
+        // Group dan hitung tim berdasarkan company_code
+        $this->totalTeams = $teams
+            ->groupBy('company_code')
+            ->map(function ($groupedTeams, $companyCode) {
+                return [
+                    'company_name' => $groupedTeams->first()->company_name,
+                    'total_teams' => $groupedTeams->count(),
+                ];
+            })
+            ->values(); // Reset index agar rapi
+
     }
 
     /**
@@ -40,7 +55,6 @@ class TotalTeamCardCompany extends Component
      */
     public function render()
     {
-        Log::debug($this->totalTeams);
         return view('components.dashboard.event.total-team-card-company', [
             'totalTeams' => $this->totalTeams,
         ]);

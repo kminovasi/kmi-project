@@ -18,7 +18,7 @@
                 <div class="card p-3 shadow-sm border-0 rounded-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <i class="fa-solid fa-lightbulb fa-2x text-warning"></i>
-                        <span class="badge bg-warning text-dark rounded-pill">Idea Box</span>
+                        <span class="badge bg-warning text-white rounded-pill">Idea Box</span>
                     </div>
                     <h5 class="fw-bold mt-2" style="font-size: 1.8rem;">{{ $statistics['ideaBox'] }}</h5>
                     <p class="text-muted" style="font-size: 1rem;">Jumlah Idea Box</p>
@@ -39,7 +39,7 @@
         <hr>
 
         <div class="row text-center">
-            <div class="col-12 col-md-6 mb-3">
+            <div class="col-12 col-md-4 mb-3">
                 <div class="card p-3 shadow-sm border-0 rounded-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <i class="fas fa-male fa-2x text-primary"></i>
@@ -49,7 +49,7 @@
                     <p class="text-muted" style="font-size: 1rem;">Total Inovator Laki-Laki</p>
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3">
+            <div class="col-12 col-md-4 mb-3">
                 <div class="card p-3 shadow-sm border-0 rounded-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <i class="fas fa-female fa-2x text-danger"></i>
@@ -57,6 +57,16 @@
                     </div>
                     <h5 class="fw-bold mt-2" style="font-size: 1.8rem;">{{ $statistics['totalInnovatorsFemale'] }}</h5>
                     <p class="text-muted" style="font-size: 1rem;">Total Inovator Perempuan</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 mb-3">
+                <div class="card p-3 shadow-sm border-0 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="fa-solid fa-handshake fa-2x text-warning"></i>
+                        <span class="badge bg-warning text-white rounded-pill">Outsource</span>
+                    </div>
+                    <h5 class="fw-bold mt-2" style="font-size: 1.8rem;">{{ $statistics['totalInnovatorsOutsource'] }}</h5>
+                    <p class="text-muted" style="font-size: 1rem;">Total Inovator Outsource</p>
                 </div>
             </div>
         </div>

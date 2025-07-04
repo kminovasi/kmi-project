@@ -25,6 +25,7 @@ export function initializeTotalInnovatorChart(chartData, year) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
+            minBarLength: 10,
             backgroundColor: "#8E1616",
         });
     }
@@ -76,13 +77,13 @@ export function initializeTotalInnovatorChart(chartData, year) {
                 },
                 datalabels: {
                     display: true,
-                    align: "center",
+                    align: "top",
                     anchor: "center",
-                    color: "#fefefe",
+                    color: "black",
                     formatter: (value) => value.toLocaleString(),
                     font: {
                         weight: "bold",
-                        size: 14,
+                        size: 13,
                     },
                 },
             },

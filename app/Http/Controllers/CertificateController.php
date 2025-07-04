@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Certificate;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
@@ -42,7 +42,7 @@ class CertificateController extends Controller
                 ->get();
 
         } else {
-            $eventsWithoutCertificate = \DB::table('events')
+            $eventsWithoutCertificate = DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
                 ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
                 ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')

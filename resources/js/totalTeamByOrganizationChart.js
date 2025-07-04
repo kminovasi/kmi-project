@@ -24,6 +24,7 @@ export function initializeTotalTeamChart(chartData) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
+            minBarLength: 10,
             backgroundColor: "#8E1616",
         });
     }
@@ -65,9 +66,9 @@ export function initializeTotalTeamChart(chartData) {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "center",
+                    align: "top",
                     anchor: "center",
-                    color: "white",
+                    color: "black",
                     formatter: (value) => value.toLocaleString(), // Format angka (opsional)
                     font: {
                         weight: "bold",

@@ -38,6 +38,7 @@ export function initializeTotalPotentialChart(chartData) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
+            minBarLength: 5,
             backgroundColor: "#4e9000",
         });
     }
@@ -50,6 +51,7 @@ export function initializeTotalPotentialChart(chartData) {
             datasets: datasets, // Data berdasarkan tahun
         },
         options: {
+            indexAxis: "y",
             responsive: true,
             plugins: {
                 legend: {
@@ -62,18 +64,18 @@ export function initializeTotalPotentialChart(chartData) {
                 datalabels: {
                     // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "top", // Jika kecil, posisikan di luar
-                    anchor: "end",
-                    color: "black", // Warna merah untuk angka kecil
+                    align: "end", 
+                    anchor: "center",
+                    color: "black", 
                     formatter: (value) => formatRupiah(value.toLocaleString()), // Format angka
                     font: {
                         weight: "bold",
-                        size: 12,
+                        size: 13,
                     },
                 },
             },
             scales: {
-                y: {
+                x: {
                     beginAtZero: true,
                     title: {
                         display: true,
@@ -83,8 +85,13 @@ export function initializeTotalPotentialChart(chartData) {
                             weight: "bold",
                         },
                     },
+                    ticks: {
+                        font: {
+                            size: calculateFontSize(),
+                        },
+                    },
                 },
-                x: {
+                y: {
                     title: {
                         display: true,
                         font: {

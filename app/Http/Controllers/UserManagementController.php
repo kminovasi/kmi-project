@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Log;
 use App\Models\User;
 use App\Models\Event;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -196,7 +196,7 @@ class UserManagementController extends Controller
 
             return view('management-system.user.show', compact('user'));
         } catch (\Exception $e) {
-            \Log::error('User show error', [
+            Log::error('User show error', [
                 'message' => $e->getMessage(),
                 'user_id' => $id,
                 'manager_id' => $user->manager_id ?? 'N/A'
@@ -208,56 +208,56 @@ class UserManagementController extends Controller
     }
 
     public function getUserEvents($companyCode)
-{
-    try {
+    {
+        try {
 
-        if (!$companyCode) {
-            return response()->json(['error' => 'User tidak terhubung ke perusahaan'], 404);
+            if (!$companyCode) {
+                return response()->json(['error' => 'User tidak terhubung ke perusahaan'], 404);
+            }
+
+            // Ambil event berdasarkan company_code
+            $events = Event::whereHas('companies', function ($query) use ($companyCode) {
+                $query->where('company_code', $companyCode);
+            })
+            ->where('status',  'active')
+            ->get();
+
+            return response()->json([
+                'success' => true,
+                'events' => $events,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Ambil event berdasarkan company_code
-        $events = Event::whereHas('companies', function ($query) use ($companyCode) {
-            $query->where('company_code', $companyCode);
-        })
-        ->where('status',  'active')
-        ->get();
-
-        return response()->json([
-            'success' => true,
-            'events' => $events,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
 
-public function getUsersWithCompany(Request $request)
-{
-    $employeeId = $request->query('employee_id');
+    public function getUsersWithCompany(Request $request)
+    {
+        $employeeId = $request->query('employee_id');
 
-    $user = User::where('employee_id', $employeeId)
-        ->join('companies', 'companies.company_code', '=', 'users.company_code')
-        ->select(
-            'companies.company_name as co_name',
-            'users.unit_name as unit_name',
-            'users.department_name as department_name',
-            'users.directorate_name as directorate_name'
-        )
-        ->first();
+        $user = User::where('employee_id', $employeeId)
+            ->join('companies', 'companies.company_code', '=', 'users.company_code')
+            ->select(
+                'companies.company_name as co_name',
+                'users.unit_name as unit_name',
+                'users.department_name as department_name',
+                'users.directorate_name as directorate_name'
+            )
+            ->first();
 
-    if ($user) {
-        return response()->json([
-            'success' => true,
-            'data' => $user,
-        ]);
-    } else {
-        return response()->json([
-            'success' => false,
-            'message' => 'User not found',
-        ], 404);
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
     }
-}
 }

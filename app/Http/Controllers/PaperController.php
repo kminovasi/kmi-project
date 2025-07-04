@@ -325,26 +325,43 @@ class PaperController extends Controller
                 ]);
             }
 
-            PvtMember::create([
-                'team_id' => $newTeam->id,
-                'employee_id' => $request->input('fasil'),
-                'status' => 'facilitator'
-            ]);
+            // Fungsi untuk buat anggota tim (snapshot posisi, jabatan, dst)
+            function createTeamMember($teamId, User $user, $status) {
+                PvtMember::create([
+                    'team_id' => $teamId,
+                    'employee_id' => $user->employee_id,
+                    'status' => $status,
+                    'position_title' => $user->position_title,
+                    'directorate_name' => $user->directorate_name,
+                    'group_function_name' => $user->group_function_name,
+                    'department_name' => $user->department_name,
+                    'unit_name' => $user->unit_name,
+                    'section_name' => $user->section_name,
+                    'sub_section_of' => $user->sub_section_of,
+                    'company_code' => $user->company_code,
+                ]);
+            }
 
-            PvtMember::create([
-                'team_id' => $newTeam->id,
-                'employee_id' => $request->input('leader'),
-                'status' => 'leader'
-            ]);
+            // Buat facilitator
+            $facilitator = User::where('employee_id', $request->input('fasil'))->first();
+            if ($facilitator) {
+                createTeamMember($newTeam->id, $facilitator, 'facilitator');
+            }
 
-            if ($request->input('anggota') != null) {
-                foreach ($request->input('anggota') as $input_anggota) {
-                    // echo $input_anggota;
-                    PvtMember::create([
-                        'team_id' => $newTeam->id,
-                        'employee_id' => $input_anggota,
-                        'status' => 'member'
-                    ]);
+            // Buat leader
+            $leader = User::where('employee_id', $request->input('leader'))->first();
+            if ($leader) {
+                createTeamMember($newTeam->id, $leader, 'leader');
+            }
+
+            // Buat anggota jika ada
+            $anggotaList = $request->input('anggota');
+            if ($anggotaList) {
+                foreach ($anggotaList as $anggotaId) {
+                    $member = User::where('employee_id', $anggotaId)->first();
+                    if ($member) {
+                        createTeamMember($newTeam->id, $member, 'member');
+                    }
                 }
             }
 

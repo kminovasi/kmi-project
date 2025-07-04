@@ -219,23 +219,27 @@
                                 <td>{{ $inovasi->team_name }}</td>
                                 <td>{{ $inovasi->innovation_title }}</td>
                                 <td>{{ $inovasi->theme_name }}</td>
-                                <td>{{ $inovasi->event_name }} {{ $inovasi->year }}</td>
+                                <td>{{ $inovasi->event_name }} Tahun {{ $inovasi->year }}</td>
                                 <td>{{ $inovasi->category }}</td>
                                 <td>{{ $inovasi->potensi_replikasi }}</td>
+                                @php
+                                    $rankData = $teamRanks->get($inovasi->team_id);
+                                @endphp
+                                
                                 <td>
-                                    @if ($inovasi->is_best_of_the_best == false)
-                                        {{ 'Juara ' . $teamRanks->rank }}
-                                    @else
-                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" data-bs-custom-class="custom-tooltip"
-                                            data-bs-title="Best of The Best">
-                                            <i class="fas fa-trophy" aria-hidden="true"></i>
+                                    @if ($inovasi->is_best_of_the_best)
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Best of The Best">
+                                            <i class="fas fa-trophy"></i>
                                         </button>
+                                    @elseif ($inovasi->is_honorable_winner)
+                                        Juara Harapan
+                                    @elseif ($rankData && $rankData->score > 0 && $rankData->rank <= 3)
+                                        Juara {{ $rankData->rank }}
+                                    @else
+                                        Peserta
                                     @endif
                                 </td>
                                 <td>
-
-
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -258,7 +262,7 @@
                                                     {{-- Input for Certificate Auto Create --}}
                                                     <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
                                                     <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
-                                                    <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
+                                                    <input type="hidden" name="team_rank" value="{{ json_encode($rankData->rank) }}">
                                                     <input type="hidden" name="certificate_type" value="participant">
 
                                                     <button type="submit" class="btn btn-sm btn-warning dropdown-item">
@@ -268,7 +272,7 @@
                                                 </form>
                                             </li>
                                             {{-- Button Downlod Certificate Team --}}
-                                            @if($teamRanks->rank <= 3)
+                                            @if($rankData->rank <= 3 || $inovasi->is_honorable_winner || $inovasi->is_best_of_the_best)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -277,7 +281,7 @@
                                                     {{-- Input for Certificate Auto Create --}}
                                                     <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
                                                     <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
-                                                    <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
+                                                    <input type="hidden" name="team_rank" value="{{ json_encode($rankData->rank) }}">
                                                     <input type="hidden" name="certificate_type" value="team">
 
                                                     <button type="submit" class="btn btn-sm btn-warning dropdown-item">

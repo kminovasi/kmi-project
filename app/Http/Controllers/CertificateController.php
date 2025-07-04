@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Certificate;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
@@ -21,7 +21,7 @@ class CertificateController extends Controller
         // dd($userRole);
 
         if ($userRole->role == 'Admin') {
-            $eventsWithoutCertificate = \DB::table('events')
+            $eventsWithoutCertificate = DB::table('events')
                 ->leftjoin('certificates', 'events.id', '=', 'certificates.event_id')
                 ->leftJoin('company_event', 'events.id', '=', 'company_event.event_id')
                 ->leftJoin('companies', 'company_event.company_id', '=', 'companies.id')
@@ -33,6 +33,7 @@ class CertificateController extends Controller
                     'events.year',
                     'certificates.template_path'
                 )
+                ->distinct()
                 ->get();
 
             $certificates = Certificate::with(['event.companies'])
@@ -51,9 +52,9 @@ class CertificateController extends Controller
                     'events.id as event_id',
                     'events.event_name',
                     'events.year',
-                    'companies.company_name',
                     'certificates.template_path'
                 )
+                ->distinct()
                 ->get();
 
             $certificates = Certificate::with('event.companies')->get();
@@ -70,21 +71,31 @@ class CertificateController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'event_id' => 'required|exists:events,id',
-            'template' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_1' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_2' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_3' => 'required|file|mimes:jpg,jpeg,png|max:5120',
         ]);
-
-        $path = $request->file('template')->store('certificate', 'public');
-
+    
+        $certificateTemplatePath = $request->file('template_certificate')->store('certificate', 'public');
+    
+        $badgeRank1Path = $request->file('badge_rank_1')->store('certificate/badge', 'public');
+        $badgeRank2Path = $request->file('badge_rank_2')->store('certificate/badge', 'public');
+        $badgeRank3Path = $request->file('badge_rank_3')->store('certificate/badge', 'public');
+    
         Certificate::create([
             'event_id' => $request->event_id,
-            'template_path' => $path,
+            'template_path' => $certificateTemplatePath,
+            'badge_rank_1' => $badgeRank1Path,
+            'badge_rank_2' => $badgeRank2Path,
+            'badge_rank_3' => $badgeRank3Path,
         ]);
-
+    
         return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dibuat.');
     }
+
 
     /**
      * Remove the specified certificate from storage.
@@ -95,13 +106,22 @@ class CertificateController extends Controller
     public function destroy($id)
     {
         $certificate = Certificate::findOrFail($id);
-
-        if (Storage::disk('public')->exists($certificate->template_path)) {
-            Storage::disk('public')->delete($certificate->template_path);
+    
+        $paths = [
+            $certificate->template_path,
+            $certificate->badge_rank_1,
+            $certificate->badge_rank_2,
+            $certificate->badge_rank_3,
+        ];
+    
+        foreach ($paths as $path) {
+            if ($path && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
-
+    
         $certificate->delete();
-
+    
         return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dihapus.');
     }
 

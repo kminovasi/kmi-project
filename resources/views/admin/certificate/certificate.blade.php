@@ -135,11 +135,22 @@
                             <div class="invalid-feedback">Silakan pilih event.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="template" class="form-label">Upload Gambar Sertifikat</label>
-                            <input type="file" class="form-control" name="template" id="template" accept="image/*" required>
-                            <div class="form-text">Unggah File Gambar (JPG, PNG)</div>
-                            <div class="invalid-feedback">Silakan unggah gambar sertifikat.</div>
+                            <label for="template_certificate" class="form-label">Upload Template Sertifikat</label>
+                            <input type="file" class="form-control" name="template_certificate" id="template_certificate" accept="image/*" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="badge_rank_1" class="form-label">Upload Badge Rank 1</label>
+                            <input type="file" class="form-control" name="badge_rank_1" id="badge_rank_1" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="badge_rank_2" class="form-label">Upload Badge Rank 2</label>
+                            <input type="file" class="form-control" name="badge_rank_2" id="badge_rank_2" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="badge_rank_3" class="form-label">Upload Badge Rank 3</label>
+                            <input type="file" class="form-control" name="badge_rank_3" id="badge_rank_3" accept="image/*" required>
+                        </div>
+                        <small class="form-text">Unggah File Gambar (JPG, PNG) Maks: 5MB</small>
                     </div>
                     <div class="modal-footer border-top">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>

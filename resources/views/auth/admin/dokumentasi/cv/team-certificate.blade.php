@@ -28,6 +28,16 @@
             background-image: url('{{ storage_path("app/public/".$template_path) }}');
             background-size: cover;
         }
+        
+        .header-gived-to {
+            position: absolute;
+            top: 39%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1rem;
+            color: #483C36;
+        }
 
         .content {
             position: absolute;
@@ -47,34 +57,57 @@
 
         .company {
             position: absolute;
-            top: 55%;
+            top: 59%;
             left: 50%;
             transform: translate(-50%, -50%);
+            border: 2px solid #E2CF97;
+            width: 28rem;
+            padding: .3rem;
             text-align: center;
+            border-radius: 4px;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
         .rank {
             position: absolute;
-            top: 25%;
-            left: 80%;
+            top: 78%;
+            left: 78%;
             transform: translate(-50%, -50%);
             text-align: center;
+        }
+        
+        .category-head {
+            position: absolute;
+            top: 64.6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-weight: bold;
+            color: #483C36;
+            font-size: .9rem;
         }
 
         .footer {
             position: absolute;
-            top: 64%;
+            top: 67%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
 
         .team-name, .innovation-title, .category, .team-rank, .company-name {
-            color: rgb(95, 70, 64);
+            color: #6E5948;
+        }
+        
+        .company-name {
+            font-size: 1.2rem;
+            font-weight: bolder;
+            letter-spacing: 2px;
         }
 
         .team-name {
-            font-size: 30px;
+            font-size: 34px;
             font-weight: bold;
         }
 
@@ -84,22 +117,60 @@
             margin-top: 5px;
         }
 
-        .team-rank {
-            font-size: 4rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
         .category {
             font-size: 18px;
             font-weight: bold;
             font-style: italic;
+        }
+        
+        .bod-name {
+            position: absolute;
+            top: 84.6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #483C36; 
+            font-weight: bold;
+        }
+        
+        .bod-title {
+            position: absolute;
+            top: 88.6%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #483C36;
+        }
+        
+        .company-footer-container {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #483C36;
+        }
+
+        .date-footer-container {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #483C36;
+        }
+        
+        .company-footer, .date-footer {
+            font-size: .7rem;
+            font-weight: lighter;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 
 <body>
     <div class="certificate-container">
+        <div class="header-gived-to uppercase">DIBERIKAN KEPADA TIM</div>
         <div class="content">
             <div class="team-name">{{ $team_name }}</div>
         </div>
@@ -107,14 +178,40 @@
             <div class="innovation-title">{{ $innovation_title }}</div>
         </div>
         <div class="company">
-            <div class="company-name fw-600 text-capitalize">{{ $company_name }}</div>
+            <div class="company-name fw-600 text-capitalize">
+                {{ str_replace([',', '.'], ' ', $company_name) }}
+            </div>
         </div>
+         <div class="category-head">KATEGORI</div>
         <div class="footer">
             <div class="category text-capitalize">{{ $category_name }}</div>
         </div>
+        @if( $team_rank == 1 )
         <div class="rank">
-            <div class="team-rank text-uppercase">{{ $team_rank }}</div> {{-- Tambahkan Variable Status Peserta --}}
+            <img src="{{ storage_path("app/public/".$badge_1) }}" width="200px" />
         </div>
+        @elseif( $team_rank == 2 )
+        <div class="rank">
+            <img src="{{ storage_path("app/public/".$badge_2) }}" width="200px" />
+        </div>
+        @elseif( $team_rank == 3 )
+        <div class="rank">
+            <img src="{{ storage_path("app/public/".$badge_3) }}" width="200px" />
+        </div>
+        @endif
+        <div class="date-footer-container">
+            <div class="date-footer">Pada Tanggal {{ \Carbon\Carbon::parse($event_end_date)->format('d F Y') }}</div>
+        </div>
+        
+        <div class="company-footer-container">
+            <div class="company-footer">
+                {{ str_replace([',', '.'], ' ', $company_name) }}
+            </div>
+        </div>
+        
+        <div class="bod-name">{{ $bodName }}</div>
+        
+        <div class="bod-title">{{ $bodTitle }}</div>
     </div>
 </body>
 

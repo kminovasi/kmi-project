@@ -88,7 +88,7 @@ button[data-bs-toggle="collapse"] {
     </div>
 </div>
 
-<!-- Complete On Desk Assessment -->
+<!-- Complete Presentation Assessment -->
     <div class="modal fade" id="completeTeamsModal" tabindex="-1" aria-labelledby="completeTeamsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
@@ -102,11 +102,26 @@ button[data-bs-toggle="collapse"] {
 
                 <div class="modal-body bg-light">
                     <div class="row">
-                        @foreach ($completeAssessment as $item)
+                        @foreach ($categoriesDataComplete as $categoryName => $teams)
                             <div class="col-md-4 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white">
-                                        <h5 class="m-0 fw-bold text-center">{{ $item->team_name }}</h5>
+                                <div class="card rounded w-100">
+                                    <div class="card-header p-0">
+                                        <button 
+                                            class="btn btn-primary w-100 text-center rounded-0" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}" 
+                                            aria-expanded="false" 
+                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                            {{ $categoryName . ' ' . '('.$teams->count().')' }}
+                                        </button>
+                                    </div>
+                                    <div class="collapse card-body p-2" id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                        @foreach ($teams as $team)
+                                            <div>
+                                                {{ $team->team_name }}
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -119,33 +134,59 @@ button[data-bs-toggle="collapse"] {
         </div>
     </div>
 
-<!-- Not Complete On Desk Assessment -->
+<!-- Not Complete Presentation Assessment -->
     <div class="modal fade" id="notCompleteTeamsModal" tabindex="-1" aria-labelledby="notCompleteTeamsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
-                <div class="modal-header  text-white">
-                    <h5 class="modal-title fw-bold d-flex align-items-center" id="notCompleteTeamsModalLabel">
-                        <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Team yang Belum Selesai Di Nilai</span>
+                <div class="modal-header text-white bg-primary">
+                    <h5 class="modal-title fw-bold d-flex text-white align-items-center" id="notCompleteTeamsModalLabel">
+                        <i data-feather="zap" class="me-2"></i>
+                        <span class="fw-bold">Tim yang Belum Selesai Dinilai</span>
                     </h5>
-                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
+    
                 <div class="modal-body bg-light">
                     <div class="row">
-                        @foreach ($notCompleteAssessment as $item)
+                        @forelse ($categoriesDataNotComplete as $categoryName => $teams)
                             <div class="col-md-4 mb-4">
-                                <div class="card shadow-sm border-0 rounded">
-                                    <div class="card-header bg-white">
-                                        <h5 class="m-0 fw-bold text-center">{{ $item->team_name }}</h5>
+                                <div class="border-0 rounded">
+                                    <p>
+                                        <button class="btn btn-primary w-100 text-start" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}"
+                                            aria-expanded="false"
+                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                            {{ $categoryName }} ({{ $teams->count() }}) {{-- jumlah tim --}}
+                                        </button>
+                                    </p>
+    
+                                    <div class="collapse card p-3"
+                                        id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                        @foreach ($teams as $teamName => $judges)
+                                            <div class="mb-3">
+                                                <strong class="text-dark">{{ $teamName }}</strong>
+                                                <ul class="mb-1 ps-3">
+                                                    @foreach ($judges as $judge)
+                                                        <li>{{ $judge->judge_name }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="col-12">
+                                <div class="alert alert-info">Semua tim telah dinilai oleh seluruh juri.</div>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
-
-                <div class="modal-footer"></div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>

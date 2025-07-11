@@ -16,6 +16,9 @@
                     <a href="{{ route('management-system.user.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Tambahkan Pengguna
                     </a>
+                    <button class="btn btn-sm btn-primary align-middle" data-bs-toggle="modal" data-bs-target="#modalImportDataMaskar">
+                        <i class="fa-solid fa-upload me-2"></i> Import Maskar
+                    </button>
                 </div>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -49,6 +52,32 @@
                 </table>
             </div>
         </div>
+    </div>
+    
+    <!-- Modal Import Data User From Maskar -->
+    <div class="modal" id="modalImportDataMaskar" tabindex="-1" aria-labelledby="modalImportDataMaskarLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Import Data Dari Maskar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+            <form action="{{ route('importUserData') }}" method="post" enctype="multipart/form-data" id="formInputFile">
+                <div class="modal-body">
+                    @method('PUT')
+                    @csrf
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label" name="formFile">Input Excel Maskar</label>
+                        <input class="form-control" type="file" id="formFile" name="formFile">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+      </div>
     </div>
 @endsection
 

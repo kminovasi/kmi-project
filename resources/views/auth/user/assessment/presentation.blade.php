@@ -114,7 +114,7 @@
             <div class="card-body">
                 @if($data_event->isNotEmpty())
                     <div class="mb-3">
-                        <x-assessment.presentation-team-total :event-id="$data_event->first()->id" />
+                        @livewire('assessment.presentation-team-total', ['eventId' => $data_event->first()->id])
                     </div>
                 @endif
                 <div class="mb-3">

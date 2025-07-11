@@ -107,7 +107,7 @@
                     <div class="card-body">
                         @if($data_event->isNotEmpty() && $data_event->first()?->id)
                             <div class="mb-3">
-                                <x-assessment.caucus-total-team :event-id="$data_event->first()->id" />
+                                @livewire('assessment.caucus-team-total', ['eventId' => $data_event->first()->id])
                             </div>
                         @endif
                         <div class="mb-3">
@@ -374,13 +374,24 @@
         let dataTable = initializeDataTable(column);
 
         $('#filter-event').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
-
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-caucus"></table>`);
+            const selectedEventId = $(this).val();
+            console.log("ðŸ”„ Emit eventChanged ke Livewire dengan ID:", selectedEventId);
+            
+            // Emit ke Livewire
+            Livewire.emit('eventChanged', selectedEventId);
+            
+            // Reset DataTable
+            if (dataTable) {
+                dataTable.destroy();
+            }
+            
+            $('#datatable-competition').remove(); // hapus tabel lama
+            $('#datatable-card').prepend('<table id="datatable-competition"></table>');
+            
             column = updateColumnDataTable();
             dataTable = initializeDataTable(column);
         });
+
         $('#filter-category').on('change', function () {
             dataTable.destroy();
             dataTable.destroy();

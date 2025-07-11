@@ -111,7 +111,7 @@
             <div class="card-body">
                 @if($data_event->isNotEmpty())
                     <div class="mb-3">
-                        <x-assessment.ondesk-team-total :event-id="$data_event->first()->id" />
+                        <livewire:assessment.ondesk-team-total :event-id="$data_event->first()->id" />
                     </div>
                 @endif
                 <div class="mb-3">
@@ -350,12 +350,23 @@
         $('#fix-all-oda').val($(`#filter-event`).val())
 
         $('#filter-event').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
-
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
-            $('#fix-all-oda').val($(`#filter-event`).val())
-
+            const selectedEventId = $(this).val();
+            console.log("ðŸ”„ Emit eventChanged ke Livewire dengan ID:", selectedEventId);
+            
+            // Emit ke Livewire
+            Livewire.emit('eventChanged', selectedEventId);
+            
+            // Update hidden input dan datatable
+            $('#fix-all-oda').val(selectedEventId);
+            
+            // Reset DataTable
+            if (dataTable) {
+                dataTable.destroy();
+            }
+            
+            $('#datatable-competition').remove(); // hapus tabel lama
+            $('#datatable-card').prepend('<table id="datatable-competition"></table>');
+            
             column = updateColumnDataTable();
             dataTable = initializeDataTable(column);
         });

@@ -1,35 +1,32 @@
 <?php
 
-namespace App\View\Components\Assessment;
+namespace App\Http\Livewire\Assessment;
 
-use App\Models\PvtEventTeam;
-use Illuminate\View\Component;
+use Livewire\Component;
 use Illuminate\Support\Facades\DB;
-use App\Models\pvtAssesmentTeamJudge;
 use Illuminate\Support\Facades\Auth;
 
-class CaucusTotalTeam extends Component
+class CaucusTeamTotal extends Component
 {
     public $eventId;
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
-    public function __construct($eventId)
+
+    protected $listeners = ['eventChanged' => 'updateEvent'];
+
+    public function mount($eventId)
     {
         $this->eventId = $eventId;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
+    public function updateEvent($eventId)
+    {
+        $this->eventId = $eventId;
+    }
+    
     public function render()
     {
         $employeeId = Auth::user()->employee_id;
-        $isSuperadmin = strtolower(Auth::user()->role) === 'superadmin';
+        $role = strtolower(Auth::user()->role);
+        $isSuperadmin = in_array($role, ['superadmin', 'admin']);
         
         $completeAssessment = DB::table('pvt_assesment_team_judges')
             ->join('judges', 'judges.id', '=', 'pvt_assesment_team_judges.judge_id')
@@ -83,7 +80,7 @@ class CaucusTotalTeam extends Component
             ->get();
         $categoriesDataNotComplete = $notCompleteAssessment->groupBy('category_name');
         
-        return view('components.assessment.caucus-total-team', [
+        return view('livewire.assessment.caucus-team-total', [
             'totalCompleteAssessment' => $completeAssessment->count(),
             'categoriesDataComplete' => $categoriesDataComplete,
             'categoriesDataNotComplete' => $categoriesDataNotComplete,

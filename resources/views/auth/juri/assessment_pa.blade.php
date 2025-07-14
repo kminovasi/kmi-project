@@ -140,6 +140,11 @@
                 @csrf
                 @method('put')
                 <div class="card-body">
+                    <div class="w-100 mx-auto text-center">
+                        <p class="mb-0" style="font-weight: bold;">Total Skor On Desk:</p> 
+                        <p class="mt-0 text-primary" style="font-size: 1.7rem; font-weight: 400">{{ $datas->score_ondesk }}</p>
+                    </div>
+                    <hr>
                     <table id="datatable-penilaian"></table>
                     <hr>
                     <div class="mb-3 mx-auto">
@@ -150,19 +155,23 @@
                     <hr>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
-                        <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control">{{ $sofiData->recommend_category }}</textarea>
+                        <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control"
+                        {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }}>{{ $sofiData->recommend_category }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputStrength">Kekuatan Inovasi</label>
-                        <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control">{{ $sofiData->strength }}</textarea>
+                        <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control"
+                        {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }}>{{ $sofiData->strength }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputOpportunity">Peluang inovasi</label>
-                        <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3">{{ $sofiData->opportunity_for_improvement }}</textarea>
+                        <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3"
+                        {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }}>{{ $sofiData->opportunity_for_improvement }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputCommentBenefit">Komentar Benefit</label>
-                        <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{ $sofiData->suggestion_for_benefit }}</textarea>
+                        <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3"
+                        {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }}>{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputFinancialBenefit">Benefit Finansial</label>

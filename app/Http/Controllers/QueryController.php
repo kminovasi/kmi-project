@@ -802,10 +802,18 @@ class QueryController extends Controller
                 )
                 ->get();
             
-            $isActive = PvtEventTeam::join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-                ->where('pvt_event_teams.team_id', $request->team_id)
-                ->where('events.status', 'active')
-                ->exists();
+            $hasJoinedAnyEvent = PvtEventTeam::where('team_id', $request->team_id)->exists();
+
+            $isActive = false;
+            
+            if (! $hasJoinedAnyEvent) {
+                $isActive = true; // anggap aktif kalau belum pernah ikut event
+            } else {
+                $isActive = PvtEventTeam::join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                    ->where('pvt_event_teams.team_id', $request->team_id)
+                    ->where('events.status', 'active')
+                    ->exists();
+            }
 
             $data_anggotas = PvtMember::with('team')
                             ->where('team_id', $request->team_id)
@@ -1426,7 +1434,7 @@ class QueryController extends Controller
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
-                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] != 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
                         $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
                         return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
@@ -1916,11 +1924,11 @@ class QueryController extends Controller
 
             // Output hasil pengecekan
             if ($found) {
-                $rawColumns[] = 'Rata - Rata Nilai';
-                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                $rawColumns[] = 'Rata - Rata Nilai On Desk';
+                $dataTable->addColumn('Rata - Rata Nilai On Desk', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
                         ->where('event_team_id', $request->filterEventTeamId)
-                        ->where('stage', 'presentation')
+                        ->where('stage', 'on desk')
                         ->groupBy('assessment_event_id')
                         ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
                         ->get();
@@ -2116,8 +2124,8 @@ class QueryController extends Controller
 
             // Output hasil pengecekan
             if ($found) {
-                $rawColumns[] = 'Rata - Rata Nilai';
-                $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                $rawColumns[] = 'Rata - Rata Nilai Presentation';
+                $dataTable->addColumn('Rata - Rata Nilai Presentation', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
                         ->where('event_team_id', $request->filterEventTeamId)
                         ->where('stage', 'presentation')
@@ -2687,9 +2695,6 @@ class QueryController extends Controller
                 ->groupBy('pvt_event_teams.id', 'pvt_event_teams.status')
                 ->select($arr_select_case);
 
-
-
-
             $dataTable = DataTables::of($data_row->get());
 
             $rawColumns[] = 'Ranking';
@@ -2806,7 +2811,6 @@ class QueryController extends Controller
                 $filePath = $data_row['file_ppt(removed)'];
 
                 if ($filePath !== null && Storage::exists('public/' . $filePath)) {
-                    $fileUrl = Storage::url('public/' . $filePath);
                     return '<button class="btn btn-green btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummaryPPT" onclick="setSummaryPPT(' . $data_row['event_team_id(removed)'] . ')"><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;Edit Summary</button>'
                         . '&nbsp; <p> <a href="' . route('query.viewFile', ['directory' => $data_row['file_ppt(removed)']]) . '" class="btn btn-info btn-sm" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;Lihat PDF</a>';
                 } else {

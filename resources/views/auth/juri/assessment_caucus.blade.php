@@ -106,6 +106,10 @@
                 @csrf
                 @method('put')
                 <div class="card-body">
+                    <div class="w-100 mx-auto text-center">
+                        <p class="mb-0" style="font-weight: bold;">Total Skor Presentation:</p> 
+                        <p class="mt-0 text-primary" style="font-size: 1.7rem; font-weight: 400">{{ $datas->score_presentation }}</p>
+                    </div>
                     <table id="datatable-penilaian"></table>
                     <hr>
                     <div class="mb-3 mx-auto">

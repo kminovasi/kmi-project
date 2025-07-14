@@ -63,7 +63,7 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         {{-- Component Navigation Bar Assessment --}}
-        @include('components.assessment.navbar')
+        @include('auth.user.paper.navbar')
         
         <div class="mb-3">
             @if (session('success'))
@@ -157,7 +157,6 @@
                     <!-- Modal Footer -->
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </div>
@@ -179,38 +178,38 @@
                         <div class="modal-body p-4">
                             <!-- Frame for Team Information -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="inputTeamName" class="form-label font-weight-normal">Tim</label>
+                                <label for="inputTeamName" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Tim</label>
                                 <div id="TeamName" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
                             <!-- Frame for Innovation Title -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="InnovationTitle" class="form-label font-weight-normal">Judul Inovasi</label>
+                                <label for="InnovationTitle" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Judul Inovasi</label>
                                 <div id="InnovationTitle" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
                             <!-- Frame for Company Information -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="Company" class="form-label font-weight-normal">Perusahaan</label>
+                                <label for="Company" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Perusahaan</label>
                                 <div id="Company" class="font-weight-bold small text-muted"></div>
                             </div>
                             <hr>
                             <!-- Frame for Problem Background -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="ProblemBackground" class="form-label font-weight-normal">Latar Belakang Masalah</label>
-                                <div id="ProblemBackground" class="font-weight-bold small text-muted"></div>
+                                <label for="ProblemBackground" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Latar Belakang Masalah</label>
+                                <textarea id="ProblemBackground" class="form-control small border-0" rows="6" readonly></textarea>
                             </div>
                             <hr>
                             <!-- Frame for Innovation Idea -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="InnovationIdea" class="form-label font-weight-normal">Ide Inovasi</label>
-                                <div id="InnovationIdea" class="font-weight-bold small text-muted"></div>
+                                <label for="InnovationIdea" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Ide Inovasi</label>
+                                <textarea id="InnovationIdea" class="form-control small border-0" rows="6" readonly></textarea>
                             </div>
                             <hr>
                             <!-- Frame for Benefits -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="Benefit" class="form-label font-weight-normal">Manfaat</label>
-                                <div id="Benefit" class="font-weight-bold small text-muted"></div>
+                                <label for="Benefit" class="form-label font-weight-normal text-wrap text-break" style="max-width: 100%;">Manfaat</label>
+                                <textarea id="Benefit" class="form-control small border-0" rows="6" readonly></textarea>
                             </div>
                             <hr>
                             <!-- Frame for Upload PPT -->
@@ -258,209 +257,215 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
         <script type="">
-    function initializeDataTable(columns) {
-        var dataTable = $('#datatable-presentasi-bod').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "responsive": true,
-            "dom": 'lBfrtip',
-            "buttons": [
-                'excel', 'csv'
-            ],
-            "ajax": {
-                "url": "{{ route('query.get_presentasi_bod') }}",
-                "type": "GET",
-                "async": true,
-                "dataSrc": function (data) {
-                    return data.data;
-                },
-                "data": function (d) {
-                    d.filterEvent = $('#filter-event').val();
-                    d.filterCategory = $('#filter-category').val();
-                }
-
-            },
-            "columns": columns,
-            "scrollY": true,
-            "scrollX": false,
-            "stateSave": true,
-            "destroy": true,
-            "createdRow": function(row, data, dataIndex) {
-                $('thead th').each(function(index) {
-                    if ($(this).text().trim() === 'Ranking') {
-                        $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); // Set text center untuk <td>
+            function initializeDataTable(columns) {
+                var dataTable = $('#datatable-presentasi-bod').DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "responsive": true,
+                    "dom": 'lBfrtip',
+                    "buttons": [
+                        'excel', 'csv'
+                    ],
+                    "ajax": {
+                        "url": "{{ route('query.get_presentasi_bod') }}",
+                        "type": "GET",
+                        "async": true,
+                        "dataSrc": function (data) {
+                            return data.data;
+                        },
+                        "data": function (d) {
+                            d.filterEvent = $('#filter-event').val();
+                            d.filterCategory = $('#filter-category').val();
+                        }
+        
+                    },
+                    "columns": columns,
+                    "scrollY": true,
+                    "scrollX": false,
+                    "stateSave": true,
+                    "destroy": true,
+                    "createdRow": function(row, data, dataIndex) {
+                        $('thead th').each(function(index) {
+                            if ($(this).text().trim() === 'Ranking') {
+                                $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); // Set text center untuk <td>
+                            }
+                        });
+                    }
+                });
+                return dataTable;
+            }
+        
+            function updateColumnDataTable() {
+                const selectElement = document.getElementById('filter-event');
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const eventName = selectedOption.text;
+                document.getElementById('event-title').innerHTML = eventName;
+                newColumn = []
+                $.ajax({
+                    url: "{{ route('query.get_presentasi_bod') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
+                    method: 'GET',
+                    // dataType: 'json',
+                    data:{
+                        filterEvent: $('#filter-event').val(),
+                        // filterYear: $('#filter-year').val(),
+                        filterCategory: $('#filter-category').val()
+                    },
+                    async: false,
+                    success: function (data) {
+                        // newColumn = []
+                        // console.log(count(data.data));
+                        if(data.data.length){
+                            let row_column = {};
+                            row_column['data'] = "DT_RowIndex"
+                            row_column['title'] = "No"
+                            row_column['mData'] = "DT_RowIndex"
+                            row_column['sTitle'] = "No"
+                            newColumn.push(row_column)
+                            for( var key in data.data[0]){
+                                if(key != "DT_RowIndex"){
+                                    let row_column = {};
+                                    row_column['data'] = key
+                                    row_column['title'] = key
+                                    row_column['mData'] = key
+                                    row_column['sTitle'] = key
+                                    newColumn.push(row_column)
+                                }
+                            }
+                        }else{
+                            let row_column = {};
+                            row_column['data'] = ''
+                            row_column['title'] = ''
+                            row_column['mData'] = ''
+                            row_column['sTitle'] = ''
+                            newColumn.push(row_column)
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Gagal mengambil kolom: ' + error);
+                    }
+                });
+                return newColumn
+            }
+        
+            $(document).ready(function() {
+        
+                let column = updateColumnDataTable();
+        
+                let dataTable = initializeDataTable(column);
+        
+        
+                $('#filter-event').on('change', function () {
+                    dataTable.destroy();
+                    dataTable.destroy();
+        
+                    document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-presentasi-bod"></table>`);
+                    column = updateColumnDataTable();
+                    dataTable = initializeDataTable(column);
+                });
+                $('#filter-category').on('change', function () {
+                    dataTable.destroy();
+                    dataTable.destroy();
+        
+                    document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-presentasi-bod"></table>`);
+        
+                    column = updateColumnDataTable();
+                    dataTable = initializeDataTable(column);
+                });
+            });
+            
+            function escapeAndAddBreaks(str) {
+                if (!str) return '';
+                const escaped = str
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+                return escaped.replace(/(\r\n|\r|\n)/g, "<br>");
+            }
+        
+            function setSummaryPPT(eventTeamId){
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'GET',
+                    url: `/query/summary-executive/get-summary-executive-by-event-team-id/${eventTeamId}`,
+                    dataType: 'json',
+                    // dataType: 'json',
+                    success: function(response) {
+                        document.getElementById("TeamName").textContent = response.team_name;
+                        document.getElementById("InnovationTitle").textContent = response.innovation_title;
+                        document.getElementById("Company").textContent = response.company_name;
+                        document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
+                        document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
+                        document.getElementById("inputId").value = response.summary_executives_id;
+                        document.getElementById("ProblemBackground").value = response.problem_background;
+                        document.getElementById("InnovationIdea").value = response.innovation_idea;
+                        document.getElementById("Benefit").value = response.benefit;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
             }
-        });
-        return dataTable;
-    }
-
-    function updateColumnDataTable() {
-        const selectElement = document.getElementById('filter-event');
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const eventName = selectedOption.text;
-        document.getElementById('event-title').innerHTML = eventName;
-        newColumn = []
-        $.ajax({
-            url: "{{ route('query.get_presentasi_bod') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
-            method: 'GET',
-            // dataType: 'json',
-            data:{
-                filterEvent: $('#filter-event').val(),
-                // filterYear: $('#filter-year').val(),
-                filterCategory: $('#filter-category').val()
-            },
-            async: false,
-            success: function (data) {
-                // newColumn = []
-                // console.log(count(data.data));
-                if(data.data.length){
-                    let row_column = {};
-                    row_column['data'] = "DT_RowIndex"
-                    row_column['title'] = "No"
-                    row_column['mData'] = "DT_RowIndex"
-                    row_column['sTitle'] = "No"
-                    newColumn.push(row_column)
-                    for( var key in data.data[0]){
-                        if(key != "DT_RowIndex"){
-                            let row_column = {};
-                            row_column['data'] = key
-                            row_column['title'] = key
-                            row_column['mData'] = key
-                            row_column['sTitle'] = key
-                            newColumn.push(row_column)
-                        }
-                    }
-                }else{
-                    let row_column = {};
-                    row_column['data'] = ''
-                    row_column['title'] = ''
-                    row_column['mData'] = ''
-                    row_column['sTitle'] = ''
-                    newColumn.push(row_column)
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Gagal mengambil kolom: ' + error);
-            }
-        });
-        return newColumn
-    }
-
-    $(document).ready(function() {
-
-        let column = updateColumnDataTable();
-
-        let dataTable = initializeDataTable(column);
-
-
-        $('#filter-event').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
-
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-presentasi-bod"></table>`);
-            column = updateColumnDataTable();
-            dataTable = initializeDataTable(column);
-        });
-        $('#filter-category').on('change', function () {
-            dataTable.destroy();
-            dataTable.destroy();
-
-            document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-presentasi-bod"></table>`);
-
-            column = updateColumnDataTable();
-            dataTable = initializeDataTable(column);
-        });
-    });
-
-
-    function setSummaryPPT(eventTeamId){
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
+            function viewPPT(team_id) {
+          // Membuka modal dengan id "ppt"
+          $('#ppt').modal('show');
+        
+          // Mengatur src iframe ke URL file PDF
+          $.ajax({
             type: 'GET',
-            url: `/query/summary-executive/get-summary-executive-by-event-team-id/${eventTeamId}`,
-            dataType: 'json',
-            // dataType: 'json',
+            url: `/path/to/ppt/url/${team_id}`,
             success: function(response) {
-                document.getElementById("TeamName").textContent = response.team_name;
-                document.getElementById("InnovationTitle").textContent = response.innovation_title;
-                document.getElementById("Company").textContent = response.company_name;
-                document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
-                document.getElementById("inputEventTeamID").value = response.pvt_event_teams_id;
-                document.getElementById("inputId").value = response.summary_executives_id;
-                document.getElementById("ProblemBackground").textContent = response.problem_background;
-                document.getElementById("InnovationIdea").textContent = response.innovation_idea;
-                document.getElementById("Benefit").textContent = response.benefit;
-                document.getElementById("Benefit").textContent = response.benefit;
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+              $('#viewPPT').attr('src', response.fileUrl);
             }
-        });
-
-    }
-    function viewPPT(team_id) {
-  // Membuka modal dengan id "ppt"
-  $('#ppt').modal('show');
-
-  // Mengatur src iframe ke URL file PDF
-  $.ajax({
-    type: 'GET',
-    url: `/path/to/ppt/url/${team_id}`,
-    success: function(response) {
-      $('#viewPPT').attr('src', response.fileUrl);
-    }
-  });
-}
-function seePPT(team_id) {
-        var pptUrl;
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: 'GET',
-            url: '{{ route('query.custom') }}',
-            dataType: 'json',
-            async: false,
-            data: {
-                table: "teams",
-                where: {
-                    "teams.id": team_id
-                },
-                limit: 1,
-                join: {
-                        'pvt_event_teams':{
-                            'pvt_event_teams.team_id' : 'teams.id'
-                        },
-                        'summary_executives':{
-                            'summary_executives.pvt_event_teams_id' : 'pvt_event_teams.id'
-                        }
+          });
+        }
+        function seePPT(team_id) {
+                var pptUrl;
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                select:[
-                        'teams.id as team_id',
-                        'benefit',
-                        'summary_executives.file_ppt as file_ppt'
-                    ]
-            },
-            // dataType: 'json',
-            success: function(response) {
-                // document.getElementById("idBenefit").value = response[0].benefit;
-                // document.getElementById("idBenefit").value = response[0].benefit;
-                pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
-
-                // Set the URL as the source for the iframe
-                document.getElementById("pptViewer").src = pptUrl;
-                document.getElementById("pptViewer").src = pptUrl;
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-}
-
-
-</script>
+                    type: 'GET',
+                    url: '{{ route('query.custom') }}',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        table: "teams",
+                        where: {
+                            "teams.id": team_id
+                        },
+                        limit: 1,
+                        join: {
+                                'pvt_event_teams':{
+                                    'pvt_event_teams.team_id' : 'teams.id'
+                                },
+                                'summary_executives':{
+                                    'summary_executives.pvt_event_teams_id' : 'pvt_event_teams.id'
+                                }
+                            },
+                        select:[
+                                'teams.id as team_id',
+                                'benefit',
+                                'summary_executives.file_ppt as file_ppt'
+                            ]
+                    },
+                    // dataType: 'json',
+                    success: function(response) {
+                        // document.getElementById("idBenefit").value = response[0].benefit;
+                        // document.getElementById("idBenefit").value = response[0].benefit;
+                        pptUrl =  '{{route('query.getFile')}}' + '?directory=' + response[0].file_ppt;
+        
+                        // Set the URL as the source for the iframe
+                        document.getElementById("pptViewer").src = pptUrl;
+                        document.getElementById("pptViewer").src = pptUrl;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+        }
+    </script>
     @endpush

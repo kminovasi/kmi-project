@@ -31,6 +31,7 @@ use App\Models\PvtAssessmentEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use App\Models\pvtAssesmentTeamJudge;
 use App\Models\TemplateAssessmentPoint;
 use Illuminate\Support\Facades\Session;
@@ -358,7 +359,8 @@ class AssessmentController extends Controller
                 'innovation_title',
                 'pvt_event_teams.event_id', 
                 'pvt_event_teams.id as event_team_id', 
-                'pvt_event_teams.status as status_event', 
+                'pvt_event_teams.status as status_event',
+                'pvt_event_teams.total_score_on_desk as score_ondesk',
                 'proof_idea', 
                 'full_paper', 
                 'full_paper_updated_at'
@@ -403,6 +405,7 @@ class AssessmentController extends Controller
                 'innovation_title', 
                 'category_name',
                 'papers.potential_benefit',
+                'total_score_presentation as score_presentation',
                 'innovation_title',
                 'pvt_event_teams.event_id', 
                 'pvt_event_teams.id as event_team_id', 
@@ -559,6 +562,7 @@ class AssessmentController extends Controller
             $dataAssesmentTeamJudge_null = pvtAssesmentTeamJudge::where('event_team_id', $request->event_team_id)
                 ->whereIn('assessment_event_id', $data_assessment_event)
                 ->where('judge_id', null)
+                ->where('stage', $request->input('stage'))
                 ->get();
 
             if ($dataAssesmentTeamJudge_null->count()) {
@@ -589,10 +593,29 @@ class AssessmentController extends Controller
     public function deleteJuri(Request $request)
     {
         try {
+            $event_team_id = $request->input('event_team_id');
+            $stage = $request->input('stage');
             pvtAssesmentTeamJudge::where('judge_id', $request->judge_id)
-                ->where('event_team_id', $request->input('event_team_id'))
-                ->where('stage', $request->input('stage'))
+                ->where('event_team_id', $event_team_id)
+                ->where('stage', $stage)
                 ->delete();
+            
+            if($request->input('stage') == 'on desk') {
+                PvtEventTeam::where('id', $event_team_id)
+                    ->update([
+                        'total_score_on_desk' => $this->calculateAverageTotalScore($event_team_id, "on desk")
+                    ]);
+            } elseif($request->input('stage') == 'presentation') {
+                PvtEventTeam::where('id', $event_team_id)
+                    ->update([
+                        'total_score_presentation' => $this->calculateAverageTotalScore($event_team_id, "presentation")
+                    ]);
+            } elseif($request->input('stage') == 'caucus') {
+                PvtEventTeam::where('id', $event_team_id)
+                    ->update([
+                        'total_score_caucus' => $this->calculateAverageTotalScore($event_team_id, "caucus")
+                    ]);
+            }            
 
             return redirect()->back()->with('success', 'Juri Berhasil Dihapus');
         } catch (\Exception $e) {
@@ -922,7 +945,7 @@ class AssessmentController extends Controller
                 // dd($assessment_event_poin);
                 
                 $passedStatus = 'Presentation';
-                $failedStatus = 'tidak lolos On Desk';
+                $failedStatus = 'tidak lolos Presentation';
 
                 if (isset($nilai_oda_bi[0]) && isset($assessment_event_poin_bi[0])) {
                     
@@ -1052,7 +1075,7 @@ class AssessmentController extends Controller
                                 ]);
                             }
                         }
-                    } else if ($team_status === 'tidak lolos On Desk') {
+                    } else if ($team_status === 'tidak lolos Presentation') {
                         // Ambil informasi tim untuk history
                         $team = PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
                             ->where('pvt_event_teams.id', $team_id)
@@ -1097,7 +1120,7 @@ class AssessmentController extends Controller
                             'status' => 'passed'
                         ]);
                     } else {
-                        $event_team->status = 'tidak lolos On Desk';
+                        $event_team->status = 'tidak lolos Presentation';
 
                         // Tambahkan history bahwa tim tidak lolos ke tahap Presentasi
                         History::create([
@@ -1230,7 +1253,7 @@ class AssessmentController extends Controller
                     ->toArray();
                 // dd($nilai_pa_bi);
                 $passedStatus = 'Caucus';
-                $failedStatus = 'tidak lolos Presentation';
+                $failedStatus = 'Tidak lolos Caucus';
 
                 if (isset($nilai_pa_bi[0]) && isset($assessment_event_poin_bi[0])) {
                     $nilai_pa_bi = $nilai_pa_bi[0];
@@ -1429,7 +1452,7 @@ class AssessmentController extends Controller
                             'status' => 'passed'
                         ]);
                     } else {
-                        $event_team->status = 'tidak lolos Presentation';
+                        $event_team->status = 'Tidak lolos Caucus';
 
                         History::create([
                             'team_id' => $team->team->id,
@@ -2002,6 +2025,7 @@ class AssessmentController extends Controller
         }
         return redirect()->route('assessment.presentasiBOD')->with('success', 'Nilai Akhir BOD Berhasil Ditetapkan');
     }
+    
     public function pdfSummary($team_id)
     {
         try {
@@ -2027,19 +2051,17 @@ class AssessmentController extends Controller
         }
     }
 
-    public function calculateAverageTotalScore($event_id, $stage)
+    public function calculateAverageTotalScore($event_team_id, $stage)
     {
         // Mengambil semua penilaian berdasarkan event_team_id
-        $pvtAssesmentTeamJudgeByEventTeamIdItems = pvtAssesmentTeamJudge::where('event_team_id', $event_id)->where('stage', $stage)->get()->toArray();
+        $pvtAssesmentTeamJudgeByEventTeamIdItems = pvtAssesmentTeamJudge::where('event_team_id', $event_team_id)->where('stage', $stage)->get()->toArray();
         // Kategorikan penilaian berdasarkan assessment_event_id
         $categorizedScores = [];
         foreach ($pvtAssesmentTeamJudgeByEventTeamIdItems as $item) {
             $assessmentEventId = $item['assessment_event_id'];
-            // Jika kategori untuk assessment_event_id belum ada, buat array baru
             if (!isset($categorizedScores[$assessmentEventId])) {
                 $categorizedScores[$assessmentEventId] = [];
             }
-            // Tambahkan score ke kategori assessment_event_id
             $categorizedScores[$assessmentEventId][] = $item['score'];
         }
 

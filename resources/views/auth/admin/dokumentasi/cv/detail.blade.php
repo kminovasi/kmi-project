@@ -33,23 +33,29 @@
         </div>
         <div class="card-body">
             <div class="row justify-content-center">
-                <div class="col-md-5 text-center">
-                    <figure class="figure">
-                        <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->proof_idea) }}" alt="paper"
-                            style="max-width: 100%; max-height: 400px;">
-                        <figcaption class="figure-caption text-center">Foto Profile Team</figcaption>
-                    </figure>
+                <div class="col-md-5 mb-3 text-center border rounded">
+                    <img src="{{ route('query.getFile') }}?directory={{ urlencode($paper->proof_idea) }}"
+                         id="fotoTim" class="img-fluid rounded"
+                         style="max-width: 30rem;">
+                    <figcaption class="figure-caption text-center">Foto Tim</figcaption>
                 </div>
-                <div class="col-md-5 text-center">
-                    <figure class="figure">
-                        <img class="img-fluid rounded" src="{{ asset('storage/'.$paper->innovation_photo) }}"
-                            alt="paper" style="max-width: 100%; max-height: 400px;">
-                        <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
-                    </figure>
+                <div class="col-md-5 mb-3 text-center border rounded">
+                    <img src="{{ route('query.getFile') }}?directory={{ urlencode($paper->innovation_photo) }}"
+                         id="fotoTim" class="img-fluid rounded"
+                         style="max-width: 30rem;">
+                    <figcaption class="figure-caption text-center">Foto Inovasi</figcaption>
                 </div>
             </div>
 
             <hr>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <p><strong>Nama Tim</strong>:</p>
+                </div>
+                <div class="col-md-9">
+                    <p>{{ $paper->team_name }}</p>
+                </div>
+            </div>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Judul</strong>:</p>
@@ -71,9 +77,10 @@
                     <p><strong>Abstrak</strong>:</p>
                 </div>
                 <div class="col-md-9">
-                    <p>{{ $paper->abstract }}</p>
+                    <p>{!! nl2br(e($paper->abstract)) !!}</p>
                 </div>
             </div>
+            <hr>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Status Inovasi</strong>:</p>
@@ -82,7 +89,6 @@
                     <p>{{ $paper->status_inovasi }}</p>
                 </div>
             </div>
-            <hr>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Potensi Replikasi</strong>:</p>
@@ -91,42 +97,44 @@
                     <p>{{ $paper->potensi_replikasi }}</p>
                 </div>
             </div>
+            <hr>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Permasalahan</strong>:</p>
                 </div>
                 <div class="col-md-9">
-                    <p>{{ $paper->problem }}</p>
+                    <p>{!! nl2br(e($paper->problem)) !!}</p>
                 </div>
             </div>
+            <hr>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Permasalahan Utama</strong>:</p>
                 </div>
                 <div class="col-md-9">
-                    <p>{{ $paper->main_cause }}</p>
+                    <p>{!! nl2br(e($paper->main_cause)) !!}</p>
                 </div>
             </div>
+            <hr>
             <div class="row mb-1">
                 <div class="col-md-3">
                     <p><strong>Solusi</strong>:</p>
                 </div>
                 <div class="col-md-9">
-                    <p>{{ $paper->solution }}</p>
+                    <p>{!! nl2br(e($paper->solution)) !!}</p>
                 </div>
             </div>
         </div>
         <div class="card-footer  d-flex justify-content-end">
-            <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}" class="btn btn-primary me-2"
-                download="{{ $paper->innovation_title }}.pdf" data-bs-toggle="tooltip" data-bs-placement="top"
-                data-bs-custom-class="custom-tooltip" data-bs-title="Download Paper">
-                <i class="fas fa-download"></i>
+            <a href="{{ route('paper.watermarks', ['paper_id' => $paper->id]) }}" class="btn btn-primary me-2" target="_blank"
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="Download Paper">
+                <i class="fas fa-download me-1"></i> Download Makalah
             </a>
             @if (!empty($paper->path))
             <a href="{{ asset('storage/' . $paper->path) }}" class="btn btn-secondary" download="Supporting Document"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                 data-bs-title="Download Dokumen Pendukung">
-                <i class="fas fa-download "></i>
+                <i class="fas fa-download me-1"></i> Download Dokumen Pendukung
             </a>
             @endif
         </div>
@@ -252,7 +260,15 @@
                         <tr>
                             <td>{{ $member->user->employee_id }}</td>
                             <td>{{ $member->user->name }}</td>
-                            <td>{{ $member->status }}</td>
+                            @if($member->status == 'gm')
+                                <td>Penanggung Jawab Benefit</td>
+                            @elseif($member->status == 'leader')
+                                <td>Ketua Tim</td>
+                            @elseif($member->status == 'member')
+                                <td>Anggota</td>
+                            @elseif($member->status == 'facilitator')
+                                <td>Fasilitator</td>
+                            @endif
                             <td>{{ $member->user->email }}</td>
                             <td>{{ $member->user->company_name }}</td>
                             <td>{{ $member->user->company_code }}</td>
@@ -263,6 +279,35 @@
             </div>
         </div>
     </div>
+    
+    <!-- Anggota Tim Outsource -->
+    @if(!empty($outsourceMember))
+    <div class="card mb-4">
+        <div class="card-header bg-danger">
+            <h5 class="card-header-title text-white">Anggota Tim Outsource</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nama</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($outsourceMember as $member)
+                            <tr>
+                                <td>{{ $member->name }}</td>
+                                <td>Outsource</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        @endif
 </div>
 
 @endsection

@@ -90,6 +90,14 @@ class CvController extends Controller
 
         // Ambil data dari request
         $inovasi = json_decode($request->input('inovasi'), true);
+
+        // Cek apakah $inovasi valid dan memiliki key 'event_id'
+        if (is_array($inovasi) && array_key_exists('event_id', $inovasi) && $inovasi['event_id'] !== null) {
+            $event_id = $inovasi['event_id'];
+        } else {
+            $event_id = json_decode($request->input('event_id'), true); // fallback jika inovasi tidak ada
+        }
+
         $employee = json_decode($request->input('employee'), true);
         $teamRanks = json_decode($request->input('team_rank'), true);
         $certificateType = $request->input('certificate_type');
@@ -98,16 +106,26 @@ class CvController extends Controller
             ->join('events', 'judges.event_id', '=', 'events.id')
             ->join('pvt_event_teams', 'events.id', '=', 'pvt_event_teams.event_id')
             ->join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('categories', 'categories.id', '=', 'teams.category_id')
             ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id') 
-            ->select('events.event_name', 'teams.team_name', 'certificates.template_path')
+            ->select(
+                'events.id as event_id',
+                'events.event_name',
+                'events.date_end as event_end',
+                'categories.category_name as category',
+                'events.year',
+                'certificates.template_path',
+                'events.date_end as event_end'
+            )
             ->where('judges.employee_id', $employee['employee_id'])
+            ->where('events.id', $event_id)
             ->where('judges.status', 'active')
             ->where('events.status', 'finish')
             ->first();
         
         $bodData = DB::table('bod_events')
             ->leftJoin('users', 'users.employee_id', '=', 'bod_events.employee_id')
-            ->where('bod_events.event_id', $inovasi['event_id'])
+            ->where('bod_events.event_id', $event_id)
             ->select('users.name as bod_name', 'users.position_title as title')
             ->first();
             
@@ -119,11 +137,12 @@ class CvController extends Controller
             // Data yang akan ditampilkan pada view sertifikat
             $data = [
                 'user_name' => $employee['name'],
-                'team_name' => $inovasi['team_name'],
                 'company_name' => $employee['company_name'],
-                'event_name' => $inovasi['event_name'],
-                'template_path' => $inovasi['template_path'],
-                'event_end_date' => $inovasi['event_end'],
+                'template_path'   => $judgeEvents->template_path,
+                'category_name'   => $judgeEvents->category,
+                'event_end_date'  => $judgeEvents->event_end,
+                'bodName' => $bodData->bod_name,
+                'bodTitle' => $bodData->title
             ];
             $certificateName = $employee['name'];
         } else {
@@ -159,6 +178,34 @@ class CvController extends Controller
                     'badge_3' => $inovasi['badge_rank_3'],
                 ];
                 $certificateName = $inovasi['team_name'];
+            } else if ($certificateType == 'best_of_the_best') {
+                $view = 'auth.admin.dokumentasi.cv.best-of-the-best-certificate';
+                $data = [
+                    'innovation_title' => $inovasi['innovation_title'],
+                    'team_name' => $inovasi['team_name'],
+                    'company_name' => $employee['company_name'],
+                    'category_name' => $inovasi['category'],
+                    'template_path' => $inovasi['certificate'],
+                    'team_rank' => $teamRanks,
+                    'event_end_date' => $inovasi['event_end'],
+                    'bodName' => $bodData->bod_name,
+                    'bodTitle' => $bodData->title,
+                ];
+                $certificateName = $inovasi['team_name'] . "_Best Of The Best";
+            } else if ($certificateType == 'honorable_winner') {
+                $view = 'auth.admin.dokumentasi.cv.honorable-winner-certificate';
+                $data = [
+                    'innovation_title' => $inovasi['innovation_title'],
+                    'team_name' => $inovasi['team_name'],
+                    'company_name' => $employee['company_name'],
+                    'category_name' => $inovasi['category'],
+                    'template_path' => $inovasi['certificate'],
+                    'team_rank' => $teamRanks,
+                    'event_end_date' => $inovasi['event_end'],
+                    'bodName' => $bodData->bod_name,
+                    'bodTitle' => $bodData->title,
+                ];
+                $certificateName = $inovasi['team_name'] . "_Juara Harapan";
             }
         }
 
@@ -173,7 +220,6 @@ class CvController extends Controller
 
     function detail($id)
     {
-
         $team = Team::findOrFail($id);
 
         // Ambil tim berdasarkan team_id
@@ -186,6 +232,7 @@ class CvController extends Controller
             ->where('teams.id', $id)
             ->select(
                 'papers.*',
+                'teams.team_name',
                 'pvt_event_teams.status as team_status',
                 'pvt_event_teams.total_score_on_desk',
                 'pvt_event_teams.total_score_presentation',
@@ -199,10 +246,15 @@ class CvController extends Controller
             ->limit(1)
             ->get();
 
+        $outsourceMember = DB::table('ph2_members')
+            ->where('team_id', $team->id)
+            ->get()
+            ->toArray();
+            
         // dd($papers);
         // mendapatkan data member berdasarkan id team
         $teamMember = $team->pvtMembers()->with('user')->get();
 
-        return view('auth.admin.dokumentasi.cv.detail', compact('teamMember', 'papers'));
+        return view('auth.admin.dokumentasi.cv.detail', compact('teamMember', 'papers', 'outsourceMember'));
     }
 }

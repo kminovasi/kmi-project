@@ -57,7 +57,7 @@ class CertificateController extends Controller
                 ->distinct()
                 ->get();
 
-            $certificates = Certificate::with('event.companies')->get();
+            $certificates = Certificate::with('event.companies')->distinct()->get();
         }
 
         return view("admin.certificate.certificate", compact('certificates', 'eventsWithoutCertificate'));

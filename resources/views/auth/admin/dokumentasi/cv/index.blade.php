@@ -272,7 +272,7 @@
                                                 </form>
                                             </li>
                                             {{-- Button Downlod Certificate Team --}}
-                                            @if($rankData->rank <= 3 || $inovasi->is_honorable_winner || $inovasi->is_best_of_the_best)
+                                            @if($rankData->rank <= 3 && !$inovasi->is_honorable_winner)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -287,6 +287,41 @@
                                                     <button type="submit" class="btn btn-sm btn-warning dropdown-item">
                                                         <i class="dropdown-item-icon" data-feather="download"></i>
                                                         Sertifikat Tim
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            @endif
+                                            @if($inovasi->is_best_of_the_best)
+                                            <hr class="dropdown-divider">
+                                            <li>
+                                                <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                                    @csrf
+
+                                                    {{-- Input for Certificate Auto Create --}}
+                                                    <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
+                                                    <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
+                                                    <input type="hidden" name="certificate_type" value="best_of_the_best">
+
+                                                    <button type="submit" class="btn btn-sm btn-warning dropdown-item">
+                                                        <i class="dropdown-item-icon" data-feather="download"></i>
+                                                        Sertifikat Best of The Best
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            @elseif($inovasi->is_honorable_winner)
+                                            <hr class="dropdown-divider">
+                                            <li>
+                                                <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                                    @csrf
+
+                                                    {{-- Input for Certificate Auto Create --}}
+                                                    <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
+                                                    <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
+                                                    <input type="hidden" name="certificate_type" value="honorable_winner">
+
+                                                    <button type="submit" class="btn btn-sm btn-warning dropdown-item">
+                                                        <i class="dropdown-item-icon" data-feather="download"></i>
+                                                        Sertifikat Juara Harapan
                                                     </button>
                                                 </form>
                                             </li>

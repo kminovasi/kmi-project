@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Show SOFI On Desk Assessment</title>
+    <title>Show SOFI Presentation Assessment</title>
 </head>
 <style>
     .header{
@@ -52,7 +52,9 @@
     
 </style>
 <body>
-    <div class="header">SOFI PRESENTATION</div>
+    <div class="header">SOFI PRESENTATION
+        <h3 class="mt-0">{{$data['dataTeam']->event_name . ' Tahun ' . $data['dataTeam']->year}}</h3>
+    </div>
     <div class="info-tim">
         <h4>INFORMASI TIM</h4>
         <table>
@@ -63,16 +65,6 @@
             <tr>
                 <td class="td-title">Judul Inovasi</td>
                 <td>: {{$data['dataTeam']->innovation_title}}</td>
-            </tr>
-            <tr>
-                <td class="td-title">LOLOS / TIDAK LOLOS</td>
-                <td>
-                     @if ($data['overallTotal']>750)
-                        <p class="text-success fw-bold">: LOLOS</p>
-                    @else
-                        <p class="text-danger fw-bold">: TIDAK LOLOS</p>
-                    @endif
-                </td>
             </tr>
         </table>
     </div>
@@ -108,12 +100,12 @@
         <h4>Strength Point Opportunity For Improvement (SOFI)</h4>
         <div>
             <h5>SOFI : 1. Strength Point</h5>
-            {{$data['dataTeam']->strength}}
+            {!! nl2br(e($data['dataTeam']->strength)) !!}
         </div>   
             <hr>
         <div>
             <h5>SOFI : 2. Opportunity For Improvement</h5>
-            {{$data['dataTeam']->opportunity_for_improvement}}
+            {!! nl2br(e($data['dataTeam']->opportunity_for_improvement)) !!}
         </div>
             <hr>
         <div>
@@ -128,7 +120,7 @@
             <hr>
             <div class="ms-4">
                 <h6 class="mb-1">Potensi Replikasi</h6>
-                @if($data['dataTeam']->potensi_replikasi == 'Bisa Direplikasia')
+                @if($data['dataTeam']->potensi_replikasi == 'Bisa Direplikasi')
                     <p>Bisa Direplikasi</p>
                 @elseif($data['dataTeam']->potensi_replikasi == 'Tidak Bisa Direplikasi')
                     <p>Tidak Bisa Direplikasi</p>
@@ -140,7 +132,7 @@
             <hr>
         <div>
             <h5>Detil Penghitungan Benefit (Real & Potensial)</h5>
-            {{$data['dataTeam']->suggestion_for_benefit}}
+            {!! nl2br(e($data['dataTeam']->suggestion_for_benefit)) !!}
         </div>
             <hr>
         <div>

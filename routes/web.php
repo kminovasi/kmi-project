@@ -24,17 +24,14 @@ use App\Http\Controllers\InnovatorDashboard;
 use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventTeamController;
-use App\Http\Controllers\ImportUserDataExcel;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GroupEventController;
 use App\Http\Controllers\BeritaAcaraController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DokumentasiController;
-use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PvtEventTeamController;
 use App\Http\Controllers\ChartDashboardController;
-use App\Http\Controllers\CoachingClinicController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MetodologiPaperController;
@@ -42,6 +39,7 @@ use App\Http\Controllers\AssessmentMatrixController;
 use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\DetailCompanyChartController;
+use App\Http\Controllers\ImportUserDataExcel;
 
 
 /*
@@ -66,16 +64,17 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware('auth');
 
-Route::get('/import/users', [ImportUserDataExcel::class, 'importFromStorage']);
+Route::put('/import/users', [ImportUserDataExcel::class, 'importFromUpload'])->middleware(['role:Superadmin,Admin'], 'auth')->name('importUserData');
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{companyId}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
-    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
+    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['auth'])->name('showTotalTeamChart');
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
     Route::get('/total-team-chart/{company_code}', [DashboardController::class, 'showTotalTeamChartCompany'])->middleware(['auth'])->name('showTotalTeamChartCompany');
     Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompany'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
     Route::get('/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('benefitChartData');
+    Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
 });
 
 Route::get('/dashboard/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('dashboard.benefit-chart-data');
@@ -93,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/my-paper/{teamId}', [ProfileController::class, 'showPaperDetail'])->name('showPaperDetail');
         Route::post('/my-paper/paper-revision/{teamId}', [ProfileController::class, 'revision'])->name('showPaperDetail.paper-revision');
         Route::put('/update-password/{employeeId}', [ProfileController::class, 'updatePasswordUser'])->name('updatePassword');
+        Route::put('/update-user-profile-picture/{employeeId}', [ProfileController::class, 'updateProfilePicture'])->name('updateProfilePicture');
     });
 
     Route::prefix('paper')->name('paper.')->group(function () {
@@ -155,7 +155,7 @@ Route::middleware('auth')->group(function () {
 
         // Paper Watermark
         Route::get('/watermarks-file/{paper_id}', [PaperController::class, 'addWatermarks'])->name('watermarks');
-
+        
         Route::get('/view-supporting-document/{paperId}', [PaperController::class, 'viewSupportingDocument'])->name('viewSupporting');
     });
 
@@ -168,6 +168,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/getCompanyByEventId', [QueryController::class, 'getCompanyByEventId'])->name('getCompanyByEventId');
         Route::get('/get_role', [QueryController::class, 'get_role'])->name('get_role');
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
+        Route::get('/viewFile', [QueryController::class, 'viewFile'])->name('viewFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');
         Route::get('/metodologi_papers', [QueryController::class, 'getMetodologiPapers'])->name('metodologi_papers');
         Route::get('/get-judge', [QueryController::class, 'getJudge'])->name('getJudge');
@@ -211,7 +212,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/get_BOD', [QueryController::class, 'get_BOD'])->name('get_BOD');
     });
     Route::get('/query/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
-
+    
     Route::prefix('assessment')->name('assessment.')->group(function () {
         Route::get('/', [AssessmentController::class, 'index'])->name('index.juri');
         Route::get('/value', [AssessmentController::class, 'index'])->name('index.admin');
@@ -229,6 +230,7 @@ Route::middleware('auth')->group(function () {
         
         Route::get('/show-executive-summary/{eventTeamId}', [AssessmentController::class, 'viewExecutiveSummary'])->name('executiveSummary');
         
+        // Show Document
         Route::get('/berita-acara-benefit/{paperId}', [AssessmentController::class, 'showBeritaAcaraBenefit'])->name('benefitView');
         Route::get('/view-supporting-document/{eventTeamId}', [AssessmentController::class, 'viewSUpportingDocuments'])->name('viewDupportingDocsAssessment');
 
@@ -241,6 +243,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/submitJuri/{id}', [AssessmentController::class, 'submitJuri'])->name('submitJuri');
 
         Route::get('/On-Desk', [AssessmentController::class, 'on_desk'])->name('on_desk');
+
         Route::get('/Presentation', [AssessmentController::class, 'presentation'])->name('presentation');
         // Route::get('/fixation-assessment', [AssessmentController::class, 'fixation'])->name('fixation');
         Route::get('/show-ondesk-sofi/{id}', [AssessmentController::class, 'showSofi_oda'])->name('show.sofi.oda');
@@ -450,25 +453,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/download-document/{documentType}', [PatentController::class, 'downloadTemplateDownload'])->name('downloadTemplateDownload');
         Route::post('/upload-payment', [PatentController::class, 'uploadPatentPaymentProof'])->name('uploadPayment');
         Route::get('/view-patent-document/{patentId}/{file}', [PatentController::class, 'viewPatentDocument'])->name('viewPatentDocument');
-    });
-
-    // ReplicationAdd commentMore actions
-    Route::prefix('replication')->name('replication.')->group(function () {
-        Route::get('/', [ReplicationController::class, 'index'])->name('index');
-        Route::get('/autocomplete/user', [ReplicationController::class, 'autocompleteEmployee'])->name('userSuggestion');
-        Route::post('/store', [ReplicationController::class, 'store'])->name('store');
-        Route::put('/update-status/{replicationId}', [ReplicationController::class, 'updateStatus'])->name('updateStatus');
-        Route::put('/upload-news-letter/{replicationId}', [ReplicationController::class, 'uploadNewsLetter'])->name('uploadNewsLetter');
-        Route::put('/upload-benefit-evidence/{replicationId}', [ReplicationController::class, 'uploadBenefitAndEvidence'])->name('uploadBenefitEvidence');
-        Route::put('/upload-reward-desc/{replicationId}', [ReplicationController::class, 'uploadRewardDesc'])->name('uploadRewardDesc');
-        Route::get('view-document/{replicationId}/{type}', [ReplicationController::class, 'viewDocument'])->name('viewDocument');
-    });
-
-    // CoachingClinic
-    Route::prefix('coaching-clinic')->name('coaching-clinic.')->group(function () {
-        Route::get('/', [CoachingClinicController::class, 'index'])->name('index');
-        Route::post('/store-coaching-apply', [CoachingClinicController::class, 'storeCoachingClinic'])->name('storeCoachingApply');
-        Route::put('/update-coaching-apply/{coachingId}/{status}', [CoachingClinicController::class, 'updateCoachingApply'])->name('updateCoachingApply');
     });
 });
 

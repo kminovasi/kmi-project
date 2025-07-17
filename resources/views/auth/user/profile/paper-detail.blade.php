@@ -30,8 +30,8 @@
                     <div class="card-body">
                         @if ($team->paper)
                             <p><strong>Judul Inovasi:</strong> {{ $team->paper->innovation_title }}</p>
-                            <p><strong>Abstrak:</strong> {{ $team->paper->abstract }}</p>
-                            <p><strong>Status:</strong> <span class="badge bg-warning">Status Approval :
+                            <p><strong>Abstrak:</strong> {!! nl2br(e($team->paper->abstract)) !!}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">Status Approval :
                                     {{ $team->paper->status }}</span></p>
                             <a href="{{ asset(Storage::url(mb_substr($team->paper->full_paper, 3))) }}"
                                 class="btn btn-sm text-white" style="background-color: #e84637" target="_blank">
@@ -66,14 +66,22 @@
                                 @if ($eventTeam->sofi)
                                     <hr>
                                     <h6 class="text-secondary">Informasi SOFI Penilaian</h6>
-                                    <p><strong>Strength:</strong> {{ $eventTeam->sofi->strength }}</p>
+                                    <p><strong>Strength:</strong> {!! nl2br(e($eventTeam->sofi->strength)) !!}</p>
                                     <p><strong>Opportunity for Improvement:</strong>
-                                        {{ $eventTeam->sofi->opportunity_for_improvement }}</p>
-                                    <a class="btn btn-sm btn-primary text-white"
-                                        href="{{ route('assessment.download.sofi.oda', $eventTeam->id) }}" target="_blank">
-                                        <i class="me-1" data-feather="download"></i>
-                                        Download SOFI
-                                    </a>
+                                        {!! nl2br(e($eventTeam->sofi->opportunity_for_improvement)) !!}</p>
+                                    @if($eventTeam->status == 'On Desk' || $eventTeam->status == 'tidak Lolos Presentasi')
+                                        <a class="btn btn-sm btn-primary text-white"
+                                            href="{{ route('assessment.download.sofi.oda', $eventTeam->id) }}" target="_blank">
+                                            <i class="me-1" data-feather="download"></i>
+                                            Download SOFI
+                                        </a>
+                                    @elseif($eventTeam->status == 'Presentation' || $eventTeam->status == 'tidak Lolos Caucus' || $eventTeam->status == 'Caucus' || $eventTeam->status == 'Presentasi BOD' || $eventTeam->status == 'Juara')
+                                        <a class="btn btn-sm btn-primary text-white"
+                                            href="{{ route('assessment.download.sofi.pa', $eventTeam->id) }}" target="_blank">
+                                            <i class="me-1" data-feather="download"></i>
+                                            Download SOFI
+                                        </a>
+                                    @endif
                                     <button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal"
                                         data-bs-target="#uploadStep"
                                         onclick="change_url_step({{ $team->paper->id }}, {{ $eventTeam->id }})">Revisi

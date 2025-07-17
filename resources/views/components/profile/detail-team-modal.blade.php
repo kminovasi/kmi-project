@@ -72,25 +72,25 @@
                                 <!-- Abstrak -->
                                 <div class="mb-3">
                                     <div class="fw-bold">Abstrak</div>
-                                    <div class="small mb-0" id="abstrak"></div>
+                                    <textarea class="form-control border-0" id="abstrak" rows="10" readonly></textarea>
                                 </div>
                                 <hr>
                                 <!-- Permasalahan -->
                                 <div class="mb-3">
                                     <div class="fw-bold">Permasalahan</div>
-                                    <div class="small mb-0" id="problem"></div>
+                                    <textarea class="form-control border-0" id="problem" rows="10" readonly></textarea>
                                 </div>
                                 <hr>
                                 <!-- Penyebab Utama -->
                                 <div class="mb-3">
                                     <div class="fw-bold">Penyebab Utama</div>
-                                    <div class="small mb-0" id="main_cause"></div>
+                                    <textarea class="form-control border-0" id="main_cause" rows="10" readonly></textarea>
                                 </div>
                                 <hr>
                                 <!-- Solusi -->
                                 <div class="mb-3">
                                     <div class="fw-bold">Solusi</div>
-                                    <div class="small mb-0" id="solution"></div>
+                                    <textarea class="form-control border-0" id="solution" rows="10" readonly></textarea>
                                 </div>
                                 <hr>
                             </div>
@@ -196,35 +196,18 @@
 
                     var lokasiElement = document.getElementById('inovasi_lokasi');
                     lokasiElement.textContent = data.paper[0].inovasi_lokasi;
-                    //document.getElementById('inovasi_lokasi').innerHTML = data.paper[0].inovasi_lokasi;
-                    // var lokasiElement = document.getElementById('inovasi_lokasi');
-                    //     if (data.papers && data.paper[0] && data.paper[0].inovasi_lokasi) {
-                    //         lokasiElement.textContent = data.paper[0].inovasi_lokasi;
-                    //     } else {
-                    //         lokasiElement.textContent = "Data tidak tersedia";
-                    //     }
-
 
                     var abstractElement = document.getElementById('abstrak');
-                    abstractElement.textContent = data.paper[0].abstract;
+                    abstractElement.value = data.paper[0].abstract;
 
                     var problemElement = document.getElementById('problem');
-                    problemElement.textContent = data.paper[0].problem;
-
-                    // var problem_impactElement = document.getElementById('problem_impact');
-                    // problem_impactElement.textContent = data.paper[0].problem_impact;
+                    problemElement.value = data.paper[0].problem;
 
                     var main_causeElement = document.getElementById('main_cause');
-                    main_causeElement.textContent = data.paper[0].main_cause;
+                    main_causeElement.value = data.paper[0].main_cause;
 
                     var solutionElement = document.getElementById('solution');
-                    solutionElement.textContent = data.paper[0].solution;
-
-                    // var outcomeElement = document.getElementById('outcome');
-                    // outcomeElement.textContent = data.paper[0].outcome;
-
-                    // var performanceElement = document.getElementById('performance');
-                    // performanceElement.textContent = data.paper[0].performance;
+                    solutionElement.value = data.paper[0].solution;
 
                     fotoTim = '{{ route('query.getFile') }}' + '?directory=' + encodeURIComponent(data.paper[0]
                         .proof_idea);

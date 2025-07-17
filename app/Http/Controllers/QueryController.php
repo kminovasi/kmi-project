@@ -51,8 +51,8 @@ class QueryController extends Controller
 
         // Lakukan pencarian berdasarkan query dan kembalikan hasil sebagai JSON
         $results = User::join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->where('name', 'like', "%$query%")
-            ->orWhere('employee_id', 'like', "%$query%")
+            ->where('name', 'LIKE', "%$query%")
+            ->orWhere('employee_id', 'LIKE', "%$query%")
             ->limit(10)
             ->get();
 
@@ -1434,12 +1434,12 @@ class QueryController extends Controller
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>" :
                             "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Pengaturan Juri</a>";
 
-                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$nextStepButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? '' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } elseif (auth()->user()->role == 'Juri' || $this->checkIfJudge()) {
                         $inputPenilaianButton = "<a class=\"btn btn-primary btn-xs mb-2\" href=\"$inputPenilaianUrl\">Input Penilaian</a>";
-                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "$inputPenilaianButton <a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? '' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     } else {
-                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
+                        return "<a class=\"btn btn-info btn-xs " . ($data_row['status_removed'] == 'On Desk' ? '' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                     }
                 });
 

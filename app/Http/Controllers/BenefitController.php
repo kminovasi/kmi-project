@@ -46,8 +46,8 @@ class BenefitController extends Controller
     {
 
         $row = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->leftJoin('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->select(
                 'papers.id as paper_id',
                 'teams.id as team_id',
@@ -70,23 +70,24 @@ class BenefitController extends Controller
             )
             ->where('papers.id', $id)->first();
 
-        if (Auth::user()->role === 'Superadmin' && $row->event_status == 'active') {
-            $is_owner = true;
-        } else if($row->event_status == 'active') {
-            $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
-                ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
-                ->whereIn('status', ['member', 'leader']) // Atau status lain yang menunjukkan pemilik benefit
-                ->exists(); // Gunakan exists() untuk cek keberadaan pemilik benefit
-        }
-
+            if (Auth::user()->role === 'Superadmin') {
+                $is_owner = true;
+            } else {
+                $is_owner = PvtMember::where('employee_id', auth()->user()->employee_id)
+                    ->where('team_id', $row->team_id) // Cek apakah user adalah bagian dari tim yang terkait dengan paper
+                    ->whereIn('status', ['member', 'leader']) // Atau status lain yang menunjukkan pemilik benefit
+                    ->exists(); // Gunakan exists() untuk cek keberadaan pemilik benefit
+            }
 
         $file_content = null;
         if ($row->file_review) {
             $filePath = storage_path('app/public/' . $row->file_review);
+        
             if (file_exists($filePath)) {
                 $file_content = file_get_contents($filePath);
             }
         }
+
 
         $benefit_custom = CustomBenefitFinancial::query()->get()->keyBy('id')->toArray();
 

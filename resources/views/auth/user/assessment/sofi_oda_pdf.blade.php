@@ -10,7 +10,7 @@
     .header{
         text-align: center;
         font-size: 16px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         font-weight: bold;
     }
     table {
@@ -20,18 +20,14 @@
     h4, h5{
         margin-bottom: 5px;
     }
-    hr{
-        margin-bottom: 3px;
-    }
     .fw-700{
         font-weight:bold;
     }
     .info-tim, .hasil-nilai, .sofi{
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
     .hasil-nilai th, .hasil-nilai td {
         border: 1px solid black;
-        padding: 5px;
         text-align: left;
     }
      .hasil-nilai th {
@@ -52,7 +48,9 @@
     
 </style>
 <body>
-    <div class="header">SOFI ON DESK ASSESSMENT</div>
+    <div class="header">SOFI ON DESK ASSESSMENT 
+    <h3 class="mt-0">{{$data['dataTeam']->event_name . ' Tahun ' . $data['dataTeam']->year}}</h3>
+    </div>
     <div class="info-tim">
         <h4>INFORMASI TIM</h4>
         <table>
@@ -64,24 +62,10 @@
                 <td class="td-title">Judul Inovasi</td>
                 <td>: {{$data['dataTeam']->innovation_title}}</td>
             </tr>
-            <tr>
-                <td class="td-title">Lokasi Implementasi Inovasi</td>
-                <td>: {{$data['dataTeam']->inovasi_lokasi}}</td>
-            </tr>
-            <tr>
-                <td class="td-title">LOLOS / TIDAK LOLOS</td>
-                <td>
-                     @if ($data['overallTotal']>750)
-                        <p class="text-success fw-bold">: LOLOS</p>
-                    @else
-                        <p class="text-danger fw-bold">: TIDAK LOLOS</p>
-                    @endif
-                </td>
-            </tr>
         </table>
     </div>
     <div class="hasil-nilai">
-        <h4>HASIL PENILAIAN</h4>
+        <h4>Hasil Penilaian</h4>
         <table>
             <tr>
                 <th>No</th>
@@ -109,15 +93,15 @@
         </table>
     </div>
     <div class="sofi">
-        <h4>STRENGTH POINT OPPORTUNITY FOR IMPROVEMENT (SOFI)</h4>
+        <h4>Strength Point Opportunity For Improvement (SOFI)</h4>
         <div>
             <h5>SOFI : 1. Strength Point</h5>
-            {{$data['dataTeam']->strength}}
+            {!! nl2br(e($data['dataTeam']->strength)) !!}
         </div>   
             <hr>
         <div>
             <h5>SOFI : 2. Opportunity For Improvement</h5>
-            {{$data['dataTeam']->opportunity_for_improvement}}
+            {!! nl2br(e($data['dataTeam']->opportunity_for_improvement)) !!}
         </div>
             <hr>
         <div>
@@ -140,10 +124,11 @@
                     <p>Nilai tidak valid</p>
                 @endif
             </div>
+            
             <hr>
         <div>
             <h5>Detil Penghitungan Benefit (Real & Potensial)</h5>
-            {{$data['dataTeam']->suggestion_for_benefit}}
+            {!! nl2br(e($data['dataTeam']->suggestion_for_benefit)) !!}
         </div>
             <hr>
         <div>

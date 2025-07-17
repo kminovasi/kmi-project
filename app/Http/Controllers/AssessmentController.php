@@ -303,6 +303,7 @@ class AssessmentController extends Controller
                 'papers.id as paper_id',
                 'papers.financial',
                 'papers.potential_benefit',
+                'papers.updated_at',
                 'innovation_title',
                 'categories.category_name', 
                 'pvt_event_teams.event_id', 
@@ -356,6 +357,8 @@ class AssessmentController extends Controller
                 'innovation_title', 
                 'category_name', 
                 'papers.potential_benefit',
+                'papers.financial',
+                'papers.updated_at',
                 'innovation_title',
                 'pvt_event_teams.event_id', 
                 'pvt_event_teams.id as event_team_id', 
@@ -404,7 +407,9 @@ class AssessmentController extends Controller
                 'team_name', 
                 'innovation_title', 
                 'category_name',
+                'papers.financial',
                 'papers.potential_benefit',
+                'papers.updated_at',
                 'total_score_presentation as score_presentation',
                 'innovation_title',
                 'pvt_event_teams.event_id', 
@@ -443,6 +448,12 @@ class AssessmentController extends Controller
     // FIXME: INI FUNGSI YG DIPAKE SUBMIT SCORE
     public function submitJuri(Request $request, $event_team_id)
     {
+        $request->validate([
+            'financial_benefit' => 'required|regex:/^[0-9.]+$/',
+            'potential_benefit' => 'required|regex:/^[0-9.]+$/',
+            'updated_at' => 'required|date',
+        ]);
+        
         try {
             // Get Total Score
             $totalScore = 0;
@@ -451,12 +462,8 @@ class AssessmentController extends Controller
                     ->update(['score' => $score,]);
                 $totalScore += $score;
             }
-            $previousFullUrl = url()->previous();
-            $segments = explode(
-                '/',
-                $previousFullUrl
-            );
-            $value = $segments[4];
+            
+            $value = $request->stage;;
             $sofi = NewSofi::where('event_team_id', $event_team_id)->first();
             $sofi->update([
                 'strength' => $request->sofi_strength,
@@ -465,19 +472,39 @@ class AssessmentController extends Controller
                 'suggestion_for_benefit' => $request->suggestion_for_benefit
             ]);
             
-            DB::table('papers')
-                ->where('papers.team_id', function($query) use ($event_team_id) {
-                    $query->select('teams.id')
-                          ->from('pvt_event_teams')
-                          ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                          ->where('pvt_event_teams.id', $event_team_id)
-                          ->limit(1);
-                })
-                ->update([
-                    'financial' => $request->financial_benefit,
-                    'potential_benefit' => $request->potential_benefit
-                ]);
-
+            $team_id = DB::table('pvt_event_teams')
+                ->join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                ->where('pvt_event_teams.id', $event_team_id)
+                ->value('teams.id');
+        
+            if (!$team_id) {
+                return back()->with('error', 'Tim tidak ditemukan.');
+            }
+        
+            $paper = Paper::where('team_id', $team_id)->first();
+        
+            if (!$paper) {
+                return back()->with('error', 'Data paper tidak ditemukan.');
+            }
+        
+            // Validasi optimistic locking
+            if (!Carbon::parse($request->updated_at)->equalTo($paper->updated_at)) {
+                return back()->with('error', 'Data sudah diubah oleh orang lain. Silakan muat ulang halaman.');
+            }
+            
+            $financial = $request->financial_benefit ? preg_replace('/[^0-9]/', '', $request->financial_benefit) : 0;
+            $potential = $request->potential_benefit ? preg_replace('/[^0-9]/', '', $request->potential_benefit) : 0;
+        
+            // Simpan update dalam transaction
+            DB::transaction(function () use ($request, $team_id) {
+                DB::table('papers')
+                    ->where('team_id', $team_id)
+                    ->update([
+                        'financial' => $financial,
+                        'potential_benefit' => $potential,
+                        'updated_at' => now()
+                    ]);
+            });
 
             $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
             
@@ -741,7 +768,7 @@ class AssessmentController extends Controller
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select('team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
+            ->select('events.event_name', 'events.year', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
             ->where('pvt_event_teams.id', $id)
             ->first();
 
@@ -751,7 +778,7 @@ class AssessmentController extends Controller
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'on desk')
-            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')->orderByRaw("CASE
+            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id', 'pvt_assessment_events.pdca', 'point')->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
                         WHEN 'pdca' = 'Do' THEN 2
                         WHEN 'pdca' = 'Check' THEN 3
@@ -867,7 +894,22 @@ class AssessmentController extends Controller
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select('teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
+            ->select(
+                'teams.id as team_id', 
+                'team_name',
+                'events.event_name',
+                'events.year',
+                'innovation_title', 
+                'inovasi_lokasi', 
+                'event_name', 
+                'financial', 
+                'potential_benefit', 
+                'potensi_replikasi', 
+                'recommend_category', 
+                'strength', 
+                'opportunity_for_improvement', 
+                'suggestion_for_benefit'
+            )
             ->where('pvt_event_teams.id', $id)
             ->first();
 
@@ -877,7 +919,7 @@ class AssessmentController extends Controller
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'presentation')
-            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id')
+            ->groupBy('pvt_event_teams.id', 'pvt_assessment_events.id', 'pvt_assessment_events.pdca', 'point')
             ->orderByRaw("CASE
                         WHEN 'pdca' = 'Plan' THEN 1
                         WHEN 'pdca' = 'Do' THEN 2

@@ -31,11 +31,11 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                                HASIL PENILAIAN CAUCUS ASSESSMENT - {{strtoupper($data['dataTeam']->event_name)}}
+                                HASIL PENILAIAN CAUCUS ASSESSMENT - {{ strtoupper($data['dataTeam']->event_name . ' Tahun ' . $data['dataTeam']->year) }}
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
-                        <a class="btn btn-sm btn-light text-primary" href="{{route('assessment.presentation')}}">
+                        <a class="btn btn-sm btn-light text-primary" href="{{route('assessment.caucus.data')}}">
                             <i class="me-1" data-feather="arrow-left"></i>
                             Kembali
                         </a>
@@ -66,15 +66,6 @@
                 <div class="ms-4">
                     <h6 class="mb-1">Lokasi Implementasi Inovasi</h6>
                     <p>{{$data['dataTeam']->inovasi_lokasi}}</p>
-                </div>
-                <hr>
-                <div class="ms-4">
-                    <h6 class="mb-1">Lolos / Tidak</h6>
-                    @if ($data['overallTotal']>750)
-                        <p class="text-success fw-bold">LOLOS</p>
-                    @else
-                        <p class="text-danger fw-bold">TIDAK LOLOS</p>
-                    @endif
                 </div>
             </div>
 
@@ -116,12 +107,12 @@
             <div class="card-body">
                 <div class="ms-4">
                     <h6 class="mb-1">SOFI : 1. Strength Point</h6>
-                    <p>{{$data['dataTeam']->strength}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->strength)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">SOFI : 2. Opportunity For Improvement</h6>
-                    <p>{{$data['dataTeam']->opportunity_for_improvement}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->opportunity_for_improvement)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
@@ -147,12 +138,12 @@
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Detil Penghitungan Benefit (Real & Potensial)</h6>
-                    <p>{{$data['dataTeam']->suggestion_for_benefit}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->suggestion_for_benefit)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Rekomendasi Juri Terhadap Kategori Makalah Inovasi</h6>
-                    <p>{{$data['dataTeam']->recommend_category}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->recommend_category)) !!}</p>
                 </div>
             </div>
         </div>

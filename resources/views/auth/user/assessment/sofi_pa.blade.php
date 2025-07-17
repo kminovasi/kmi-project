@@ -31,7 +31,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                                HASIL PENILAIAN PRESENTASI ASSESSMENT - {{strtoupper($data['dataTeam']->event_name)}}
+                                HASIL PENILAIAN PRESENTASI ASSESSMENT - {{ strtoupper($data['dataTeam']->event_name . ' Tahun ' . $data['dataTeam']->year) }}
                         </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
@@ -55,17 +55,17 @@
             <div class="card-body" id="datatable-card">
                 <div class="ms-4">
                     <h6 class="mb-1">Nama Tim</h6>
-                    <p>{{$data['dataTeam']->team_name}}</p>
+                    <p>{{ $data['dataTeam']->team_name }}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Judul Inovasi</h6>
-                    <p>{{$data['dataTeam']->innovation_title}}</p>
+                    <p>{{ $data['dataTeam']->innovation_title }}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Lokasi Implementasi Inovasi</h6>
-                    <p>{{$data['dataTeam']->inovasi_lokasi}}</p>
+                    <p>{{ $data['dataTeam']->inovasi_lokasi }}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
@@ -116,12 +116,12 @@
             <div class="card-body">
                 <div class="ms-4">
                     <h6 class="mb-1">SOFI : 1. Strength Point</h6>
-                    <p>{{$data['dataTeam']->strength}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->strength)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">SOFI : 2. Opportunity For Improvement</h6>
-                    <p>{{$data['dataTeam']->opportunity_for_improvement}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->opportunity_for_improvement)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
@@ -147,12 +147,12 @@
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Detil Penghitungan Benefit (Real & Potensial)</h6>
-                    <p>{{$data['dataTeam']->suggestion_for_benefit}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->suggestion_for_benefit)) !!}</p>
                 </div>
                 <hr>
                 <div class="ms-4">
                     <h6 class="mb-1">Rekomendasi Juri Terhadap Kategori Makalah Inovasi</h6>
-                    <p>{{$data['dataTeam']->recommend_category}}</p>
+                    <p>{!! nl2br(e($data['dataTeam']->recommend_category)) !!}</p>
                 </div>
             </div>
         </div>

@@ -463,7 +463,7 @@ class AssessmentController extends Controller
                 $totalScore += $score;
             }
             
-            $value = $request->stage;;
+            $value = $request->stage;
             $sofi = NewSofi::where('event_team_id', $event_team_id)->first();
             $sofi->update([
                 'strength' => $request->sofi_strength,
@@ -722,6 +722,7 @@ class AssessmentController extends Controller
             'is_judge' => $is_judge
         ]);
     }
+    
     public function showSofi_oda($id)
     {
 
@@ -730,13 +731,34 @@ class AssessmentController extends Controller
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select('teams.id as team_id', 'pvt_event_teams.id as event_team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
+            ->select(
+                'teams.id as team_id', 
+                'pvt_event_teams.id as event_team_id', 
+                'team_name', 
+                'innovation_title', 
+                'inovasi_lokasi', 
+                'event_name', 
+                'events.year',
+                'financial', 
+                'potential_benefit', 
+                'potensi_replikasi', 
+                'recommend_category', 
+                'strength', 
+                'opportunity_for_improvement', 
+                'suggestion_for_benefit'
+            )
             ->where('pvt_event_teams.id', $id)
             ->first();
 
         $dataNilai = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-            ->select('pvt_event_teams.id as id_event_team', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id as id_point', 'point', DB::raw('ROUND(AVG(score),2) as average_score'))
+            ->select(
+                'pvt_event_teams.id as id_event_team', 
+                'pvt_assessment_events.pdca', 
+                'pvt_assessment_events.id as id_point', 
+                'point', 
+                DB::raw('ROUND(AVG(score),2) as average_score')
+            )
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'on desk')
@@ -761,6 +783,7 @@ class AssessmentController extends Controller
         ];
         return view('auth.user.assessment.sofi_oda', compact('data'));
     }
+    
     public function downloadSofi_oda($id)
     {
         $dataTeam = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -808,6 +831,7 @@ class AssessmentController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="sofi-oda.pdf"');
     }
+    
     public function showSofi_pa($id)
     {
 
@@ -816,13 +840,34 @@ class AssessmentController extends Controller
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select('pvt_event_teams.id as event_team_id', 'teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
+            ->select(
+                'teams.id as team_id', 
+                'pvt_event_teams.id as event_team_id', 
+                'team_name', 
+                'innovation_title', 
+                'inovasi_lokasi', 
+                'event_name', 
+                'events.year',
+                'financial', 
+                'potential_benefit', 
+                'potensi_replikasi', 
+                'recommend_category', 
+                'strength', 
+                'opportunity_for_improvement', 
+                'suggestion_for_benefit'
+            )
             ->where('pvt_event_teams.id', $id)
             ->first();
 
         $dataNilai = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-            ->select('pvt_event_teams.id as id_event_team', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id as id_point', 'point', DB::raw('ROUND(AVG(score),2) as average_score'))
+            ->select(
+                'pvt_event_teams.id as id_event_team', 
+                'pvt_assessment_events.pdca', 
+                'pvt_assessment_events.id as id_point', 
+                'point', 
+                DB::raw('ROUND(AVG(score),2) as average_score')
+            )
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'presentation')
@@ -847,6 +892,7 @@ class AssessmentController extends Controller
         ];
         return view('auth.user.assessment.sofi_pa', compact('data'));
     }
+    
     public function showSofi_caucus($id)
     {
         $dataTeam = Team::join('papers', 'papers.team_id', '=', 'teams.id')
@@ -854,13 +900,33 @@ class AssessmentController extends Controller
             // ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('new_sofi', 'new_sofi.event_team_id', '=', 'pvt_event_teams.id')
             ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->select('pvt_event_teams.id as event_team_id', 'teams.id as team_id', 'team_name', 'innovation_title', 'inovasi_lokasi', 'event_name', 'financial', 'potential_benefit', 'potensi_replikasi', 'recommend_category', 'strength', 'opportunity_for_improvement', 'suggestion_for_benefit')
+            ->select(
+                'teams.id as team_id', 
+                'pvt_event_teams.id as event_team_id', 
+                'team_name', 
+                'innovation_title', 
+                'inovasi_lokasi', 
+                'event_name', 
+                'events.year',
+                'financial', 
+                'potential_benefit', 
+                'potensi_replikasi', 
+                'recommend_category', 
+                'strength', 
+                'opportunity_for_improvement', 
+                'suggestion_for_benefit'
+            )
             ->where('pvt_event_teams.id', $id)
             ->first();
 
         $dataNilai = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
             ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
-            ->select('pvt_event_teams.id as id_event_team', 'pvt_assessment_events.pdca', 'pvt_assessment_events.id as id_point', 'point', DB::raw('ROUND(AVG(score),2) as average_score'))
+            ->select(
+                'pvt_event_teams.id as id_event_team', 
+                'pvt_assessment_events.pdca', 
+                'pvt_assessment_events.id as id_point', 
+                'point', DB::raw('ROUND(AVG(score),2) as average_score')
+            )
             ->where('pvt_event_teams.id', $id)
             ->where('pvt_assessment_events.status_point', 'active')
             ->where('pvt_assesment_team_judges.stage', 'caucus')

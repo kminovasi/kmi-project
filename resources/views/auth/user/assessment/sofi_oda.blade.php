@@ -31,7 +31,7 @@
                                     <div class="col-auto mb-3">
                                         <h1 class="page-header-title">
                                             <div class="page-header-icon"><i data-feather="file-text"></i></div>
-                                             HASIL PENILAIAN ON DESK ASSESSMENT - {{strtoupper($data['dataTeam']->event_name)}}
+                                             HASIL PENILAIAN ON DESK ASSESSMENT - {{ strtoupper($data['dataTeam']->event_name . ' Tahun ' . $data['dataTeam']->year) }}
                                         </h1>
                                     </div>
                                     <div class="col-12 col-xl-auto mb-3">
@@ -39,7 +39,7 @@
                                             <i class="me-1" data-feather="arrow-left"></i>
                                             Kembali
                                         </a>
-                                        <a class="btn btn-sm btn-primary text-white" href="{{route('assessment.download.sofi.oda', $data['dataTeam']->event_team_id)}}">
+                                        <a target="_blank" class="btn btn-sm btn-primary text-white" href="{{route('assessment.download.sofi.oda', $data['dataTeam']->event_team_id)}}">
                                             <i class="me-1" data-feather="download"></i>
                                             Download SOFI
                                         </a>
@@ -67,61 +67,20 @@
                                     <h6 class="mb-1">Lokasi Implementasi Inovasi</h6>
                                     <p>{{$data['dataTeam']->inovasi_lokasi}}</p>
                                 </div>
-                                <hr>
-                                <div class="ms-4">
-                                    <h6 class="mb-1">Lolos / Tidak</h6>
-                                    @if ($data['overallTotal']>750)
-                                        <p class="text-success fw-bold">LOLOS</p>
-                                    @else
-                                        <p class="text-danger fw-bold">TIDAK LOLOS</p>
-                                    @endif
-                                </div>
                             </div>
                             
-                        </div>
-                        <div class="card mb-4">
-                            <div class="card-header">HASIL PENILAIAN</div>
-                            <div class="card-body">
-                                <div class="table-responsive table-billing-history">
-                                    <table class="table mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th class="border-gray-200" scope="col">No</th>
-                                                <th class="border-gray-200" scope="col">Item Penilaian</th>
-                                                <th class="border-gray-200" scope="col">Final Score</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                                $no=1;
-                                            ?>
-                                            @foreach ($data['individualResults'] as $item)
-                                                <tr>
-                                                    <td>{{$no++}}</td>
-                                                    <td>{{$item->point}}</td>
-                                                    <td>{{$item->average_score}}</td>
-                                                </tr>
-                                            @endforeach
-                                                <tr>
-                                                    <td colspan="2"><div class="fw-700 text-monospace">TOTAL</div></td>
-                                                    <td><div class="fw-700">{{ $data['overallTotal'] }}</div></td>
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
                         <div class="card mb-4">
                             <div class="card-header">STRENGTH POINT OPPORTUNITY FOR IMPROVEMENT (SOFI)</div>
                             <div class="card-body">
                                 <div class="ms-4">
                                     <h6 class="mb-1">SOFI : 1. Strength Point</h6>
-                                    <p>{{$data['dataTeam']->strength}}</p>
+                                    <p>{!! nl2br($data['dataTeam']->strength) !!}</p>
                                 </div>
                                 <hr>
                                 <div class="ms-4">
                                     <h6 class="mb-1">SOFI : 2. Opportunity For Improvement</h6>
-                                    <p>{{$data['dataTeam']->opportunity_for_improvement}}</p>
+                                    <p>{!! nl2br($data['dataTeam']->opportunity_for_improvement) !!}</p>
                                 </div>
                                 <hr>
                                 <div class="ms-4">
@@ -153,7 +112,7 @@
                                 <hr>
                                 <div class="ms-4">
                                     <h6 class="mb-1">Rekomendasi Juri Terhadap Kategori Makalah Inovasi</h6>
-                                    <p>{{$data['dataTeam']->recommend_category}}</p>
+                                    <p>{{$data['dataTeam']->recommend_category ?? 'Tetap'}}</p>
                                 </div>
                             </div>
                         </div>

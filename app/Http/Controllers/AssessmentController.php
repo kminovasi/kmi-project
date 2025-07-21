@@ -456,14 +456,11 @@ class AssessmentController extends Controller
         
         try {
             // Get Total Score
-            $totalScore = 0;
             foreach ($request->score as $id => $score) {
                 pvtAssesmentTeamJudge::where('id', $id)
                     ->update(['score' => $score,]);
-                $totalScore += $score;
             }
             
-            $value = $request->stage;
             $sofi = NewSofi::where('event_team_id', $event_team_id)->first();
             $sofi->update([
                 'strength' => $request->sofi_strength,
@@ -496,7 +493,7 @@ class AssessmentController extends Controller
             $potential = $request->potential_benefit ? preg_replace('/[^0-9]/', '', $request->potential_benefit) : 0;
         
             // Simpan update dalam transaction
-            DB::transaction(function () use ($request, $team_id) {
+            DB::transaction(function () use ($request, $team_id, $financial, $potential) {
                 DB::table('papers')
                     ->where('team_id', $team_id)
                     ->update([
@@ -508,7 +505,7 @@ class AssessmentController extends Controller
 
             $pvtEventTeam = PvtEventTeam::findOrFail($event_team_id);
             
-            if ($value === "assessment-ondesk-value") {
+            if ($request->stage == "assessment-ondesk-value") {
                 $pvtEventTeam->update([
                     'total_score_on_desk' => $this->calculateAverageTotalScore($event_team_id, "on desk")
                 ]);
@@ -522,7 +519,7 @@ class AssessmentController extends Controller
                     'activity' => "Nilai stage On Desk telah ditetapkan",
                     'status' => 'passed'
                 ]);
-            } elseif ($value === "assessment-presentation-value") {
+            } elseif ($request->stage == "assessment-presentation-value") {
                 $pvtEventTeam->update([
                     'total_score_presentation' => $this->calculateAverageTotalScore($event_team_id, "presentation")
                 ]);
@@ -536,7 +533,7 @@ class AssessmentController extends Controller
                     'activity' => "Nilai stage Presentasi telah ditetapkan",
                     'status' => 'passed'
                 ]);
-            } elseif ($value === "assessment-caucus-value") {
+            } elseif ($request->stage == "assessment-caucus-value") {
                 $pvtEventTeam->update([
                     'total_score_caucus' => $this->calculateAverageTotalScore($event_team_id, "caucus")
                 ]);
@@ -550,7 +547,10 @@ class AssessmentController extends Controller
                     'activity' => "Nilai stage Caucus telah ditetapkan",
                     'status' => 'passed'
                 ]);
+            } else {
+                return back()->with('error', 'Stage tidak valid.');
             }
+
             return redirect()->back()->with('success', 'Nilai Berhasil Ditambahkan');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors('Error: ' . $e->getMessage());

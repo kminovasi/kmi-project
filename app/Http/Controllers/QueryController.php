@@ -380,10 +380,15 @@ class QueryController extends Controller
     {
         try {
             $query_data = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-                ->leftJoin('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                ->leftJoin(DB::raw("(
+                    SELECT pet.*
+                    FROM pvt_event_teams pet
+                    JOIN events e ON e.id = pet.event_id
+                    WHERE e.status != 'finish'
+                ) as active_pet"), 'active_pet.team_id', '=', 'teams.id')
+                ->leftJoin('events', 'events.id', '=', 'active_pet.event_id')
                 ->join('categories', 'teams.category_id', '=', 'categories.id')
-                ->join('themes', 'teams.theme_id', '=',  'themes.id')
+                ->join('themes', 'teams.theme_id', '=', 'themes.id')
                 ->join('companies', 'companies.company_code', '=', 'teams.company_code')
                 ->join('metodologi_papers', 'papers.metodologi_paper_id', '=', 'metodologi_papers.id')
                 ->orderBy('papers.created_at', 'desc');
@@ -502,6 +507,10 @@ class QueryController extends Controller
                 $query_data->where('papers.status_inovasi', $request->status_inovasi);
             }
             
+            if ($request->filled('filter_approval')) {
+                $query_data->where('papers.status', $request->filter_approval);
+            }
+            
             // Filter by category
             if ($request->filled('filter_category')) {
                 $query_data->where('teams.category_id', $request->filter_category);
@@ -511,7 +520,7 @@ class QueryController extends Controller
                 $query_data->where('teams.company_code', $request->filterCompany);
             }
 
-            $data_row = $query_data->select($select)->get();
+            $data_row = $query_data->select($select)->distinct('team_name')->get();
 
             $dataTable = DataTables::of($data_row);
             $ownerCache = [];
@@ -1093,7 +1102,8 @@ class QueryController extends Controller
                             WHEN pdca = 'Check' THEN 3
                             WHEN pdca = 'Action' THEN 4
                             ELSE 5
-                        END, pvt_assessment_events.id ASC");
+                        END, pvt_assessment_events.id ASC")
+                ->distinct();
 
             $dataTable = DataTables::of($data_row->get());
             $rawColumns[] = 'action';
@@ -1771,7 +1781,7 @@ class QueryController extends Controller
                     $poin_ke = $i + 1;
                     $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
                     $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
-                        if ($arr_event_team_id[$i]['employee_id'] == Auth::user()->employee_id && $data_row['status'] == "On Desk") {
+                        if ($arr_event_team_id[$i]['employee_id'] == Auth::user()->employee_id && $data_row['status'] == "On Desk" || Auth::user()->role == 'Superadmin') {
                             return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" >
                                 <div class="invalid-feedback">
                                     Score melebihi maksimum.
@@ -1969,7 +1979,7 @@ class QueryController extends Controller
                     $poin_ke = $i + 1;
                     $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
                     $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
-                        if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Presentation") {
+                        if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Presentation" || Auth::user()->role == 'Superadmin') {
                             return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
                                 <div class="invalid-feedback">
                                     Score melebihi maksimum.

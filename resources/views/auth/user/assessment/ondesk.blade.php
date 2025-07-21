@@ -111,7 +111,7 @@
             <div class="card-body">
                 @if($data_event->isNotEmpty())
                     <div class="mb-3">
-                        <livewire:assessment.ondesk-team-total :event-id="$data_event->first()->id" />
+                        @livewire('assessment.ondesk-team-total', ['eventId' => $data_event->first()->id])
                     </div>
                 @endif
                 <div class="mb-3">
@@ -171,9 +171,8 @@
                     <div class="form-floating mb-4">
                         <select id="filter-event" name="filter-event" class="form-select">
                             @foreach ($data_event as $event)
-                                <option value="{{ $event->id }}"
-                                    {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
-                                    {{ $event->event_name }} - {{ $event->year }}
+                                <option value="{{ $event->id }}" {{ $event->company_code == Auth::user()->company_code ? 'selected' : '' }}>
+                                    {{ $event->event_name }} Tahun {{ $event->year }}
                                 </option>
                             @endforeach
                         </select>
@@ -182,7 +181,6 @@
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -225,7 +223,7 @@
                     <h5 class="modal-title" id="title">Fiksasi Nilai Peserta On Desk</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="form-fixall-oda" action="{{ route('assessment.fix.oda') }}" method="POSt">
+                <form id="form-fixall-oda" action="{{ route('assessment.fix.oda') }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -351,22 +349,21 @@
 
         $('#filter-event').on('change', function () {
             const selectedEventId = $(this).val();
-            console.log("ðŸ”„ Emit eventChanged ke Livewire dengan ID:", selectedEventId);
-            
+        
             // Emit ke Livewire
             Livewire.emit('eventChanged', selectedEventId);
-            
+        
             // Update hidden input dan datatable
             $('#fix-all-oda').val(selectedEventId);
-            
+        
             // Reset DataTable
             if (dataTable) {
                 dataTable.destroy();
             }
-            
+        
             $('#datatable-competition').remove(); // hapus tabel lama
             $('#datatable-card').prepend('<table id="datatable-competition"></table>');
-            
+        
             column = updateColumnDataTable();
             dataTable = initializeDataTable(column);
         });

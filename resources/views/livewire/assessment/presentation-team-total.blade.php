@@ -117,13 +117,13 @@
                                 <h4 class="text-center">Tim Ternilai Lolos/Tidak Lolos</h4>
                                 <div class="innovation-card pass-fail-info">
                                     <div class="innovation-completion d-flex flex-row gap-1">
-                                        <div class="stat pass-fail-stat" id="completeAssessmentStat">
+                                        <div class="stat pass-fail-stat" id="passAssessmentStat">
                                             <div class="value pass-value">{{ $passedTeams->unique()->count() }}</div>
                                             <div class="label pass-label">Lolos Caucus</div>
                                         </div>
-                                        <div class="stat pass-fail-stat" id="notCompleteAssessmentStat">
+                                        <div class="stat pass-fail-stat" id="failAssessmentStat">
                                             <div class="value pass-value">{{ $failedTeams->unique()->count() }}</div>
-                                            <div class="label pass-label">Titak Lolos Caucus</div>
+                                            <div class="label pass-label">Tidak Lolos Caucus</div>
                                         </div>
                                     </div>
                                 </div>
@@ -237,6 +237,98 @@
                 </div>
             </div>
         </div>
+    
+    <!-- Passed Assessment Team -->
+    <div class="modal fade" id="passedTeamsModal" tabindex="-1" aria-labelledby="passedTeamsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content border-0 shadow-lg rounded-3">
+                    <div class="modal-header  text-white">
+                        <h5 class="modal-title fw-bold d-flex align-items-center" id="completeTeamsModalLabel">
+                            <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Team Lolos Caucus</span>
+                        </h5>
+                        <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body bg-light">
+                        <div class="row">
+                            @foreach ($categoriesDataPassed as $categoryName => $teams)
+                                <div class="col-md-4 mb-4">
+                                    <div class="card rounded w-100">
+                                        <div class="card-header p-0">
+                                            <button 
+                                                class="btn btn-primary w-100 text-center rounded-0" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}" 
+                                                aria-expanded="false" 
+                                                aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                                {{ $categoryName . ' ' . '('.$teams->count().')' }}
+                                            </button>
+                                        </div>
+                                        <div class="collapse card-body p-2" id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                            @foreach ($teams as $team)
+                                                <div>
+                                                    {{ $team->team_name }}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="modal-footer"></div>
+                </div>
+            </div>
+        </div>
+    
+    <!-- Failed Assessment Team -->
+    <div class="modal fade" id="failedTeamsModal" tabindex="-1" aria-labelledby="failedTeamsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content border-0 shadow-lg rounded-3">
+                    <div class="modal-header  text-white">
+                        <h5 class="modal-title fw-bold d-flex align-items-center" id="completeTeamsModalLabel">
+                            <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Team Tidak Lolos Caucus</span>
+                        </h5>
+                        <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body bg-light">
+                        <div class="row">
+                            @foreach ($categoriesDataFailed as $categoryName => $teams)
+                                <div class="col-md-4 mb-4">
+                                    <div class="card rounded w-100">
+                                        <div class="card-header p-0">
+                                            <button 
+                                                class="btn btn-primary w-100 text-center rounded-0" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}" 
+                                                aria-expanded="false" 
+                                                aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                                {{ $categoryName . ' ' . '('.$teams->count().')' }}
+                                            </button>
+                                        </div>
+                                        <div class="collapse card-body p-2" id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                            @foreach ($teams as $team)
+                                                <div>
+                                                    {{ $team->team_name }}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="modal-footer"></div>
+                </div>
+            </div>
+        </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -248,6 +340,16 @@
         $('#notCompleteAssessmentStat').click(function() {
             // Buka modal
             $('#notCompleteTeamsModal').modal('show');
+        });
+        
+        $('#passAssessmentStat').click(function() {
+            // Buka modal
+            $('#passedTeamsModal').modal('show');
+        });
+        
+        $('#failAssessmentStat').click(function() {
+            // Buka modal
+            $('#failedTeamsModal').modal('show');
         });
     </script>
 </div>

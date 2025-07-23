@@ -107,7 +107,9 @@ class OndeskTeamTotal extends Component
                 $query->whereIn('pvt_event_teams.id', $teamIds);
             })
             ->select(
+                'teams.*',
                 'pvt_event_teams.*',
+                'categories.category_name',
                 'categories.category_parent',
                 DB::raw("
                     CASE 
@@ -126,6 +128,8 @@ class OndeskTeamTotal extends Component
             return $team->score_minimum !== null && $team->total_score_on_desk < $team->score_minimum;
         });
 
+        $categoriesDataFailed = $failedTeams->groupBy('category_name');
+        $categoriesDataPassed = $passedTeams->groupBy('category_name');
 
         return view('livewire.assessment.ondesk-team-total', [
             'totalCompleteAssessment' => $completeAssessment->pluck('team_name')->unique()->count(),
@@ -134,7 +138,9 @@ class OndeskTeamTotal extends Component
             'totalNotCompleteAssessment' => $notCompleteAssessment->pluck('team_name')->unique()->count(),
             'totalTeams' => $notCompleteAssessment->pluck('team_name')->unique()->count() + $completeAssessment->pluck('team_name')->unique()->count(),
             'passedTeams' => $passedTeams,
-            'failedTeams' => $failedTeams
+            'failedTeams' => $failedTeams,
+            'categoriesDataPassed' => $categoriesDataPassed,
+            'categoriesDataFailed' => $categoriesDataFailed
         ]);
     }
 }

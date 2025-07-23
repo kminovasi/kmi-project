@@ -21,22 +21,168 @@ class DashboardController extends Controller
         $year = $request->input('year') ?? date('Y');
         $userCompanyCode = Auth::user()->company_code;
         $isSuperadmin = Auth::user()->role === "Superadmin";
-
-        // Helper untuk filter berdasarkan company_code
-        $addCompanyFilter = function ($query) use ($isSuperadmin, $userCompanyCode) {
-            return $query->when(!$isSuperadmin, function ($q) use ($userCompanyCode) {
-                $q->where('teams.company_code', $userCompanyCode);
-            });
-        };
+        $listCompany = Company::all();
+        
+        if(in_array($userCompanyCode, [2000, 7000])) {
+            $filteredCompanyCodeUser = [2000, 7000];
+        } else {
+            $filteredCompanyCodeUser = [$userCompanyCode];
+        }
 
         // Status untuk masing-masing grup
         $implementedStatuses = ['Implemented'];
         $ideaBoxStatuses = ['Progress', 'Not Implemented'];
 
         $categories = Category::select('id', 'category_name')->with([
-            'teams' => function ($query) {
-                $query->select('id', 'category_id'); // pastikan kolom yang dibutuhkan tetap dipilih
-                $query->with(['papers:id,team_id,status_inovasi,status']);
+            'teams' => function ($query) use ($isSuperadmin, $filteredCompanyCodeUser) {
+                $query->select('id', 'category_id', 'company_code'); // tambahkan company_code untuk kebutuhan filter & validasi
+        
+                if (!$isSuperadmin) {
+                    $query->whereIn('company_code', $filteredCompanyCodeUser);
+                }
+        
+                $query->with([
+                    'papers' => function ($q) {
+                        $q->select('id', 'team_id', 'status_inovasi', 'status');
+                    }
+                ]);
+            }
+        ])->get();
+
+        $implemented = [];
+        $ideaBox = [];
+
+        $totalImplementedInnovations = 0;
+        $totalIdeaBoxInnovations = 0;
+
+        foreach ($categories as $category) {
+            $implementedTeamIds = [];
+            $ideaBoxTeamIds = [];
+
+            $implementedCount = 0;
+            $ideaBoxCount = 0;
+
+            foreach ($category->teams as $team) {
+                foreach ($team->papers as $paper) {
+                    if (in_array($paper->status_inovasi, $implementedStatuses) && $paper->status !== 'not finish' && $category->category_name != 'IDEA BOX') {
+                        $implementedTeamIds[] = $team->id;
+                        $implementedCount++; // Tambah total inovasi
+                        break;
+                    } elseif (in_array($paper->status_inovasi, $ideaBoxStatuses) || $paper->status === 'not finish' || $category->category_name == 'IDEA BOX') {
+                        $ideaBoxTeamIds[] = $team->id;
+                        $ideaBoxCount++; // Tambah total inovasi
+                        break;
+                    }
+                }
+            }
+
+            $implemented[] = [
+                'category_name' => $category->category_name,
+                'count' => count(array_unique($implementedTeamIds))
+            ];
+
+            $ideaBox[] = [
+                'category_name' => $category->category_name,
+                'count' => count(array_unique($ideaBoxTeamIds))
+            ];
+
+            $totalImplementedInnovations += $implementedCount;
+            $totalIdeaBoxInnovations += $ideaBoxCount;
+        }
+
+        $availableYears = Event::select('year')
+            ->groupBy('year')
+            ->orderBy('year', 'DESC')
+            ->pluck('year')
+            ->toArray();
+
+        $totalInnovatorsMale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->join('teams', 'teams.id', '=', 'pvt_members.team_id') 
+            ->join('papers', 'papers.team_id', '=', 'teams.id')
+            ->when(!$isSuperadmin, function ($query) use ($filteredCompanyCodeUser) {
+                $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
+            })
+            ->where('pvt_members.status', '!=', 'gm')
+            ->where('users.gender', 'Male')
+            ->where('papers.status', '!=', 'rejected by innovation admin')
+            ->select('pvt_members.employee_id', 'teams.id')
+            ->distinct()
+            ->count();
+
+        $totalInnovatorsFemale = DB::table('pvt_members')
+            ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->join('teams', 'teams.id', '=', 'pvt_members.team_id') 
+            ->join('papers', 'papers.team_id', '=', 'teams.id')       
+            ->when(!$isSuperadmin, function ($query) use ($filteredCompanyCodeUser) {
+                $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
+            })
+            ->where('pvt_members.status', '!=', 'gm')
+            ->where('users.gender', 'Female')
+            ->where('papers.status', '!=', 'rejected by innovation admin')
+            ->select('pvt_members.employee_id', 'teams.id')
+            ->distinct()
+            ->count();
+        
+        $totalInnovatoresOutsource = DB::table('ph2_members')
+        ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
+        ->join('papers', 'papers.team_id', '=', 'teams.id')
+        ->when(!$isSuperadmin, function ($query) use ($filteredCompanyCodeUser) {
+            $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
+        })
+        ->where('papers.status', '!=', 'rejected by innovation admin')
+        ->distinct()
+        ->count();
+
+        $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale + $totalInnovatoresOutsource;
+        $totalActiveEvents = Event::where('status', 'active')->count();
+
+        return view('auth.user.home', compact(
+            'listCompany',
+            'totalActiveEvents',
+            'categories',
+            'year',
+            'availableYears',
+            'totalInnovators',
+            'totalInnovatorsMale',
+            'totalInnovatorsFemale',
+            'totalInnovatoresOutsource',
+            'isSuperadmin',
+            'userCompanyCode',
+            'implemented',
+            'ideaBox',
+            'totalImplementedInnovations',
+            'totalIdeaBoxInnovations'
+        ));
+    }
+    
+    public function filterDashboardCard(Request $request)
+    {
+        if (Auth::user()->role != 'Superadmin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+        
+        $companyCode = $request->company_code;
+        
+        if(in_array($companyCode, [2000, 7000])) {
+            $filteredCompanyCodeUser = [2000, 7000];
+        } else {
+            $filteredCompanyCodeUser = [$companyCode];
+        }
+
+        // Status untuk masing-masing grup
+        $implementedStatuses = ['Implemented'];
+        $ideaBoxStatuses = ['Progress', 'Not Implemented'];
+
+        $categories = Category::select('id', 'category_name')->with([
+            'teams' => function ($query) use ($filteredCompanyCodeUser) {
+                $query->select('id', 'category_id', 'company_code'); // tambahkan company_code untuk kebutuhan filter & validasi
+                $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
+                $query->with([
+                    'papers' => function ($q) {
+                        $q->select('id', 'team_id', 'status_inovasi', 'status');
+                    }
+                ]);
             }
         ])->get();
 
@@ -91,9 +237,7 @@ class DashboardController extends Controller
             ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
             ->join('teams', 'teams.id', '=', 'pvt_members.team_id') 
             ->join('papers', 'papers.team_id', '=', 'teams.id')
-            ->when(!$isSuperadmin, function ($query) use ($userCompanyCode) {
-                $query->where('teams.company_code', $userCompanyCode);
-            })
+            ->whereIn('teams.company_code', $filteredCompanyCodeUser)
             ->where('pvt_members.status', '!=', 'gm')
             ->where('users.gender', 'Male')
             ->where('papers.status', '!=', 'rejected by innovation admin')
@@ -105,9 +249,7 @@ class DashboardController extends Controller
             ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
             ->join('teams', 'teams.id', '=', 'pvt_members.team_id') 
             ->join('papers', 'papers.team_id', '=', 'teams.id')       
-            ->when(!$isSuperadmin, function ($query) use ($userCompanyCode) {
-                $query->where('teams.company_code', $userCompanyCode);
-            })
+            ->whereIn('teams.company_code', $filteredCompanyCodeUser)
             ->where('pvt_members.status', '!=', 'gm')
             ->where('users.gender', 'Female')
             ->where('papers.status', '!=', 'rejected by innovation admin')
@@ -118,36 +260,36 @@ class DashboardController extends Controller
         $totalInnovatoresOutsource = DB::table('ph2_members')
         ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
         ->join('papers', 'papers.team_id', '=', 'teams.id')
-        ->when(!$isSuperadmin, function ($query) use ($userCompanyCode) {
-            $query->where('teams.company_code', $userCompanyCode);
-        })
+        ->whereIn('teams.company_code', $filteredCompanyCodeUser)
         ->where('papers.status', '!=', 'rejected by innovation admin')
         ->distinct()
         ->count();
 
         $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale + $totalInnovatoresOutsource;
         $totalActiveEvents = Event::where('status', 'active')->count();
-
-        return view('auth.user.home', compact(
-            'totalActiveEvents',
-            'categories',
-            'year',
-            'availableYears',
-            'totalInnovators',
-            'totalInnovatorsMale',
-            'totalInnovatorsFemale',
-            'totalInnovatoresOutsource',
-            'isSuperadmin',
-            'userCompanyCode',
-            'implemented',
-            'ideaBox',
-            'totalImplementedInnovations',
-            'totalIdeaBoxInnovations'
-        ));
-    }
+        
+        $html = view('components.dashboard.filtered_dashboard_card', compact(
+            'implemented', 'totalInnovators', 'totalInnovatorsMale', 'totalInnovatorsFemale',
+            'totalInnovatoresOutsource', 'totalActiveEvents', 'ideaBox',
+            'totalImplementedInnovations', 'totalIdeaBoxInnovations'
+        ))->render();
     
-    public function showDashboardPaperList($category, $status)
+        return response()->json(['html' => $html]);
+    }
+
+    public function showDashboardPaperList(Request $request, $category, $status)
     {
+        $userCompanyCode = Auth::user()->company_code;
+        $paramCompanyCode = $request->query('company_code');
+    
+        if ($paramCompanyCode) {
+            $filteredCompanyCode = [$paramCompanyCode];
+        } elseif (in_array($userCompanyCode, [2000, 7000])) {
+            $filteredCompanyCode = [2000, 7000];
+        } else {
+            $filteredCompanyCode = [$userCompanyCode];
+        }
+    
         if ($status === 'implemented') {
             $innovationStatus = ['Implemented'];
         } elseif ($status === 'idea box') {
@@ -155,17 +297,18 @@ class DashboardController extends Controller
         } else {
             $innovationStatus = [];
         }
-
-
-        // Ambil data papers berdasarkan kategori dan status inovasi
+    
         $categories = Category::with([
-            'teams' => function ($query) {
-                $query->select('id', 'team_name', 'category_id', 'status_lomba');
+            'teams' => function ($query) use ($filteredCompanyCode) {
+                $query->select('id', 'team_name', 'category_id', 'status_lomba')
+                      ->whereIn('company_code', $filteredCompanyCode);
             },
             'teams.papers' => function ($query) use ($innovationStatus) {
-                $query->select('id', 'innovation_title', 'team_id', 'status')
-                    ->whereIn('status_inovasi', $innovationStatus)
-                    ->orWhereIn('status', $innovationStatus);
+                $query->select('id', 'innovation_title', 'team_id', 'status', 'status_inovasi')
+                      ->where(function ($q) use ($innovationStatus) {
+                          $q->whereIn('status_inovasi', $innovationStatus)
+                            ->orWhereIn('status', $innovationStatus);
+                      });
             },
             'teams.company' => function ($query) {
                 $query->select('company_code', 'company_name');
@@ -173,19 +316,18 @@ class DashboardController extends Controller
         ])
         ->where('category_name', $category)
         ->get();
-
-        // di controller atau sebelum blade
+    
+        // Cek apakah ada data
         $hasData = false;
         foreach ($categories as $item) {
             foreach ($item->teams as $team) {
                 if ($team->papers->count() > 0) {
                     $hasData = true;
-                    break 2; // keluar dari kedua loop
+                    break 2;
                 }
             }
         }
-
-
+    
         return view('components.dashboard.list-paper', compact('categories', 'category', 'status', 'hasData'));
     }
 
@@ -283,6 +425,12 @@ class DashboardController extends Controller
         $years = range($currentYear - 3, $currentYear);
         $isSuperadmin = Auth::user()->role === 'Superadmin';
         $company_code = Auth::user()->company_code;
+        
+        if(in_array($company_code, [2000, 7000])) {
+            $filteredCompanyCode = [2000, 7000];
+        } else {
+            $filteredCompanyCode = [$company_code];
+        }
     
         // Ambil perusahaan beserta teams dan papers yang diterima
         $companiesQuery = Company::with([
@@ -296,7 +444,7 @@ class DashboardController extends Controller
         ]);
     
         if (!$isSuperadmin) {
-            $companiesQuery->where('company_code', $company_code);
+            $companiesQuery->whereIn('company_code', $filteredCompanyCode);
         }
     
         $companies = $companiesQuery->get();
@@ -427,83 +575,83 @@ class DashboardController extends Controller
                 now()->subYears(4)->startOfYear(),
                 now()->endOfYear()
             ])
-            ->groupBy('companies.company_name', 'year')
+            ->groupBy('companies.company_name', 'events.year')
             ->get();
 
         return response()->json($data);
     }
 
     public function getFinancialBenefitsByCompany()
-{
-    $currentYear = now()->year;
-    $years = range($currentYear - 3, $currentYear);
-
-    // Ambil perusahaan dengan relasi tim -> papers & events
-    $companies = Company::with([
-        'teams.papers' => function ($query) {
-            $query->where('status', 'accepted by innovation admin');
-        },
-        'teams.events' => function ($query) use ($years) {
-            $query->whereIn('year', $years)
-                  ->where('events.status', 'finish');
+    {
+        $currentYear = now()->year;
+        $years = range($currentYear - 3, $currentYear);
+    
+        // Ambil perusahaan dengan relasi tim -> papers & events
+        $companies = Company::with([
+            'teams.papers' => function ($query) {
+                $query->where('status', 'accepted by innovation admin');
+            },
+            'teams.events' => function ($query) use ($years) {
+                $query->whereIn('year', $years)
+                      ->where('events.status', 'finish');
+            }
+        ])->get();
+    
+        $mergedCompanies = collect();
+    
+        foreach ($companies as $company) {
+            $code = $company->company_code;
+            $actualCode = ($code == '7000') ? '2000' : $code;
+    
+            if (!$mergedCompanies->has($actualCode)) {
+                $companyObj = new \stdClass();
+                $companyObj->company_name = ($actualCode == '2000')
+                    ? 'PT Semen Indonesia (Persero)'
+                    : $company->company_name;
+                $companyObj->teams = collect();
+                $mergedCompanies->put($actualCode, $companyObj);
+            }
+    
+            $mergedCompanies[$actualCode]->teams = $mergedCompanies[$actualCode]->teams->merge($company->teams);
         }
-    ])->get();
-
-    $mergedCompanies = collect();
-
-    foreach ($companies as $company) {
-        $code = $company->company_code;
-        $actualCode = ($code == '7000') ? '2000' : $code;
-
-        if (!$mergedCompanies->has($actualCode)) {
-            $companyObj = new \stdClass();
-            $companyObj->company_name = ($actualCode == '2000')
-                ? 'PT Semen Indonesia (Persero)'
-                : $company->company_name;
-            $companyObj->teams = collect();
-            $mergedCompanies->put($actualCode, $companyObj);
-        }
-
-        $mergedCompanies[$actualCode]->teams = $mergedCompanies[$actualCode]->teams->merge($company->teams);
-    }
-
-    // Filter hanya yang memiliki total financial benefit > 0
-    $mergedCompanies = $mergedCompanies->filter(function ($company) {
-        return $company->teams->reduce(function ($carry, $team) {
-            return $carry + $team->papers->sum('financial');
-        }, 0) > 0;
-    });
-
-    // Bangun data untuk response
-    $financialData = [];
-
-    foreach ($mergedCompanies as $company) {
-        $dataPerYear = [];
-
-        foreach ($years as $year) {
-            $total = $company->teams->reduce(function ($carry, $team) use ($year) {
-                $hasEventInYear = $team->events->contains(function ($event) use ($year) {
-                    return $event->year == $year && $event->status == 'finish';
-                });
-
-                if (!$hasEventInYear) {
-                    return $carry;
-                }
-
+    
+        // Filter hanya yang memiliki total financial benefit > 0
+        $mergedCompanies = $mergedCompanies->filter(function ($company) {
+            return $company->teams->reduce(function ($carry, $team) {
                 return $carry + $team->papers->sum('financial');
-            }, 0);
-
-            $dataPerYear[$year] = $total;
+            }, 0) > 0;
+        });
+    
+        // Bangun data untuk response
+        $financialData = [];
+    
+        foreach ($mergedCompanies as $company) {
+            $dataPerYear = [];
+    
+            foreach ($years as $year) {
+                $total = $company->teams->reduce(function ($carry, $team) use ($year) {
+                    $hasEventInYear = $team->events->contains(function ($event) use ($year) {
+                        return $event->year == $year && $event->status == 'finish';
+                    });
+    
+                    if (!$hasEventInYear) {
+                        return $carry;
+                    }
+    
+                    return $carry + $team->papers->sum('financial');
+                }, 0);
+    
+                $dataPerYear[$year] = $total;
+            }
+    
+            $financialData[] = [
+                'company_name' => $company->company_name,
+                'financials' => $dataPerYear,
+            ];
         }
-
-        $financialData[] = [
-            'company_name' => $company->company_name,
-            'financials' => $dataPerYear,
-        ];
+    
+        return response()->json($financialData);
     }
-
-    return response()->json($financialData);
-}
 
 
     public function showTotalTeamChartCompany($company_code)

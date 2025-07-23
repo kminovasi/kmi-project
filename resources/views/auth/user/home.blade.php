@@ -55,12 +55,15 @@
                             <div class="card-header bg-gradient-primary">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="card-title mb-0 fw-bold text-white">Total Data Inovasi Terkirim</h5>
-                                    <i class="bi bi-bar-chart-line text-white" style="font-size: 1.7rem"></i> 
+                                    @if(Auth::user()->role == 'Superadmin')
+                                    <button class="btn btn-sm btn-white" data-bs-toggle="modal" data-bs-target="#companyFilter">Filter</button>
+                                    @else
+                                    <i class="bi bi-bar-chart-line text-white" style="font-size: 1.7rem"></i>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="p-2 pt-3 mx-auto">
-                            <x-dashboard.card :implemented="$implemented" :total-innovators="$totalInnovators" :total-innovators-male="$totalInnovatorsMale"
-                                :total-innovators-female="$totalInnovatorsFemale" :total-innovatores-outsource="$totalInnovatoresOutsource" :total-active-events="$totalActiveEvents" :idea-box="$ideaBox" :total-implemented-innovations="$totalImplementedInnovations" :total-idea-box-innovations="$totalIdeaBoxInnovations" />
+                            <div id="dashboard-card-content" class="p-2 pt-3 mx-auto">
+                            @include('components.dashboard.filtered_dashboard_card')
                             </div>
                         </div>
                     </div>
@@ -108,7 +111,76 @@
             @endif
         </div>
     </div>
+    
+    <!-- Modal Filter Perusahaan -->
+    <div class="modal fade" id="companyFilter" tabindex="-1" aria-labelledby="companyFilterLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="companyFilterLabel">Filter Perusahaan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label" for="filter-company">Perusahaan</label>
+                  <select id="filter-company" name="filter-company" class="form-select">
+                    <option selected>-- Pilih Perusahaan --</option>
+                    @foreach($listCompany as $company)
+                    <option value="{{ $company->company_code }}">{{ $company->company_name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+              </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('filter-company').addEventListener('change', function () {
+            const selectedCompany = this.value;
+
+            fetch(`/dashboard/filter-dashboard-company?company_code=${selectedCompany}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json(); // hanya kalau memang JSON
+                })
+                .then(data => {
+                    
+                    document.getElementById('dashboard-card-content').innerHTML = data.html;
+                    
+                    document.querySelectorAll('.list-paper-link').forEach(link => {
+                        const baseUrl = link.getAttribute('href');
+                        let url = new URL(baseUrl, window.location.origin);
+                    
+                        // Hapus parameter company_code sebelumnya, jika ada
+                        url.searchParams.set('company_code', selectedCompany);
+                    
+                        link.href = url.toString(); // update href
+                    });
+                    
+                    // Coba ambil data dari elemen bawaan halaman (bukan hasil filter)
+                    const total = parseInt(document.getElementById('totalInnovators').textContent.replace(/\D/g, ''));
+                    const male = parseInt(document.getElementById('totalInnovatorsMale').textContent.replace(/\D/g, ''));
+                    const female = parseInt(document.getElementById('totalInnovatorsFemale').textContent.replace(/\D/g, ''));
+                    const outsource = parseInt(document.getElementById('totalInnovatorsOutsource').textContent.replace(/\D/g, ''));
+                    renderInnovatorChart(total, male, female, outsource);
+                    
+                })
+                .catch(err => {
+                    console.error('Gagal fetch data:', err);
+                    alert('Gagal mengambil data. Apakah Anda sudah login?');
+                });
+            
+        });
+    });
+</script>
 
 <script src="{{ asset('build/assets/benefitChart-c7442a10.js') }}" type="module"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">

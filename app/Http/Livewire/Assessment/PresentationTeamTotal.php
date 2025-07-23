@@ -107,6 +107,8 @@ class PresentationTeamTotal extends Component
             })
             ->select(
                 'pvt_event_teams.*',
+                'teams.*',
+                'categories.category_name',
                 'categories.category_parent',
                 DB::raw("
                     CASE 
@@ -118,12 +120,15 @@ class PresentationTeamTotal extends Component
             ->get();
         
         $passedTeams = $allTeams->filter(function ($team) {
-            return $team->score_minimum !== null && $team->total_score_on_desk >= $team->score_minimum;
+            return $team->score_minimum !== null && $team->total_score_presentation >= $team->score_minimum;
         });
         
         $failedTeams = $allTeams->filter(function ($team) {
-            return $team->score_minimum !== null && $team->total_score_on_desk < $team->score_minimum;
+            return $team->score_minimum !== null && $team->total_score_presentation < $team->score_minimum;
         });
+        
+        $categoriesDataFailed = $failedTeams->groupBy('category_name');
+        $categoriesDataPassed = $passedTeams->groupBy('category_name');
         
         return view('livewire.assessment.presentation-team-total', [
             'totalCompleteAssessment' => $completeAssessment->pluck('team_name')->unique()->count(),
@@ -132,7 +137,9 @@ class PresentationTeamTotal extends Component
             'totalNotCompleteAssessment' => $notCompleteAssessment->pluck('team_name')->unique()->count(),
             'totalTeams' => $notCompleteAssessment->pluck('team_name')->unique()->count() + $completeAssessment->pluck('team_name')->unique()->count(),
             'passedTeams' => $passedTeams,
-            'failedTeams' => $failedTeams
+            'failedTeams' => $failedTeams,
+            'categoriesDataPassed' => $categoriesDataPassed,
+            'categoriesDataFailed' => $categoriesDataFailed
         ]);
     }
 }

@@ -64,17 +64,16 @@ Route::get('dashboard', [
     'showDashboard'
 ])->name('dashboard')->middleware('auth');
 
-Route::put('/import/users', [ImportUserDataExcel::class, 'importFromUpload'])->middleware(['role:Superadmin,Admin'], 'auth')->name('importUserData');
+Route::get('/import/users', [ImportUserDataExcel::class, 'importFromStorage']);
 Route::get('/detail-company-chart', [DetailCompanyChartController::class, 'index'])->middleware(['role:Superadmin,Admin'], 'auth')->name('detail-company-chart');
 Route::get('/detail-company-chart/{companyId}', [DetailCompanyChartController::class, 'show'])->middleware('auth')->name('detail-company-chart-show');
 
 Route::prefix('dashboard')->name('dashboard.')->group(function () {
-    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['auth'])->name('showTotalTeamChart');
+    Route::get('/total-team-chart', [DashboardController::class, 'showTotalTeamChart'])->middleware(['role:Superadmin'])->name('showTotalTeamChart');
     Route::get('/total-benefit-chart', [DashboardController::class, 'showTotalBenefitChart'])->name('showTotalBenefitChart');
     Route::get('/total-team-chart/{company_code}', [DashboardController::class, 'showTotalTeamChartCompany'])->middleware(['auth'])->name('showTotalTeamChartCompany');
     Route::get('/total-benefit-chart/{company_code}', [DashboardController::class, 'showTotalBenefitChartCompany'])->middleware(['auth'])->name('showTotalBenefitChartCompany');
     Route::get('/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('benefitChartData');
-    Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
 });
 
 Route::get('/dashboard/benefit-chart-data', [DashboardController::class, 'getBenefitChartData'])->name('dashboard.benefit-chart-data');
@@ -92,7 +91,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/my-paper/{teamId}', [ProfileController::class, 'showPaperDetail'])->name('showPaperDetail');
         Route::post('/my-paper/paper-revision/{teamId}', [ProfileController::class, 'revision'])->name('showPaperDetail.paper-revision');
         Route::put('/update-password/{employeeId}', [ProfileController::class, 'updatePasswordUser'])->name('updatePassword');
-        Route::put('/update-user-profile-picture/{employeeId}', [ProfileController::class, 'updateProfilePicture'])->name('updateProfilePicture');
     });
 
     Route::prefix('paper')->name('paper.')->group(function () {
@@ -155,8 +153,6 @@ Route::middleware('auth')->group(function () {
 
         // Paper Watermark
         Route::get('/watermarks-file/{paper_id}', [PaperController::class, 'addWatermarks'])->name('watermarks');
-        
-        Route::get('/view-supporting-document/{paperId}', [PaperController::class, 'viewSupportingDocument'])->name('viewSupporting');
     });
 
 
@@ -168,7 +164,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/getCompanyByEventId', [QueryController::class, 'getCompanyByEventId'])->name('getCompanyByEventId');
         Route::get('/get_role', [QueryController::class, 'get_role'])->name('get_role');
         Route::get('/getFile', [QueryController::class, 'getFile'])->name('getFile');
-        Route::get('/viewFile', [QueryController::class, 'viewFile'])->name('viewFile');
         Route::post('/get_data_member', [QueryController::class, 'get_data_member'])->name('get_data_member');
         Route::get('/metodologi_papers', [QueryController::class, 'getMetodologiPapers'])->name('metodologi_papers');
         Route::get('/get-judge', [QueryController::class, 'getJudge'])->name('getJudge');
@@ -212,7 +207,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/get_BOD', [QueryController::class, 'get_BOD'])->name('get_BOD');
     });
     Route::get('/query/summary-executive/get-summary-executive-by-event-team-id/{id}', [SummaryExecutiveController::class, 'getSummaryExecutiveByEventTeamId'])->name('getSummaryExecutiveByEventTeamId');
-    
+
     Route::prefix('assessment')->name('assessment.')->group(function () {
         Route::get('/', [AssessmentController::class, 'index'])->name('index.juri');
         Route::get('/value', [AssessmentController::class, 'index'])->name('index.admin');
@@ -230,9 +225,7 @@ Route::middleware('auth')->group(function () {
         
         Route::get('/show-executive-summary/{eventTeamId}', [AssessmentController::class, 'viewExecutiveSummary'])->name('executiveSummary');
         
-        // Show Document
         Route::get('/berita-acara-benefit/{paperId}', [AssessmentController::class, 'showBeritaAcaraBenefit'])->name('benefitView');
-        Route::get('/view-supporting-document/{eventTeamId}', [AssessmentController::class, 'viewSUpportingDocuments'])->name('viewDupportingDocsAssessment');
 
         Route::get('/assessment-ondesk-value/{id}', [AssessmentController::class, 'assessmentValue_oda'])->name('juri.value.oda');
         Route::get('/assessment-presentation-value/{id}', [AssessmentController::class, 'assessmentValue_pa'])->name('juri.value.pa');
@@ -243,7 +236,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/submitJuri/{id}', [AssessmentController::class, 'submitJuri'])->name('submitJuri');
 
         Route::get('/On-Desk', [AssessmentController::class, 'on_desk'])->name('on_desk');
-
         Route::get('/Presentation', [AssessmentController::class, 'presentation'])->name('presentation');
         // Route::get('/fixation-assessment', [AssessmentController::class, 'fixation'])->name('fixation');
         Route::get('/show-ondesk-sofi/{id}', [AssessmentController::class, 'showSofi_oda'])->name('show.sofi.oda');

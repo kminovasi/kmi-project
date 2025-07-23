@@ -89,28 +89,28 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-600 fw-600 mb-0">Abstrak</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->abstract !!}
+                                        {!! nl2br(e($paper->abstract)) !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Masalah</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->problem !!}
+                                        {!! nl2br(e($paper->problem)) !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Penyebab Utama</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->main_cause !!}
+                                        {!! nl2br(e($paper->main_cause)) !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Solusi</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->solution !!}
+                                        {!! nl2br(e($paper->solution)) !!}
                                     </div>
                                 </div>
                             </div>
@@ -129,20 +129,20 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Benefit Non-Finansial</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->non_financial !!}
+                                        {!! nl2br(e($paper->non_financial)) !!}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Potensi Replikasi</label>
                                     <div class="border rounded p-3">
-                                        {!! $paper->potensi_replikasi !!}
+                                        {{ $paper->potensi_replikasi }}}
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-600">Full Paper</label>
-                                    @if ($paper->full_paper && !str_contains($paper->full_paper, '/AP/'))
+                                    @if ($paper->full_paper)
                                         <div>
                                             <a href="{{ route('paper.watermarks', $paper->id) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
@@ -158,7 +158,7 @@
                                     <label class="form-label fw-600">Berita Acara Benefit</label>
                                     @if ($paper->file_review)
                                         <div>
-                                            <a href="{{ asset('storage/' . $paper->file_review) }}"
+                                            <a href="{{ route('assessment.benefitView', ['paperId' => $paper->id]) }}"
                                                 class="btn btn-sm btn-primary" target="_blank">
                                                 <i class="fas fa-file-pdf me-1"></i> Lihat Berita Acara
                                             </a>
@@ -172,7 +172,7 @@
                                     <label class="form-label fw-600">Foto Inovasi</label>
                                     @if ($paper->innovation_photo)
                                         <div>
-                                            <img src="{{ asset('storage/' . $paper->innovation_photo) }}"
+                                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($paper->innovation_photo) }}"
                                                 class="img-fluid rounded" alt="Innovation Photo">
                                         </div>
                                     @else
@@ -184,7 +184,7 @@
                                     <label class="form-label fw-600">Proof of Idea</label>
                                     @if ($paper->proof_idea)
                                         <div>
-                                            <img src="{{ asset('storage/' . $paper->proof_idea) }}"
+                                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($paper->proof_idea) }}"
                                                 class="img-fluid rounded" alt="Proof of Idea">
                                         </div>
                                     @else

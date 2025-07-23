@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use DataTables;
 use App\Models\Team;
 use App\Models\Event;
 use App\Models\Paper;
@@ -13,15 +16,12 @@ use Illuminate\Http\Request;
 use App\Mail\PaperStatusUpdated;
 use App\Models\PvtCustomBenefit;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CustomBenefitFinancial;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaperNotification;
 use App\Services\PaperFileUploadService;
-use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\UpdatePaperRequest;
 
 class EventTeamController extends Controller
@@ -82,12 +82,12 @@ class EventTeamController extends Controller
             ->orderBy('date_start', 'desc');
     
         return DataTables::of($query)
-            ->addColumn('company', function ($event) {
-                return $event->companies->pluck('company_name')->implode(', ') ?: 'N/A';
+            ->addColumn('company', function ($query) {
+                return $query->companies->pluck('company_name')->implode(', ') ?: 'N/A';
             })
-            ->editColumn('event_name', function ($event) {
-                $year = \Carbon\Carbon::parse($event->date_start)->format('Y');
-                return $event->event_name . ' Tahun ' . $year;
+            ->editColumn('event_name', function ($query) {
+                $year = $query->year;
+                return $query->event_name . ' Tahun ' . $year;
             })
             ->toJson();
     }
@@ -116,7 +116,7 @@ class EventTeamController extends Controller
                 $userRole = null;
                 $isUserTeamMember = false;
     
-                if ($role === 'Superadmin' || $role === 'Admin') {
+                if ($role === 'Superadmin' || $role === 'Admin' || $role === 'Juri') {
                     $isUserTeamMember = true;
                 } else if ($userMembership) {
                     $isUserTeamMember = true;

@@ -137,22 +137,27 @@
                         data: 'team_name',
                         render: function(data, type, row) {
                             let html = data;
-                            if (row.is_user_team) {
-                                const roleClasses = {
-                                    'member': 'badge-member',
-                                    'leader': 'badge-leader',
-                                    'facilitator': 'badge-facilitator',
-                                    'gm': 'badge-gm'
-                                };
-                                const roleLabels = {
-                                    'member': 'Member',
-                                    'leader': 'Leader',
-                                    'facilitator': 'Facilitator',
-                                    'gm': 'GM'
-                                };
-                                html +=
-                                    `<span class="team-badge ${roleClasses[row.user_role]}">${roleLabels[row.user_role]}</span>`;
+                            const roleClasses = {
+                                'member': 'badge-member',
+                                'leader': 'badge-leader',
+                                'facilitator': 'badge-facilitator',
+                                'gm': 'badge-gm'
+                            };
+                            
+                            const roleLabels = {
+                                'member': 'Member',
+                                'leader': 'Leader',
+                                'facilitator': 'Facilitator',
+                                'gm': 'GM'
+                            };
+                            
+                            // Misalnya dari backend atau JS global, misal window.currentUserRole
+                            if (row.is_user_team || ['judge', 'superadmin'].includes(currentUserRole)) {
+                                if (roleClasses[row.user_role]) {
+                                    html += `<span class="team-badge ${roleClasses[row.user_role]}">${roleLabels[row.user_role]}</span>`;
+                                }
                             }
+
                             return html;
                         }
                     },

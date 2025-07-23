@@ -1,10 +1,19 @@
 <div>
     <style>
+        /* (Tetap gunakan style yang kamu punya) */
         .innovation-card {
-            background-color: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .innovation-card.assessment-info {
+            background-color: #f8f9fa;
+            color: #1D1616;
+        }
+        
+        .innovation-card.pass-fail-info {
+            background-color: #f8f9fa;
             color: #1D1616;
         }
 
@@ -23,26 +32,45 @@
         .innovation-completion {
             display: flex;
             justify-content: space-around;
-            margin-top: 10px;
         }
-
-        .completion-stat {
+        
+        .stat {
             text-align: center;
-            padding: 10px 15px;
+            padding: 10px;
             border-radius: 6px;
             cursor: pointer;
+        }
+
+        .stat.completion-stat {
             background-color: rgba(216, 64, 64, .1);
         }
-
-        .completion-value {
+        
+        .stat.pass-fail-stat {
+            background-color: rgba(0, 79, 180, .1);
+        }
+        
+        .value {
             font-size: 1.4rem;
             font-weight: 600;
-            color: #D84040;
-            /* Warna primer */
         }
 
-        .completion-label {
+        .value.completion-value {
+            color: #D84040;
+        }
+        
+        .value.pass-value {
+            color: #004fb4;
+        }
+        
+        .label {
             font-size: 0.9rem;
+        }
+
+        .label.pass-label {
+            color: #1D1616;
+        }
+        
+        .label.completion-label {
             color: #1D1616;
         }
 
@@ -56,33 +84,51 @@
             width: 100%;
             box-sizing: border-box;
         }
-
     </style>
-    <div class="col-lg-5 col-xl-5 mb-8 mx-auto">
+    
+    <div class="col-lg-12 col-xl-12 mb-8 mx-auto">
         <div class="bg-gradient-green text-white h-100">
+            <div class="card-header">
+                <div class="innovation-stat d-flex justify-content-center align-items-center">
+                    <span class="innovation-label text-black">Total Team Terverifikasi</span>
+                    <span class="innovation-value">{{ $totalTeams }}</span>
+                </div>
+            </div>
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                    <!-- Informasi Teks -->
                     <div class="me-3 flex-grow-1 d-flex flex-column gap-y-2">
                         <div class="row">
-                            <div class="innovation-card">
-                                <div class="innovation-stat d-flex justify-content-center align-items-center">
-                                    <span class="innovation-label">Total Team Terverifikasi</span>
-                                    <span class="innovation-value">{{ $totalTeams }}</span>
-                                </div>
-                                <div class="innovation-completion">
-                                    <div class="completion-stat" id="completeAssessmentStat">
-                                        <div class="completion-value">{{ $totalCompleteAssessment }}</div>
-                                        <div class="completion-label">Penilaian Selesai</div>
+                            <div class="col-md-6">
+                                <h4 class="text-center">Kegiatan Penilaian Presentation</h4>
+                                <div class="innovation-card assessment-info">
+                                    <div class="innovation-completion d-flex flex-row gap-1">
+                                        <div class="stat completion-stat" id="completeAssessmentStat">
+                                            <div class="value completion-value">{{ $totalCompleteAssessment }}</div>
+                                            <div class="label completion-label">Penilaian Selesai</div>
+                                        </div>
+                                        <div class="stat completion-stat" id="notCompleteAssessmentStat">
+                                            <div class="value completion-value">{{ $totalNotCompleteAssessment }}</div>
+                                            <div class="label completion-label">Penilaian Belum Selesai</div>
+                                        </div>
                                     </div>
-                                    <div class="completion-stat" id="notCompleteAssessmentStat">
-                                        <div class="completion-value">{{ $totalNotCompleteAssessment }}</div>
-                                        <div class="completion-label">Penilaian Belum Selesai</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="text-center">Tim Ternilai Lolos/Tidak Lolos</h4>
+                                <div class="innovation-card pass-fail-info">
+                                    <div class="innovation-completion d-flex flex-row gap-1">
+                                        <div class="stat pass-fail-stat" id="completeAssessmentStat">
+                                            <div class="value pass-value">{{ $passedTeams->unique()->count() }}</div>
+                                            <div class="label pass-label">Lolos Caucus</div>
+                                        </div>
+                                        <div class="stat pass-fail-stat" id="notCompleteAssessmentStat">
+                                            <div class="value pass-value">{{ $failedTeams->unique()->count() }}</div>
+                                            <div class="label pass-label">Titak Lolos Caucus</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

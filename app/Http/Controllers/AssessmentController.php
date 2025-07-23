@@ -204,32 +204,31 @@ class AssessmentController extends Controller
     {
         try {
             DB::beginTransaction();
-
+    
             if ($request->assessment_poin_id == null)
                 $request->assessment_poin_id = [];
-
+    
             $event_id = $request->event;
-
-            // // Filter out undefined values from the assessment_poin_id array
-            // $assessmentPoinIds = array_filter($request->assessment_poin_id, function($value) {
-            //  return $value !== 'undefined';
-            // });
-
+    
             $dataAssessmentPoint = PvtAssessmentEvent::where('event_id', $event_id)
                 ->where('category', $request->category)
                 ->where('stage', 'on desk')
                 ->whereNotIn('id', $request->assessment_poin_id)
                 ->get();
+    
             $dataEventTeam = PvtEventTeam::where('event_id', $event_id)
                 ->pluck('id')
                 ->toArray();
+    
             foreach ($request->assessment_poin_id as $poin_id) {
                 PvtAssessmentEvent::where('id', $poin_id)->update(['status_point' => 'active']);
+    
                 foreach ($dataEventTeam as $eventTeam) {
                     $dataJudgeInPvtAssessment = pvtAssesmentTeamJudge::distinct()
                         ->where('event_team_id', $eventTeam)
                         ->select('judge_id')
                         ->get();
+    
                     if ($dataJudgeInPvtAssessment->count()) {
                         foreach ($dataJudgeInPvtAssessment as $judge) {
                             pvtAssesmentTeamJudge::updateOrCreate([
@@ -248,33 +247,31 @@ class AssessmentController extends Controller
                     }
                 }
             }
-
+    
             foreach ($dataAssessmentPoint as $AssessmentPoint) {
                 PvtAssessmentEvent::where('id', $AssessmentPoint->id)->update(['status_point' => 'nonactive']);
                 pvtAssesmentTeamJudge::where('assessment_event_id', $AssessmentPoint->id)->delete();
             }
-
+    
             MinimumscoreEvent::updateOrCreate([
                 'event_id' => $event_id,
-                // 'year'  => $request->year
+                'category' => $request->category,
             ], [
                 'score_minimum_oda' => $request->minimumscore_oda,
                 'score_minimum_pa' => $request->minimumscore_pa,
-                'category' => $request->category
             ]);
-
-
+    
             DB::commit();
-
-            // Set sesi untuk menandai bahwa tombol telah diklik
+    
             Session::put('buttonStatus', 'disabled');
-
+    
             return redirect()->back()->with('success', 'Status Poin Penilaian berhasil diperbarui');
         } catch (Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors('Error: ' . $e->getMessage());
         }
     }
+
     
     public function showBeritaAcaraBenefit($paperId)
     {

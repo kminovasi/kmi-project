@@ -19,6 +19,7 @@ class OndeskTeamTotal extends Component
 
     public function updateEvent($eventId)
     {
+        logger("updateEvent() dipanggil dengan eventId = $eventId");
         $this->eventId = $eventId;
     }
 
@@ -81,6 +82,41 @@ class OndeskTeamTotal extends Component
                     return $judges->unique('judge_name');
                 });
             });
+        
+        $allTeams = DB::table('pvt_event_teams')
+            ->leftJoin('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+            ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
+            ->leftJoin('minimumscore_events as ms_idea', function ($join) {
+                $join->on('ms_idea.event_id', '=', 'events.id')
+                     ->where('ms_idea.category', '=', 'IDEA');
+            })
+            ->leftJoin('minimumscore_events as ms_biii', function ($join) {
+                $join->on('ms_biii.event_id', '=', 'events.id')
+                     ->where('ms_biii.category', '=', 'BI/II');
+            })
+            ->where('events.id', $this->eventId)
+            ->where('pvt_event_teams.status', '!=', 'tidak Lolos On Desk')
+            ->select(
+                'pvt_event_teams.*',
+                'categories.category_parent',
+                DB::raw("
+                    CASE 
+                        WHEN categories.category_name = 'IDEA BOX' THEN ms_idea.score_minimum_oda
+                        ELSE ms_biii.score_minimum_oda
+                    END AS score_minimum
+                ")
+            )
+            ->get();
+        
+        $passedTeams = $allTeams->filter(function ($team) {
+            return $team->score_minimum !== null && $team->total_score_on_desk >= $team->score_minimum;
+        });
+        
+        $failedTeams = $allTeams->filter(function ($team) {
+            return $team->score_minimum !== null && $team->total_score_on_desk < $team->score_minimum;
+        });
+
 
         return view('livewire.assessment.ondesk-team-total', [
             'totalCompleteAssessment' => $completeAssessment->pluck('team_name')->unique()->count(),
@@ -88,6 +124,8 @@ class OndeskTeamTotal extends Component
             'categoriesDataNotComplete' => $categoriesDataNotComplete,
             'totalNotCompleteAssessment' => $notCompleteAssessment->pluck('team_name')->unique()->count(),
             'totalTeams' => $notCompleteAssessment->pluck('team_name')->unique()->count() + $completeAssessment->pluck('team_name')->unique()->count(),
+            'passedTeams' => $passedTeams,
+            'failedTeams' => $failedTeams
         ]);
     }
 }

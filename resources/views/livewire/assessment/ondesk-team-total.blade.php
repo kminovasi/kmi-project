@@ -1,105 +1,152 @@
-<style>
-.innovation-card {
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #1D1616;
-}
+<div>
+    <style>
+        /* (Tetap gunakan style yang kamu punya) */
+        .innovation-card {
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .innovation-card.assessment-info {
+            background-color: #f8f9fa;
+            color: #1D1616;
+        }
+        
+        .innovation-card.pass-fail-info {
+            background-color: #f8f9fa;
+            color: #1D1616;
+        }
 
-.innovation-label {
-    font-size: 1.2rem;
-    margin-right: 10px;
-    font-weight: 600;
-}
+        .innovation-label {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            font-weight: 600;
+        }
 
-.innovation-value {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #D84040;
-}
+        .innovation-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #D84040;
+        }
 
-.innovation-completion {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 10px;
-}
+        .innovation-completion {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.completion-stat {
-    text-align: center;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: rgba(216, 64, 64, .1);
-}
+        .stat.completion-stat {
+            background-color: rgba(216, 64, 64, .1);
+        }
+        
+        .stat.pass-fail-stat {
+            background-color: rgba(0, 79, 180, .1);
+        }
+        
+        .value {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
 
-.completion-value {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #D84040;
-    /* Warna primer */
-}
+        .value.completion-value {
+            color: #D84040;
+        }
+        
+        .value.pass-value {
+            color: #004fb4;
+        }
+        
+        .label {
+            font-size: 0.9rem;
+        }
 
-.completion-label {
-    font-size: 0.9rem;
-    color: #1D1616;
-}
+        .label.pass-label {
+            color: #1D1616;
+        }
+        
+        .label.completion-label {
+            color: #1D1616;
+        }
 
-.modal-body {
-    overflow-y: auto;
-    max-height: 60vh;
-}
+        .modal-body {
+            overflow-y: auto;
+            max-height: 60vh;
+        }
 
-button[data-bs-toggle="collapse"] {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-}
+        button[data-bs-toggle="collapse"] {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
 
-</style>
-<div class="col-lg-5 col-xl-5 mb-8 mx-auto">
-    <div class="bg-gradient-green text-white h-100">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- Informasi Teks -->
-                <div class="me-3 flex-grow-1 d-flex flex-column gap-y-2">
-                    <div class="row">
-                        <div class="innovation-card">
-                            <div class="innovation-stat d-flex justify-content-center align-items-center">
-                                <span class="innovation-label">Total Team Terverifikasi</span>
-                                <span class="innovation-value">{{ $totalTeams }}</span>
-                            </div>
-                            <div class="innovation-completion">
-                                <div class="completion-stat" id="completeAssessmentStat">
-                                    <div class="completion-value">{{ $totalCompleteAssessment }}</div>
-                                    <div class="completion-label">Penilaian Selesai</div>
+    {{-- Kartu Statistik --}}
+    <div class="col-lg-12 col-xl-12 mb-8 mx-auto">
+        <div class="bg-gradient-green text-white h-100">
+            <div class="card-header">
+                <div class="innovation-stat d-flex justify-content-center align-items-center">
+                    <span class="innovation-label text-black">Total Team Terverifikasi</span>
+                    <span class="innovation-value">{{ $totalTeams }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-3 flex-grow-1 d-flex flex-column gap-y-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="text-center">Kegiatan Penilaian On Desk</h4>
+                                <div class="innovation-card assessment-info">
+                                    <div class="innovation-completion d-flex flex-row gap-1">
+                                        <div class="stat completion-stat" id="completeAssessmentStat">
+                                            <div class="value completion-value">{{ $totalCompleteAssessment }}</div>
+                                            <div class="label completion-label">Penilaian Selesai</div>
+                                        </div>
+                                        <div class="stat completion-stat" id="notCompleteAssessmentStat">
+                                            <div class="value completion-value">{{ $totalNotCompleteAssessment }}</div>
+                                            <div class="label completion-label">Penilaian Belum Selesai</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="completion-stat" id="notCompleteAssessmentStat">
-                                    <div class="completion-value">{{ $totalNotCompleteAssessment }}</div>
-                                    <div class="completion-label">Penilaian Belum Selesai</div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="text-center">Tim Ternilai Lolos/Tidak Lolos</h4>
+                                <div class="innovation-card pass-fail-info">
+                                    <div class="innovation-completion d-flex flex-row gap-1">
+                                        <div class="stat pass-fail-stat" id="completeAssessmentStat">
+                                            <div class="value pass-value">{{ $passedTeams->unique()->count() }}</div>
+                                            <div class="label pass-label">Lolos Presentasi</div>
+                                        </div>
+                                        <div class="stat pass-fail-stat" id="notCompleteAssessmentStat">
+                                            <div class="value pass-value">{{ $failedTeams->unique()->count() }}</div>
+                                            <div class="label pass-label">Titak Lolos Presentasi</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Complete On Desk Assessment -->
+    {{-- MODAL: Complete --}}
     <div class="modal fade" id="completeTeamsModal" tabindex="-1" aria-labelledby="completeTeamsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
                 <div class="modal-header  text-white">
                     <h5 class="modal-title fw-bold d-flex align-items-center" id="completeTeamsModalLabel">
-                        <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Team yang Sudah Selesai Di Nilai</span>
+                        <i data-feather="zap" class="me-2"></i>
+                        <span class="fw-bold">Team yang Sudah Selesai Di Nilai</span>
                     </h5>
-                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <div class="modal-body bg-light">
                     <div class="row">
                         @foreach ($categoriesDataComplete as $categoryName => $teams)
@@ -110,17 +157,15 @@ button[data-bs-toggle="collapse"] {
                                             class="btn btn-primary w-100 text-center rounded-0" 
                                             type="button" 
                                             data-bs-toggle="collapse" 
-                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}" 
+                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-complete" 
                                             aria-expanded="false" 
-                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
-                                            {{ $categoryName . ' ' . '('.$teams->count().')' }}
+                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-complete">
+                                            {{ $categoryName . ' (' . $teams->count() . ')' }}
                                         </button>
                                     </div>
-                                    <div class="collapse card-body p-2" id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                    <div class="collapse card-body p-2" id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-complete">
                                         @foreach ($teams as $team)
-                                            <div>
-                                                {{ $team->team_name }}
-                                            </div>
+                                            <div>{{ $team->team_name }}</div>
                                         @endforeach
                                     </div>
                                 </div>
@@ -128,13 +173,12 @@ button[data-bs-toggle="collapse"] {
                         @endforeach
                     </div>
                 </div>
-
                 <div class="modal-footer"></div>
             </div>
         </div>
     </div>
 
-<!-- Not Complete On Desk Assessment -->
+    {{-- MODAL: Not Complete --}}
     <div class="modal fade" id="notCompleteTeamsModal" tabindex="-1" aria-labelledby="notCompleteTeamsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content border-0 shadow-lg rounded-3">
@@ -145,7 +189,6 @@ button[data-bs-toggle="collapse"] {
                     </h5>
                     <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-    
                 <div class="modal-body bg-light">
                     <div class="row">
                         @forelse ($categoriesDataNotComplete as $categoryName => $teams)
@@ -154,15 +197,14 @@ button[data-bs-toggle="collapse"] {
                                     <p>
                                         <button class="btn btn-primary w-100 text-start" type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}"
+                                            data-bs-target="#{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-notcomplete"
                                             aria-expanded="false"
-                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
-                                            {{ $categoryName }} ({{ $teams->count() }}) {{-- jumlah tim --}}
+                                            aria-controls="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-notcomplete">
+                                            {{ $categoryName }} ({{ $teams->count() }})
                                         </button>
                                     </p>
-    
                                     <div class="collapse card p-3"
-                                        id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}">
+                                        id="{{ Illuminate\Support\Str::slug(strtolower($categoryName)) }}-notcomplete">
                                         @foreach ($teams as $teamName => $judges)
                                             <div class="mb-3">
                                                 <strong class="text-dark">{{ $teamName }}</strong>
@@ -183,7 +225,6 @@ button[data-bs-toggle="collapse"] {
                         @endforelse
                     </div>
                 </div>
-    
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
@@ -191,15 +232,14 @@ button[data-bs-toggle="collapse"] {
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $('#completeAssessmentStat').click(function() {
-        // Buka modal
-        $('#completeTeamsModal').modal('show');
-    });
+    {{-- Modal trigger --}}
+    <script>
+        $('#completeAssessmentStat').click(function () {
+            $('#completeTeamsModal').modal('show');
+        });
 
-    $('#notCompleteAssessmentStat').click(function() {
-        // Buka modal
-        $('#notCompleteTeamsModal').modal('show');
-    });
-</script>
+        $('#notCompleteAssessmentStat').click(function () {
+            $('#notCompleteTeamsModal').modal('show');
+        });
+    </script>
+</div>

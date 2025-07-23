@@ -45,7 +45,7 @@
     <div class="p-2 border-bottom">
         <a href="{{ route('assessment.show.template') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.template') ? 'active-link' : '' }}">Template
             Penilaian</a>
-        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturab Poin Penilaian</a>
+        <a href="{{ route('assessment.show.point') }}" class="btn btn-outline-danger btn-sm rounded shadow-sm px-4 py-3 text-uppercase fw-800 me-2 my-1 {{ Route::is('assessment.show.point') ? 'active-link' : '' }}">Pengaturan Poin Penilaian</a>
     </div>
     @endif
     <div class="mb-3">
@@ -132,7 +132,7 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="btnAssign" {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
+                            <button type="submit" class="btn btn-primary" id="btnAssign"  {{ session('buttonStatus') == 'disabled' ? 'disabled' : '' }}>Kirim</button>
                         </div>
                     </div>
                 </div>

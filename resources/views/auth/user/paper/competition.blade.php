@@ -88,7 +88,7 @@
                     <select id="event-select" class="form-select" style="width: 200px; display: inline-block;">
                         <option value="">Pilih Event</option>
                         @foreach ($data_event as $event)
-                            <option value="{{ $event->id }}">{{ $event->event_name }}</option>
+                            <option value="{{ $event->id }}">{{ $event->event_name . ' Tahun ' . $event->year }}</option>
                         @endforeach
                     </select>
                     <button id="assign-to-event" class="btn btn-primary">Tambahkan ke Event</button>

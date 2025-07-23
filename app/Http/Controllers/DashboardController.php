@@ -148,9 +148,6 @@ class DashboardController extends Controller
     
     public function showDashboardPaperList($category, $status)
     {
-        // Take category and status from the request
-        // and use them to filter the papers
-        // based on the category and status
         if ($status === 'implemented') {
             $innovationStatus = ['Implemented'];
         } elseif ($status === 'idea box') {

@@ -122,7 +122,7 @@ class QueryController extends Controller
                     ->orWhere('employee_id', 'LIKE', "%$query%");
             })
             ->whereIn('job_level', ["Band 2", "Band 1", "Band 3"])
-            ->select('employee_id', 'name', 'company_name', 'job_level')
+            ->select('employee_id', 'name', 'company_name', 'job_level', 'users.company_code')
             ->limit(10)
             ->get();
 

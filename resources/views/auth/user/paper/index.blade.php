@@ -294,6 +294,18 @@
                                 <option value="Implemented">Implemented</option>
                             </select>
                         </div>
+                        
+                        <!-- Status Approval -->
+                        <div class="mb-3">
+                            <label for="filter-approval-status" class="form-label fw-semi-bold">Status Persetujuan</label>
+                            <select id="filter-approval-status" name="filter-approval-status" class="form-select">
+                                <option value="" selected>-- Pilih Status Persetujuan --</option>
+                                <option value="not finish">Belum Melengkapi Makalah</option>
+                                <option value="accepted paper by facilitator">Makalah Disetujui Fasilitator</option>
+                                <option value="accepted benefit by general manager">Benefit Disetujui Band 1</option>
+                                <option value="accepted by innovation admin">Inovasi Diverifikasi Admin Inovasi</option>
+                            </select>
+                        </div>
 
                         <!-- Filter by Category -->
                         <div class="mb-3">
@@ -311,7 +323,6 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Tutup</button>
-                    <button class="btn btn-primary" type="submit" form="filterForm">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -345,8 +356,8 @@
                             <label for="inputBeberapaDokumen" class="form-label fw-semibold">Pilih File (PDF, Gambar, atau
                                 Video)</label>
                             <input type="file" name="document_support[]" class="form-control border-primary"
-                                accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv" id="inputBeberapaDokumen" multiple>
-                            <small class="text-muted">Maksimal 100MB per file.</small>
+                                accept=".pdf, .jpg, .jpeg, .png, .mp4, .avi, .mkv, .mov" id="inputBeberapaDokumen" multiple>
+                            <small class="text-muted">File Video (128MB:mp4, avi, mkv, mov), PDF (10MB), Gambar (5MB:jpg, jpeg, png)</small>
                         </div>
                     </div>
                     <!-- Footer -->
@@ -589,7 +600,8 @@
                      d.filterCompany = $('#filter-company').val();
                      d.filterRole = $('#filter-role').val();
                      d.status_inovasi = $('#filter-status-inovasi').val(); 
-                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
+                     d.filter_category = $('#filter_category').val();
+                     d.filter_approval = $('#filter-approval-status').val();
                      return d;
                 }
             },
@@ -713,7 +725,8 @@
                      d.filterCompany = $('#filter-company').val();
                      d.filterRole = $('#filter-role').val();
                      d.status_inovasi = $('#filter-status-inovasi').val(); 
-                     d.filter_category = $('#filter_category').val(); //ambil nilai yg dipilih ke server
+                     d.filter_category = $('#filter_category').val();
+                     d.filter_approval = $('#filter-approval-status').val();
                      return d;
                 }
             },
@@ -765,6 +778,10 @@
         $('#filter-company').on('change', function () {
             dataTable.ajax.reload();
         });
+        
+        $('#filter-approval-status').on('change', function () {
+            dataTable.ajax.reload();
+        })
         
         $('#filter_category').on('change', function () {
             dataTable.ajax.reload();
@@ -956,6 +973,8 @@
                     '.btn-edit-team-member'
                 ];
                 
+                console.log(data.isEventActive);
+        
                 toggleElements.forEach(selector => {
                     const el = document.querySelector(selector);
                     if (el) {
@@ -1033,7 +1052,7 @@
                         return {
                             results: $.map(data, function(item) {
                                 return {
-                                    text: item.name, // Nama yang akan ditampilkan di kotak seleksi
+                                    text: item.employee_id + ' - ' + item.name + ' - ' + item.company_code, // Nama yang akan ditampilkan di kotak seleksi
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })
@@ -1071,7 +1090,7 @@
                         return {
                             results: $.map(data, function(item) {
                                 return {
-                                    text: item.name, // Nama yang akan ditampilkan di kotak seleksi
+                                    text: item.employee_id + ' - ' + item.name + ' - ' + item.company_code, // Nama yang akan ditampilkan di kotak seleksi
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })

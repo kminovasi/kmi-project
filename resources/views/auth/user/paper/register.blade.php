@@ -102,6 +102,10 @@
                                 <select class="form-select" aria-label="Default select example" name="leader"
                                     id="id_leader" value="{{ old('leader') }}" placeholder="Pilih Ketua Tim"
                                     onChange="show_identity(this); check_select(this);" required>
+                                    <!-- <option selected disabled>Select a leader :</option> -->
+                                    <!-- @foreach ($datas_user as $r_fasil)
+    <option value="{{ $r_fasil->id }}">{{ $r_fasil->employee_id }} - {{ $r_fasil->name }}</option>
+    @endforeach    -->
                                 </select>
                             </div>
                             <div class="mb-4">
@@ -199,11 +203,13 @@
                             <div class="mb-3">
                                 <h6 class="small mb-1">Upload Foto Tim (Resmi)</h6>
                                 <input type="file" name="proof_idea" class="form-control" accept="image/*">
+                                <small class="text-muted">Format: JPG/JPEG/PNG, Maksimal ukuran 5MB</small>
                             </div>
 
                             <div class="mb-3">
                                 <h6 class="small mb-1">Upload Foto Produk Inovasi</h6>
                                 <input type="file" name="innovation_photo" class="form-control" accept="image/*">
+                                <small class="text-muted">Format: JPG/JPEG/PNG, Maksimal ukuran 5MB</small>
                             </div>
                             @if (App::environment('stage'))
                                 <div class="mb-3">
@@ -322,39 +328,39 @@
 
         // fungsi untuk menampilkan dan mengset input value company beradasarkan leader
         function show_identity(element) {
-            var leader_value = element.value;
-            var companyField = document.getElementById("company");
-            var unitField = document.getElementById("unit");
-            var departmentField = document.getElementById("department");
-            var directorateField = document.getElementById("directorate");
-            console.log(leader_value)
+    var leader_value = element.value;
+    var companyField = document.getElementById("company");
+    var unitField = document.getElementById("unit");
+    var departmentField = document.getElementById("department");
+    var directorateField = document.getElementById("directorate");
+    console.log(leader_value)
 
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                url: '{{ route('getUsersWithCompany') }}',
-                dataType: 'json',
-                data: {
-                    employee_id: leader_value
-                },
-                success: function(response) {
-                    if (response.success) {
-                        console.log(response.data)
-                        companyField.value = response.data.co_name
-                        unitField.value = response.data.unit_name
-                        departmentField.value = response.data.department_name
-                        directorateField.value = response.data.directorate_name
-                    } else {
-                        console.error(response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                }
-            });
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: 'GET',
+        url: '{{ route('getUsersWithCompany') }}',
+        dataType: 'json',
+        data: {
+            employee_id: leader_value
+        },
+        success: function(response) {
+            if (response.success) {
+                console.log(response.data)
+                companyField.value = response.data.co_name
+                unitField.value = response.data.unit_name
+                departmentField.value = response.data.department_name
+                directorateField.value = response.data.directorate_name
+            } else {
+                console.error(response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
         }
+    });
+}
 
         function addRow(element) {
             var anggota_array = document.querySelectorAll('select[name="anggota[]"]');
@@ -428,6 +434,7 @@
 
         // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
         function search_select2(select_element_id) {
+
             $('#' + select_element_id).select2({
                 // allowClear: true,
                 // theme: "classic",
@@ -454,8 +461,7 @@
                         return {
                             results: $.map(data, function(item) {
                                 return {
-                                    text: item.employee_id + ' - ' + item
-                                        .name, // Nama yang akan ditampilkan di kotak seleksi
+                                    text: item.employee_id + ' - ' + item.name + ' - ' + item.company_code, 
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })
@@ -465,9 +471,9 @@
                 }
             });
         }
-
         // fungsi select2 untuk opsi yang membutuhkan data karyawan (fasilitator, leader, anggota)
         function search_facilitator(select_element_id) {
+
             $('#' + select_element_id).select2({
                 allowClear: true,
                 width: "100%",
@@ -495,8 +501,7 @@
                         return {
                             results: $.map(data, function(item) {
                                 return {
-                                    text: item.employee_id + ' - ' + item.name + ' - ' + item
-                                        .job_level, // Nama yang akan ditampilkan di kotak seleksi
+                                    text: item.employee_id + ' - ' + item.name + ' -- ' + item.company_name + ' (' + item.job_level + ')', // Nama yang akan ditampilkan di kotak seleksi
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })
@@ -506,7 +511,6 @@
                 }
             });
         }
-        
         // mengecek setiap select agar tidak terjadi karyawan yang terpilih 2 kali
         function check_select(element) {
             // fungsi untuk mengecek apakah ada karyawan yang dipilih yang sama

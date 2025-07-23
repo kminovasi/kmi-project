@@ -83,6 +83,12 @@ class OndeskTeamTotal extends Component
                 });
             });
         
+        $teamIds = DB::table('pvt_assesment_team_judges as paj')
+            ->join('judges', 'judges.id', '=', 'paj.judge_id')
+            ->where('judges.employee_id', $employeeId)
+            ->where('stage', 'on desk')
+            ->pluck('paj.event_team_id');
+        
         $allTeams = DB::table('pvt_event_teams')
             ->leftJoin('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
@@ -97,6 +103,9 @@ class OndeskTeamTotal extends Component
             })
             ->where('events.id', $this->eventId)
             ->where('pvt_event_teams.status', '!=', 'tidak Lolos On Desk')
+            ->when(!$isSuperadmin, function ($query) use ($teamIds) {
+                $query->whereIn('pvt_event_teams.id', $teamIds);
+            })
             ->select(
                 'pvt_event_teams.*',
                 'categories.category_parent',
@@ -108,7 +117,7 @@ class OndeskTeamTotal extends Component
                 ")
             )
             ->get();
-        
+
         $passedTeams = $allTeams->filter(function ($team) {
             return $team->score_minimum !== null && $team->total_score_on_desk >= $team->score_minimum;
         });

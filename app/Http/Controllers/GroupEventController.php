@@ -8,6 +8,8 @@ use App\Models\Event;
 use App\Models\Paper;
 use App\Models\History;
 use App\Models\PvtEventTeam;
+use App\Models\PvtAssessmentEvent;
+use App\Models\pvtAssesmentTeamJudge;
 use Illuminate\Http\Request;
 use App\Mail\EventAssignmentNotification;
 use Illuminate\Support\Facades\{Auth, Mail, Log};
@@ -183,6 +185,7 @@ class GroupEventController extends Controller
             ->rawColumns(['checkbox', 'internal_events', 'group_events', 'ap_events'])
             ->make(true);
     }
+    
     public function assignTeamsToEvent(Request $request)
     {
         try {
@@ -192,7 +195,33 @@ class GroupEventController extends Controller
                 ->get();
 
             foreach ($papers as $paper) {
-                $this->processTeamAssignment($paper, $event);
+                $idEventTeam = $this->processTeamAssignment($paper, $event);
+                
+                $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                    ->join('categories', 'categories.id', '=', 'teams.category_id')
+                    ->where('pvt_event_teams.id', $idEventTeam)
+                    ->pluck('category_parent')
+                    ->first();
+                if ($category == 'IDEA BOX'){
+                    $category = 'IDEA';
+                } else {
+                    $category = 'BI/II';
+                }
+            
+                $data_assessment_event = PvtAssessmentEvent::where('event_id', $event->id)
+                    ->where('category', $category)
+                    ->where('status_point', 'active')
+                    ->where('stage', 'on desk')
+                    ->pluck('id')
+                    ->toArray();
+            
+                foreach ($data_assessment_event as $assessmentEventId) {
+                    pvtAssesmentTeamJudge::updateOrCreate([
+                        'event_team_id' => $idEventTeam,
+                        'assessment_event_id' => $assessmentEventId,
+                        'stage' => 'on desk'
+                    ]);
+                }
             }
 
             return response()->json([
@@ -211,35 +240,39 @@ class GroupEventController extends Controller
     private function processTeamAssignment($paper, $event)
     {
         $pap = Paper::findOrFail($paper->id);
+    
+        // Cek apakah sudah ada
         $existingEntry = PvtEventTeam::where([
             'team_id' => $paper->team_id,
             'event_id' => $event->id
-        ])->exists();
-
+        ])->first();
+    
         if ($existingEntry) {
-            return;
+            return $existingEntry->id;
         }
+    
+        // Update status paper dan team
         $pap->update([
-            'status_event' => 'reject_group'
+            'status_event' => 'accept_group'
         ]);
-
-        PvtEventTeam::create([
+    
+        $eventTeam = PvtEventTeam::create([
             'team_id' => $paper->team_id,
             'event_id' => $event->id,
         ]);
-
+    
         $updateTeam = Team::findOrFail($paper->team_id);
         $updateTeam->update([
             'status_lomba' => 'group'
         ]);
-
+    
         History::create([
             'team_id' => $paper->team_id,
             'activity' => "Accepted to Event Group",
             'status' => 'Accepted'
         ]);
-
-        // $this->sendNotifications($paper->team, $event);
+    
+        return $eventTeam->id;
     }
 
     private function sendNotifications($team, $event)

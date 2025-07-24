@@ -611,17 +611,26 @@ class PaperController extends Controller
 
             $paper = Paper::findOrFail($id);
             $team = Team::findOrFail($paper->team_id);
-            $paper->$stage = '';
-            $paper->save();
-
+            
+            // Hapus file lama jika ada
+            if ($paper->$stage && Storage::disk('public')->exists($paper->$stage)) {
+                Storage::disk('public')->delete($paper->$stage);
+            }
+            
+            // Generate nama file unik
+            $filename = $stage . '_' . uniqid() . '.' . $request->file('file_stage')->getClientOriginalExtension();
+            
+            // Simpan file dan update field
             $paper->updateAndHistory([
                 $stage => $request->file('file_stage')->storeAs(
                     'internal/' . $team->status_lomba . '/' . $team->team_name,
-                    $stage . "." . $request->file('file_stage')->getClientOriginalExtension(),
+                    $filename,
                     'public'
                 ),
             ]);
-
+            
+            $paper->refresh();
+            
             if ($stage === 'full_paper') {
                 $steps = [
                     'step_1',
@@ -780,7 +789,10 @@ class PaperController extends Controller
                 }
             }
 
-            return response($fpdi->Output(), 200)->header('Content-Type', 'application/pdf');
+            return response($fpdi->Output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
         } catch (\Exception $e) {
             // dd($e->getMessage());
             return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
@@ -1391,8 +1403,13 @@ class PaperController extends Controller
             $idEventTeam = PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,
                 'event_id' => $event_id,
-                // 'year' => $request->year
             ])['id'];
+            
+            if($eventData->type == 'group') {
+                Paper::update([
+                    'status_event' => 'accept_group'
+                ]);
+            }
 
             $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
@@ -1402,7 +1419,7 @@ class PaperController extends Controller
             
             History::create([
                 'team_id' => $team_id,
-                'activity' => "Accepted to Event Internal",
+                'activity' => "Accepted to Event " . ucfirst($eventData->type),
                 'status' => 'Accepted'
             ]);
 
@@ -1413,7 +1430,6 @@ class PaperController extends Controller
 
             $data_assessment_event = PvtEventTeam::join('pvt_assessment_events', function ($join) {
                 $join->on('pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id');
-                // ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
             })
                 ->where('pvt_event_teams.id', $idEventTeam)
                 ->where('pvt_assessment_events.category', $category)
@@ -1442,7 +1458,7 @@ class PaperController extends Controller
             PvtEventTeam::updateOrCreate([
                 'team_id' => $team_id,
                 'event_id' => $event_id,
-                'Status' => 'Tidak Lolos On Desk'
+                'Status' => 'tidak Lolos On Desk'
             ]);
             
             History::create([
@@ -1670,19 +1686,18 @@ class PaperController extends Controller
             ],
             'document_support.*' => [
                 'required',
-                'file', // Validasi bahwa ini adalah file
-                'mimes:pdf,jpg,jpeg,png,mp4,avi,mkv', // Validasi untuk menerima format pdf, gambar, atau video
+                'file',
+                'mimes:pdf,jpg,jpeg,png,mp4,avi,mkv,mov',
                 function ($attribute, $value, $fail) {
                     $fileType = $value->getMimeType();
-                    $fileSize = $value->getSize() / 1024; // ukuran dalam KB
-
-                    // Validasi berdasarkan tipe file
-                    if (str_contains($fileType, 'pdf') && $fileSize > 30720) { // PDF maksimal 30MB (30720 KB)
-                        $fail("The {$attribute} must not exceed 10MB.");
-                    } elseif (str_contains($fileType, 'image') && $fileSize > 5120) { // Gambar maksimal 5MB (5120 KB)
+                    $fileSize = $value->getSize() / 1024; // KB
+            
+                    if (Str::contains($fileType, 'pdf') && $fileSize > 30720) {
+                        $fail("The {$attribute} must not exceed 30MB.");
+                    } elseif (Str::contains($fileType, 'image') && $fileSize > 5120) {
                         $fail("The {$attribute} must not exceed 5MB.");
-                    } elseif (str_contains($fileType, 'video') && $fileSize > 204800) { // Video maksimal 50MB (51200 KB)
-                        $fail("The {$attribute} must not exceed 100MB.");
+                    } elseif (Str::contains($fileType, 'video') && $fileSize > 131072) {
+                        $fail("The {$attribute} must not exceed 128MB.");
                     }
                 },
             ],
@@ -1838,7 +1853,9 @@ class PaperController extends Controller
     public function addWatermarks($paperId, $stage = 'full_paper') 
     {
         try {
-            $filePath = storage_path('app/public/' . ltrim(Paper::where('id', '=', $paperId)->pluck($stage)[0], '/'));
+            $paper = Paper::findOrFail($paperId); // Pastikan fresh
+            $paper->refresh();
+            $filePath = storage_path('app/public/' . ltrim($paper->$stage, '/'));
     
             if (!file_exists($filePath)) {
                 dump($filePath);
@@ -1894,10 +1911,9 @@ class PaperController extends Controller
                 $fpdi->SetAlpha(1); // Reset transparansi
             }
             
-            return response($fpdi->Output('S'), 200)
+            return response($fpdi->Output('D'), 200)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-                ->header('Pragma', 'no-cache');
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 
         } catch (FileNotFoundException $e) {
             return response()->json(['error' => 'File tidak ditemukan.'], 404);

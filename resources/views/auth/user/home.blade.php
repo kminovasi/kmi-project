@@ -71,14 +71,6 @@
                     <div class="mb-3">
                         <x-dashboard.innovator.total-innovator-by-band-level :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode"/>
                     </div>
-
-                    <div>
-                        @if ($isSuperadmin)
-                            <x-dashboard.total-team-card />
-                        @else
-                            <x-dashboard.internal.total-team-card />
-                        @endif
-                    </div>
                 </div>
 
                 <!-- Right Column - Benefits -->
@@ -95,6 +87,12 @@
                     </div>
                 </div>
             </div>
+            
+            @if ($isSuperadmin)
+                <x-dashboard.total-team-card />
+            @else
+                <x-dashboard.internal.total-team-card />
+            @endif
             
             <div class="mt-3">
                 <x-dashboard.innovator.innovator-ranking :is-superadmin="$isSuperadmin" :user-company-code="$userCompanyCode" />

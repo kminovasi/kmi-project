@@ -8,19 +8,20 @@ use Carbon\Carbon;
 
 class TotalTeamCard extends Component
 {
-    public $teamData;
+    public $teamDataInternal;
+    public $teamDataGroup;
 
     public function __construct()
     {
         // Ambil data total tim yang diterima dalam 4 tahun terakhir
-        $this->teamData = $this->getTotalTeamsByYear();
+        $this->teamDataInternal = $this->getTotalTeamsByYear('internal');
+        $this->teamDataGroup = $this->getTotalTeamsByYear('group');
     }
 
-    private function getTotalTeamsByYear()
+    private function getTotalTeamsByYear($eventType)
     {
         // Ambil 4 tahun terakhir
         $years = range(Carbon::now()->year - 3, Carbon::now()->year);
-        $paperStatus = ['accepted by innovation admin', 'rejected by innovation admin'];
 
         $teamCounts = DB::table('teams')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
@@ -30,7 +31,8 @@ class TotalTeamCard extends Component
                 'events.year as year',
                 DB::raw('COUNT(DISTINCT teams.id) as total_teams')
             )
-            ->whereIn('papers.status', $paperStatus)
+            ->where('papers.status', 'accepted by innovation admin')
+            ->where('events.type', $eventType)
             ->whereIn('events.year', $years)
             ->groupBy('events.year')
             ->orderBy('events.year')
@@ -48,7 +50,8 @@ class TotalTeamCard extends Component
     public function render()
     {
         return view('components.dashboard.total-team-card', [
-            'teamData' => $this->teamData
+            'teamDataInternal' => $this->teamDataInternal,
+            'teamDataGroup' => $this->teamDataGroup
         ]);
     }
 }

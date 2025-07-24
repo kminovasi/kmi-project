@@ -5,7 +5,6 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="row g-3">
             @php
                 $colors = [
                     [
@@ -26,7 +25,24 @@
                     ],
                 ];
             @endphp
-            @foreach ($teamData as $year => $count)
+        <div class="row g-3 p-3">
+            <div class="fs-5 fw-bold">Total Tim Event Internal</div>
+            @foreach ($teamDataInternal as $year => $count)
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
+                        <div class="card-body py-4 position-relative z-1 text-center text-white">
+                            <h6 class="text-uppercase mb-2 opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
+                            <div class="display-6 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ $count }}</div>
+                            <div class="mt-2 small opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-10"></div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="row g-3 p-3">
+            <div class="fs-5 fw-bold">Total Tim Event Group</div>
+            @foreach ($teamDataGroup as $year => $count)
                 <div class="col-6 col-md-3">
                     <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
                         <div class="card-body py-4 position-relative z-1 text-center text-white">

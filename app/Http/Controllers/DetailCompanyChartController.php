@@ -59,6 +59,8 @@ class DetailCompanyChartController extends Controller
         // Ambil nama perusahaan dan company_code berdasarkan ID
         $company = Company::select('company_name', 'id', 'company_code')->where('company_code', $companyId)->first();
         
+        // dd($company);
+
         // Ambil tahun yang tersedia untuk filter dropdown
         $availableYears = Event::select('year')
             ->groupBy('year')
@@ -73,7 +75,7 @@ class DetailCompanyChartController extends Controller
         $organizationUnit = $request->query('organization-unit');
 
         // Hitung total inovator dan berdasarkan gender dengan filter tahun
-       $targetCompanyCode = $company->company_code;
+        $targetCompanyCode = $company->company_code;
 
         // Jika company_code 2000 atau 7000, jadikan gabungan 2000+7000
         if (in_array($targetCompanyCode, [2000, 7000])) {
@@ -85,20 +87,30 @@ class DetailCompanyChartController extends Controller
         $innovatorData = DB::table('pvt_members')
             ->join('teams', 'teams.id', '=', 'pvt_members.team_id')
             ->join('papers', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->leftJoin('users', 'users.employee_id', '=', 'pvt_members.employee_id')
             ->whereIn('teams.company_code', $filteredCodes)
+            ->where('papers.status', 'accepted by innovation admin')
             ->where('pvt_members.status', '!=', 'gm')
             ->select('users.gender', 'pvt_members.employee_id', 'teams.id as team_id')
             ->distinct()
             ->get()
+            ->unique(fn($row) => $row->employee_id . '-' . $row->team_id)
             ->groupBy('gender');
+        
+        $outsourceInnovatorData = DB::table('ph2_members')
+            ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
+            ->join('papers', 'papers.team_id', '=', 'teams.id')
+            ->whereIn('teams.company_code', $filteredCodes)
+            ->where('papers.status', 'accepted by innovation admin')
+            ->select('ph2_members.name', 'teams.id as team_id')
+            ->get()
+            ->unique(fn($row) => $row->name . '-' . $row->team_id)
+            ->count();
         
         // Hitung total inovator pria & wanita unik berdasarkan employee_id
         $maleCount = count($innovatorData['Male'] ?? []);
         $femaleCount = count($innovatorData['Female'] ?? []);
-        $totalInnovators = $maleCount + $femaleCount;
+        $totalInnovators = $maleCount + $femaleCount + $outsourceInnovatorData;
 
         // Hitung total manfaat inovasi dengan filter tahun
         $totalPotentialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
@@ -124,6 +136,7 @@ class DetailCompanyChartController extends Controller
             'totalInnovators',
             'maleCount',
             'femaleCount',
+            'outsourceInnovatorData',
             'organizationUnit',
             'availableYears',
             'year',

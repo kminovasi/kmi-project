@@ -51,7 +51,16 @@ class SummaryExecutiveController extends Controller
                 'pvt_event_teams.id as pvt_event_teams_id'
             )
             ->first();
-
+        
+        if (!$summary) {
+            return response()->json([
+                'pvt_event_teams_id' => $pvt_event_teams_id,
+                'problem_background' => '',
+                'innovation_idea' => '',
+                'benefit' => '',
+            ]);
+        }
+        
         return response()->json($summary);
     }
 }

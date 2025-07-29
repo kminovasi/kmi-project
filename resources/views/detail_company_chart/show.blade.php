@@ -2,7 +2,7 @@
 
 @section('title', 'Detail ' . $company->company_name)
 
-@vite(['resources/css/detailCompanyChart.css'])
+<link rel="stylesheet" href="{{ asset('build/assets/detailCompanyChart-22b7fdae.css') }}">
 
 @push('css')
     <style>
@@ -76,6 +76,10 @@
                                 <div class="gender-value">{{ $femaleCount }}</div>
                                 <div class="gender-label">Perempuan</div>
                             </div>
+                            <div class="gender-stat">
+                                <div class="gender-value">{{ $outsourceInnovatorData }}</div>
+                                <div class="gender-label">Outsource</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,7 +103,7 @@
         </div>
         <div class="row mt-4">
             <div class="col-md-12">
-                <x-dashboard.company.total-innovator-with-gender-chart :companyId="$company->id" />
+                <x-dashboard.company.total-innovator-with-gender-chart :companyId="$company->company_code" />
             </div>
             <div class="col-md-4 col-sm-4 col-xs-6">
                 <button type="button" class="btn btn-filter" data-bs-toggle="modal" data-bs-target="#filterModal">
@@ -110,7 +114,7 @@
                 <h4 class="text-center">Grafik pada tahun {{ $year }}</h4>
             </div>
         </div>
-        <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->id" :company-code="$company->code" :available-years="$availableYears" />
+        <x-detail-company-chart.filter-by-organization-unit :organization-unit="$organizationUnit" :company-id="$company->company_code" :company-code="$company->code" :available-years="$availableYears" />
         <div class="row mt-4">
             <div class="col-lg-12 col-md-12">
                 {{-- Blade component total team innovations by organization charts --}}
@@ -148,5 +152,5 @@
         </div>
 
     </div>
-    @vite(['resources/js/company/companyDashboardChart.js'])
+    <script src="{{ asset('build/assets/companyDashboardChart-69e6f61b.js') }}" type="module"></script>
 @endsection

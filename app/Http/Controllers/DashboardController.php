@@ -337,23 +337,28 @@ class DashboardController extends Controller
         $years = range($currentYear - 3, $currentYear);
     
         // Ambil data tim yang memiliki paper diterima, lalu join ke event dan company
-        $rawData = DB::table('teams')
-            ->join('papers', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->join('company_event', 'company_event.event_id', '=', 'events.id')
-            ->join('companies', 'companies.id', '=', 'company_event.company_id')
-            ->where('papers.status', 'accepted by innovation admin')
-            ->whereIn(DB::raw('YEAR(events.year)'), $years)
-            ->select(
-                'companies.id as company_id',
-                'companies.company_name',
-                'companies.company_code',
-                DB::raw('YEAR(events.year) as year'),
-                'teams.id as team_id'
-            )
+        $teamIds = DB::table('pvt_event_teams')
+            ->select('team_id')
             ->distinct()
-            ->get();
+            ->pluck('team_id');
+        
+        $rawData = DB::table('teams')
+    ->join('papers', 'papers.team_id', '=', 'teams.id')
+    ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+    ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+    ->join('companies', 'companies.company_code', '=', 'teams.company_code') // langsung dari tim
+    ->where('papers.status', 'accepted by innovation admin')
+    ->whereIn(DB::raw('YEAR(events.year)'), $years)
+    ->select(
+        'companies.id as company_id',
+        'companies.company_name',
+        'companies.company_code',
+        DB::raw('YEAR(events.year) as year'),
+        'teams.id as team_id'
+    )
+    ->groupBy('teams.id', 'companies.id', 'companies.company_name', 'companies.company_code', DB::raw('YEAR(events.year)'))
+    ->get();
+
     
         // Kelompokkan data
         $groupedData = [];

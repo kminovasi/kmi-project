@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Notifications\PaperNotification;
 use App\Services\PaperFileUploadService;
 use App\Http\Requests\UpdatePaperRequest;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TeamsInfoExport;
 
 class EventTeamController extends Controller
 {
@@ -371,10 +373,32 @@ class EventTeamController extends Controller
             ->get();
 
         // Kirim email ke semua anggota team yang memenuhi kriteria
-        foreach ($teamMembers as $member) {
-            Mail::to($member->email)->send(new PaperStatusUpdated($paper, $member));
-        }
+        // foreach ($teamMembers as $member) {
+        //     Mail::to($member->email)->send(new PaperStatusUpdated($paper, $member));
+        // }
 
         return redirect()->back()->with('success', 'Status Makalah Inovasi Berhasil Diperbarui');
+    }
+    
+    public function downloadTeamsInfoExcel($eventId)
+    {
+        $event = Event::findOrFail($eventId);
+    
+        $teamsData = DB::table('teams')
+            ->join('papers', 'papers.team_id', '=', 'teams.id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
+            ->where('events.id', $eventId)
+            ->select(
+                'papers.*',
+                'teams.team_name as team_name'
+            )
+            ->distinct()
+            ->get();
+    
+        return Excel::download(
+            new TeamsInfoExport($teamsData),
+            'List_Benefit_Tim_Event_' . $event->event_name . '_Tahun_' . $event->year . '.xlsx'
+        );
     }
 }

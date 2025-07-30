@@ -15,7 +15,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            List Team | Event {{ $event->event_name }}
+                            List Team | Event {{ $event->event_name . ' Tahun ' . $event->year }}
                         </h1>
                     </div>
                     <div class="col-auto mb-3">
@@ -30,7 +30,17 @@
     </header>
     <div class="container-xl px-4 ">
         <div class="card mb-4">
-            <div class="card-header text-white" style="background-color: #e94838;">List of Teams</div>
+            <div class="card-header text-white d-flex justify-content-between" style="background-color: #e94838;">
+                <div>List of Teams</div>
+                @if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Superadmin')
+                <div>
+                    <a href="{{ route('event-team.download.excel', ['eventId' => $event->id]) }}" class="btn btn-sm btn-light">
+                        Download Excel
+                    </a>
+                </div>
+            @endif
+
+            </div>
             <div class="card-body">
                 <table id="datatablesSimple" class="table table-striped">
                     <thead>

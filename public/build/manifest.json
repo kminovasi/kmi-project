@@ -81,7 +81,7 @@
     "src": "resources/js/cementInnovationsChart.js"
   },
   "resources/js/company/companyDashboardChart.js": {
-    "file": "assets/companyDashboardChart-69e6f61b.js",
+    "file": "assets/companyDashboardChart-c7a8f013.js",
     "imports": [
       "_chartjs-plugin-datalabels.esm-6f583e48.js"
     ],

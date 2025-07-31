@@ -14,8 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 labels: chartData.years,
                 datasets: [
                     {
-                        label: `Paper Count`,
-                        data: chartData.paperCounts,
+                        label: `Idea Box`,
+                        data: chartData.ideaBoxCounts,
+                        backgroundColor: "rgba(54, 162, 235, 0.8)",
+                    },
+                    {
+                        label: `Implemented`,
+                        data: chartData.implementedCounts,
                         backgroundColor: "rgb(216, 64, 64)",
                     },
                 ],
@@ -24,21 +29,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: false,
+                        display: true,
+                        position: 'top',
                     },
                     tooltip: {
                         backgroundColor: "rgba(0, 0, 0, 0.8)",
-                        titleFont: {
-                            size: 14,
-                        },
-                        bodyFont: {
-                            size: 12,
-                        },
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
                     },
                     datalabels: {
                         color: "#EEEEEE",
-                        anchor: "center", // Center the label horizontally
-                        align: "center", // Center the label vertically
+                        anchor: "center",
+                        align: "center",
                         font: {
                             weight: "bold",
                             size: 18,
@@ -57,9 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             },
                         },
                         ticks: {
-                            font: {
-                                size: 12,
-                            },
+                            font: { size: 12 },
                         },
                     },
                     x: {
@@ -72,9 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             },
                         },
                         ticks: {
-                            font: {
-                                size: 12,
-                            },
+                            font: { size: 12 },
                         },
                     },
                 },

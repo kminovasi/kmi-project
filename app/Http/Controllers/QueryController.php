@@ -157,18 +157,20 @@ class QueryController extends Controller
     {
         // $unit = $request->input('unit');
         $query = $request->input('query');
-        $results = User::where('name', 'like', "%$query%")
-            ->orWhere('employee_id', 'LIKE', "%$query%")
-            ->orWhere('email', 'like', "%$query%")
-            ->whereIn('job_level', ["Band 1"])
-            ->join('companies', 'companies.company_code', '=', 'users.company_code')
-            ->select('employee_id', 'name', 'companies.company_name', 'job_level')
-            ->limit(10)
-            ->get();
-
+        $results = User::where(function($queryBuilder) use ($query) {
+            $queryBuilder->where('name', 'like', "%$query%")
+                ->orWhere('employee_id', 'LIKE', "%$query%")
+                ->orWhere('email', 'like', "%$query%");
+        })
+        ->where('job_level', 'Band 1')
+        ->join('companies', 'companies.company_code', '=', 'users.company_code')
+        ->select('employee_id', 'name', 'companies.company_name', 'job_level')
+        ->limit(10)
+        ->get();
 
         return response()->json($results);
     }
+    
     public function get_BOD(Request $request)
     {
         // $unit = $request->input('unit');
@@ -948,6 +950,7 @@ class QueryController extends Controller
                     "berita_acaras.id",
                     "berita_acaras.event_id",
                     "events.event_name",
+                    "events.year",
                     "berita_acaras.no_surat",
                     "berita_acaras.jenis_event",
                     "berita_acaras.penetapan_juara",
@@ -1020,7 +1023,7 @@ class QueryController extends Controller
 
             // Menambahkan event_name ke dalam DataTable
             $dataTable->addColumn('event_name', function ($data_row) {
-                return $data_row['event_name'];
+                return $data_row['event_name'] . ' Tahun ' . $data_row['year'];
             });
 
             return $dataTable->addIndexColumn()->toJson();
@@ -1379,8 +1382,8 @@ class QueryController extends Controller
                     ->join('categories', 'categories.id', '=', 'teams.category_id')
                     ->join('themes', 'themes.id', '=', 'teams.theme_id')
                     ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-                    ->join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                    ->join('pvt_assessment_events', function ($join) {
+                    ->leftJoin('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
+                    ->leftJoin('pvt_assessment_events', function ($join) {
                         $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
                     })
                     ->whereIn('categories.id', $categoryid)
@@ -1460,7 +1463,7 @@ class QueryController extends Controller
                         $rawColumns[] = "Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'];
                         $dataTable->addColumn("Penilaian (" . $arr_event_id[$i]['pdca'] . ") : " . $arr_event_id[$i]['point'], function ($data_row) use ($i, $arr_event_id) {
                             $data_avg = pvtEventTeam::join('pvt_assesment_team_judges', 'pvt_assesment_team_judges.event_team_id', '=', 'pvt_event_teams.id')
-                                ->join('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
+                                ->leftJoin('pvt_assessment_events', 'pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id')
                                 ->where('pvt_assessment_events.status_point', 'active')
                                 ->where('pvt_assesment_team_judges.stage', 'on desk')
                                 ->where('pvt_event_teams.id', $data_row['event_team_id_removed'])
@@ -2539,7 +2542,7 @@ class QueryController extends Controller
                 if ($data_total) {
                     $totalScore = $data_total->total_score_caucus;
                      
-                    if( $this->calculateDeviation($data_row['event_team_id_removed'], 'caucus') > 10) {
+                    if( $this->calculateDeviation($data_row['event_team_id(removed)'], 'caucus') > 10) {
                         return '<span style="color:red">' . $totalScore . '</span>';
                     }
                     
@@ -2570,8 +2573,6 @@ class QueryController extends Controller
                     ->get()
                     ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
                     ->toArray();
-
-
 
                 // Cek apakah total_score_presentation null atau 0
                 $eventTeamId = $data_row['event_team_id(removed)'];
@@ -2612,16 +2613,6 @@ class QueryController extends Controller
                     return "<a class=\"btn btn-info btn-xs  " . ($data_row['Hasil Penilaian Presentasi'] == 0 ? 'disabled' : '') . "\" href=\"$lihatSofiUrl\">Lihat SOFI</a>";
                 }
             });
-
-            $rawColumns[] = 'Summary';
-            $dataTable->addColumn('Summary', function ($data_row) {
-                $summaryExists = SummaryExecutive::where('pvt_event_teams_id', $data_row['event_team_id(removed)'])->exists();
-                if ($summaryExists) {
-                    return '<button class="btn btn-cyan btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummary" onclick="setSummary(' . $data_row['team_id'] . ',' . $data_row['event_team_id(removed)'] . ')">Edit summary</button>';
-                }
-                return '<button class="btn btn-cyan btn-xs" type="button" data-bs-toggle="modal" data-bs-target="#executiveSummary" onclick="setSummary(' . $data_row['team_id'] . ',' . $data_row['event_team_id(removed)'] . ')">Summary</button>';
-            });
-
 
             $dataTable->rawColumns($rawColumns);
 

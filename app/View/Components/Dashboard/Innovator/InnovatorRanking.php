@@ -4,6 +4,7 @@ namespace App\View\Components\Dashboard\Innovator;
 
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class InnovatorRanking extends Component
 {
@@ -16,6 +17,7 @@ class InnovatorRanking extends Component
      */
     public function __construct($userCompanyCode, $isSuperadmin)
     {
+        $userRole = Auth::user()->role;
         $filteredCompanyCode = [];
         if (in_array($userCompanyCode, [2000, 7000])) {
             $filteredCompanyCode = [2000, 7000];
@@ -37,6 +39,9 @@ class InnovatorRanking extends Component
             )
             ->where('papers.status', 'accepted by innovation admin')
             ->whereIn('pvt_members.status', ['member', 'leader'])
+            ->when($userRole != 'Superadmin', function ($query) use ($filteredCompanyCode) {
+                $query->whereIn('teams.company_code', $filteredCompanyCode);
+            })
             ->groupBy('pvt_members.employee_id', 'users.name', 'events.year')
             ->get()
             ->groupBy('year')  

@@ -18,7 +18,7 @@ class DokumentasiController extends Controller
     public function indexBeritaAcara()
     {
         $data = BeritaAcara::join('events', 'berita_acaras.event_id', 'events.id')
-            ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
+            ->select('berita_acaras.*', 'events.id as eventID', 'events.event_name', 'events.year', 'events.date_start', 'events.date_end')
             ->get();
         $event = Event::where('status', 'active')->get();
         return view('auth.admin.dokumentasi.berita-acara.index', ['data' => $data, 'event' => $event]);

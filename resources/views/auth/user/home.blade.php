@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <div id="dashboard-card-content" class="p-2 pt-3 mx-auto">
-                            {{-- @include('components.dashboard.filtered_dashboard_card') --}}
+                            @include('components.dashboard.filtered_dashboard_card')
                             </div>
                         </div>
                     </div>
@@ -178,8 +178,9 @@
             
         });
     });
+    //  @vite('resources/js/benefitChart.js')
 </script>
 
-<script src="{{ asset('build/assets/benefitChart-c7442a10.js') }}" type="module"></script>
+<script src="{{ asset('build/assets/benefitChart-72cc0ff1.js') }}" type="module"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 

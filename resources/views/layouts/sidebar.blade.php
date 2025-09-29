@@ -32,6 +32,14 @@
                     <div class="nav-link-icon"><i data-feather="clipboard"></i></div>
                     Makalah Inovasi
                 </a>
+                <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}"
+                    href="{{ route('ai.chat.index') }}">
+                        <div class="nav-link-icon"><i data-feather="message-circle"></i></div>
+                        Si-Ino Chat
+                        @if(($unread ?? 0) > 0)
+                            <span class="badge bg-success-soft text-success ms-auto">{{ $unread }}</span>
+                        @endif
+                </a>
                 <a class="nav-link {{ request()->routeIs('event-team.index') ? 'active' : '' }}"
                     href="{{ route('event-team.index') }}">
                     <div class="nav-link-icon"><i class="fa-solid fa-calendar-days me-1"></i></div>
@@ -48,13 +56,6 @@
                     <div class="nav-link-icon"><i data-feather="award"></i></div>
                     Paten
                 </a>
-{{--                 
-                <a class="nav-link {{ request()->routeIs('replication.index') ? 'active' : '' }}" 
-                    href="{{ route('replication.index') }}">
-                    <div class="nav-link-icon"><i data-feather="repeat"></i></div>
-                    Replikasi
-                </a> --}}
-
                 <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}"
                     href="{{ route('profile.index') }}">
                     <div class="nav-link-icon"><i data-feather="user-check"></i></div>
@@ -109,11 +110,34 @@
                         </nav>
                     </div>
                     <div class="sidenav-menu-heading text-white">Pengelolaan Event</div>
-                    <a class="nav-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}"
-                        href="{{ route('certificates.index') }}">
-                        <div class="nav-link-icon"><i data-feather="award"></i></div>
-                        <span class="text-white">Sertifikat</span>
+                    @php
+                        $isCertActive = request()->routeIs('certificates.*')
+                            || request()->routeIs('management-system.metodologi_papers.*');
+                    @endphp
+                    <a class="nav-link {{ $isCertActive ? '' : 'collapsed' }}" href="javascript:void(0);"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseCertificates"
+                        aria-expanded="{{ $isCertActive ? 'true' : 'false' }}"
+                        aria-controls="collapseCertificates">
+                            <div class="nav-link-icon"><i data-feather="award"></i></div>
+                            Sertifikat
+                            <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
+
+                        <div class="collapse {{ $isCertActive ? 'show' : '' }}" id="collapseCertificates" data-bs-parent="#accordionSidenav">
+                            <nav class="sidenav-menu-nested nav accordion" id="accordionCertificates">
+                                @if(Auth::user()->role == 'Superadmin')
+                                    <a class="nav-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}"
+                                    href="{{ route('certificates.index') }}">
+                                    Template Sertifikat
+                                    </a>
+                                    <a class="nav-link {{ request()->routeIs('certificates.show-all') ? 'active' : '' }}"
+                                        href="{{ route('certificates.show-all') }}">
+                                        Lihat Sertifikat
+                                    </a>
+                                @endif
+                            </nav>
+                        </div>
                     {{-- <a class="nav-link {{ request()->routeIs('flyer.index') ? 'active' : '' }}"
                         href="{{ route('flyer.index') }}">
                         <div class="nav-link-icon"><i data-feather="airplay"></i></div>

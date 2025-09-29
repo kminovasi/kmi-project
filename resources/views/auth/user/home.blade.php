@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <div id="dashboard-card-content" class="p-2 pt-3 mx-auto">
-                            @include('components.dashboard.filtered_dashboard_card')
+                            {{-- @include('components.dashboard.filtered_dashboard_card') --}}
                             </div>
                         </div>
                     </div>

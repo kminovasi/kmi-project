@@ -40,6 +40,9 @@ use App\Http\Controllers\ManagamentSystemController;
 use App\Http\Controllers\SummaryExecutiveController;
 use App\Http\Controllers\DetailCompanyChartController;
 use App\Http\Controllers\ImportUserDataExcel;
+use App\Http\Controllers\AiAssessmentController;
+use App\Http\Controllers\QaMessageController;
+use App\Http\Controllers\ChatController;
 
 
 /*
@@ -56,6 +59,7 @@ use App\Http\Controllers\ImportUserDataExcel;
 // route for login logout
 Route::get('/login', [SessionController::class, 'index'])->name('login')->middleware('guest');
 Route::post('/login', [SessionController::class, 'login'])->name('postLogin');
+Route::post('/register', [SessionController::class, 'register'])->name('postRegister');
 Route::post('/logout', [SessionController::class, 'logout'])->name('logout')->middleware('auth');
 
 // route for dashboard
@@ -94,6 +98,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/my-paper/paper-revision/{teamId}', [ProfileController::class, 'revision'])->name('showPaperDetail.paper-revision');
         Route::put('/update-password/{employeeId}', [ProfileController::class, 'updatePasswordUser'])->name('updatePassword');
         Route::put('/update-user-profile-picture/{employeeId}', [ProfileController::class, 'updateProfilePicture'])->name('updateProfilePicture');
+        Route::put('/update-user-details/{employeeId}', [ProfileController::class, 'updateUserDetails'])->name('updateUserDetails');
+
     });
 
     Route::prefix('paper')->name('paper.')->group(function () {
@@ -285,6 +291,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/view-file/{path}', [BeritaAcaraController::class, 'viewUploadedPDF'])
             ->where('path', '.*')
             ->name('viewUploadedPDF');
+        Route::get('/berita-acara/{id}/download-word', [BeritaAcaraController::class,'downloadWord'])->name('downloadWord');
     });
 
     Route::prefix('event')->name('event.')->group(function () {
@@ -394,6 +401,9 @@ Route::middleware('auth')->group(function () {
         // Rute Certificates
         Route::resource('certificates', CertificateController::class)->only(['index', 'store', 'destroy']);
         Route::post('certificates/{id}/activate', [CertificateController::class, 'activate'])->name('certificates.activate');
+        Route::get('certificates/show-all-certificates', [CertificateController::class, 'showAll'])->name('certificates.show-all');
+        Route::get('certificates/judges', [CertificateController::class, 'showJudgeCertificatesAll'])->name('certificates.judges.index');
+        Route::get('certificates/participants', [CertificateController::class, 'showParticipantCertificatesAll'])->name('certificates.participants.index');
 
 
         //Rute Timeline
@@ -402,7 +412,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Evidence
-    Route::prefix('/evidence')->name('evidence.')->group(function () {
+     Route::prefix('/evidence')->name('evidence.')->group(function () {
         Route::get('/', [EvidenceController::class, 'index'])->name('index');
         Route::get('/category/{categoryId}', [EvidenceController::class, 'List_paper'])->name('category');
         Route::get('/detail-paper/{id}', [EvidenceController::class, 'paper_detail'])->name('detail');
@@ -411,6 +421,10 @@ Route::middleware('auth')->group(function () {
         })->name('excel');
         Route::get('/download-word/{id}', [EvidenceWordExport::class, 'downloadWord'])->name('downloadWord');
         Route::get('/download/{id}', [EvidenceController::class, 'download'])->name('download-paper');
+        Route::get('/preview/{id}', [EvidenceController::class, 'preview'])->name('preview-paper');
+        Route::get('/pdf-stream-watermarked/{id}', [EvidenceController::class, 'pdfStreamWatermarked'])->name('pdf-stream-watermarked');
+
+
     });
 
     // Cv
@@ -507,3 +521,26 @@ Route::post('merger-pdf', [App\Http\Controllers\PDFMergerController::class, 'mer
 Route::get('/getAllBodEvent', [BodEventController::class, 'index'])->name('bodevent.index')->middleware('auth');
 Route::delete('/bodevent/{id}', [BodEventController::class, 'destroy'])->name('bodevent.destroy')->middleware('auth');
 Route::patch('/bodevent/toggle-status/{id}', [BodEventController::class, 'toggleStatus'])->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/ai/analyze-paper/{paperId}', [AiAssessmentController::class, 'analyze'])->name('ai.analyze.paper');
+    Route::get('/ai/analyze-paper/{paperId}/view', [AiAssessmentController::class, 'view'])->name('ai.analyze.paper.view');
+    Route::get('/qa/messages',  [QaMessageController::class, 'index'])->name('qa.messages.index');
+    Route::post('/qa/messages', [QaMessageController::class, 'store'])->name('qa.messages.store');
+    Route::post('/qa/ask-ai', [QaMessageController::class, 'askAi'])->name('qa.messages.ask');
+
+    // Route::get('/chat', [ChatController::class, 'index'])->name('ai.chat.index');
+    // Route::get('/ai/chat/{session}/fetch', [ChatController::class, 'fetch'])->name('ai.chat.fetch');
+    // Route::post('/ai/chat/{session}/send', [ChatController::class, 'send'])->name('ai.chat.send');
+    // Route::post('/ai/chat/{session}/upload', [ChatController::class, 'upload'])->middleware('auth')->name('ai.chat.upload');
+    
+    Route::get('/ai',                [ChatController::class, 'index'])->name('ai.chat.index'); 
+    Route::get('/ai/wizard',         [ChatController::class, 'wizard'])->name('ai.chat.wizard');
+    Route::get('/ai/finder',         [ChatController::class, 'finder'])->name('ai.chat.finder');
+    Route::get('/ai/direct',         [ChatController::class, 'direct'])->name('ai.chat.direct');
+
+    Route::get('/ai/chat/fetch',     [ChatController::class, 'fetch'])->name('ai.chat.fetch'); 
+    Route::post('/ai/chat/send',     [ChatController::class, 'send'])->name('ai.chat.send');   
+    Route::post('/ai/chat/upload',   [ChatController::class, 'upload'])->name('ai.chat.upload');
+
+});

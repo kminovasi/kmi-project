@@ -1,0 +1,11 @@
+<x-dashboard.card 
+    :implemented="$implemented" 
+    :total-innovators="$totalInnovators" 
+    :total-innovators-male="$totalInnovatorsMale"
+    :total-innovators-female="$totalInnovatorsFemale" 
+    :total-innovatores-outsource="$totalInnovatoresOutsource" 
+    :total-active-events="$totalActiveEvents" 
+    :idea-box="$ideaBox" 
+    :total-implemented-innovations="$totalImplementedInnovations" 
+    :total-idea-box-innovations="$totalIdeaBoxInnovations"
+/>

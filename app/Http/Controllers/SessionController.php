@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SessionController extends Controller
 {
@@ -51,6 +55,51 @@ class SessionController extends Controller
         }
 
         return redirect()->route('homepage');
+    }
+    
+    public function register(Request $request)
+    {
+        $email = $request->input('email');
+        $existing = User::where('email', $email)->first();
+
+        if ($existing) {
+            // EMAIL SUDAH TERDAFTAR -> REPLACE PASSWORD
+            $validated = $request->validate([
+                'email'     => ['required','email:rfc,dns','max:150'],
+                'password'  => ['required','string','min:8','confirmed'],
+            ]);
+
+            $existing->forceFill([
+                'password' => Hash::make($validated['password']),
+            ])->save();
+
+            Auth::guard('web')->login($existing);
+            Session::flash('success', __('Password berhasil diperbarui. Selamat datang kembali!'));
+            return redirect()->intended('homepage');
+
+        } else {
+            // EMAIL BELUM TERDAFTAR -> BUAT USER BARU 
+            $validated = $request->validate([
+                'name'      => ['required','string','max:150'],
+                'email'     => ['required','email:rfc,dns','max:150', Rule::unique('users','email')],
+
+                'password'  => ['required','string','min:8','confirmed'],
+            ]);
+
+            $username = $request->input('username') ?: $validated['email'];
+
+            $user = User::create([
+                'name'      => $validated['name'],
+                'email'     => $validated['email'],
+                'username'  => $username,
+                'password'  => Hash::make($validated['password']),
+                'role'      => 'Innovator', 
+            ]);
+
+            Auth::guard('web')->login($user);
+            Session::flash('success', __('Registrasi berhasil. Selamat datang!'));
+            return redirect()->intended('homepage');
+        }
     }
 
     public function logout(Request $request)

@@ -12,16 +12,16 @@ class DashboardEventController extends Controller
     public function getActiveEvent()
     {
         $query = Event::query();
-
+    
         // Jika user BUKAN superadmin, filter berdasarkan company_code
         if (Auth::user()->role !== 'Superadmin') {
             $companyCode = Auth::user()->company_code;
-
+    
             $query->whereHas('companies', function ($q) use ($companyCode) {
                 $q->where('company_code', $companyCode);
             });
         }
-
+    
         $events = $query->orderByRaw("
                 CASE
                     WHEN status = 'active' THEN 1
@@ -30,7 +30,7 @@ class DashboardEventController extends Controller
             ")
             ->orderBy('date_start', 'asc')
             ->get();
-
+    
         return view('dashboard.event.index', compact('events'));
     }
 
@@ -54,7 +54,7 @@ class DashboardEventController extends Controller
 
         return view('dashboard.event.statistics', [
             'eventId' => $event->id,
-            'eventName' => $event->event_name,
+            'eventName'      => $event->event_name . ' Tahun ' . $event->year,
             'organizationUnit' => $organizationUnit,
             'event_type' => $event_type,
             'companies' => $companies, // Kirim daftar perusahaan ke view,

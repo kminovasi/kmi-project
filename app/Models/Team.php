@@ -59,9 +59,8 @@ class Team extends Model
     {
         return $this->belongsTo(Company::class, 'company_code', 'company_code'); // Pastikan kolom yang digunakan sesuai
     }
-
-    // Team.php
-    public function getCompanyAttribute()
+    
+    public function getRelatedCompanyAttribute()
     {
         // Ambil semua events dari team ini → lalu ambil semua company dari tiap event
         return $this->events
@@ -71,7 +70,6 @@ class Team extends Model
             ->unique('id') // Optional: hilangkan duplikat
             ->first();     // Ambil satu (atau bisa return semuanya kalau mau)
     }
-
 
     public function events()
     {
@@ -95,11 +93,6 @@ class Team extends Model
     public function pvtEventTeams()
     {
         return $this->hasMany(PvtEventTeam::class, 'team_id');
-    }
-
-    public function coachingClinics()
-    {
-        return $this->hasMany(CoachingClinic::class, 'team_id', 'id');
     }
 
     public function members()

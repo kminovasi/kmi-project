@@ -110,6 +110,7 @@ $(document).ready(function() {
             { data: 'company_name', title: 'Nama Perusahaan' },
             { data: 'position', title: 'Posisi' },
             { data: 'event_name', title: 'Event' },
+             { data: 'year', title: 'Tahun Event' },
             { data: 'event_type', title: 'Tipe Event' }, // Kolom baru untuk tipe event
             { data: 'job_level', title: 'Job Level' },
             {

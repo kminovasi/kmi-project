@@ -402,7 +402,7 @@ class DashboardController extends Controller
     
         foreach ($groupedData as $company) {
             $chartData['labels'][] = $company['company_name'];
-            $chartData['company_id'][] = $company['company_id'];
+            $chartData['company_ids'][] = $company['company_id'];
     
             // Proses logo
             $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company['company_name']));
@@ -424,121 +424,52 @@ class DashboardController extends Controller
         return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
     }
     
-    public function showTotalBenefitChart()
-    {
-        $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 3, $currentYear);
-        $isSuperadmin = Auth::user()->role === 'Superadmin';
-        $company_code = Auth::user()->company_code;
-        
-        if(in_array($company_code, [2000, 7000])) {
-            $filteredCompanyCode = [2000, 7000];
-        } else {
-            $filteredCompanyCode = [$company_code];
-        }
-    
-        // Ambil perusahaan beserta teams dan papers yang diterima
-        $companiesQuery = Company::with([
-            'teams.papers' => function ($query) {
-                $query->where('status', 'accepted by innovation admin');
-            },
-            'teams.events' => function ($query) use ($years) {
-                $query->whereIn('events.year', $years);
-                $query->where('events.status', 'finish');
-            }
-        ]);
-    
-        if (!$isSuperadmin) {
-            $companiesQuery->whereIn('company_code', $filteredCompanyCode);
-        }
-    
-        $companies = $companiesQuery->get();
-    
-        $chartData = [
-            'labels' => [],
-            'datasets' => [],
-            'logos' => [],
-            'isSuperadmin' => $isSuperadmin,
-        ];
-    
-        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
-    
-        foreach ($years as $i => $year) {
-            $chartData['datasets'][] = [
-                'label' => $year,
-                'backgroundColor' => $colors[$i % count($colors)],
-                'data' => [],
-            ];
-        }
-    
-        // Koleksi perusahaan digabung
-        $mergedCompanies = collect();
-    
-        foreach ($companies as $company) {
-            $code = $company->company_code;
-            $actualCode = ($code == '7000') ? '2000' : $code;
-    
-            if (!$mergedCompanies->has($actualCode)) {
-                $companyObj = new \stdClass();
-                $companyObj->company_name = ($actualCode == '2000')
-                    ? 'PT Semen Indonesia (Persero)'
-                    : $company->company_name;
-                $companyObj->teams = collect();
-                $mergedCompanies->put($actualCode, $companyObj);
-            }
-    
-            $mergedCompanies[$actualCode]->teams = $mergedCompanies[$actualCode]->teams->merge($company->teams);
-        }
-    
-        $mergedCompanies = $mergedCompanies->filter(function ($company) {
-            return $company->teams->reduce(function ($carry, $team) {
-                return $carry + $team->papers->sum('financial');
-            }, 0) > 0;
-        });
-    
-        // Proses chartData
-        foreach ($mergedCompanies as $company) {
-            $companyName = $company->company_name;
-            $teams = $company->teams;
-    
-            // Proses nama logo
-            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($companyName));
-            $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
-            $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
-    
-            $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
-            $logoPath = file_exists($logoPath)
-                ? asset('assets/logos/' . $sanitizedCompanyName . '.png')
-                : asset('assets/logos/pt_semen_indonesia_tbk.png');
-    
-            $chartData['labels'][] = $companyName;
-            $chartData['logos'][] = $logoPath;
-    
-            foreach ($years as $index => $year) {
-                $financialTotal = $teams->reduce(function ($carry, $team) use ($year) {
-                    // Cek apakah tim ini ikut event pada tahun tersebut
-                    $hasEventInYear = $team->events->contains(function ($event) use ($year) {
-                        return $event->year == $year && $event->status == 'finish';
-                    });
-            
-                    if (!$hasEventInYear) {
-                        return $carry;
-                    }
-            
-                    // Jika ya, tambahkan semua paper-nya
-                    return $carry + $team->papers->sum('financial');
-                }, 0);
-            
-                $chartData['datasets'][$index]['data'][] = $financialTotal;
-            }
-    
-        }
-    
-        return view('dashboard.total-financial-benefit-chart', [
-            'chartDataTotalBenefit' => $chartData,
-            'isSuperadmin' => $isSuperadmin,
-        ]);
+   public function showTotalBenefitChart()
+{
+    $currentYear = now()->year;
+    $years = range($currentYear - 3, $currentYear);
+    $isSuperadmin = Auth::user()->role === 'Superadmin';
+
+    // Pakai logic yang sudah benar (mengalikan dengan jumlah event finish)
+    $rows = self::getFinancialBenefitsByCompany(); // <-- already array
+
+    // Susun chartData => labels, datasets per tahun, logos
+    $labels = array_map(fn($r) => $r['company_name'], $rows);
+
+    // logos dari nama perusahaan (fallback ke default)
+    $logos = [];
+    foreach ($labels as $name) {
+        $slug = preg_replace('/[^a-zA-Z0-9_()]+/','_', strtolower($name));
+        $slug = preg_replace('/_+/', '_', trim($slug, '_'));
+        $path = public_path("assets/logos/{$slug}.png");
+        $logos[] = file_exists($path)
+            ? asset("assets/logos/{$slug}.png")
+            : asset('assets/logos/pt_semen_indonesia_tbk.png');
     }
+
+    $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
+    $datasets = [];
+    foreach ($years as $i => $y) {
+        $datasets[] = [
+            'label' => $y,
+            'backgroundColor' => $colors[$i % count($colors)],
+            'data' => array_map(fn($r) => (int)($r['financials'][$y] ?? 0), $rows),
+        ];
+    }
+
+    $chartData = [
+        'labels'       => $labels,
+        'datasets'     => $datasets,
+        'logos'        => $logos,
+        'isSuperadmin' => $isSuperadmin,
+    ];
+
+    return view('dashboard.total-financial-benefit-chart', [
+        'chartDataTotalBenefit' => $chartData,
+        'isSuperadmin'          => $isSuperadmin,
+    ]);
+}
+
 
 
 
@@ -586,78 +517,81 @@ class DashboardController extends Controller
         return response()->json($data);
     }
 
-    public function getFinancialBenefitsByCompany()
+    public static function getFinancialBenefitsByCompany(): array
     {
         $currentYear = now()->year;
         $years = range($currentYear - 3, $currentYear);
     
-        // Ambil perusahaan dengan relasi tim -> papers & events
-        $companies = Company::with([
-            'teams.papers' => function ($query) {
-                $query->where('status', 'accepted by innovation admin');
-            },
-            'teams.events' => function ($query) use ($years) {
-                $query->whereIn('year', $years)
-                      ->where('events.status', 'finish');
+        // total paper accepted per TIM (all-time) + merge 7000 -> 2000
+        $base = DB::table('teams as t')
+            ->join('papers as p', function ($j) {
+                $j->on('p.team_id', '=', 't.id')
+                  ->whereRaw("TRIM(LOWER(p.status)) = 'accepted by innovation admin'");
+            })
+            ->selectRaw("
+                t.id AS team_id,
+                CASE WHEN t.company_code = 7000 THEN 2000 ELSE t.company_code END AS company_code_merged,
+                SUM(p.financial) AS team_financial
+            ")
+            ->groupByRaw("
+                t.id,
+                CASE WHEN t.company_code = 7000 THEN 2000 ELSE t.company_code END
+            ");
+    
+        $perYearTotals = [];
+        $allCodes = [];
+    
+        foreach ($years as $y) {
+            // ✅ Hitung SEKALI SAJA per tim di tahun y (boolean presence), bukan jumlah event
+            $finishCount = DB::table('pvt_event_teams as pet')
+                ->join('events as e', 'e.id', '=', 'pet.event_id')
+                ->where('e.status', 'finish')
+                ->where('e.year', $y)
+                ->selectRaw('pet.team_id, 1 AS has_finish')      // cukup 1 jika ada minimal 1 event finish
+                ->groupBy('pet.team_id');
+    
+            // kontribusi per perusahaan per tahun = SUM(team_financial × has_finish[0/1])
+            $rows = DB::query()
+                ->fromSub($base, 'tp')
+                ->joinSub($finishCount, 'fc', 'fc.team_id', '=', 'tp.team_id')
+                ->selectRaw('tp.company_code_merged, SUM(tp.team_financial * fc.has_finish) AS total')
+                ->groupBy('tp.company_code_merged')
+                ->get();
+    
+            $perYearTotals[$y] = [];
+            foreach ($rows as $r) {
+                $perYearTotals[$y][$r->company_code_merged] = (int) $r->total;
+                $allCodes[$r->company_code_merged] = true;
             }
-        ])->get();
-    
-        $mergedCompanies = collect();
-    
-        foreach ($companies as $company) {
-            $code = $company->company_code;
-            $actualCode = ($code == '7000') ? '2000' : $code;
-    
-            if (!$mergedCompanies->has($actualCode)) {
-                $companyObj = new \stdClass();
-                $companyObj->company_name = ($actualCode == '2000')
-                    ? 'PT Semen Indonesia (Persero)'
-                    : $company->company_name;
-                $companyObj->teams = collect();
-                $mergedCompanies->put($actualCode, $companyObj);
-            }
-    
-            $mergedCompanies[$actualCode]->teams = $mergedCompanies[$actualCode]->teams->merge($company->teams);
         }
     
-        // Filter hanya yang memiliki total financial benefit > 0
-        $mergedCompanies = $mergedCompanies->filter(function ($company) {
-            return $company->teams->reduce(function ($carry, $team) {
-                return $carry + $team->papers->sum('financial');
-            }, 0) > 0;
-        });
+        // nama perusahaan (override 2000)
+        $codes = array_keys($allCodes);
+        $names = \App\Models\Company::whereIn('company_code', $codes)
+            ->pluck('company_name', 'company_code')->toArray();
+        $names['2000'] = $names['2000'] ?? 'PT Semen Indonesia (Persero)Tbk';
     
-        // Bangun data untuk response
-        $financialData = [];
-    
-        foreach ($mergedCompanies as $company) {
-            $dataPerYear = [];
-    
-            foreach ($years as $year) {
-                $total = $company->teams->reduce(function ($carry, $team) use ($year) {
-                    $hasEventInYear = $team->events->contains(function ($event) use ($year) {
-                        return $event->year == $year && $event->status == 'finish';
-                    });
-    
-                    if (!$hasEventInYear) {
-                        return $carry;
-                    }
-    
-                    return $carry + $team->papers->sum('financial');
-                }, 0);
-    
-                $dataPerYear[$year] = $total;
+        // rakit payload untuk chart
+        $out = [];
+        foreach ($codes as $code) {
+            $byYear = [];
+            $sum = 0;
+            foreach ($years as $y) {
+                $v = $perYearTotals[$y][$code] ?? 0;
+                $byYear[$y] = $v;
+                $sum += $v;
             }
-    
-            $financialData[] = [
-                'company_name' => $company->company_name,
-                'financials' => $dataPerYear,
-            ];
+            if ($sum > 0) {
+                $out[] = [
+                    'company_name' => $code === '2000' ? 'PT Semen Indonesia (Persero)Tbk' : ($names[$code] ?? $code),
+                    'financials'   => $byYear,
+                ];
+            }
         }
     
-        return response()->json($financialData);
+        usort($out, fn($a, $b) => array_sum($b['financials']) <=> array_sum($a['financials']));
+        return $out;
     }
-
 
     public function showTotalTeamChartCompany($company_code)
     {

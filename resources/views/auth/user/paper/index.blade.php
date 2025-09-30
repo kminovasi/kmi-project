@@ -1108,29 +1108,23 @@
 
     document.querySelector('.btn-edit-team-member').addEventListener('click', function () {
         let inputs = document.querySelectorAll('.detail-team-input');
-        let sedangEdit = false;
-
-        inputs.forEach(function (input) {
-            if (input.disabled) {
-                sedangEdit = true;
-            }
-        });
-
-        if (sedangEdit) {
+        let sedangEdit = Array.from(inputs).every(input => !input.disabled);
+    
+        if (!sedangEdit) {
             // Aktifkan mode edit
             inputs.forEach(function (input) {
                 input.disabled = false;
             });
-
+    
             // Tampilkan tombol tambah
             document.querySelector('#add-member-btn')?.classList.remove('d-none');
             document.querySelector('#add-outsource-btn')?.classList.remove('d-none');
-
+    
             // Tampilkan semua tombol hapus yang tersembunyi
             document.querySelectorAll('.btn-delete-member, .btn-delete-outsource').forEach(function (btn) {
                 btn.classList.remove('d-none');
             });
-
+    
             this.textContent = 'Simpan Perubahan';
         } else {
             // Submit form

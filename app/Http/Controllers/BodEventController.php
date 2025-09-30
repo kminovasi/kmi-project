@@ -35,7 +35,10 @@ class BodEventController extends Controller
                     'company_name' => $bodEvent->user->company_name ?? '-',
                     'position' => $bodEvent->user->position_title ?? '-',
                     'event_name' => $bodEvent->event->event_name ?? '-', // Nama event
-                    'event_type' => $bodEvent->event->type ?? '-',      // Tipe event
+                    'event_type' => $bodEvent->event->type ?? '-'      
+                        ? ucfirst(strtolower($bodEvent->event->type)) 
+                    : '-',
+                    'year' => $bodEvent->event->year ?? '-',
                     'job_level' => $bodEvent->user->job_level ?? '-',
                     'status' => $bodEvent->status,
                     'action' => '

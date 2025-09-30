@@ -43,18 +43,18 @@ class AssessmentMatrixController extends Controller
         $request->validate([
             'id' => 'required|exists:assessment_matrix_images,id'
         ]);
-
+    
         $image = AssessmentMatrixImage::findOrFail($request->id);
-
+    
         // Pastikan path relatif terhadap storage/app/public
         $path = $image->path;
-
+    
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
         }
-
+    
         $image->delete();
-
+    
         // Jika bukan AJAX
         return redirect()->back()->with('success', 'Gambar berhasil dihapus');
     }

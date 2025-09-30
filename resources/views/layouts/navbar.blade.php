@@ -1,3 +1,4 @@
+
 <nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white"
     id="sidenavAccordion">
     <!-- Sidenav Toggle Button-->
@@ -7,7 +8,11 @@
     <!-- * * Tip * * You can use text or an image for your navbar brand.-->
     <!-- * * * * * * When using an image, we recommend the SVG format.-->
     <!-- * * * * * * Dimensions: Maximum height: 32px, maximum width: 240px-->
-    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="/">Portal inovasi SIG</a>
+    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="/">
+        <div class="d-flex align-items-center text-color-main">
+            <img class="navbar-logo me-3" src="{{ asset('assets/landingpage/logo-rev2.png') }}" style="max-height: 32px; height: auto; width: auto; object-fit: contain;" alt="logo">
+        </div>
+    </a>
     <!-- Navbar Search Input-->
 
     <!-- * * Note: * * Visible only on and above the lg breakpoint-->
@@ -70,7 +75,7 @@
 
         <!-- Notifications Dropdown menampilkan daftar notifikasi-->
         @php
-            $notifications = auth()->user()->unreadNotifications;
+            $notifications = auth()->user()?->unreadNotifications ?? collect();
         @endphp
         <li class="nav-item dropdown no-caret d-none d-sm-block me-3 dropdown-notifications">
             {{-- <a class="btn btn-icon btn-transparent-dark dropdown-toggle relative" id="navbarDropdownAlerts"
@@ -117,22 +122,31 @@
         </li>
 
         <!-- User Dropdown-->
+         @php
+            $pp = Auth::user()->profile_picture ?? Auth::user()->photo_profile ?? null;
+
+            $avatarUrl = $pp
+                ? route('query.getFile') . '?directory=' . urlencode($pp)
+                : asset('template/dist/assets/img/illustrations/profiles/profile-1.png');
+        @endphp
+
         <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
-            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
-                href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false"><img class="img-fluid"
-                    src="{{ asset('template/dist/assets/img/illustrations/profiles/profile-1.png') }}" /></a>
-            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
-                aria-labelledby="navbarDropdownUserImage">
-                <h6 class="dropdown-header d-flex align-items-center">
-                    <img class="dropdown-user-img"
-                        src="{{ asset('template/dist/assets/img/illustrations/profiles/profile-1.png') }}" />
-                    <div class="dropdown-user-details">
-                        <div class="dropdown-user-details-name">{{ Auth::user()->name }}</div>
-                        <div class="dropdown-user-details-email">{{ Auth::user()->email }}</div>
-                    </div>
-                </h6>
-                <div class="dropdown-divider"></div>
+        <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
+            href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            <img class="img-fluid" src="{{ $avatarUrl }}" />
+        </a>
+
+        <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
+            aria-labelledby="navbarDropdownUserImage">
+            <h6 class="dropdown-header d-flex align-items-center">
+                <img class="dropdown-user-img" src="{{ $avatarUrl }}" />
+                <div class="dropdown-user-details">
+                    <div class="dropdown-user-details-name">{{ Auth::user()->name }}</div>
+                    <div class="dropdown-user-details-email">{{ Auth::user()->email }}</div>
+                </div>
+            </h6>
+            <div class="dropdown-divider"></div>
 
                 {{-- <a class="dropdown-item" href="">
                             <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>

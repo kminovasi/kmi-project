@@ -14,7 +14,7 @@
 <div class="container-md ">
     <figure class="text-center">
         <img class="img-fluid border rounded-3 shadow-lg mb-4 overflow-hidden" width="700" height="500" loading="lazy"
-        src="{{ asset('storage/' . $post->cover_image) }}" alt="content-image">
+        src="{{ route('dashboard.getFile') }}?directory={{ urlencode($post->cover_image) }}" alt="content-image">
     </figure>
     <div class="content mb-4 lead">
         {!! $post->content !!}

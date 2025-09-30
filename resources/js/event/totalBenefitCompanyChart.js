@@ -157,4 +157,3 @@ const formatRupiah = (value) => {
     }).format(value);
 };
 
-window.renderTotalBenefitChart = renderTotalBenefitChart;

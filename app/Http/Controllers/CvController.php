@@ -66,7 +66,6 @@ class CvController extends Controller
             $innovations->where('pvt_members.employee_id', $employee->employee_id);
         }
 
-        // === APPLY FILTERS ===
         if ($request->filled('event')) {
            $innovations->where('events.id', $request->event);
         }
@@ -130,7 +129,7 @@ class CvController extends Controller
     private function renderViewToJpeg(string $view, array $data, array $opt = []): string
     {
         $orientation = $opt['orientation'] ?? 'landscape';
-        $width  = $opt['width']  ?? ($orientation === 'landscape' ? 3508 : 2480); // A4 @ ~300dpi
+        $width  = $opt['width']  ?? ($orientation === 'landscape' ? 3508 : 2480); 
         $height = $opt['height'] ?? ($orientation === 'landscape' ? 2480 : 3508);
         $quality = $opt['quality'] ?? 92;
     
@@ -144,14 +143,14 @@ class CvController extends Controller
         $jpgPath = $tmpDir.'/cert-'.Str::uuid().'.jpg';
     
         $imagick = new \Imagick();
-        $imagick->setResolution(300, 300); // set SEBELUM read
+        $imagick->setResolution(300, 300); 
         $imagick->setBackgroundColor(new \ImagickPixel('white'));
-        $imagick->readImage($pdfPath.'[0]'); // halaman pertama
+        $imagick->readImage($pdfPath.'[0]'); 
         $imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
         $imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
         $imagick->setImageFormat('jpeg');
         $imagick->setImageCompressionQuality($quality);
-        $imagick->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1, true); // proporsional
+        $imagick->resizeImage($width, $height, \Imagick::FILTER_LANCZOS, 1, true); 
         $imagick->writeImage($jpgPath);
         $imagick->clear();
         $imagick->destroy();
@@ -225,7 +224,7 @@ class CvController extends Controller
         };
 
 
-        //SERTIFIKAT JURI (Superadmin & Juri) 
+        //SERTIFIKAT JURI 
         if ($certificateType === 'judge') {
 
              $view = 'auth.user.profile.judge-certificate';   
@@ -314,72 +313,125 @@ class CvController extends Controller
 
         }
 
-        //SEMUA PESERTA (termasuk Superadmin)
+        // SEMUA PESERTA
         if ($certificateType === 'participant') {
-            // BOD pakai event_id dari inovasi
+            $auth    = \Auth::user();
+            $role    = optional($auth)->role;
+            $empId   = optional($auth)->employee_id;
+        
             $bodData = \DB::table('bod_events')
                 ->leftJoin('users', 'users.employee_id', '=', 'bod_events.employee_id')
                 ->where('bod_events.event_id', $inovasi['event_id'] ?? 0)
                 ->select('users.name as bod_name', 'users.position_title as title')
                 ->first();
-
-            $team_members = \DB::table('pvt_members')
-                ->join('users', 'users.employee_id', '=', 'pvt_members.employee_id')
-                ->where('pvt_members.team_id', $inovasi['team_id'])
-                ->whereRaw("LOWER(pvt_members.status) <> 'gm'") 
-                ->select('users.name as member_name', 'users.company_name', 'pvt_members.status')
-                ->get();
-
-            if ($team_members->isEmpty()) {
-                abort(404, 'Tidak ada anggota tim ditemukan.');
-            }
-            
+        
             $event = $getEvent($inovasi['event_id'] ?? null);
             $bg_abs = $resolveBg($inovasi['certificate'] ?? null);
-            $zip = new \ZipArchive();
-            $zipFileName = 'Sertifikat_' . $inovasi['team_name'] . '.zip';
-            $zipPath = storage_path('app/public/' . $zipFileName);
-
-            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+            if (!$bg_abs) {
+                abort(404, 'Template sertifikat peserta tidak ditemukan.');
+            }
+        
+            // ---- MODE SUPERADMIN: ZIP SEMUA ANGGOTA (kecuali GM) ----
+            if (strcasecmp((string)$role, 'Superadmin') === 0) {
+                $team_members = \DB::table('pvt_members as pm')
+                    ->join('users as u', 'u.employee_id', '=', 'pm.employee_id')
+                    ->where('pm.team_id', $inovasi['team_id'])
+                    ->whereRaw("LOWER(pm.status) <> 'gm'")
+                    ->select('u.name as member_name', 'u.company_name', 'pm.status', 'pm.employee_id')
+                    ->get();
+        
+                if ($team_members->isEmpty()) {
+                    abort(404, 'Tidak ada anggota tim ditemukan untuk dibuatkan ZIP.');
+                }
+        
+                $zip = new \ZipArchive();
+                $zipFileName = 'Sertifikat_' . ($inovasi['team_name'] ?? 'Tim') . '.zip';
+                $zipPath = storage_path('app/public/' . $zipFileName);
+        
+                $tempImages = [];
+                if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                    abort(500, 'Gagal membuka/membuat file ZIP.');
+                }
+        
                 foreach ($team_members as $member) {
                     $data = [
-                        'user_name'      => $member->member_name,
-                        'team_name'      => $inovasi['team_name'],
-                        'company_name'   => $member->company_name ?? $inovasi['company_name'],
-                        'category_name'  => $inovasi['category'],
-                        'template_path'  => $inovasi['certificate'],
-                        'team_rank'      => $teamRanks,
-                        'member_status'  => $member->status ?? '-',
-                        'event_end_date' => $inovasi['event_end'],
-                        // 'bodName'        => $bodData->bod_name ?? '-',
-                        // 'bodTitle'       => $bodData->title ?? '-',
+                        'user_name'        => $member->member_name,
+                        'team_name'        => $inovasi['team_name'],
+                        'company_name'     => $member->company_name ?? $inovasi['company_name'],
+                        'category_name'    => $inovasi['category'],
+                        'template_path'    => $inovasi['certificate'],
+                        'team_rank'        => $teamRanks,
+                        'member_status'    => $member->status ?? '-',
+                        'event_end_date'   => $inovasi['event_end'],
+                        'bodName'          => $bodData->bod_name ?? '-',
+                        'bodTitle'         => $bodData->title ?? '-',
                         'event_name'       => $event->event_name ?? ($inovasi['event_name'] ?? null),
                         'year'             => $event->year ?? ($inovasi['year'] ?? null),
                         'certificate_date' => $event->certificate_date ?? null,
-
+                        'bg_abs'           => $bg_abs,
                     ];
-                $imgPath = $this->renderViewToJpeg(
+        
+                    $imgPath = $this->renderViewToJpeg(
+                        'auth.admin.dokumentasi.cv.participant-certificate',
+                        $data,
+                        ['orientation' => 'landscape', 'quality' => 92]
+                    );
+        
+                    $zip->addFile($imgPath, 'Sertifikat - ' . $member->member_name . '.jpg');
+                    $tempImages[] = $imgPath;
+                }
+        
+                $zip->close();
+                foreach ($tempImages as $tmp) { @unlink($tmp); }
+                return response()->download($zipPath)->deleteFileAfterSend(true);
+            }
+        
+            // ---- MODE NON-SUPERADMIN: HANYA MILIKNYA SENDIRI ----
+            if (empty($empId)) {
+                abort(403, 'Tidak dapat mengidentifikasi akun Anda.');
+            }
+        
+            $me = \DB::table('pvt_members as pm')
+                ->join('users as u', 'u.employee_id', '=', 'pm.employee_id')
+                ->where('pm.team_id', $inovasi['team_id'])
+                ->where('pm.employee_id', $empId)
+                ->whereRaw("LOWER(pm.status) <> 'gm'")
+                ->select('u.name as member_name', 'u.company_name', 'pm.status')
+                ->first();
+        
+            if (!$me) {
+                abort(403, 'Sertifikat tidak tersedia.');
+            }
+        
+            $data = [
+                'user_name'        => $me->member_name,
+                'team_name'        => $inovasi['team_name'],
+                'company_name'     => $me->company_name ?? $inovasi['company_name'],
+                'category_name'    => $inovasi['category'],
+                'template_path'    => $inovasi['certificate'],
+                'team_rank'        => $teamRanks,
+                'member_status'    => $me->status ?? '-',
+                'event_end_date'   => $inovasi['event_end'],
+                'bodName'          => $bodData->bod_name ?? '-',
+                'bodTitle'         => $bodData->title ?? '-',
+                'event_name'       => $event->event_name ?? ($inovasi['event_name'] ?? null),
+                'year'             => $event->year ?? ($inovasi['year'] ?? null),
+                'certificate_date' => $event->certificate_date ?? null,
+                'bg_abs'           => $bg_abs,
+            ];
+        
+            $imgPath = $this->renderViewToJpeg(
                 'auth.admin.dokumentasi.cv.participant-certificate',
                 $data,
                 ['orientation' => 'landscape', 'quality' => 92]
             );
-
-            $zip->addFile($imgPath, 'Sertifikat - ' . $member->member_name . '.jpg');
-            $tempImages[] = $imgPath; // catat untuk dibersihkan
+        
+            $filename = 'Sertifikat - ' . $me->member_name . '.jpg';
+            return response()->download($imgPath, $filename, ['Content-Type' => 'image/jpeg'])
+                ->deleteFileAfterSend(true);
         }
-        $zip->close();
-    } else {
-        abort(500, 'Gagal membuat file ZIP.');
-    }
 
-    // bersihkan file JPG sementara
-    foreach ($tempImages as $tmp) { @unlink($tmp); }
-
-    return response()->download($zipPath)->deleteFileAfterSend(true);
-}
-
-
-        //SERTIFIKAT TIM 
+        // SERTIFIKAT TIM 
         if ($certificateType === 'team') {
             $userRole = optional(\Auth::user())->role;
         
@@ -389,7 +441,7 @@ class CvController extends Controller
                 ->select('users.name as bod_name', 'users.position_title as title')
                 ->first();
             
-             $event = $getEvent($inovasi['event_id'] ?? null);
+            $event = $getEvent($inovasi['event_id'] ?? null);
         
             $bg_abs     = $resolveBg($inovasi['certificate'] ?? null);
             $badge1_abs = $resolveBg($inovasi['badge_rank_1'] ?? null);
@@ -397,44 +449,56 @@ class CvController extends Controller
             $badge3_abs = $resolveBg($inovasi['badge_rank_3'] ?? null);
         
             $rankValue = null;
+            $teamStatusLabel = 'Peserta'; 
             $eventId = $inovasi['event_id'] ?? $request->input('event_id');
             $teamId  = $inovasi['team_id']  ?? $request->input('team_id');
         
             if (!empty($eventId) && !empty($teamId)) {
+                // status dan skor tim
                 $teamRow = \DB::table('pvt_event_teams as pet')
                     ->join('teams as t', 't.id', '=', 'pet.team_id')
                     ->where('pet.event_id', $eventId)
                     ->where('pet.team_id',  $teamId)
-                    ->select('t.category_id as cat_id', \DB::raw('COALESCE(pet.final_score,0) as my_score'))
+                    ->select(
+                        't.category_id as cat_id',
+                        \DB::raw('COALESCE(pet.final_score, -1) as my_score'), 
+                        'pet.status as my_status'
+                    )
                     ->first();
         
                 if ($teamRow) {
-                    $countHigher = \DB::table('pvt_event_teams as pet2')
-                        ->join('teams as t2', 't2.id', '=', 'pet2.team_id')
-                        ->where('pet2.event_id', $eventId)
-                        ->where('t2.category_id', $teamRow->cat_id)
-                        ->whereRaw('COALESCE(pet2.final_score,0) > ?', [$teamRow->my_score])
-                        ->count();
+                    $norm = trim((string)$teamRow->my_status);
+                    $teamStatusLabel = $norm !== '' ? ucwords(strtolower($norm)) : 'Peserta';
         
-                    $rankValue = $countHigher + 1;
+                    // status "Juara" → hitung peringkat
+                    if (strcasecmp($norm, 'Juara') === 0) {
+                        $countHigher = \DB::table('pvt_event_teams as pet2')
+                            ->join('teams as t2', 't2.id', '=', 'pet2.team_id')
+                            ->where('pet2.event_id', $eventId)
+                            ->where('t2.category_id', $teamRow->cat_id)
+                            ->whereRaw('LOWER(pet2.status) = ?', ['juara'])
+                            ->whereRaw('COALESCE(pet2.final_score, -1) > ?', [$teamRow->my_score])
+                            ->count();
+        
+                        $rankValue = $countHigher + 1; // 1/2/3
+                    }
                 }
             }
         
             if ($rankValue === null && $userRole === 'Superadmin') {
-                $rankValue = (function ($raw) {
-                    if ($raw === null) return null;
-                    if (is_numeric($raw)) return (int)$raw;
-                    $dec = json_decode($raw, true);
-                    return is_numeric($dec) ? (int)$dec : null;
-                })($request->input('team_rank'));
-            }
+                $currentStatus = \DB::table('pvt_event_teams')
+                    ->where('event_id', $eventId)->where('team_id', $teamId)
+                    ->value('status');
         
-            // \Log::debug('[CERT][TEAM] rank calc', [
-            //     'user_role' => $userRole,
-            //     'event_id'  => $eventId,
-            //     'team_id'   => $teamId,
-            //     'rank'      => $rankValue,
-            // ]);
+                if (strcasecmp((string)$currentStatus, 'Juara') === 0) {
+                    $rankValue = (function ($raw) {
+                        if ($raw === null) return null;
+                        if (is_numeric($raw)) return (int)$raw;
+                        $dec = json_decode($raw, true);
+                        return is_numeric($dec) ? (int)$dec : null;
+                    })($request->input('team_rank'));
+                }
+            }
         
             $data = [
                 'innovation_title' => $titleCase($inovasi['innovation_title'] ?? ''),
@@ -442,10 +506,11 @@ class CvController extends Controller
                 'company_name'     => $inovasi['company_name']     ?? '',
                 'category_name'    => $inovasi['category']         ?? '',
                 'template_path'    => $inovasi['certificate']      ?? null,
-                'team_rank'        => $rankValue, 
+                'team_rank'        => $rankValue,
+                'team_status'      => $teamStatusLabel,
                 'event_end_date'   => $inovasi['event_end']        ?? null,
-                // 'bodName'          => $bodData->bod_name           ?? '-',
-                // 'bodTitle'         => $bodData->title              ?? '-',
+                'bodName'          => $bodData->bod_name           ?? '-',
+                'bodTitle'         => $bodData->title              ?? '-',
                 'bg_abs'           => $bg_abs,
                 'badge1_abs'       => $badge1_abs,
                 'badge2_abs'       => $badge2_abs,
@@ -458,6 +523,9 @@ class CvController extends Controller
             $view = 'auth.admin.dokumentasi.cv.team-certificate';
             $certificateName = $inovasi['team_name'] ?? 'Tim';
         }
+
+
+
 
         
         //BEST OF THE BEST

@@ -1,6 +1,6 @@
 <div class="card p-3 mt-3">
     <h5 class="text-center">Akumulasi Total Kategori yang Dipilih Inovator </h5>
-    <div class="mt-3 row" id="cardContainer">
+    <div class="mt-3 row d-flex justify-content-center" id="cardContainer">
         <!-- Kartu-kartu data akan dimasukkan di sini -->
     </div>
 </div>

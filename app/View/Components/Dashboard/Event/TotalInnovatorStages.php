@@ -3,46 +3,51 @@
 namespace App\View\Components\Dashboard\Event;
 
 use App\Models\Event;
-use App\Models\PvtEventTeam;
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\DB;
 
 class TotalInnovatorStages extends Component
 {
     public $chartData;
     public $event_name;
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
+    public $totalTeams;
+
     public function __construct($eventId)
     {
-        // Ambil jumlah peserta berdasarkan status per event
         $statuses = [
-            'On Desk',
-            'Presentation',
             'tidak lolos On Desk',
+            'On Desk',
             'tidak lolos Presentation',
-            'Lolos Presentation',
+            'Presentation',
             'Tidak lolos Caucus',
             'Caucus',
             'Presentation BOD',
             'Juara'
         ];
-        $this->event_name = Event::findOrFail($eventId)->first()->event_name;
 
-        $data = PvtEventTeam::where('event_id', $eventId)
-            ->selectRaw('status, COUNT(*) as total')
+        // Ambil nama event
+        $event = Event::findOrFail($eventId);
+        $this->event_name = $event->event_name;
+
+        // Ambil data status terakhir semua tim dalam event
+        $teams = DB::table('pvt_event_teams')
+            ->where('event_id', $eventId)
             ->whereIn('status', $statuses)
-            ->groupBy('status')
-            ->get()
-            ->pluck('total', 'status');
+            ->select('team_id', 'status')
+            ->distinct()
+            ->get();
 
-        // Inisialisasi data untuk setiap status agar tidak ada yang kosong
+        // Kelompokkan berdasarkan status
+        $grouped = $teams->groupBy('status');
+
+        // Susun chart data
         $chartData = [];
         foreach ($statuses as $status) {
-            $chartData[] = $data[$status] ?? 0;
+            $chartData[] = $grouped->has($status) ? $grouped[$status]->count() : 0;
         }
+
+        // Hitung total tim unik
+        $this->totalTeams = $teams->pluck('team_id')->unique()->count();
 
         $this->chartData = [
             'labels' => $statuses,
@@ -50,16 +55,12 @@ class TotalInnovatorStages extends Component
         ];
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
     public function render()
     {
         return view('components.dashboard.event.total-innovator-stages', [
             'chartData' => $this->chartData,
-            'event_name' => $this->event_name
+            'event_name' => $this->event_name,
+            'totalTeams' => $this->totalTeams
         ]);
     }
 }

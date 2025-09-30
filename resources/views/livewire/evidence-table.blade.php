@@ -3,7 +3,7 @@
     <div class="flex row mb-4">
         <!-- Pencarian berdasarkan judul paper -->
         <div class="col-md-6">
-            <input type="text" name="search" wire:model.debounce.300ms="search" class="form-control form-control-sm" placeholder="Cari judul paper..."
+            <input type="text" name="search" wire:model.debounce.300ms="search" class="form-control form-control-sm" placeholder="Cari judul paper/ nama tim..."
                 value="{{ request('search') }}">
         </div>
 
@@ -51,15 +51,17 @@
                             <td>Rp.{{ number_format($paper->financial, 0, ',', '.') }}</td>
                             <td>>Rp.{{ number_format($paper->potential_benefit, 0, ',', '.') }}</td>
                             <td class="text-center">
-                                @if ($paper->is_best_of_the_best == false)
-                                    {{ $paper->rank <= 3 ? 'Juara ' . $paper->rank : 'Peserta' }}
-                                @else
+                                @if ($paper->is_best_of_the_best == true)
                                     Best Of The Best
                                     <button type="button" class="btn btn-warning btn-xs" data-bs-toggle="tooltip"
                                         data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                         data-bs-title="Best of The Best">
                                         <i class="fas fa-trophy" aria-hidden="true"></i>
                                     </button>
+                                @elseif ($paper->is_honorable_winner == true)
+                                    Juara Harapan
+                                @else
+                                    {{ $paper->rank <= 3 ? 'Juara ' . $paper->rank : 'Peserta' }}
                                 @endif
                             </td>
                             <td>
@@ -78,19 +80,30 @@
                                         </li>
                                         <hr class="dropdown-divider">
                                         <li>
-                                            {{-- <a href="{{ asset('storage/' . str_replace('f: ', '', $paper->full_paper)) }}"
-                                                class="dropdown-item" download="{{ $paper->innovation_title }}.pdf">
-                                                <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
-                                            </a> --}}
-                                            <a href="{{ route('evidence.download-paper', $paper->paper_id) }}"
-                                                class="dropdown-item" download="{{ $paper->innovation_title }}.pdf"
-                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip"
+                                            @if(in_array(Auth::user()->role, ['Admin', 'Superadmin']))
+                                                {{-- Admin & Superadmin bisa download --}}
+                                                <a href="{{ route('evidence.download-paper', $paper->paper_id) }}"
+                                                class="dropdown-item"
+                                                download="{{ $paper->innovation_title }}.pdf"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                data-bs-custom-class="custom-tooltip"
                                                 data-bs-title="Download Makalah">
-                                                <i class="fas fa-download dropdown-item-icon"></i>  Download Paper
-                                            </a>
+                                                <i class="fas fa-download dropdown-item-icon"></i> Download Paper
+                                                </a>
+                                            @else
+                                                {{-- Role lain hanya preview --}}
+                                                <a href="{{ route('evidence.preview-paper', $paper->paper_id) }}"
+                                                class="dropdown-item"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                data-bs-custom-class="custom-tooltip"
+                                                data-bs-title="Preview Makalah">
+                                                <i class="fas fa-eye dropdown-item-icon"></i> Preview Paper
+                                                </a>
+                                            @endif
                                         </li>
                                     </ul>
-
                                 </div>
                             </td>
                         </tr>

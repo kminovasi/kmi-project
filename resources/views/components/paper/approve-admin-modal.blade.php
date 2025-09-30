@@ -17,8 +17,8 @@
                          <select class="form-select" aria-label="Default select example" name="status"
                              id="status_by_admin" require>
                              <option selected>-</option>
-                             <option value="accept_assessment">Accept (Lolos Penilaian)</option>
-                             <option value=accept_innovation>Accept (Titak Lolos Penilaian)</option>
+                             <option value="accept_assessment">Accept (Lolos Verifikasi Awal)</option>
+                             <option value="accept_innovation">Accept (Tidak Lolos Verifikasi Awal)</option>
                              <option value="revision">Revisi</option>
                              <option value="reject">Reject</option>
                          </select>

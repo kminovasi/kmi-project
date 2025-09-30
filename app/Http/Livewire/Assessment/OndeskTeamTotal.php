@@ -36,6 +36,7 @@ class OndeskTeamTotal extends Component
             ->join('categories', 'categories.id', '=', 'teams.category_id')
             ->where('pvt_event_teams.event_id', $this->eventId)
             ->where('pvt_assesment_team_judges.stage', 'on desk')
+            ->where('pvt_assesment_team_judges.score','!=', 0) 
             ->when(!$isSuperadmin, function ($query) use ($employeeId) {
                 $query->where('judges.employee_id', $employeeId);
             })

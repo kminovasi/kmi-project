@@ -145,7 +145,7 @@
             <div class="col-md-3 col-sm-3 col-xs-6 justify-content-end">
                 <div class="d-flex">
                     @php
-                        $formattedDateTime = now()->isoFormat('dddd 路 D MMMM YYYY') . ' 路 ' . now()->format('H:i');
+                        $formattedDateTime = now()->isoFormat('dddd · D MMMM YYYY') . ' · ' . now()->format('H:i');
                     @endphp
                     <div class="page-header-subtitle mt-1 d-flex align-items-center">
                         <i class="bi bi-calendar-date me-2"></i>

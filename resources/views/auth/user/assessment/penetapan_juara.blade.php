@@ -50,7 +50,7 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         {{-- Component Navigation Paper --}}
-        @include('components.assessment.navbar')
+        @include('auth.user.paper.navbar')
 
         <div class="mb-3">
             @if ($errors->any())
@@ -193,7 +193,15 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="inputDate" class="form-label">Tanggal Penetapan Juara</label>
+                                    <label for="rapatJuriAt" class="form-label">Tanggal Rapat Dewan Juri</label>
+                                    <input type="date" name="rapat_juri" id="inputDate" class="form-control" required>
+                                </div>
+                                 <div class="mb-3">
+                                    <label for="rapatDirekturAt" class="form-label">Tanggal Rapat Direktur</label>
+                                    <input type="date" name="rapat_direktur" id="inputDate" class="form-control" required>
+                                </div>
+                                 <div class="mb-3">
+                                    <label for="inputDate" class="form-label">Tanggal Pembuatan Berita Acara</label>
                                     <input type="date" name="penetapan_juara" id="inputDate" class="form-control" required>
                                 </div>
                                 <div class="card-footer text-end">
@@ -252,7 +260,6 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Terapkan Filter</button>
                 </div>
             </div>
         </div>
@@ -301,7 +308,6 @@
                 "columns": [
                     { title: "No", data: null, orderable: false },
                     { title: "Tim", data: 'Tim', orderable: true }, // Adjust the column to match the modified DataTable
-                    { title: "Judul", data: 'judul' },
                     { title: "Kategori", data: 'kategori' },
                     { title: "Ranking", data: 'Ranking' }
                 ],
@@ -363,9 +369,18 @@
             // Definisikan dataTable sebagai variabel global
             let dataTable;
             const selectElement = document.getElementById('filter-event');
+               function updateEventTitle() {
                 const selectedOption = selectElement.options[selectElement.selectedIndex];
-                const eventName = selectedOption.text;
-                document.getElementById('event-title').innerHTML = eventName;
+                if (selectedOption) {
+                    const eventName = selectedOption.text;
+                    document.getElementById('event-title').innerHTML = eventName;
+                }
+            }
+            updateEventTitle();
+            selectElement.addEventListener('change', function() {
+            updateEventTitle();
+            initTable(); /
+            });
 
             // Inisialisasi pertama kali
             function initTable() {
@@ -389,9 +404,9 @@
                     },
                     "columns": [
                         { title: "No", data: null, orderable: false },
-                        { title: "Tim", data: 'Tim', orderable: true },
-                        { title: "Judul", data: 'judul' },
-                        { title: "Kategori", data: 'kategori' },
+                        { title: "Tim", data: 'team_name', orderable: true },
+                        { title: "Judul", data: 'Judul' },
+                        { title: "Kategori", data: 'Kategori' },
                         { title: "Skor Akhir", data: 'final_score' },
                         { title: "Ranking", data: 'Ranking' }
                     ],

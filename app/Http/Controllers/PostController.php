@@ -84,7 +84,7 @@ class PostController extends Controller
                 Storage::disk('public')->delete($post->cover_image);
             }
             // Simpan gambar baru
-            $validatedData['cover_image'] = $request->file('cover_image')->store('posts');
+            $validatedData['cover_image'] = $request->file('cover_image')->store('posts', 'public');
         } else {
             // Jika tidak ada gambar baru, tetap gunakan gambar lama
             $validatedData['cover_image'] = $post->cover_image;

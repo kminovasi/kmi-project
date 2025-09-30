@@ -22,19 +22,24 @@ class CementInnovationChart extends Component
 
         // Ambil data inovasi berdasarkan perusahaan dan status
         $data = Team::select(
-                'teams.company_code',
-                'companies.company_name',
-                'companies.sort_order',
-                DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Implemented') THEN 1 ELSE 0 END) as implemented"),
-                DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Progress', 'Not Implemented') THEN 1 ELSE 0 END) as idea_box")
-            )
-            ->join('companies', 'teams.company_code', '=', 'companies.company_code')
-            ->join('papers', 'teams.id', '=', 'papers.team_id')
-            ->where('companies.group', 'Semen')
-            ->where('papers.status', 'accepted by innovation admin')
-            ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order')
-            ->orderBy('companies.sort_order')
-            ->get();
+            'teams.company_code',
+            'companies.company_name',
+            'companies.sort_order',
+            DB::raw("SUM(CASE 
+                        WHEN categories.category_name != 'IDEA BOX' 
+                        THEN 1 ELSE 0 END) as implemented"),
+            DB::raw("SUM(CASE 
+                        WHEN categories.category_name = 'IDEA BOX' 
+                        THEN 1 ELSE 0 END) as idea_box")
+        )
+        ->join('companies', 'teams.company_code', '=', 'companies.company_code')
+        ->join('papers', 'teams.id', '=', 'papers.team_id')
+        ->leftJoin('categories', 'categories.id', '=', 'teams.category_id')
+        ->where('companies.group', 'Semen')
+        ->where('papers.status', 'accepted by innovation admin')
+        ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order')
+        ->orderBy('companies.sort_order')
+        ->get();
 
         // Gabungkan data company_code 7000 ke 2000
         $company2000 = $data->firstWhere('company_code', '2000');

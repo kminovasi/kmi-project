@@ -25,11 +25,15 @@ class FinancialBenefitChartCompanies extends Component
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
     public function render()
-    {
-        $financialData = app(DashboardController::class)->getFinancialBenefitsByCompany()->getData(true);
+{
+    $result = app(\App\Http\Controllers\DashboardController::class)
+        ->getFinancialBenefitsByCompany(); // <- sudah array
 
-        return view('components.dashboard.financial-benefit-chart-companies', [
-            'financialData' => $financialData
-        ]);
-    }
+    $financialData = is_array($result) ? $result : (array) $result;
+
+    return view('components.dashboard.financial-benefit-chart-companies', [
+        'financialData' => $financialData,
+    ]);
+}
+
 }

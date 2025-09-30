@@ -711,7 +711,7 @@ class PaperController extends Controller
             
                     $fpdi->StartTransform();
             
-                    // Tempatkan watermark di tengah halaman dengan rotasi 45째
+                    // Tempatkan watermark di tengah halaman dengan rotasi 45°
                     $fpdi->StartTransform();
                     $centerX = $size['width'] / 2;
                     $centerY = $size['height'] / 2;
@@ -1404,12 +1404,6 @@ class PaperController extends Controller
                 'team_id' => $team_id,
                 'event_id' => $event_id,
             ])['id'];
-            
-            if($eventData->type == 'group') {
-                Paper::update([
-                    'status_event' => 'accept_group'
-                ]);
-            }
 
             $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
@@ -1896,7 +1890,7 @@ class PaperController extends Controller
             
                 $fpdi->StartTransform();
             
-                // Tempatkan watermark di tengah halaman dengan rotasi 45째
+                // Tempatkan watermark di tengah halaman dengan rotasi 45°
                 $fpdi->StartTransform();
                 $centerX = $size['width'] / 2;
                 $centerY = $size['height'] / 2;
@@ -1945,82 +1939,87 @@ class PaperController extends Controller
     }
     
     public function updateDetailDataTeam(Request $request, Team $team)
-    {
-        $request->validate([
-            'team_name' => 'required|string|max:255',
-            'facilitator' => 'required|string|max:255',
-            'leader' => 'required|string|max:255',
-            'member' => 'required|array',
-            'member.*' => 'required|string|max:255',
-            'outsource' => 'nullable|array',
-            'outsource.*' => 'nullable|string|max:255',
-        ]);
+{
+    $request->validate([
+        'team_name'   => 'required|string|max:255',
+        'facilitator' => 'required|string|max:255', // employee_id fasilitator
+        'leader'      => 'required|string|max:255', // employee_id ketua
+        'member'      => 'nullable|array',          // <-- tidak wajib
+        'member.*'    => 'nullable|string|max:255', // <-- tidak wajib (boleh kosong, akan difilter)
+        'outsource'   => 'nullable|array',
+        'outsource.*' => 'nullable|string|max:255',
+    ]);
 
-        try {
-            DB::transaction(function () use ($request, $team) {
-                // Update nama tim
-                $teamId = $team->id;
-                $team->update(['team_name' => $request->team_name]);
+    try {
+        DB::transaction(function () use ($request, $team) {
+            $teamId = $team->id;
 
-                // Update facilitator & leader
-                foreach (['facilitator', 'leader'] as $role) {
-                    PvtMember::updateOrCreate(
-                        ['team_id' => $team->id, 'status' => $role],
-                        ['employee_id' => $request->$role]
-                    );
-                }
+            // 1) Update nama tim
+            $team->update(['team_name' => $request->team_name]);
 
-                // Hapus semua member lama
-                PvtMember::where('team_id', $teamId)
-                    ->where('status', 'member')
-                    ->delete();
+            // 2) Update facilitator & leader (tetap wajib)
+            foreach (['facilitator', 'leader'] as $role) {
+                PvtMember::updateOrCreate(
+                    ['team_id' => $teamId, 'status' => $role],
+                    ['employee_id' => $request->input($role)]
+                );
+            }
 
-                // Tambah member baru (batch insert)
-                $members = collect($request->member)->filter()->map(function ($id) use ($teamId) {
-                    return [
-                        'team_id' => $teamId,
-                        'employee_id' => $id,
-                        'status' => 'member',
+            // 3) Hapus semua member lama
+            PvtMember::where('team_id', $teamId)
+                ->where('status', 'member')
+                ->delete();
+
+            // 4) Insert member baru kalau ada (filter nilai kosong dari Select2)
+            $membersInput = collect($request->input('member', []))
+                ->filter(fn ($v) => filled($v)) // buang "" / null
+                ->map(fn ($id) => [
+                    'team_id'     => $teamId,
+                    'employee_id' => $id,
+                    'status'      => 'member',
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+
+            if ($membersInput->isNotEmpty()) {
+                PvtMember::insert($membersInput->toArray());
+            }
+
+            // 5) Hapus outsource lama
+            ph2Member::where('team_id', $teamId)->delete();
+
+            // 6) Insert outsource baru kalau ada (dan bernilai)
+            $outsourceInput = collect($request->input('outsource', []))
+                ->filter(fn ($name) => filled($name));
+
+            if ($outsourceInput->isNotEmpty()) {
+                $ymdFlat = (int) date('Y') . (int) date('n') . (int) date('j');
+
+                foreach ($outsourceInput as $name) {
+                    $new = ph2Member::create([
+                        'team_id'    => $teamId,
+                        'name'       => $name,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ];
-                });
+                    ]);
 
-                if ($members->isNotEmpty()) {
-                    PvtMember::insert($members->toArray());
+                    $new->update([
+                        'ph2_id' => 'ph2-' . $ymdFlat . '-' . $new->id,
+                    ]);
                 }
+            }
+        });
 
-                // Hapus outsource lama
-                ph2Member::where('team_id', $teamId)
-                    ->delete();
-
-                    
-                    // Tambah outsource baru
-                if (!empty($request->outsource)) {
-                    $formattedDate = (int) date('Y') . (int) date('n') . (int) date('j');
-
-                    foreach ($request->outsource as $name) {
-                        // Step 1: insert dulu
-                        $new = ph2Member::create([
-                            'team_id' => $teamId,
-                            'name' => $name,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-
-                        // Step 2: update ph2_id setelah tahu id-nya
-                        $new->update([
-                            'ph2_id' => 'ph2-' . $formattedDate . '-' . $new->id,
-                        ]);
-                    }
-                }
-            });
-
-            return redirect()->route('paper.index')->with('success', 'Detail Tim Berhasil Diperbarui');
-        } catch (\Exception $e) {
-            return redirect()->route('paper.index')->withErrors('Error: ' . $e->getMessage());
-        }
+        return redirect()
+            ->route('paper.index')
+            ->with('success', 'Detail Tim Berhasil Diperbarui');
+    } catch (\Exception $e) {
+        return redirect()
+            ->route('paper.index')
+            ->withErrors('Error: ' . $e->getMessage());
     }
+}
+
 
     public function updateDetailDataPaper(Request $request, Paper $paper)
     {

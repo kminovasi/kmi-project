@@ -78,7 +78,7 @@ class JudgeTable extends Component
             }
 
             if ($this->search) {
-                $query->where('users.name', 'ILIKE', '%' . $this->search . '%');
+                $query->where('users.name', 'like', '%' . $this->search . '%');
             }
 
         $judges = $query->orderBy('users.name', 'asc')->paginate($this->perPage);

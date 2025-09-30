@@ -35,11 +35,11 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                 datalabels: {
                     color: '#000',
                     font: {
-                        weight: 'bold', // Membuat angka di dalam chart menjadi bold
-                        size: 20 // Ukuran font angka
+                        weight: 'bold', 
+                        size: 20 
                     },
-                    anchor: 'center', // Tempatkan angka di bagian atas batang
-                    align: 'center' // Penempatan angka di dalam batang
+                    anchor: 'center', 
+                    align: 'center' 
                 }
             },
             scales: {
@@ -49,8 +49,8 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                         display: true,
                         text: 'Jumlah Team',
                         font: {
-                            size: 14, // Ukuran font
-                            weight: 'bold' // Membuat teks Y axis menjadi bold
+                            size: 14,
+                            weight: 'bold' 
                         }
                     }
                 },
@@ -59,8 +59,8 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
                         display: true,
                         text: 'Tahapan Penilaian',
                         font: {
-                            size: 14, // Ukuran font
-                            weight: 'bold' // Membuat teks X axis menjadi bold
+                            size: 14, 
+                            weight: 'bold' 
                         }
                     }
                 }
@@ -69,4 +69,6 @@ export function renderTotalInnovatorStagesChart(canvasId, chartData) {
     });
 }
 
-window.renderTotalInnovatorStagesChart = renderTotalInnovatorStagesChart;
+if (typeof window !== 'undefined') {
+    window.renderTotalInnovatorStagesChart = renderTotalInnovatorStagesChart;
+}

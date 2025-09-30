@@ -1,6 +1,6 @@
 <style>
     .btn-download {
-        width: 75%;
+        width: 50%;
     }
 
     .btn-form {
@@ -21,7 +21,7 @@
                     <div class="col-auto mb-3 ">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="user"></i></div>
-                            Profil
+                            Profil Pengguna
                         </h1>
                     </div>
                 </div>
@@ -65,21 +65,62 @@
                         <p class="card-text"><strong>Posisi:</strong> {{ $user->position_title }}</p>
                         <p class="card-text"><strong>Perusahaan:</strong> {{ $user->company_name }}</p>
                     </div>
-                    @if (Auth::user()->role == 'Juri' && $isActiveJudge)
-                        <form class="btn-form p-3" action="{{ route('cv.generateCertificate') }}" method="POST">
-                            @csrf
-                            {{-- Input for Certificate Auto Create --}}
-                            <input type="hidden" name="inovasi" value="{{ json_encode($judgeEvents) }}">
-                            <input type="hidden" name="employee" value="{{ json_encode($user) }}">
-                            <input type="hidden" name="team_rank" value="{{ json_encode($teamRanks) }}">
-                            <input type="hidden" name="certificate_type" value="team">
+                    <!--@if (Auth::user()->role == 'Juri' && $isActiveJudge && $judgeEvents->count())-->
+                    <!--    <div class="dropdown btn-form py-2">-->
+                    <!--        <button class="btn btn-download btn-sm btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">-->
+                    <!--            Lihat Sertifikat Juri-->
+                    <!--        </button>-->
+                    <!--        <ul class="dropdown-menu">-->
+                    <!--            @foreach ($judgeEvents as $event)-->
+                    <!--                <li>-->
+                    <!--                    <form action="{{ route('cv.generateCertificate') }}" method="POST" class="px-3 py-2">-->
+                    <!--                        @csrf-->
+                    <!--                         <input type="hidden" name="certificate_type" value="judge">-->
+                    <!--                        <input type="hidden" name="event_id" value="{{ $event->event_id }}">-->
+                    <!--                        {{-- <input type="hidden" name="employee" value="{{ $user }}"> --}}-->
+                    <!--                        <input type="hidden" name="employee" value="{{ $user->employee_id }}">-->
+                    <!--                        <button type="submit" class="btn btn-sm btn-link text-start w-100">-->
+                    <!--                            {{ $event->event_name . ' Tahun ' . $event->year }}-->
+                    <!--                        </button>-->
+                    <!--                    </form>-->
+                    <!--                </li>-->
+                    <!--            @endforeach-->
+                    <!--        </ul>-->
+                    <!--    </div>-->
+                    <!--@endif-->
+@if (Auth::user()->role === 'Juri' && $isActiveJudge && $judgeEvents->count())
+    @php
+        // Saring: TAMPILKAN selain event_id 3 dan 4
+        $visibleJudgeEvents = $judgeEvents->filter(function ($e) {
+            return !in_array((int) $e->event_id, [3, 4], true);
+        });
+    @endphp
 
-                            <button type="submit" class="btn btn-sm btn-download btn-success mx-5">
-                                <i class="dropdown-item-icon mb-1 me-2 fs-2" data-feather="download"></i>
-                                Download Sertifikat Juri
+    @if ($visibleJudgeEvents->count())
+        <div class="dropdown btn-form py-2">
+            <button class="btn btn-download btn-sm btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Lihat Sertifikat Juri
+            </button>
+            <ul class="dropdown-menu">
+                @foreach ($visibleJudgeEvents as $event)
+                    <li>
+                        <form action="{{ route('cv.generateCertificate') }}" method="POST" class="px-3 py-2">
+                            @csrf
+                            <input type="hidden" name="certificate_type" value="judge">
+                            <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                            <input type="hidden" name="employee" value="{{ $user->employee_id }}">
+                            <button type="submit" class="btn btn-sm btn-link text-start w-100">
+                                {{ $event->event_name.' Tahun '.$event->year }}
                             </button>
                         </form>
-                    @endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+@endif
+
+
                 </div>
                 <x-profile.list-paper :teamIds="$teamIds" />
             </div>
@@ -98,77 +139,142 @@
             <div class="col-xl-12">
                 <!-- Account details card-->
                 <div class="card mb-4">
-                    <div class="card-header bg-primary bg-gradient text-white">Detail Pengguna</div>
-                    <div class="card-body">
-                        <form>
-                            <!-- Form Group (email address)-->
-                            <div class="mb-3">
-                                <label class="small mb-1" for="dataName">Nama lengkap</label>
-                                <input class="form-control" id="dataName" type="email"
-                                    placeholder="Enter your email address" value="{{ $name }}" disabled />
-                            </div>
-                            <!-- Form Group (email address)-->
-                            <div class="mb-3">
-                                <label class="small mb-1" for="dataEmail">Alamat email</label>
-                                <input class="form-control" id="dataEmail" type="email"
-                                    placeholder="Enter your email address" value="{{ $email }}" disabled />
-                            </div>
-                            <!-- Form Row        -->
-                            <div class="row gx-3 mb-3">
-                                <!-- Form Group (conmpany name)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataCompany">Nama perusahaan</label>
-                                    <input class="form-control" id="dataCompany" type="text"
-                                        placeholder="Enter your organization name" value="{{ $company }}" disabled />
-                                </div>
-                                <!-- Form Group (position)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataPosition">Posisi</label>
-                                    <input class="form-control" id="dataPosition" type="text"
-                                        placeholder="Enter your location" value="{{ $position }}" disabled />
-                                </div>
-                            </div>
-                            <!-- Form Row        -->
-                            <div class="row gx-3 mb-3">
-                                <!-- Form Group (diroktorate name)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataDirectorate">Nama irektorat</label>
-                                    <input class="form-control" id="dataDirectorate" type="text"
-                                        placeholder="Enter your organization name" value="{{ $directorate }}" disabled />
-                                </div>
-                                <!-- Form Group (department)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataDepartment">Departemen</label>
-                                    <input class="form-control" id="dataDepartment" type="text"
-                                        placeholder="Enter your location" value="{{ $department }}" disabled />
-                                </div>
-                            </div>
-                            <!--form row  -->
-                            <div class="row gx-3 mb-3">
-                                <!-- Form Group (unit name)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataUnit">Unit</label>
-                                    <input class="form-control" id="dataUnit" type="text"
-                                        placeholder="Enter your organization name" value="{{ $unit }}" disabled />
-                                </div>
-                                <!-- Form Group (section)-->
-                                <div class="col-md-6">
-                                    <label class="small mb-1" for="dataSection">Section</label>
-                                    <input class="form-control" id="dataSection" type="text"
-                                        placeholder="Enter your location" value="{{ $section }}" disabled />
-                                </div>
-                            </div>
-                            <!-- Form Group (manager)-->
+                    {{-- <div class="card-header bg-primary bg-gradient text-white">Detail Pengguna</div> --}}
+                    <div class="card-header d-flex justify-content-between align-items-center bg-primary bg-gradient text-white">
+                        <span>Detail Pengguna</span>
+                        <div>
+                            <button id="btnEditUser" class="btn btn-sm btn-light">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </button>
+                            <button type="submit" form="formUserDetails" id="btnSaveUser" class="btn btn-sm btn-success d-none">
+                                <i class="bi bi-check2-square"></i> Simpan
+                            </button>
+                            <button id="btnCancelUser" class="btn btn-sm btn-danger d-none">
+                                <i class="bi bi-x-circle"></i> Batal
+                            </button>
+                        </div>
+                    </div>
 
-                            <div class="mb-3">
-                                <label class="small mb-1" for="dataManager">Job Level</label>
-                                <input class="form-control" id="dataManager" value="{{ $jobLevel }}" disabled />
-                            </div>
-                            <div class="mb-3">
-                                <label class="small mb-1" for="dataManager">Manager</label>
-                                <input class="form-control" id="dataManager" value="{{ $manager }}" disabled />
-                            </div>
-                        </form>
+                    <form id="formUserDetails" method="POST"
+                        action="{{ route('profile.updateUserDetails', ['employeeId' => $userId]) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="card-body">
+                    {{-- Ringkasan nama & email --}}
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                        <label class="small mb-1">Nama lengkap</label>
+                        <input name="name" type="text"
+                                class="form-control editable @error('name') is-invalid @enderror"
+                                value="{{ old('name', $name) }}" disabled>
+                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                        <label class="small mb-1">Alamat email</label>
+                        <input name="email" type="email"
+                                class="form-control editable @error('email') is-invalid @enderror"
+                                value="{{ old('email', $email) }}" disabled>
+                        @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
+                    {{-- Dua kolom --}}
+                    <div class="row g-3">
+                        {{-- KIRI --}}
+                        <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label class="small mb-1">ID Karyawan</label>
+                            <input name="employee_id" type="text" class="form-control editable"
+                                value="{{ old('employee_id', $userId) }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Pengguna</label>
+                            <input name="username" type="text" class="form-control editable"
+                                value="{{ old('username', $user->username ?? '') }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Jabatan</label>
+                            <input type="text" class="form-control"
+                                value="{{ $position }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Job Level</label>
+                            <input type="text" class="form-control" value="{{ $jobLevel }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">ID Atasan</label>
+                            <input type="text" class="form-control" value="{{ $user->manager_id ?? '-' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Kode Perusahaan</label>
+                            <input type="text" class="form-control" value="{{ $user->company_code ?? '-' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Perusahaan</label>
+                            <input type="text" class="form-control" value="{{ $company }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Perusahaan Asal</label>
+                            <input type="text" class="form-control" value="{{ $user->origin_company_name ?? '-' }}" disabled>
+                        </div>
+                        </div>
+
+                        {{-- KANAN --}}
+                        <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Direktorat</label>
+                            <input type="text" class="form-control" value="{{ $directorate }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Grup Fungsi</label>
+                            <input type="text" class="form-control" value="{{ $user->function_group_name ?? '-' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Departemen</label>
+                            <input type="text" class="form-control" value="{{ $department }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Unit</label>
+                            <input type="text" class="form-control" value="{{ $unit }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Nama Seksi</label>
+                            <input type="text" class="form-control" value="{{ $section }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Sub Seksi</label>
+                            <input type="text" class="form-control" value="{{ $user->subsection_name }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Role</label>
+                            <input type="text" class="form-control" value="{{ $user->role ?? '-' }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Jenis Kelamin</label>
+                            <select name="gender" class="form-select editable @error('gender') is-invalid @enderror" disabled>
+                            <option value="" hidden>Pilih</option>
+                            <option value="Laki-laki"  @selected(old('gender', $user->gender)==='Laki-laki')>Laki-laki</option>
+                            <option value="Perempuan"  @selected(old('gender', $user->gender)==='Perempuan')>Perempuan</option>
+                            </select>
+                            @error('gender')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Tanggal Lahir</label>
+                            <input name="date_of_birth" type="text" class="form-control editable"
+                                value="{{ old('date_of_birth', $user->date_of_birth) }}"
+                                placeholder="dd-mm-yy"
+                                disabled>
+                        </div>
+                    </div>
+
+                    {{-- Manager (nama) --}}
+                    <div class="mt-3">
+                        <label class="small mb-1">Manager</label>
+                        <input type="text" class="form-control" value="{{ $manager }}" disabled>
+                    </div>
+                    </div>
+                </form>
                         <form id="changePassword" action="{{ route('profile.updatePassword', ['employeeId' => $userId]) }}" method="POST">
                             @csrf
                             @method('PUT')
@@ -263,6 +369,27 @@
                 formUpdatePhotoProfile.classList.add('d-none');
                 cancelEditPhotoProfile.classList.add('d-none');
                 btnEditPhotoProfile.textContent = 'Edit Foto Profile';
+            });
+        });
+
+            document.addEventListener('DOMContentLoaded', () => {
+            const btnEdit = document.getElementById('btnEditUser');
+            const btnSave = document.getElementById('btnSaveUser');
+            const btnCancel = document.getElementById('btnCancelUser');
+            const editableFields = document.querySelectorAll('.editable');
+
+            btnEdit.addEventListener('click', () => {
+                editableFields.forEach(el => el.removeAttribute('disabled'));
+                btnEdit.classList.add('d-none');
+                btnSave.classList.remove('d-none');
+                btnCancel.classList.remove('d-none');
+            });
+
+            btnCancel.addEventListener('click', () => {
+                editableFields.forEach(el => el.setAttribute('disabled', true));
+                btnEdit.classList.remove('d-none');
+                btnSave.classList.add('d-none');
+                btnCancel.classList.add('d-none');
             });
         });
     </script>

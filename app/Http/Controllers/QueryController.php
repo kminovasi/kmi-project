@@ -162,7 +162,7 @@ class QueryController extends Controller
                 ->orWhere('employee_id', 'LIKE', "%$query%")
                 ->orWhere('email', 'like', "%$query%");
         })
-        ->where('job_level', 'Band 1')
+        ->whereIn('job_level', ['Band 1', 'Band 2'])
         ->join('companies', 'companies.company_code', '=', 'users.company_code')
         ->select('employee_id', 'name', 'companies.company_name', 'job_level')
         ->limit(10)
@@ -1016,7 +1016,12 @@ class QueryController extends Controller
                     // Tampilkan tombol lihat jika file sudah diunggah
                     return '<a href="' . route('berita-acara.viewUploadedPDF', ['path' => $data_row['signed_file']]) . '" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>';
                 }
-                return '<a href="' . route('berita-acara.showPDF', ['id' => $data_row['id']]) . '" class="btn btn-info btn-sm" target="_blank">Tampilkan</a>'; // Jika tidak ada file, tidak ada tombol lihat
+                return '
+                    <a href="' . route('berita-acara.showPDF', ['id' => $data_row['id']]) . '" 
+                    class="btn btn-info btn-sm" target="_blank">PDF</a>
+                    <a href="' . route('berita-acara.downloadWord', ['id' => $data_row['id']]) . '" 
+                    class="btn btn-success btn-sm" target="_blank">Word</a>
+                ';
             });
 
             $dataTable->rawColumns($rawColumns);
@@ -1823,6 +1828,203 @@ class QueryController extends Controller
     }
 
 
+    // public function get_input_pa_assessment_team(Request $request)
+    // {
+    //     try {
+    //         // $idEmployee = auth()->user()->employee_id;
+    //         $arr_event_team_id = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
+    //             ->join('users', 'users.employee_id', '=', 'judges.employee_id')
+    //             ->where('event_team_id', $request->filterEventTeamId)
+    //             ->where('pvt_assesment_team_judges.stage', 'presentation')
+    //             ->select(['judge_id', 'users.name as name', 'users.employee_id as employee_id'])
+    //             // ->distinct()
+    //             ->groupBy('judge_id', 'users.name', 'users.employee_id')
+    //             // ->pluck('judge_id')
+    //             ->get()
+    //             ->toArray();
+
+    //         $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+    //             ->join('categories', 'categories.id', '=', 'teams.category_id')
+    //             ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //             ->pluck('category_parent')
+    //             ->first();
+
+    //         if ($category == 'IDEA BOX')
+    //             $category = 'IDEA';
+    //         else
+    //             $category = 'BI/II';
+
+    //         $size_event_team = count($arr_event_team_id);
+    //         $arr_select_case = [
+    //             'point',
+    //             'detail_point as detail_point(removed)',
+    //             'score_max as score_max(removed)',
+    //             'pvt_assessment_events.id as assessment_events_id(removed)',
+    //             'pvt_assessment_events.pdca as pdca(removed)',
+    //             DB::raw("MIN(pvt_event_teams.status) as \"status(removed)\""),
+    //         ];
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.score END) AS \"Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"");
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.id END) AS \"ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name'])  . " (removed) )\"");
+    //             }
+    //             // $arr_select_case[] = DB::raw("AVG(CASE WHEN pvt_assesment_team_judges.event_team_id = pvt_event_teams.id AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id THEN pvt_assesment_team_judges.score END) AS \"Rata - rata Nilai\"");
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 // ->join('pvt_assessment_events', 'pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                     //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->where('pvt_assesment_team_judges.stage', 'presentation')
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         } else {
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->where('pvt_assesment_team_judges.stage', 'presentation')
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         }
+    //         $dataTable = DataTables::of($data_row->get());
+
+    //         $rawColumns[] = 'Detail poin';
+    //         $dataTable->addColumn('Detail poin', function ($data_row) {
+    //             return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
+    //         });
+
+    //         $data = $data_row->get();
+
+    //         $found = false;
+    //         foreach ($data as $item) {
+    //             if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+    //                 $found = true;
+    //                 break;
+    //             }
+    //         }
+
+    //         // Output hasil pengecekan
+    //         if ($found) {
+    //             $rawColumns[] = 'Rata - Rata Nilai On Desk';
+    //             $dataTable->addColumn('Rata - Rata Nilai On Desk', function ($data_row) use ($request) {
+    //                 $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+    //                     ->where('event_team_id', $request->filterEventTeamId)
+    //                     ->where('stage', 'on desk')
+    //                     ->groupBy('assessment_event_id')
+    //                     ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+    //                     ->get();
+
+    //                 if ($data_assessment_team_judge->count())
+    //                     return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
+    //                 else
+    //                     return '-';
+    //             });
+    //         } else {
+    //             $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+    //                 $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+    //                     ->where('event_team_id', $request->filterEventTeamId)
+    //                     ->where('stage', 'on desk')
+    //                     ->groupBy('assessment_event_id')
+    //                     ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+    //                     ->get();
+
+    //                 if ($data_assessment_team_judge->count())
+    //                     return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
+    //                 else
+    //                     return '-';
+    //             });
+    //         }
+
+
+
+    //         $rawColumns[] = 'Maks skor';
+    //         $dataTable->addColumn('Maks skor', function ($data_row) {
+    //             return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+    //         <br>
+    //         <br>';
+    //         });
+
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
+    //                 $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
+    //                     if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Presentation" || Auth::user()->role == 'Superadmin') {
+    //                         return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                     } else {
+    //                         return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)">
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //         // dd($rawColumns);
+    //         $dataTable->rawColumns($rawColumns);
+
+    //         $remove_column = [];
+    //         foreach ($dataTable->original as $data_column) {
+    //             foreach ($data_column->getAttributes() as $column => $value) {
+    //                 if (strstr($column, "removed") !== false) {
+    //                     $remove_column[] = $column;
+    //                 }
+    //             }
+    //         }
+
+    //         $dataTable->removeColumn($remove_column);
+
+    //         return $dataTable->addIndexColumn()->toJson();
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'error' => $e->getMessage()
+    //         ], 422);
+    //     }
+    // }
+    
     public function get_input_pa_assessment_team(Request $request)
     {
         try {
@@ -1862,15 +2064,26 @@ class QueryController extends Controller
             if ($size_event_team != 0) {
                 for ($i = 0; $i < $size_event_team; $i++) {
                     $poin_ke = $i + 1;
-                    $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.score END) AS \"Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"");
-                    $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.id END) AS \"ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name'])  . " (removed) )\"");
+                    $arr_select_case[] = DB::raw("
+                        MAX(CASE 
+                            WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "'
+                            AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id
+                            AND pvt_assesment_team_judges.stage = 'presentation'
+                        THEN pvt_assesment_team_judges.score END)
+                        AS \"Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"
+                    ");
+                    $arr_select_case[] = DB::raw("
+                        MAX(CASE 
+                            WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "'
+                            AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id
+                            AND pvt_assesment_team_judges.stage = 'presentation'
+                        THEN pvt_assesment_team_judges.id END)
+                        AS \"ID (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"
+                    ");
                 }
-                // $arr_select_case[] = DB::raw("AVG(CASE WHEN pvt_assesment_team_judges.event_team_id = pvt_event_teams.id AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id THEN pvt_assesment_team_judges.score END) AS \"Rata - rata Nilai\"");
                 $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
-                    // ->join('pvt_assessment_events', 'pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
                     ->join('pvt_assessment_events', function ($join) {
                         $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                        //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
                     })
                     ->where('category', $category)
                     ->where('pvt_assessment_events.status_point', 'active')
@@ -1943,31 +2156,28 @@ class QueryController extends Controller
                         ->where('event_team_id', $request->filterEventTeamId)
                         ->where('stage', 'on desk')
                         ->groupBy('assessment_event_id')
-                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                        ->get();
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS average"))
+                        ->first();
 
-                    if ($data_assessment_team_judge->count())
-                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
-                    else
-                        return '-';
+                    return $data_assessment_team_judge
+                        ? '<span style="color:#007bff;">' . $data_assessment_team_judge->average . '</span><br><br>'
+                        : '-';
                 });
             } else {
+                $rawColumns[] = 'Rata - Rata Nilai'; // tambahkan ini
                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
                         ->where('event_team_id', $request->filterEventTeamId)
                         ->where('stage', 'on desk')
                         ->groupBy('assessment_event_id')
-                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                        ->get();
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS average"))
+                        ->first();
 
-                    if ($data_assessment_team_judge->count())
-                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
-                    else
-                        return '-';
+                    return $data_assessment_team_judge
+                        ? '<span style="color:#007bff;">' . $data_assessment_team_judge->average . '</span><br><br>'
+                        : '-';
                 });
             }
-
-
 
             $rawColumns[] = 'Maks skor';
             $dataTable->addColumn('Maks skor', function ($data_row) {
@@ -1976,26 +2186,30 @@ class QueryController extends Controller
             <br>';
             });
 
-
             if ($size_event_team != 0) {
                 for ($i = 0; $i < $size_event_team; $i++) {
                     $poin_ke = $i + 1;
-                    $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
-                    $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
-                        if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Presentation" || Auth::user()->role == 'Superadmin') {
-                            return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
-                                <div class="invalid-feedback">
-                                    Score melebihi maksimum.
-                                </div>
-                                <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
-                        } else {
-                            return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)">
-                                <div class="invalid-feedback">
-                                    Score melebihi maksimum.
-                                </div>
-                                <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+                    $rawColumns[] = "Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
+                    $dataTable->addColumn("Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")",
+                        function ($data_row) use ($i, $arr_event_team_id) {
+                           $isSuperadmin = auth()->user()->role === 'Superadmin';
+                           $isOwnJudge   = $arr_event_team_id[$i]['employee_id'] == auth()->user()->employee_id;
+                            $isCaucus     = $data_row['status(removed)'] === "Caucus";
+
+                            if ($isSuperadmin || ($isOwnJudge && $isCaucus)) {
+                                $disabled = ''; // Bisa diisi
+                            } else {
+                                $disabled = 'disabled'; // Tidak bisa diisi
+                            }
+
+
+                            return '<input class="form-control" id="input-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '"
+                                name="score[' . $data_row["ID (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']"
+                                value="' . $data_row["Penilaian (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '"
+                                type="number" onInput="validate_score(this)" ' . $disabled . '>
+                                <div class="invalid-feedback">Score melebihi maksimum.</div>';
                         }
-                    });
+                    );
                 }
             }
             // dd($rawColumns);
@@ -2020,34 +2234,35 @@ class QueryController extends Controller
         }
     }
 
-
+    //code superadmin bisa input nilai
     public function get_input_caucus_assessment_team(Request $request)
     {
         try {
-            // $idEmployee = auth()->user()->employee_id;
+            // Ambil data juri pada event team
             $arr_event_team_id = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
                 ->join('users', 'users.employee_id', '=', 'judges.employee_id')
                 ->where('event_team_id', $request->filterEventTeamId)
                 ->where('pvt_assesment_team_judges.stage', 'caucus')
                 ->select(['judge_id', 'users.name as name', 'users.employee_id as employee_id'])
-                // ->distinct()
                 ->groupBy('judge_id', 'users.name', 'users.employee_id')
-                // ->pluck('judge_id')
                 ->get()
                 ->toArray();
 
+            // Ambil kategori
             $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
                 ->pluck('category_parent')
                 ->first();
 
-            if ($category == 'IDEA BOX')
+            if ($category == 'IDEA BOX') {
                 $category = 'IDEA';
-            else
+            } else {
                 $category = 'BI/II';
+            }
 
             $size_event_team = count($arr_event_team_id);
+
             $arr_select_case = [
                 'point',
                 'detail_point as detail_point(removed)',
@@ -2060,20 +2275,31 @@ class QueryController extends Controller
             if ($size_event_team != 0) {
                 for ($i = 0; $i < $size_event_team; $i++) {
                     $poin_ke = $i + 1;
-                    $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.score END) AS \"Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"");
-                    $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.id END) AS \"ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name'])  . " (removed) )\"");
+                    $arr_select_case[] = DB::raw("
+                        MAX(CASE 
+                            WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "'
+                            AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id
+                            AND pvt_assesment_team_judges.stage = 'caucus'
+                        THEN pvt_assesment_team_judges.score END)
+                        AS \"Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"
+                    ");
+                    $arr_select_case[] = DB::raw("
+                        MAX(CASE 
+                            WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "'
+                            AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id
+                            AND pvt_assesment_team_judges.stage = 'caucus'
+                        THEN pvt_assesment_team_judges.id END)
+                        AS \"ID (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"
+                    ");
                 }
-                // $arr_select_case[] = DB::raw("AVG(CASE WHEN pvt_assesment_team_judges.event_team_id = pvt_event_teams.id AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id THEN pvt_assesment_team_judges.score END) AS \"Rata - rata Nilai\"");
                 $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
-                    // ->join('pvt_assessment_events', 'pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
                     ->join('pvt_assessment_events', function ($join) {
                         $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                        //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
                     })
                     ->where('category', $category)
                     ->where('pvt_assessment_events.status_point', 'active')
                     ->where('pvt_event_teams.id', $request->filterEventTeamId)
-                    ->whereIn('pvt_assesment_team_judges.stage', ['presentation','caucus'])
+                    ->whereIn('pvt_assesment_team_judges.stage', ['presentation', 'caucus'])
                     ->groupBy(
                         'pvt_assessment_events.id',
                         'point',
@@ -2084,17 +2310,16 @@ class QueryController extends Controller
                     )
                     ->select($arr_select_case)
                     ->orderByRaw("CASE
-                                            WHEN 'pdca(removed)' = 'Plan' THEN 1
-                                            WHEN 'pdca(removed)' = 'Do' THEN 2
-                                            WHEN 'pdca(removed)' = 'Check' THEN 3
-                                            WHEN 'pdca(removed)' = 'Action' THEN 4
-                                            ELSE 5
-                                        END, pvt_assessment_events.id ASC");
+                        WHEN 'pdca(removed)' = 'Plan' THEN 1
+                        WHEN 'pdca(removed)' = 'Do' THEN 2
+                        WHEN 'pdca(removed)' = 'Check' THEN 3
+                        WHEN 'pdca(removed)' = 'Action' THEN 4
+                        ELSE 5
+                    END, pvt_assessment_events.id ASC");
             } else {
                 $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
                     ->join('pvt_assessment_events', function ($join) {
                         $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
-                        //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
                     })
                     ->where('category', $category)
                     ->where('pvt_assessment_events.status_point', 'active')
@@ -2110,23 +2335,25 @@ class QueryController extends Controller
                     )
                     ->select($arr_select_case)
                     ->orderByRaw("CASE
-                                            WHEN 'pdca(removed)' = 'Plan' THEN 1
-                                            WHEN 'pdca(removed)' = 'Do' THEN 2
-                                            WHEN 'pdca(removed)' = 'Check' THEN 3
-                                            WHEN 'pdca(removed)' = 'Action' THEN 4
-                                            ELSE 5
-                                        END, pvt_assessment_events.id ASC");
+                        WHEN 'pdca(removed)' = 'Plan' THEN 1
+                        WHEN 'pdca(removed)' = 'Do' THEN 2
+                        WHEN 'pdca(removed)' = 'Check' THEN 3
+                        WHEN 'pdca(removed)' = 'Action' THEN 4
+                        ELSE 5
+                    END, pvt_assessment_events.id ASC");
             }
 
             $dataTable = DataTables::of($data_row->get());
 
+            // Detail point
             $rawColumns[] = 'Detail point';
             $dataTable->addColumn('Detail point', function ($data_row) {
-                return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
+                return '<textarea class="form-control" rows="10" cols="50" readonly>' . $data_row['detail_point(removed)'] . '</textarea>';
             });
 
             $data = $data_row->get();
 
+            // Cek apakah ada point "Mutu Presentasi"
             $found = false;
             foreach ($data as $item) {
                 if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
@@ -2135,7 +2362,7 @@ class QueryController extends Controller
                 }
             }
 
-            // Output hasil pengecekan
+            // Rata-rata nilai
             if ($found) {
                 $rawColumns[] = 'Rata - Rata Nilai Presentation';
                 $dataTable->addColumn('Rata - Rata Nilai Presentation', function ($data_row) use ($request) {
@@ -2146,60 +2373,64 @@ class QueryController extends Controller
                         ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
                         ->get();
 
-                    if ($data_assessment_team_judge->count())
-                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
-                    else
-                        return '-';
+                    return $data_assessment_team_judge->count()
+                        ? '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span>'
+                        : '-';
                 });
             } else {
+                $rawColumns[] = 'Rata - Rata Nilai'; // tambahkan ini
                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
                         ->where('event_team_id', $request->filterEventTeamId)
                         ->where('stage', 'on desk')
                         ->groupBy('assessment_event_id')
-                        ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
-                        ->get();
+                        ->select(DB::raw("ROUND(AVG(score), 2) AS average"))
+                        ->first();
 
-                    if ($data_assessment_team_judge->count())
-                        return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
-                    else
-                        return '-';
+                    return $data_assessment_team_judge
+                        ? '<span style="color:#007bff;">' . $data_assessment_team_judge->average . '</span><br><br>'
+                        : '-';
                 });
             }
 
 
+            // Score max
             $rawColumns[] = 'Score max';
             $dataTable->addColumn('Score max', function ($data_row) {
-                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
-            <br>
-            <br>';
+                return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;">' . $data_row['score_max(removed)'] . '</a>';
             });
 
-
+            // Input nilai (Superadmin bisa edit semua, juri hanya bisa edit nilai sendiri pada Caucus)
             if ($size_event_team != 0) {
                 for ($i = 0; $i < $size_event_team; $i++) {
                     $poin_ke = $i + 1;
-                    $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
-                    $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
-                        if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Caucus") {
-                            return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
-                                <div class="invalid-feedback">
-                                    Score melebihi maksimum.
-                                </div>
-                                <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
-                        } else {
-                            return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)">
-                                <div class="invalid-feedback">
-                                    Score melebihi maksimum.
-                                </div>
-                                <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+                    $rawColumns[] = "Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
+                    $dataTable->addColumn("Penilaian (Juri " . $poin_ke . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")",
+                        function ($data_row) use ($i, $arr_event_team_id) {
+                           $isSuperadmin = auth()->user()->role === 'Superadmin';
+                           $isOwnJudge   = $arr_event_team_id[$i]['employee_id'] == auth()->user()->employee_id;
+                            $isCaucus     = $data_row['status(removed)'] === "Caucus";
+
+                            if ($isSuperadmin || ($isOwnJudge && $isCaucus)) {
+                                $disabled = ''; // Bisa diisi
+                            } else {
+                                $disabled = 'disabled'; // Tidak bisa diisi
+                            }
+
+
+                            return '<input class="form-control" id="input-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '"
+                                name="score[' . $data_row["ID (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']"
+                                value="' . $data_row["Penilaian (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '"
+                                type="number" onInput="validate_score(this)" ' . $disabled . '>
+                                <div class="invalid-feedback">Score melebihi maksimum.</div>';
                         }
-                    });
+                    );
                 }
             }
-            // dd($rawColumns);
+
             $dataTable->rawColumns($rawColumns);
 
+            // Hapus kolom dengan (removed)
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
                 foreach ($data_column->getAttributes() as $column => $value) {
@@ -2218,6 +2449,415 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
+
+    // public function get_input_caucus_assessment_team(Request $request)
+    // {
+    //     try {
+    //         // $idEmployee = auth()->user()->employee_id;
+    //         $arr_event_team_id = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
+    //             ->join('users', 'users.employee_id', '=', 'judges.employee_id')
+    //             ->where('event_team_id', $request->filterEventTeamId)
+    //             ->where('pvt_assesment_team_judges.stage', 'caucus')
+    //             ->select(['judge_id', 'users.name as name', 'users.employee_id as employee_id'])
+    //             // ->distinct()
+    //             ->groupBy('judge_id', 'users.name', 'users.employee_id')
+    //             // ->pluck('judge_id')
+    //             ->get()
+    //             ->toArray();
+
+    //         $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+    //             ->join('categories', 'categories.id', '=', 'teams.category_id')
+    //             ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //             ->pluck('category_parent')
+    //             ->first();
+
+    //         if ($category == 'IDEA BOX')
+    //             $category = 'IDEA';
+    //         else
+    //             $category = 'BI/II';
+
+    //         $size_event_team = count($arr_event_team_id);
+    //         $arr_select_case = [
+    //             'point',
+    //             'detail_point as detail_point(removed)',
+    //             'score_max as score_max(removed)',
+    //             'pvt_assessment_events.id as assessment_events_id(removed)',
+    //             'pvt_assessment_events.pdca as pdca(removed)',
+    //             DB::raw("MIN(pvt_event_teams.status) as \"status(removed)\""),
+    //         ];
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.score END) AS \"Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"");
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.id END) AS \"ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name'])  . " (removed) )\"");
+    //             }
+    //             // $arr_select_case[] = DB::raw("AVG(CASE WHEN pvt_assesment_team_judges.event_team_id = pvt_event_teams.id AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id THEN pvt_assesment_team_judges.score END) AS \"Rata - rata Nilai\"");
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 // ->join('pvt_assessment_events', 'pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                     //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->whereIn('pvt_assesment_team_judges.stage', ['presentation','caucus'])
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         } else {
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                     //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->where('pvt_assesment_team_judges.stage', 'caucus')
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         }
+
+    //         $dataTable = DataTables::of($data_row->get());
+
+    //         $rawColumns[] = 'Detail point';
+    //         $dataTable->addColumn('Detail point', function ($data_row) {
+    //             return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
+    //         });
+
+    //         $data = $data_row->get();
+
+    //         $found = false;
+    //         foreach ($data as $item) {
+    //             if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+    //                 $found = true;
+    //                 break;
+    //             }
+    //         }
+
+    //         // Output hasil pengecekan
+    //         if ($found) {
+    //             $rawColumns[] = 'Rata - Rata Nilai Presentation';
+    //             $dataTable->addColumn('Rata - Rata Nilai Presentation', function ($data_row) use ($request) {
+    //                 $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+    //                     ->where('event_team_id', $request->filterEventTeamId)
+    //                     ->where('stage', 'presentation')
+    //                     ->groupBy('assessment_event_id')
+    //                     ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+    //                     ->get();
+
+    //                 if ($data_assessment_team_judge->count())
+    //                     return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
+    //                 else
+    //                     return '-';
+    //             });
+                // } else {
+                //                 $rawColumns[] = 'Rata - Rata Nilai'; // tambahkan ini
+                //                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+                //                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+                //                         ->where('event_team_id', $request->filterEventTeamId)
+                //                         ->where('stage', 'on desk')
+                //                         ->groupBy('assessment_event_id')
+                //                         ->select(DB::raw("ROUND(AVG(score), 2) AS average"))
+                //                         ->first();
+                
+                //                     return $data_assessment_team_judge
+                //                         ? '<span style="color:#007bff;">' . $data_assessment_team_judge->average . '</span><br><br>'
+                //                         : '-';
+                //                 });
+                //             }
+
+
+
+    //         $rawColumns[] = 'Score max';
+    //         $dataTable->addColumn('Score max', function ($data_row) {
+    //             return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+    //         <br>
+    //         <br>';
+    //         });
+
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
+    //                 $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
+    //                     if ($arr_event_team_id[$i]['employee_id'] != auth()->user()->employee_id || $data_row['status(removed)'] != "Caucus") {
+    //                         return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                     } else {
+    //                         return '<input class="form-control"  id="input-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)">
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . $i + 1 . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //         // dd($rawColumns);
+    //         $dataTable->rawColumns($rawColumns);
+
+    //         $remove_column = [];
+    //         foreach ($dataTable->original as $data_column) {
+    //             foreach ($data_column->getAttributes() as $column => $value) {
+    //                 if (strstr($column, "removed") !== false) {
+    //                     $remove_column[] = $column;
+    //                 }
+    //             }
+    //         }
+
+    //         $dataTable->removeColumn($remove_column);
+
+    //         return $dataTable->addIndexColumn()->toJson();
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'error' => $e->getMessage()
+    //         ], 422);
+    //     }
+    // }
+    
+    //  public function get_input_caucus_assessment_team(Request $request)
+    // {
+    //     try {
+    //         // $idEmployee = auth()->user()->employee_id;
+    //         $arr_event_team_id = pvtAssesmentTeamJudge::join('judges', 'pvt_assesment_team_judges.judge_id', '=', 'judges.id')
+    //             ->join('users', 'users.employee_id', '=', 'judges.employee_id')
+    //             ->where('event_team_id', $request->filterEventTeamId)
+    //             ->where('pvt_assesment_team_judges.stage', 'caucus')
+    //             ->select(['judge_id', 'users.name as name', 'users.employee_id as employee_id'])
+    //             // ->distinct()
+    //             ->groupBy('judge_id', 'users.name', 'users.employee_id')
+    //             // ->pluck('judge_id')
+    //             ->get()
+    //             ->toArray();
+
+    //         $category = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+    //             ->join('categories', 'categories.id', '=', 'teams.category_id')
+    //             ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //             ->pluck('category_parent')
+    //             ->first();
+
+    //         if ($category == 'IDEA BOX')
+    //             $category = 'IDEA';
+    //         else
+    //             $category = 'BI/II';
+
+    //         $size_event_team = count($arr_event_team_id);
+    //         $arr_select_case = [
+    //             'point',
+    //             'detail_point as detail_point(removed)',
+    //             'score_max as score_max(removed)',
+    //             'pvt_assessment_events.id as assessment_events_id(removed)',
+    //             'pvt_assessment_events.pdca as pdca(removed)',
+    //             DB::raw("MIN(pvt_event_teams.status) as \"status(removed)\""),
+    //         ];
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.score END) AS \"Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )\"");
+    //                 $arr_select_case[] = DB::raw("MAX(CASE WHEN pvt_assesment_team_judges.judge_id = '" . $arr_event_team_id[$i]['judge_id'] . "' THEN pvt_assesment_team_judges.id END) AS \"ID (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name'])  . " (removed) )\"");
+    //             }
+    //             // $arr_select_case[] = DB::raw("AVG(CASE WHEN pvt_assesment_team_judges.event_team_id = pvt_event_teams.id AND pvt_assesment_team_judges.assessment_event_id = pvt_assessment_events.id THEN pvt_assesment_team_judges.score END) AS \"Rata - rata Nilai\"");
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 // ->join('pvt_assessment_events', 'pvt_assessment_events.event_id', '=', 'pvt_event_teams.event_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                     //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->whereIn('pvt_assesment_team_judges.stage', ['presentation','caucus'])
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         } else {
+    //             $data_row = PvtEventTeam::join('pvt_assesment_team_judges', 'pvt_event_teams.id', '=', 'pvt_assesment_team_judges.event_team_id')
+    //                 ->join('pvt_assessment_events', function ($join) {
+    //                     $join->on('pvt_assessment_events.id', '=', 'pvt_assesment_team_judges.assessment_event_id');
+    //                     //  ->on('pvt_assessment_events.year', '=', 'pvt_event_teams.year');
+    //                 })
+    //                 ->where('category', $category)
+    //                 ->where('pvt_assessment_events.status_point', 'active')
+    //                 ->where('pvt_event_teams.id', $request->filterEventTeamId)
+    //                 ->where('pvt_assesment_team_judges.stage', 'caucus')
+    //                 ->groupBy(
+    //                     'pvt_assessment_events.id',
+    //                     'point',
+    //                     'detail_point',
+    //                     'score_max',
+    //                     'pvt_event_teams.status',
+    //                     'pvt_assessment_events.pdca'
+    //                 )
+    //                 ->select($arr_select_case)
+    //                 ->orderByRaw("CASE
+    //                                         WHEN 'pdca(removed)' = 'Plan' THEN 1
+    //                                         WHEN 'pdca(removed)' = 'Do' THEN 2
+    //                                         WHEN 'pdca(removed)' = 'Check' THEN 3
+    //                                         WHEN 'pdca(removed)' = 'Action' THEN 4
+    //                                         ELSE 5
+    //                                     END, pvt_assessment_events.id ASC");
+    //         }
+
+    //         $dataTable = DataTables::of($data_row->get());
+
+    //         $rawColumns[] = 'Detail point';
+    //         $dataTable->addColumn('Detail point', function ($data_row) {
+    //             return '<textarea class="form-control"  id="textarea" rows="10" cols="50" type="text" readonly> ' . $data_row['detail_point(removed)'] . ' </textarea>';
+    //         });
+
+    //         $data = $data_row->get();
+
+    //         $found = false;
+    //         foreach ($data as $item) {
+    //             if (isset($item['point']) && $item['point'] === 'Mutu Presentasi') {
+    //                 $found = true;
+    //                 break;
+    //             }
+    //         }
+
+    //         // Output hasil pengecekan
+    //         if ($found) {
+    //             $rawColumns[] = 'Rata - Rata Nilai Presentation';
+    //             $dataTable->addColumn('Rata - Rata Nilai Presentation', function ($data_row) use ($request) {
+    //                 $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+    //                     ->where('event_team_id', $request->filterEventTeamId)
+    //                     ->where('stage', 'presentation')
+    //                     ->groupBy('assessment_event_id')
+    //                     ->select(DB::raw("ROUND(AVG(score), 2) AS \"average\""))
+    //                     ->get();
+
+    //                 if ($data_assessment_team_judge->count())
+    //                     return '<span style="color: #007bff;">' . $data_assessment_team_judge[0]['average'] . '</span><br><br>';
+    //                 else
+    //                     return '-';
+    //             });
+    //         } else {
+    //                 $rawColumns[] = 'Rata - Rata Nilai'; // tambahkan ini
+    //                 $dataTable->addColumn('Rata - Rata Nilai', function ($data_row) use ($request) {
+    //                     $data_assessment_team_judge = pvtAssesmentTeamJudge::where('assessment_event_id', $data_row['assessment_events_id(removed)'])
+    //                         ->where('event_team_id', $request->filterEventTeamId)
+    //                         ->where('stage', 'on desk')
+    //                         ->groupBy('assessment_event_id')
+    //                         ->select(DB::raw("ROUND(AVG(score), 2) AS average"))
+    //                         ->first();
+    
+    //                     return $data_assessment_team_judge
+    //                         ? '<span style="color:#007bff;">' . $data_assessment_team_judge->average . '</span><br><br>'
+    //                         : '-';
+    //                 });
+    //             }
+
+    
+
+
+    //         $rawColumns[] = 'Score max';
+    //         $dataTable->addColumn('Score max', function ($data_row) {
+    //             return '<a id="' . $data_row['assessment_events_id(removed)'] . '" readonly style="color: green; text-align: center; display: block; margin-top: 20px;"> ' . $data_row['score_max(removed)'] . ' </a>
+    //         <br>
+    //         <br>';
+    //         });
+
+
+    //         if ($size_event_team != 0) {
+    //             for ($i = 0; $i < $size_event_team; $i++) {
+    //                 $poin_ke = $i + 1;
+    //                 $rawColumns[] = "Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")";
+    //                 $dataTable->addColumn("Penilaian (Juri " . $i + 1 . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . ")", function ($data_row) use ($i, $arr_event_team_id) {
+    //                  if (
+    //                     Auth::user()->role == 'Superadmin' ||
+    //                     (
+    //                         $arr_event_team_id[$i]['employee_id'] == auth()->user()->employee_id
+    //                         && $data_row['status(removed)'] == "Caucus"
+    //                     )
+    //                 ) {
+    //                     // Superadmin & juri yg sesuai employee_id -> input aktif
+    //                     return '<input class="form-control"  id="input-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)">
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                 } else {
+    //                     // selain itu -> disabled
+    //                     return '<input class="form-control"  id="input-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '" name="score[' . $data_row["ID (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . ']" value="' . $data_row["Penilaian (Juri " . ($i + 1) . " : " . str_replace('.', '', $arr_event_team_id[$i]['name']) . " (removed) )"] . '" type="number" onInput="validate_score(this)" disabled>
+    //                             <div class="invalid-feedback">
+    //                                 Score melebihi maksimum.
+    //                             </div>
+    //                             <br id="br-' . ($i + 1) . '-' . $data_row['assessment_events_id(removed)'] . '" style="display:block">';
+    //                 }
+
+    //                 });
+    //             }
+    //         }
+    //         // dd($rawColumns);
+    //         $dataTable->rawColumns($rawColumns);
+
+    //         $remove_column = [];
+    //         foreach ($dataTable->original as $data_column) {
+    //             foreach ($data_column->getAttributes() as $column => $value) {
+    //                 if (strstr($column, "removed") !== false) {
+    //                     $remove_column[] = $column;
+    //                 }
+    //             }
+    //         }
+
+    //         $dataTable->removeColumn($remove_column);
+
+    //         return $dataTable->addIndexColumn()->toJson();
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'error' => $e->getMessage()
+    //         ], 422);
+    //     }
+    // }
 
     public function get_judge(Request $request)
     {
@@ -2635,7 +3275,7 @@ class QueryController extends Controller
         }
     }
 
-    public function get_presentasi_bod(Request $request)
+   public function get_presentasi_bod(Request $request)
     {
         try {
 
@@ -2714,18 +3354,16 @@ class QueryController extends Controller
                         'pvt_event_teams.id as id',
                         'pvt_event_teams.final_score',
                         'categories.id as category_id'
-                    )  // Menambahkan kategori ke dalam hasil
+                    )  
                     ->get()
-                    ->keyBy('id')  // Ubah hasil query menjadi key-value pair dengan id sebagai key
+                    ->keyBy('id')  
                     ->toArray();
 
-                // Cek apakah total_score_presentation null atau 0
                 $eventTeamId = $data_row['event_team_id(removed)'];
                 if (!isset($data_total[$eventTeamId]) || $data_total[$eventTeamId]['final_score'] == 0) {
                     return 'belum dinilai'; 
                 }
 
-                // Kembalikan ranking untuk event_team_id saat ini
                 return $data_total[$eventTeamId]['Ranking'];
             });
 
@@ -2838,10 +3476,10 @@ class QueryController extends Controller
             ], 422);
         }
     }
+
     public function get_penetapan_juara(Request $request)
     {
         try {
-            // Cek apakah filterCategory ada atau null
             $data_category = Category::select('id', 'category_name', 'category_parent');
             $data_category = $data_category->get()
                 ->toArray();
@@ -2849,7 +3487,6 @@ class QueryController extends Controller
             $data_category_first = Category::where('id', $request->filterCategory)
                 ->select('category_name', 'category_parent', 'id')->first();
 
-            // Jika tidak ada category yang dipilih (null), ambil semua data
             if ($data_category_first) {
                 $category_type = ($data_category_first->category_parent == 'IDEA BOX') ? 'IDEA' : 'BI/II';
                 $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
@@ -2860,7 +3497,6 @@ class QueryController extends Controller
                     ->get()
                     ->toArray();
             } else {
-                // Jika category null, ambil semua kategori
                 $arr_event_id = PvtAssessmentEvent::where('event_id', $request->filterEvent)
                     ->where('status_point', 'active')
                     ->where('stage', 'presentation')
@@ -2871,7 +3507,6 @@ class QueryController extends Controller
 
             $categoryid = array_column($data_category, 'id');
 
-            // Query untuk mengambil data tim dan skor
             $arr_select_case = [
                 DB::raw('MIN(teams.id) as team_id'),
                 DB::raw('MIN(team_name) as team_name'),
@@ -2881,9 +3516,9 @@ class QueryController extends Controller
                 'pvt_event_teams.is_best_of_the_best AS is_best_of_the_best',
                 'pvt_event_teams.is_honorable_winner AS is_honorable_winner',
                 DB::raw('MAX(pvt_event_teams.final_score) as final_score'),
+                DB::raw('MAX(pvt_event_teams.keputusan_bod) as keputusan_bod'),
             ];
 
-            // Query utama untuk mengambil data tim
             $data_row = Team::join('papers', 'papers.team_id', '=', 'teams.id')
                 ->join('categories', 'categories.id', '=', 'teams.category_id')
                 ->join('themes', 'themes.id', '=', 'teams.theme_id')
@@ -2899,62 +3534,71 @@ class QueryController extends Controller
                 ->groupBy('pvt_event_teams.id', 'pvt_event_teams.is_best_of_the_best', 'pvt_event_teams.is_honorable_winner')
                 ->select($arr_select_case);
 
-            // Jika filterCategory tidak null, tambahkan filter untuk kategori
             if ($request->filterCategory) {
                 $data_row->where('categories.id', $request->filterCategory);
             }
 
-            // Urutkan berdasarkan MIN(category_name) dan final_score
-            $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) // Gunakan alias dari SELECT
-                ->orderBy('final_score', 'desc') // Kemudian urutkan berdasarkan final_score
+            $dataTable = DataTables::of($data_row->orderBy(DB::raw('MIN(category_name)')) 
+                ->orderBy('final_score', 'desc') 
                 ->get());
 
-            $rawColumns[] = 'Tim'; // Allow HTML rendering in the Tim column
+            $rawColumns[] = 'Tim'; 
             $dataTable->addColumn('Tim', function ($data_row) {
-                // Display the team name with a badge if "Best of the Best"
                 $badge = $data_row->is_best_of_the_best ? "<span class='badge bg-success'><i class='fas fa-trophy'></i> Best of the Best</span>" : "";
                 return $data_row->team_name . " " . $badge;
             });
             $dataTable->rawColumns($rawColumns);
 
             $rawColumns[] = 'Ranking';
-            $dataTable->addColumn('Ranking', function ($data_row) use ($request, $categoryid) {
-                // Query ranking per kategori
-                $data_total = pvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-                    ->join('categories', 'categories.id', '=', 'teams.category_id')
-                    ->where('pvt_event_teams.event_id', $request->filterEvent)
-                    ->whereIn('categories.id', $categoryid)
-                    ->whereNotNull('pvt_event_teams.final_score')
-                    ->groupBy('pvt_event_teams.id', 'categories.id', 'pvt_event_teams.final_score')
-                    ->select(
-                        DB::raw("DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.final_score DESC) AS \"Ranking\""),
-                        'pvt_event_teams.id as id',
-                        'pvt_event_teams.final_score',
-                        'categories.id as category_id'
-                    )
-                    ->get()
-                    ->keyBy('id')
-                    ->toArray();
-            
-                // Ambil ID dan data status
-                $eventTeamId = $data_row['event_team_id(removed)'] ?? $data_row['event_team_id'] ?? null;
-                $isBest = $data_row['is_best_of_the_best'] ?? false;
-                $isHonorable = $data_row['is_honorable_winner'] ?? false;
-            
-                // Default ranking string
-                $ranking = $data_total[$eventTeamId]['Ranking'] ?? '-';
-            
-                // Tambahkan badge jika perlu
-                if ($isBest == true) {
-                    return "Best of the Best";
-                } elseif ($isHonorable == true) {
-                    return "Juara Harapan";
-                } else {
-                    return "Juara $ranking";
+            $dataTable->addColumn('Ranking', function ($row) use ($request, $categoryid) {
+
+                $bod = trim((string)($row->keputusan_bod ?? ''));
+                if ($bod !== '') {
+                    return $bod; 
                 }
+
+                if (!empty($row->is_best_of_the_best)) {
+                    return 'Best of the Best';
+                }
+                if (!empty($row->is_honorable_winner)) {
+                    return 'Juara Harapan';
+                }
+
+                static $data_total = null;
+                if ($data_total === null) {
+                    $data_total = \App\Models\PvtEventTeam::join('teams', 'teams.id', '=', 'pvt_event_teams.team_id')
+                        ->join('categories', 'categories.id', '=', 'teams.category_id')
+                        ->where('pvt_event_teams.event_id', $request->filterEvent)
+                        ->whereIn('categories.id', $categoryid)
+                        ->whereNotNull('pvt_event_teams.total_score_presentation')
+                        ->groupBy('pvt_event_teams.id', 'categories.id', 'pvt_event_teams.total_score_presentation')
+                        ->select(
+                            DB::raw('DENSE_RANK() OVER (PARTITION BY categories.id ORDER BY pvt_event_teams.total_score_presentation DESC) AS Ranking'),
+                            'pvt_event_teams.id as id',
+                            'pvt_event_teams.total_score_presentation',
+                            'categories.id as category_id'
+                        )
+                        ->get()->keyBy('id')->toArray();
+                }
+
+                $eventTeamId = $row->event_team_id_removed
+                    ?? ($row->{'event_team_id(removed)'} ?? ($row['event_team_id_removed'] ?? ($row['event_team_id(removed)'] ?? null)));
+
+                if (!isset($data_total[$eventTeamId]) ||
+                    (float)$data_total[$eventTeamId]['total_score_presentation'] <= 0) {
+                    return 'belum dinilai';
+                }
+
+                $rank = (int)$data_total[$eventTeamId]['Ranking'];
+                return 'Juara ' . $rank;
             });
 
-            // Menghapus kolom yang mengandung kata "removed"
+
+                $dataTable->editColumn('keputusan_bod', function ($row) {
+                $val = trim((string)($row->keputusan_bod ?? ''));
+                return $val === '' ? '-' : $val;        
+            });
+
             $remove_column = [];
             foreach ($dataTable->original as $data_column) {
                 foreach ($data_column->getAttributes() as $column => $value) {

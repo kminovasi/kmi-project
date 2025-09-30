@@ -59,18 +59,26 @@ class InnovatorCard extends Component
             ->count();
 
        $inovatorByGender = DB::table('pvt_members')
-            ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
-            ->join('papers', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->leftJoin('users', 'pvt_members.employee_id', '=', 'users.employee_id')
-            ->where('pvt_event_teams.event_id', $this->eventId)
-            ->where('pvt_members.status', '!=', 'gm')
-            ->where('papers.status', '=', 'accepted by innovation admin')
-            ->whereNotNull('users.gender')
-            ->select('users.gender', DB::raw('CONCAT(pvt_members.employee_id, "-", teams.id) as unique_participation'))
-            ->distinct()
-            ->get()
-            ->groupBy('gender');
+        ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
+        ->join('papers', 'papers.team_id', '=', 'teams.id')
+        ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+        ->leftJoin('users', 'pvt_members.employee_id', '=', 'users.employee_id')
+        ->where('pvt_event_teams.event_id', $this->eventId)
+        ->where('pvt_members.status', '!=', 'gm')
+        ->whereRaw('TRIM(LOWER(papers.status)) = ?', ['accepted by innovation admin'])
+        // ->whereNotNull('users.gender')
+        ->selectRaw("
+                    CASE
+                    WHEN users.gender IS NULL OR TRIM(users.gender) = '' THEN 'Male'
+                    WHEN LOWER(TRIM(users.gender)) IN ('male','laki-laki','unknown','0') THEN 'Male'
+                    WHEN LOWER(TRIM(users.gender)) IN ('female','perempuan') THEN 'Female'
+                    ELSE 'Male'
+                END AS gender_norm,
+                CONCAT(pvt_members.employee_id, '-', teams.id) AS unique_participation
+        ")
+        ->distinct()
+        ->get()
+        ->groupBy('gender_norm');
         
         $outsourceInnovatorData = DB::table('ph2_members')
             ->join('teams', 'teams.id', '=', 'ph2_members.team_id')

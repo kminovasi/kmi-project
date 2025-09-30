@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand" href="#">
             <div class="d-flex align-items-center text-color-main">
-                <img class="me-3" src="{{ asset('assets/landingpage/logo.png') }}" alt="logo">
+                <img class="me-3" src="{{ asset('assets/landingpage/logo-rev2.png') }}" width="160px" alt="logo">
             </div>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg"
@@ -15,7 +15,7 @@
             <div class="offcanvas-header">
                 <a class="navbar-brand" href="#">
                     <div class="d-flex align-items-center text-color-main">
-                        <img class="me-3" src="{{ asset('assets/landingpage/logo.png') }}" alt="logo">
+                        <img class="me-3" src="{{ asset('assets/landingpage/logo-rev2.png') }}" alt="logo">
                     </div>
                 </a>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>

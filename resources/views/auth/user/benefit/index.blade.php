@@ -114,11 +114,11 @@
 
 
                                     <div class="mb-3">
-                                        <h6 class="small mb-1">Pilih Band 1 (General Manager)</h6>
+                                        <h6 class="small mb-1">Pilih Band 1 atau Band 2</h6>
                                         <input type="hidden" name="team_id" value="{{ $row->team_id }}">
                                         <select class="form-select @error('gm_id') is-invalid @enderror"
                                             aria-label="Default select example" name="gm_id" id="id_gm"
-                                            value="{{ old('gm_id') }}" placeholder="Pilih GM"
+                                            value="{{ old('gm_id') }}" placeholder="Pilih Band 1 atau Band 2"
                                             {{ $is_disabled ? 'disabled' : '' }}></select>
                                         @error('gm_id')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -127,8 +127,8 @@
                                     @if ($gmName !== null)
                                         <div class="mb-3">
                                             <input type="hidden" name="oldGm" value="{{ $gmName->employee_id }}">
-                                            <div class="h6">Nama General Manager yang di Pilih Sebelumnnya : </div>
-                                            <div class="h5">{{ $gmName->name }}</div>
+                                            <div class="h6">Nama Band yang di Pilih Sebelumnnya : </div>
+                                            <div class="h5"> {{ $gmName->name }} - {{ $gmName->job_level }}</div>
                                             <hr>
                                         </div>
                                     @endif
@@ -258,7 +258,7 @@
                 // theme: "classic",
                 allowClear: true,
                 width: "100%",
-                placeholder: "Pilih Band 1",
+                placeholder: "Pilih Band 1 atau Band 2",
                 ajax: {
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -279,7 +279,7 @@
                             results: $.map(data, function(item) {
                                 return {
                                     text: item.employee_id + ' - ' + item.name + ' - ' + item
-                                        .company_name, 
+                                        .company_name + ' (' + item.job_level + ')', // Nama yang akan ditampilkan di kotak seleksi
                                     id: item.employee_id // Nilai yang akan dikirimkan saat opsi dipilih
                                 };
                             })

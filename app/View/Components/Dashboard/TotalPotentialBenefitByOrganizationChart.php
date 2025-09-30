@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Paper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\Component;
+use Log;
 
 class TotalPotentialBenefitByOrganizationChart extends Component
 {
@@ -13,19 +14,13 @@ class TotalPotentialBenefitByOrganizationChart extends Component
     public $chartData;
     public $company_name;
     public $year;
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
+
     public function __construct($organizationUnit = null, $companyId, $year)
     {
-        // Tetapkan nilai default jika $organizationUnit null
         $this->organizationUnit = $organizationUnit ?? 'directorate_name';
         $this->year = $year;
 
-        // Validasi apakah organizationUnit adalah kolom yang valid
-        $validOrganizationUnits = [
+        $valid = [
             'directorate_name',
             'group_function_name',
             'department_name',
@@ -33,51 +28,79 @@ class TotalPotentialBenefitByOrganizationChart extends Component
             'section_name',
             'sub_section_of',
         ];
-
-        if (!in_array($this->organizationUnit, $validOrganizationUnits)) {
+        if (!in_array($this->organizationUnit, $valid)) {
             throw new \InvalidArgumentException("Invalid organization unit: {$this->organizationUnit}");
         }
 
-        $company = Company::findOrFail($companyId);
-        $companyCode = $company->company_code;
-        $currentYear = now()->year;
+        $company     = Company::findOrFail($companyId);
+        $companyCode = (int) $company->company_code;
         $this->company_name = $company->company_name;
+        $filteredCodes = in_array($companyCode, [2000, 7000]) ? [2000, 7000] : [$companyCode];
 
-        // Ambil data total financial benefit
-        $this->chartData = Paper::select(
-            DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit}) as organization_unit"),
-            DB::raw('EXTRACT(YEAR FROM papers.created_at) as year'),
-            DB::raw('SUM(papers.potential_benefit) as total_potential_benefit')
-        )
-            ->join('teams', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_members', function ($join) {
-                $join->on('teams.id', '=', 'pvt_members.team_id')
-                    ->where('pvt_members.status', 'leader'); // Hanya ambil leader
+        $base = DB::table('teams as t')
+            ->join('papers as p', function ($j) {
+                $j->on('p.team_id', '=', 't.id')
+                  ->whereRaw("TRIM(LOWER(p.status)) = 'accepted by innovation admin'");
             })
-            ->join('users', 'pvt_members.employee_id', '=', 'users.employee_id')
-            ->leftJoin('user_hierarchy_histories', function ($join) {
-                $join->on('user_hierarchy_histories.user_id', '=', 'users.id')
-                    ->whereRaw('papers.created_at >= COALESCE(user_hierarchy_histories.effective_start_date, papers.created_at)')
-                    ->whereRaw('papers.created_at <= COALESCE(user_hierarchy_histories.effective_end_date, papers.created_at)');
+            ->whereIn('t.company_code', $filteredCodes)
+            ->selectRaw('t.id AS team_id, CAST(SUM(COALESCE(p.potential_benefit,0)) AS SIGNED) AS team_potential')
+            ->groupBy('t.id');
+
+        $eligible = DB::table('pvt_event_teams as pet')
+            ->join('events as e', 'e.id', '=', 'pet.event_id')
+            ->join('teams as t', 't.id', '=', 'pet.team_id')
+            ->leftJoin('pvt_members as pm', function ($j) {
+                $j->on('pm.team_id', '=', 't.id')->where('pm.status', 'leader');
             })
-            ->where('teams.company_code', $companyCode)
-            ->where('papers.status', 'accepted by innovation admin')
-            ->whereYear('papers.created_at', $this->year)
-            ->groupBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"), DB::raw('EXTRACT(YEAR FROM papers.created_at)'))
-            ->orderBy(DB::raw("COALESCE(user_hierarchy_histories.{$this->organizationUnit}, users.{$this->organizationUnit})"))
+            ->leftJoin('users as u', 'u.employee_id', '=', 'pm.employee_id')
+            ->leftJoin('user_hierarchy_histories as uhh', function ($j) {
+                $j->on('uhh.user_id', '=', 'u.id')
+                  ->whereRaw('(COALESCE(e.date_start, e.created_at)) >= COALESCE(uhh.effective_start_date, COALESCE(e.date_start, e.created_at))')
+                  ->whereRaw('(COALESCE(e.date_start, e.created_at)) <= COALESCE(uhh.effective_end_date, COALESCE(e.date_start, e.created_at))');
+            })
+            ->where('e.status', 'finish')
+            ->where('e.year', $this->year)
+            ->whereIn('t.company_code', $filteredCodes)
+            ->selectRaw("
+                pet.team_id,
+                e.year,
+                MAX(COALESCE(uhh.{$this->organizationUnit}, u.{$this->organizationUnit}, 'Lainnya')) AS organization_unit
+            ")
+            ->groupBy('pet.team_id', 'e.year');
+
+        $rows = DB::query()
+            ->fromSub($base, 'tp')
+            ->joinSub($eligible, 'elig', 'elig.team_id', '=', 'tp.team_id')
+            ->selectRaw('elig.organization_unit, elig.year, CAST(SUM(tp.team_potential) AS SIGNED) AS total_potential')
+            ->groupBy('elig.organization_unit', 'elig.year')
+            ->orderBy('elig.organization_unit')
             ->get()
+            ->map(function ($r) {
+                $r->year = (int) $r->year;
+                $r->total_potential = (int) $r->total_potential;
+                return $r;
+            })
+            ->filter(fn ($r) => $r->total_potential > 0) 
+            ->values();
+
+        // $grandTotalRaw = (int) $rows->sum('total_potential');
+        // $perUnitRaw    = $rows->groupBy('organization_unit')->map(fn($g) => (int) $g->sum('total_potential'));
+        // $perYearRaw    = $rows->groupBy('year')->map(fn($g) => (int) $g->sum('total_potential'));
+        // Log::debug('[TPB OrgChart RAW]', [
+        //     'company_code' => $companyCode,
+        //     'company_name' => $this->company_name,
+        //     'year'         => $this->year,
+        //     'units'        => $perUnitRaw->count(),
+        //     'grand_total'  => $grandTotalRaw,
+        //     'per_unit'     => $perUnitRaw,
+        //     'per_year'     => $perYearRaw,
+        // ]);
+
+        $this->chartData = $rows
             ->groupBy('organization_unit')
-            ->map(function ($data) {
-                return $data->keyBy('year')->map(fn($item) => $item->total_potential_benefit);
-            });
+            ->map(fn ($g) => $g->keyBy('year')->map(fn ($r) => (string) $r->total_potential));
     }
 
-
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
     public function render()
     {
         return view('components.dashboard.total-potential-benefit-by-organization-chart', [

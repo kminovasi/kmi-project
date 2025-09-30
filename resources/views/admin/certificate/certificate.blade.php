@@ -43,8 +43,10 @@
                             <tr>
                                 <th scope="col" style="font-weight: normal;">No</th>
                                 <th scope="col" style="font-weight: normal;">Event</th>
-                                <th scope="col" style="font-weight: normal;">Perusahaan</th>
+                                {{-- <th scope="col" style="font-weight: normal;">Perusahaan</th> --}}
                                 <th scope="col" style="font-weight: normal;">Template Gambar</th>
+                                <th scope="col" style="font-weight: normal;">Template Khusus</th>
+                                <th scope="col" style="font-weight: normal;">Tanggal</th>
                                 <th scope="col" style="font-weight: normal;">Aksi</th>
                             </tr>
                         </thead>
@@ -58,18 +60,35 @@
                                 @foreach ($certificates as $key => $certificate)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $certificate->event->event_name }} {{ $certificate->event->year }}</td>
-                                        <td>{{ $certificate->event && $certificate->event->company ? $certificate->event->company->company_name : '-' }}</td>
+                                        <td>{{ $certificate->event->event_name }} Tahun {{ $certificate->event->year }}</td>
+                                        {{-- <td>{{ $certificate->event && $certificate->event->company ? $certificate->event->company->company_name : '-' }}</td> --}}
                                         <td>
-                                            <img src="{{ asset('storage/' . $certificate->template_path) }}"
+                                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($certificate->template_path) }}"
                                                 alt="Template Gambar" class="img-fluid" style="max-width: 100px; height: auto;">
                                         </td>
                                         <td>
+                                            <img src="{{ route('query.getFile') }}?directory={{ urlencode($certificate->special_template_path) }}"
+                                                alt="Template Gambar" class="img-fluid" style="max-width: 100px; height: auto;">
+                                        </td>
+                                        <td>
+                                            @php
+                                                // jika pakai casts di Model, ini sudah Carbon instance
+                                                $tgl = $certificate->certificate_date
+                                                ? $certificate->certificate_date->locale('id')->isoFormat('D MMMM YYYY')
+                                                : null;
+                                            @endphp
+                                            {{ $tgl ?? '-' }}
+                                        </td>
+                                        <td>
                                             <!-- Button View -->
-                                            <a href="{{ asset('storage/' . $certificate->template_path) }}"
-                                                class="btn btn-sm btn-info" target="_blank" title="Lihat Sertifikat">
-                                                 <i data-feather="eye"></i>
-                                             </a>
+                                            {{-- <a
+                                                href="{{ route('query.getFile', ['directory' => $certificate->template_path]) }}"
+                                                class="btn btn-sm btn-info"
+                                                target="_blank"
+                                                title="Lihat Sertifikat"
+                                              >
+                                                <i data-feather="eye"></i>
+                                          </a> --}}
 
                                             <!-- Button Delete -->
                                             <form id="delete-form-{{ $certificate->id }}"
@@ -129,7 +148,7 @@
                             <select class="form-select" name="event_id" id="event_id" required>
                                 <option value="" selected disabled>Pilih Event</option>
                                 @foreach ($eventsWithoutCertificate as $event)
-                                    <option value="{{ $event->event_id }}">{{ $event->event_name }} {{ $event->year }}</option>
+                                    <option value="{{ $event->event_id }}">{{ $event->event_name }} Tahun {{ $event->year }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">Silakan pilih event.</div>
@@ -150,6 +169,23 @@
                             <label for="badge_rank_3" class="form-label">Upload Badge Rank 3</label>
                             <input type="file" class="form-control" name="badge_rank_3" id="badge_rank_3" accept="image/*" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="special_template_certificate" class="form-label">Upload Template Sertifikat Khusus</label>
+                            <input type="file" class="form-control" name="special_template_certificate" id="special_template_certificate" accept="image/*" required>
+                        </div>
+                        <div class="mb-3">
+                        <label for="certificate_date" class="form-label">Tanggal Sertifikat</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="certificate_date"
+                            id="certificate_date"
+                            value="{{ old('certificate_date', now()->toDateString()) }}"
+                            required
+                        >
+                        <div class="invalid-feedback">Silakan pilih tanggal sertifikat.</div>
+                        </div>
+
                         <small class="form-text">Unggah File Gambar (JPG, PNG) Maks: 5MB</small>
                     </div>
                     <div class="modal-footer border-top">
@@ -160,9 +196,6 @@
             </form>
         </div>
     </div>
-
-
-
 
 @endsection
 @push('js')

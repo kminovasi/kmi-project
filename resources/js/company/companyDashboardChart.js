@@ -14,14 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 labels: chartData.years,
                 datasets: [
                     {
-                        label: `Idea Box`,
-                        data: chartData.ideaBoxCounts,
-                        backgroundColor: "rgba(54, 162, 235, 0.8)",
-                    },
-                    {
-                        label: `Implemented`,
-                        data: chartData.implementedCounts,
+                        label: `Paper Count`,
+                        data: chartData.paperCounts,
                         backgroundColor: "rgb(216, 64, 64)",
+                        maxBarThickness: 60,
                     },
                 ],
             },
@@ -29,18 +25,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'top',
+                        display: false,
                     },
                     tooltip: {
                         backgroundColor: "rgba(0, 0, 0, 0.8)",
-                        titleFont: { size: 14 },
-                        bodyFont: { size: 12 },
+                        titleFont: {
+                            size: 14,
+                        },
+                        bodyFont: {
+                            size: 12,
+                        },
                     },
                     datalabels: {
                         color: "#EEEEEE",
-                        anchor: "center",
-                        align: "center",
+                        anchor: "center", // Center the label horizontally
+                        align: "center", // Center the label vertically
                         font: {
                             weight: "bold",
                             size: 18,
@@ -59,7 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             },
                         },
                         ticks: {
-                            font: { size: 12 },
+                            font: {
+                                size: 12,
+                            },
                         },
                     },
                     x: {
@@ -72,7 +73,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             },
                         },
                         ticks: {
-                            font: { size: 12 },
+                            font: {
+                                size: 12,
+                            },
                         },
                     },
                 },
@@ -88,29 +91,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const directorateArray = Object.entries(window.directorateData).map(
         ([key, value]) => ({
             directorate_name: key,
-            ...value,
-        }),
+            value,
+        })
     );
 
     const filteredData = directorateArray.filter(
         (item) =>
             item.directorate_name &&
             item.directorate_name !== "-" &&
-            item.directorate_name !== "",
+            item.directorate_name !== ""
     );
 
     filteredData.sort(
         (a, b) =>
             b.total_ideas +
             b.total_innovations -
-            (a.total_ideas + a.total_innovations),
+            (a.total_ideas + a.total_innovations)
     );
 
     const itemHeight = 40;
     const minHeight = 400;
     const calculatedHeight = Math.max(
         minHeight,
-        filteredData.length * itemHeight,
+        filteredData.length * itemHeight
     );
 
     document.querySelector(".chart-wrapper").style.height =
@@ -233,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.innovatorDirectorateData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
     );
     const values = Object.values(data);
 
@@ -289,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.potentialBenefitsData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
     );
     const values = Object.values(data);
 
@@ -356,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 ctx.fillText(
                                     data.toLocaleString(),
                                     xPos + padding,
-                                    bar.y,
+                                    bar.y
                                 );
                             }
                         });
@@ -374,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = window.financialBenefitsData;
 
     const labels = Object.keys(data).map((label) =>
-        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label,
+        label === "-" || !label.trim() ? "Tidak Masuk Unit Organisasi" : label
     );
     const values = Object.values(data);
 
@@ -441,7 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 ctx.fillText(
                                     data.toLocaleString(),
                                     xPos + padding,
-                                    bar.y,
+                                    bar.y
                                 );
                             }
                         });

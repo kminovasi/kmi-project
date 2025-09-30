@@ -13,26 +13,38 @@
 
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
-    <canvas id="totalPotentialChart" style="width: 100%; max-height: 20rem;"></canvas>
+    <canvas id="totalPotentialChart" style="width: 100%;"></canvas>
     <div class="mt-3 text-end">
         <button class="btn btn-sm btn-success export-excel-totalPotentialBenefitByOrganizationChart">Export to Excel</button>
         <button class="btn btn-sm btn-danger export-pdf-totalPotentialBenefitByOrganizationChart">Export to PDF</button>
     </div>
 </div>
 
-@vite(['resources/js/totalPotentialBenefitByOrganizationChart.js'])
+{{-- <!--@vite(['resources/js/totalPotentialBenefitByOrganizationChart.js'])--> --}}
 
 <script type="module">
-    import {
-        initializeTotalPotentialChart
-    } from "{{ Vite::asset('resources/js/totalPotentialBenefitByOrganizationChart.js') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartData = @json($chartData); // Kirim data ke JavaScript
+        const company_name = @json($company_name);
+        
+        // Simpan ke global
+        window.chartData = chartData;
+        window.company_name = company_name;
 
-    const chartData = @json($chartData); // Kirim data ke JavaScript
-    const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
-    const company_name = @json($company_name);
-    window.chartData = chartData; // Store chart data globally
-    window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
-    window.company_name = company_name; // Store company name globally
-    initializeTotalPotentialChart(chartData); // Panggil fungsi dari file JS
+        // Debug log
+        // console.log("[DEBUG][Potential] chartData:", chartData);
+        // console.log("[DEBUG][Potential] company_name:", company_name);
+        // console.log("[DEBUG][Potential] typeof window.initializeTotalPotentialChart =", typeof window.initializeTotalPotentialChart);
+
+        // Render chart jika fungsi tersedia
+        if (typeof window.initializeTotalPotentialChart === 'function') {
+            // console.log("[DEBUG][Potential] Memanggil initializeTotalPotentialChart...");
+            window.initializeTotalPotentialChart(chartData);
+        } else {
+            // console.warn("[DEBUG][Potential] initializeTotalPotentialChart belum tersedia! Pastikan file JS sudah termuat.");
+        }
+    });
 </script>
-@vite(['resources/js/exportTotalPotentialBenefitByOrganizationChart.js'])
+
+<script type="module" src="{{ asset('build/assets/totalPotentialBenefitByOrganizationChart-4c545d78.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalPotentialBenefitByOrganizationChart-f7299526.js') }}"></script>

@@ -13,6 +13,7 @@ class Card extends Component
     public  $totalInnovators;
     public  $totalInnovatorsMale;
     public  $totalInnovatorsFemale;
+    public $totalInnovatoresOutsource;
     public $totalActiveEvents;
     public $implemented;
     public $totalImplementedInnovations;
@@ -28,6 +29,7 @@ class Card extends Component
         $totalInnovators = null,
         $totalInnovatorsMale = null,
         $totalInnovatorsFemale = null,
+        $totalInnovatoresOutsource = null,
         $totalActiveEvents = null,
         $totalImplementedInnovations = null,
         $totalIdeaBoxInnovations = null
@@ -37,6 +39,7 @@ class Card extends Component
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
+        $this->totalInnovatoresOutsource = $totalInnovatoresOutsource;
         $this->totalActiveEvents = $totalActiveEvents;
         $this->totalImplementedInnovations = $totalImplementedInnovations;
         $this->totalIdeaBoxInnovations = $totalIdeaBoxInnovations;

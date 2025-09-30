@@ -7,14 +7,23 @@
     </div>
 </div>
 
+<script type="module" src="{{ asset('build/assets/totalInnovatorStages-e429d7f8.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalInnovatorStages-152e8980.js') }}"></script>
+
 <script type="module">
-    import { renderTotalInnovatorStagesChart } from "{{ Vite::asset('resources/js/event/totalInnovatorStages.js') }}";
+document.addEventListener("DOMContentLoaded", () => {
+    const chartData = @json($chartData) ?? {};
+    const canvasId = "totalInnovatorStagesChart";
 
-    const chartDataExportTotalInnovatorStages = @json($chartData);
-    const event_name = @json($event_name);
-    window.chartDataExportTotalInnovatorStages = chartDataExportTotalInnovatorStages;
-    window.event_name = event_name;
-    renderTotalInnovatorStagesChart('totalInnovatorStagesChart', chartDataExportTotalInnovatorStages);
+    if (
+        !chartData ||
+        !Array.isArray(chartData.labels) ||
+        !Array.isArray(chartData.data) ||
+        !document.getElementById(canvasId)
+    ) return;
+
+    if (typeof window.renderTotalInnovatorStagesChart === "function") {
+        window.renderTotalInnovatorStagesChart(canvasId, chartData);
+    }
+});
 </script>
-
-@vite(['resources/js/event/exportTotalInnovatorStages.js'])

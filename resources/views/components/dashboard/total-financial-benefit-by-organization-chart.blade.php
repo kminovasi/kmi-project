@@ -13,26 +13,29 @@
 
         {{ $labels[$organizationUnit] ?? 'Unit Organisasi' }}
     </h2>
-    <canvas id="totalFinancialChart" style="width: 100%; max-height: 20rem;"></canvas>
+    <canvas id="totalFinancialChart" style="width: 100%;"></canvas>
     <div class="mt-3 text-end">
         <button class="btn btn-sm btn-success export-excel-totalFinancialBenefitByOrganizationChart">Export to Excel</button>
         <button class="btn btn-sm btn-danger export-pdf-totalFinancialBenefitByOrganizationChart">Export to PDF</button>
     </div>
 </div>
 
-@vite(['resources/js/totalFinancialBenefitByOrganizationChart.js'])
+{{-- @vite(['resources/js/totalFinancialBenefitByOrganizationChart.js']) --}}
 
 <script type="module">
-    import {
-        initializeTotalFinancialChart
-    } from "{{ Vite::asset('resources/js/totalFinancialBenefitByOrganizationChart.js') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartData = @json($chartData); // Kirim data ke JavaScript
+        const company_name = @json($company_name);
+        
+        window.chartData = chartData; // Store chart data globally
+        window.company_name = company_name; // Store company name globally
 
-    const chartData = @json($chartData); // Kirim data ke JavaScript
-    const company_name = @json($company_name);
-    initializeTotalFinancialChart(chartData); // Panggil fungsi dari file JS
-    window.chartData = chartData; // Store chart data globally
-    window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
-    window.company_name = company_name; // Store company name globally
+        // Kalau kamu ingin langsung render dari sini (optional):
+        if (typeof window.initializeTotalFinancialChart === 'function') {
+            window.initializeTotalFinancialChart(chartData);
+        }
+    });
 </script>
 
-@vite(['resources/js/exportTotalFinancialBenefitByOrganizationChart.js'])
+<script type="module" src="{{ asset('build/assets/totalFinancialBenefitByOrganizationChart-c2fb24e1.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalFinancialBenefitByOrganizationChart-78123bca.js') }}"></script>

@@ -1,4 +1,4 @@
-@vite(['resources/css/app.css'])
+<link rel="stylesheet" href="{{ asset('build/assets/app-6037ed8c.css') }}">
 
 <style>
     h4 {

@@ -50,8 +50,8 @@ class registerRequests extends FormRequest
             // 'outcome' => 'required',
             // 'performance' => 'required',
             'status_inovasi' => 'required',
-            'proof_idea' => 'file|mimes:jpeg,jpg,png|max:2048',
-            'innovation_photo' => 'file|mimes:jpeg,jpg,png|max:2048'
+            'proof_idea' => 'file|mimes:jpeg,jpg,png|max:5120',
+            'innovation_photo' => 'file|mimes:jpeg,jpg,png|max:5120'
         ];
     }
 }

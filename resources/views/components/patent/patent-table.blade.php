@@ -151,7 +151,7 @@
           <input type="hidden" name="patent_id-doc" id="patent_id-doc">
           <div class="mb-3">
             <label for="input_completeness_documents" id="label_completeness_documents" class="form-label"></label>
-            <input type="file" class="form-control" id="input_completeness_documents" required accepted=".pdf">
+            <input type="file" class="form-control" id="input_completeness_documents" required accept=".pdf">
             <small>Upload File .pdf Maks 5MB</small>
           </div>
           <div class="text-end">

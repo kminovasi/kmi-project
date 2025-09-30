@@ -92,7 +92,7 @@
             <div class="card-header">
                 <div class="innovation-stat d-flex justify-content-center align-items-center">
                     <span class="innovation-label text-black">Total Team Terverifikasi</span>
-                    <span class="innovation-value">{{ $totalTeams }}</span>
+                    <span class="innovation-value">{{ $passedTeams->unique()->count() + $failedTeams->unique()->count() }}</span>
                 </div>
             </div>
             <div class="card-body">

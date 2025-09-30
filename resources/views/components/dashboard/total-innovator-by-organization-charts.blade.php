@@ -20,19 +20,20 @@
     </div>
 </div>
 
-@vite(['resources/js/totalInnovatorByOrganizationChart.js'])
-
 <script type="module">
-    import {
-        initializeTotalInnovatorChart
-    } from "{{ Vite::asset('resources/js/totalInnovatorByOrganizationChart.js') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartData = @json($chartData); // Kirim data ke JavaScript
+        const company_name = @json($company_name);
+        
+        window.chartData = chartData; // Store chart data globally
+        window.company_name = company_name; // Store company name globally
 
-    const chartData = @json($chartData); // Kirim data ke JavaScript
-    const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
-    const company_name = @json($company_name);
-    window.chartData = chartData; // Store chart data globally
-    window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
-    window.company_name = company_name; // Store company name globally
-    initializeTotalInnovatorChart(chartData); // Panggil fungsi dari file JS
+        // Kalau kamu ingin langsung render dari sini (optional):
+        if (typeof window.initializeTotalInnovatorChart === 'function') {
+            window.initializeTotalInnovatorChart(chartData);
+        }
+    });
 </script>
-@vite(['resources/js/exportTotalInnovatorByOrganization.js'])
+
+<script type="module" src="{{ asset('build/assets/totalInnovatorByOrganizationChart-bb4e58f2.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalInnovatorByOrganization-eef86002.js') }}"></script>

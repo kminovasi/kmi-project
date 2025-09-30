@@ -7,15 +7,20 @@
                         class="form-control form-control-sm" placeholder="Cari nama juri...">
                 </div>
 
-                <!-- Filter berdasarkan company code  -->
+                {{-- Filter berdasarkan company code --}}
+                {{-- 
                 <div class="col-md-3 mb-1">
                     @livewire('company-select', ['selectedCompany' => $company])
                 </div>
+                --}}
 
-                <!-- Filter berdasarkan Event -->
+                {{-- Filter berdasarkan Event --}}
+                {{-- 
                 <div class="col-md-3 mb-1">
                     @livewire('event-select', ['selectedEvent' => $event])
                 </div>
+                --}}
+
             </div>
         </div>
     @endif

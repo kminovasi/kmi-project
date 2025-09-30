@@ -37,7 +37,6 @@ class TotalInnovatorWithGenderChart extends Component
     
     $companyCode = in_array($companyTarget, [2000, 7000]) ? [2000, 7000] : [$companyTarget];
 
-    // Query utama untuk pegawai tetap
     $permanentQuery = DB::table('users')
         ->join('pvt_members', 'users.employee_id', '=', 'pvt_members.employee_id')
         ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
@@ -54,7 +53,6 @@ class TotalInnovatorWithGenderChart extends Component
             DB::raw("CONCAT(pvt_members.employee_id, '-', teams.id) as unique_key")
         );
 
-    // Query tambahan untuk outsourcing (ph2_members)
     $outsourcingQuery = DB::table('ph2_members')
         ->join('teams', 'ph2_members.team_id', '=', 'teams.id')
         ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
@@ -69,10 +67,8 @@ class TotalInnovatorWithGenderChart extends Component
             DB::raw("CONCAT(ph2_members.name, '-', teams.id) as unique_key")
         );
 
-    // Union kedua query
     $combined = $permanentQuery->unionAll($outsourcingQuery);
 
-    // Bungkus union untuk penghitungan dan group by
     $result = DB::table(DB::raw("({$combined->toSql()}) as combined"))
         ->mergeBindings($combined)
         ->select(
@@ -85,22 +81,40 @@ class TotalInnovatorWithGenderChart extends Component
         ->get()
         ->groupBy('year')
         ->map(function ($yearData) {
-            $male = $yearData->where('gender', 'Male')->sum('total');
-            $female = $yearData->where('gender', 'Female')->sum('total');
-            $outsource = $yearData->where('gender', 'Outsource')->sum('total');
-            return [
-                'laki_laki' => $male,
-                'perempuan' => $female,
-                'outsourcing' => $outsource,
-                'total' => $male + $female + $outsource,
-            ];
-        })
+        $normalize = function ($g) {
+            $x = strtolower(trim((string) $g));   
+            if ($x === '' || in_array($x, ['male','laki-laki','laki','m','1','unknown','0'], true)) {
+                return 'Male';
+            }
+            if (in_array($x, ['female','perempuan','perempua','f'], true)) {
+                return 'Female';
+            }
+            if ($x === 'outsource') {
+                return 'Outsource';
+            }
+            return 'Male';
+        };
+
+        $grouped = $yearData->groupBy(function ($row) use ($normalize) {
+            return $normalize($row->gender ?? '');
+        });
+
+        $male      = (int) ($grouped->get('Male', collect())->sum('total'));
+        $female    = (int) ($grouped->get('Female', collect())->sum('total'));
+        $outsource = (int) ($grouped->get('Outsource', collect())->sum('total'));
+
+        return [
+            'laki_laki'   => $male,
+            'perempuan'   => $female,
+            'outsourcing' => $outsource,
+            'total'       => $male + $female + $outsource,
+        ];
+    })
+
         ->toArray();
 
     return $result;
 }
-
-
 
     /**
      * Get the view / contents that represent the component.

@@ -52,7 +52,7 @@ const imagePlugin = {
 
                 // Calculate aspect ratio
                 const aspectRatio = img.width / img.height;
-                const imgWidth = 30; // Set your desired width
+                const imgWidth = 20; // Set your desired width
                 const imgHeight = imgWidth / aspectRatio; // Calculate height based on aspect ratio
 
                 ctx.drawImage(
@@ -95,7 +95,14 @@ const initChart = async (newLabels = labels, newDataValues = dataValues, newLogo
         }
 
         // Create the chart
-        const ctx = document.getElementById("benefitChart").getContext("2d");
+        const canvas = document.getElementById("benefitChart");
+
+        // >>> Perbaikan: tinggi canvas diset dinamis agar bar/logo tidak tumpang tindih
+        // (≈ 40px per label, minimal 360px; silakan ubah angka 40 sesuai kebutuhan)
+        canvas.style.height = `${Math.max(360, newLabels.length * 40)}px`;
+
+        const ctx = canvas.getContext("2d");
+
         benefitChart = new Chart(ctx, {
             type: "bar",
             data: {
@@ -108,6 +115,8 @@ const initChart = async (newLabels = labels, newDataValues = dataValues, newLogo
                 ],
             },
             options: {
+                responsive: true, 
+                maintainAspectRatio: false,
                 indexAxis: "y",
                 layout: {
                     padding: {

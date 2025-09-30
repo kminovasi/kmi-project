@@ -15,16 +15,19 @@
                     <div id="collapse{{ $year }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $year }}"
                         data-bs-parent="#accordionInnovator">
                         <div class="accordion-body p-0">
-                            <table class="table table-striped">
+                            <table class="table table-bordered">
                                 <thead class="table-light">
-                                    <tr>
+                                    <tr class="text-center">
+                                        <th>Ranking</th>
                                         <th>Nama Inovator</th>
                                         <th>Jumlah Tim</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php $no = 1; @endphp
                                     @foreach ($innovators as $data)
                                         <tr>
+                                            <td class="text-center">{{ $no++ }}</td>
                                             <td>{{ $data['name'] }}</td>
                                             <td class="text-center">{{ $data['total'] }}</td>
                                         </tr>

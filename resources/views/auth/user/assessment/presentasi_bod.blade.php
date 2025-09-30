@@ -214,8 +214,9 @@
                             <hr>
                             <!-- Frame for Upload PPT -->
                             <div class="mb-3 p-3 border rounded shadow-sm">
-                                <label for="uploadPPT" class="form-label font-weight-normal">Unggah PPT</label>
-                                <input type="file" name="file_ppt" id="uploadPPT" class="form-control">
+                                <label for="uploadPPT" class="form-label font-weight-normal">Unggah File (PDF/PPT)</label>
+                                <input type="file" name="file_ppt" id="uploadPPT" class="form-control" 
+                                       accept=".pdf, .ppt, .pptx">
                             </div>
                         </div>
                         <div class="modal-footer border-0">

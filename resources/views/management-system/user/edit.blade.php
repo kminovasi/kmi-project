@@ -52,13 +52,50 @@
                                 <input type="text" name="position_title" class="form-control" value="{{ $user->position_title }}">
                             </div>
                             <div class="form-group">
-                                <label>Kode Perusahaan</label>
-                                <input type="text" name="company_code" class="form-control" value="{{ $user->company_code }}">
+                                <label>Job Level</label>
+                                <input type="text" name="job_level" class="form-control" value="{{ $user->job_level }}">
                             </div>
                             <div class="form-group">
-                                <label>Nama Perusahaan</label>
-                                <input type="text" name="company_name" class="form-control" value="{{ $user->company_name }}">
+                                <label>ID Atasan</label>
+                                <input type="text" name="manager_id" class="form-control" value="{{ $user->manager_id }}">
                             </div>
+                            <div class="form-group">
+                            <label>Kode Perusahaan</label>
+                            <select name="company_code" id="company_code" class="form-control">
+                                <option value="">-- Pilih Kode Perusahaan --</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->company_code }}" {{ $user->company_code == $company->company_code ? 'selected' : '' }}>
+                                        {{ $company->company_code }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nama Perusahaan</label>
+                            <select name="company_name" id="company_name" class="form-control">
+                                <option value="">-- Pilih Nama Perusahaan --</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->company_name }}" {{ $user->company_name == $company->company_name ? 'selected' : '' }}>
+                                        {{ $company->company_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Perusahaan Asal</label>
+                            <select name="home_company" id="home_company" class="form-control">
+                                <option value="">-- Pilih Perusahaan Asal --</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->company_name }}" {{ $user->home_company == $company->company_name ? 'selected' : '' }}>
+                                        {{ $company->company_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Nama Direktorat</label>
                                 <input type="text" name="directorate_name" class="form-control" value="{{ $user->directorate_name }}">
@@ -83,12 +120,6 @@
                                 <label>Sub Seksi</label>
                                 <input type="text" name="sub_section_of" class="form-control" value="{{ $user->sub_section_of }}">
                             </div>
-                            <div class="form-group">
-                                <label>Job Level</label>
-                                <input type="text" name="job_level" class="form-control" value="{{ $user->job_level }}">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Password (kosongkan untuk mempertahankan password lama)</label>
                                 <input type="password" name="password" class="form-control">
@@ -130,5 +161,32 @@
             </form>
         </div>
     </div>
+
+    <script>
+    const companies = @json($companies);
+
+    const companyCodeSelect = document.getElementById('company_code');
+    const companyNameSelect = document.getElementById('company_name');
+
+    companyCodeSelect.addEventListener('change', function() {
+        const selectedCode = this.value;
+        const company = companies.find(c => c.company_code === selectedCode);
+        if (company) {
+            companyNameSelect.value = company.company_name;
+        } else {
+            companyNameSelect.value = '';
+        }
+    });
+
+    companyNameSelect.addEventListener('change', function() {
+        const selectedName = this.value;
+        const company = companies.find(c => c.company_name === selectedName);
+        if (company) {
+            companyCodeSelect.value = company.company_code;
+        } else {
+            companyCodeSelect.value = '';
+        }
+    });
+</script>
 @endsection
 

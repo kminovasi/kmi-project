@@ -37,7 +37,6 @@ export function initializeTotalFinancialChart(chartData) {
             label: firstYear.toString(),
             data: labels.map((unit) => chartData[unit][firstYear] || 0),
             maxBarThickness: 60,
-            minBarLength: 5,
             backgroundColor: "#4e9000",
         });
     }
@@ -45,13 +44,12 @@ export function initializeTotalFinancialChart(chartData) {
     const ctx = document.getElementById("totalFinancialChart").getContext("2d");
     new Chart(ctx, {
         plugins: [ChartDataLabels],
-        type: "bar", // Bar chart
+        type: "bar", // Tipe chart
         data: {
-            labels: labels,
-            datasets: datasets,
+            labels: labels, // Nama unit
+            datasets: datasets, // Data berdasarkan tahun
         },
         options: {
-            indexAxis: "y", // ⬅️ Ini membuat chart menjadi horizontal
             responsive: true,
             plugins: {
                 legend: {
@@ -62,19 +60,20 @@ export function initializeTotalFinancialChart(chartData) {
                     text: "Total Benefit Finansial Berdasarkan Organisasi",
                 },
                 datalabels: {
+                    // Konfigurasi plugin Data Labels
                     display: true,
-                    align: "end",
-                    anchor: "center",
-                    color: "black",
-                    formatter: (value) => formatRupiah(value.toLocaleString()),
+                    align: "top", // Jika kecil, posisikan di luar
+                    anchor: "end",
+                    color: "black", // Warna merah untuk angka kecil
+                    formatter: (value) => formatRupiah(value.toLocaleString()), // Format angka
                     font: {
                         weight: "bold",
-                        size: 13,
+                        size: 12,
                     },
                 },
             },
             scales: {
-                x: {
+                y: {
                     beginAtZero: true,
                     title: {
                         display: true,
@@ -84,13 +83,8 @@ export function initializeTotalFinancialChart(chartData) {
                             weight: "bold",
                         },
                     },
-                    ticks: {
-                        font: {
-                            size: calculateFontSize(),
-                        },
-                    },
                 },
-                y: {
+                x: {
                     title: {
                         display: true,
                         font: {
@@ -100,7 +94,7 @@ export function initializeTotalFinancialChart(chartData) {
                     },
                     ticks: {
                         font: {
-                            size: calculateFontSize(),
+                            size: calculateFontSize(), // Dynamic font size for x-axis labels
                         },
                     },
                 },

@@ -5,6 +5,7 @@ namespace App\View\Components\DetailCompanyChart;
 use Illuminate\Support\Facades\DB;
 use App\Models\Company;
 use App\Models\Event;
+use App\Models\Paper;
 use Illuminate\View\Component;
 
 class PaperCount extends Component
@@ -17,12 +18,13 @@ class PaperCount extends Component
         $company = Company::select('company_name', 'company_code')->where('id', $companyId)->first();
         $this->companyName = $company->company_name;
 
-        // Ambil tahun yang tersedia dari tabel events
         $availableYears = Event::select('year')
             ->groupBy('year')
             ->orderBy('year', 'ASC')
             ->pluck('year')
             ->toArray();
+
+        $yearlyPapers = [];
 
         $targetCompanyCode = $company->company_code;
 
@@ -32,7 +34,6 @@ class PaperCount extends Component
             $filteredCodes = [$targetCompanyCode];
         }
 
-        // Ambil data team_id, tahun, dan kategori
         $teamYears = DB::table('teams')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -41,36 +42,24 @@ class PaperCount extends Component
             ->where('papers.status', 'accepted by innovation admin')
             ->whereIn('events.year', $availableYears)
             ->whereIn('teams.company_code', $filteredCodes)
-            ->select('teams.id as team_id', 'events.year', 'categories.category_name')
+            ->select('teams.id as team_id', 'events.year')
             ->get();
 
-        // Map dan kelompokkan berdasarkan tahun dan jenis kategori
-        $grouped = collect($teamYears)
-            ->map(fn($row) => [
-                'team_id' => $row['team_id'],
-                'year' => $row['year'],
-                'type' => strtolower($row['category_name']) === 'idea box' ? 'idea_box' : 'implemented',
-            ])
-            ->unique(fn($row) => $row['team_id'] . '-' . $row['year']) // 1 tim per tahun
-            ->groupBy(fn($row) => $row['year'] . '_' . $row['type']);
+        // Group per tahun dan hitung jumlah unik team_id
+        $teamCountsPerYear = $teamYears
+            ->map(fn($row) => ['team_id' => $row->team_id, 'year' => $row->year])
+            ->unique(fn($row) => $row['team_id'] . '-' . $row['year'])
+            ->groupBy('year')
+            ->map(fn($group) => count($group));
 
-        // Inisialisasi hasil akhir
-        $teamCountsPerYear = [];
-        foreach ($availableYears as $year) {
-            $ideaKey = $year . '_idea_box';
-            $nonIdeaKey = $year . '_implemented';
+        // Bikin hasil akhir sesuai urutan $availableYears
+        $result = collect($availableYears)->mapWithKeys(function ($year) use ($teamCountsPerYear) {
+            return [$year => $teamCountsPerYear[$year] ?? 0];
+        })->sortKeys();
 
-            $teamCountsPerYear[$year] = [
-                'idea_box' => count($grouped[$ideaKey] ?? []),
-                'implemented' => count($grouped[$nonIdeaKey] ?? []),
-            ];
-        }
-
-        // Format akhir untuk chart
         $this->chartData = json_encode([
-            'years' => array_keys($teamCountsPerYear),
-            'ideaBoxCounts' => array_column($teamCountsPerYear, 'idea_box'),
-            'implementedCounts' => array_column($teamCountsPerYear, 'implemented'),
+            'years' => $result->keys()->toArray(),
+            'paperCounts' => $result->values()->toArray(),
         ]);
     }
 

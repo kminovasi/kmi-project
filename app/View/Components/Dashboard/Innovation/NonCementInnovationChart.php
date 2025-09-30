@@ -23,14 +23,19 @@ class NonCementInnovationChart extends Component
 
         // Ambil data inovasi berdasarkan perusahaan dan status
         $data = Team::select(
-                'teams.company_code',
-                'companies.company_name',
-                'companies.sort_order',
-                DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Implemented') THEN 1 ELSE 0 END) as implemented"),
-                DB::raw("SUM(CASE WHEN papers.status_inovasi IN ('Progress', 'Not Implemented') THEN 1 ELSE 0 END) as idea_box")
+            'teams.company_code',
+            'companies.company_name',
+            'companies.sort_order',
+            DB::raw("SUM(CASE 
+                        WHEN categories.category_name != 'IDEA BOX' 
+                        THEN 1 ELSE 0 END) as implemented"),
+            DB::raw("SUM(CASE 
+                        WHEN categories.category_name = 'IDEA BOX' 
+                        THEN 1 ELSE 0 END) as idea_box")
             )
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('categories', 'categories.id', '=', 'teams.category_id')
             ->where('companies.group', 'Non Semen')
             ->where('papers.status', 'accepted by innovation admin')    
             ->groupBy('teams.company_code', 'companies.company_name', 'companies.sort_order',)

@@ -2,13 +2,24 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import autocolors from "chartjs-plugin-autocolors";
 
-export function renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart) {
-    const ctx = document.getElementById("totalInnovatorWithGenderChart").getContext("2d");
+export function renderTotalInnovatorWithGenderChart(
+    chartDataTotalInnovatorWithGenderChart
+) {
+    const ctx = document
+        .getElementById("totalInnovatorWithGenderChart")
+        .getContext("2d");
 
     const labels = Object.keys(chartDataTotalInnovatorWithGenderChart);
-    const maleData = labels.map((year) => chartDataTotalInnovatorWithGenderChart[year].laki_laki || 0);
-    const femaleData = labels.map((year) => chartDataTotalInnovatorWithGenderChart[year].perempuan || 0);
-    const outsourceData = labels.map((year) => chartDataTotalInnovatorWithGenderChart[year].outsourcing || 0);
+    const maleData = labels.map(
+        (year) => chartDataTotalInnovatorWithGenderChart[year].laki_laki || 0
+    );
+    console.log(maleData);
+    const femaleData = labels.map(
+        (year) => chartDataTotalInnovatorWithGenderChart[year].perempuan || 0
+    );
+    const outsourceData = labels.map(
+        (year) => chartDataTotalInnovatorWithGenderChart[year].outsourcing || 0
+    );
 
     new Chart(ctx, {
         type: "bar",
@@ -39,29 +50,43 @@ export function renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithG
         options: {
             responsive: false,
             plugins: {
-                legend: { position: "top" },
+                legend: {
+                    position: "top",
+                },
                 datalabels: {
                     anchor: "end",
                     align: "top",
                 },
             },
             scales: {
-                x: { title: { display: true, text: "Tahun" } },
+                x: {
+                    title: {
+                        display: true,
+                        text: "Tahun",
+                    },
+                },
                 y: {
-                    title: { display: true, text: "Jumlah Innovator" },
+                    title: {
+                        display: true,
+                        text: "Jumlah Innovator",
+                    },
                     beginAtZero: true,
                 },
             },
         },
     });
 
+    // Render summary
     renderSummary(chartDataTotalInnovatorWithGenderChart);
 }
 
 function renderSummary(chartData) {
+    // Get total for each year and gender
     const yearlyTotals = {};
     const yearlyGenderData = {};
-    let totalMale = 0, totalFemale = 0, totalOutsource = 0;
+    let totalMale = 0;
+    let totalFemale = 0;
+    let totalOutsource = 0;
 
     Object.entries(chartData).forEach(([year, data]) => {
         const maleCount = data.laki_laki || 0;
@@ -77,37 +102,49 @@ function renderSummary(chartData) {
         totalOutsource += outsourceCount;
     });
 
-    const years = Object.keys(yearlyTotals).map((year) => parseInt(year)).sort((a, b) => b - a);
+    // Calculate yearly growth
+    const years = Object.keys(yearlyTotals)
+        .map((year) => parseInt(year))
+        .sort((a, b) => b - a);
     const yearlyGrowth = {};
     for (let i = 0; i < years.length; i++) {
         const currentYear = years[i];
         const previousYear = years[i + 1];
         const growth = yearlyTotals[currentYear] - yearlyTotals[previousYear];
-        const growthPercentage = ((growth / yearlyTotals[previousYear]) * 100).toFixed(1);
+        const growthPercentage = (
+            (growth / yearlyTotals[previousYear]) *
+            100
+        ).toFixed(1);
         yearlyGrowth[currentYear] = {
             absolute: growth,
             percentage: growthPercentage,
         };
     }
 
-    let highestYear = years[0], lowestYear = years[0];
+    // Find year with highest and lowest total
+    let highestYear = years[0];
+    let lowestYear = years[0];
     years.forEach((year) => {
         if (yearlyTotals[year] > yearlyTotals[highestYear]) highestYear = year;
         if (yearlyTotals[year] < yearlyTotals[lowestYear]) lowestYear = year;
     });
 
+    // Calculate average yearly total
     const averageTotal = (
         Object.values(yearlyTotals).reduce((a, b) => a + b, 0) / years.length
     ).toFixed(0);
 
+    // Calculate gender ratio
     const totalInnovators = totalMale + totalFemale + totalOutsource;
     const malePercentage = ((totalMale / totalInnovators) * 100).toFixed(1);
     const femalePercentage = ((totalFemale / totalInnovators) * 100).toFixed(1);
     const outsourcePercentage = ((totalOutsource / totalInnovators) * 100).toFixed(1);
 
+    // Create summary HTML
     const summaryHtml = `
         <div class="mt-4 p-4 bg-gray-100 rounded summary-card">
             <h3 class="text-lg font-semibold mb-3 text-center">Ringkasan Statistik Innovator</h3>
+
             <div class="container-fluid d-flex flex-row justify-content-between align-items-baseline flex-wrap">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -119,15 +156,17 @@ function renderSummary(chartData) {
                             <li>Tahun terendah: ${lowestYear} (${yearlyTotals[lowestYear].toLocaleString()} innovator)</li>
                         </ul>
                     </div>
+
                     <div>
                         <h4 class="font-medium mb-2">Distribusi Gender:</h4>
                         <ul class="list-disc pl-5">
                             <li>Laki-laki: ${totalMale.toLocaleString()} (${malePercentage}%)</li>
                             <li>Perempuan: ${totalFemale.toLocaleString()} (${femalePercentage}%)</li>
-                            <li>Outsource: ${totalOutsource.toLocaleString()} (${outsourcePercentage}%)</li>
+                            <li>Perempuan: ${totalOutsource.toLocaleString()} (${outsourcePercentage}%)</li>
                         </ul>
                     </div>
                 </div>
+
                 <div class="mt-4">
                     <h4 class="font-medium mb-2">Pertumbuhan Tahunan:</h4>
                     <div class="overflow-x-auto">
@@ -141,14 +180,18 @@ function renderSummary(chartData) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${years.map((year, index) => `
+                                ${years
+                                    .map(
+                                        (year, index) => `
                                     <tr class="${index % 2 === 0 ? "bg-white" : "bg-gray-200"}">
                                         <td class="px-4 py-2">${year}</td>
                                         <td class="px-4 py-2">${yearlyTotals[year].toLocaleString()}</td>
                                         <td class="px-4 py-2">${index + 1 == years.length ? "-" : (yearlyGrowth[year].absolute >= 0 ? "+" : "") + yearlyGrowth[year].absolute.toLocaleString()}</td>
                                         <td class="px-4 py-2">${index + 1 == years.length ? "-" : yearlyGrowth[year].percentage + "%"}</td>
                                     </tr>
-                                `).join("")}
+                                `
+                                    )
+                                    .join("")}
                             </tbody>
                         </table>
                     </div>
@@ -157,11 +200,10 @@ function renderSummary(chartData) {
         </div>
     `;
 
+    // Render the summary to the DOM
     const summaryContainer = document.getElementById("chartSummary");
     if (summaryContainer) {
         summaryContainer.innerHTML = summaryHtml;
     }
 }
-
-// 👉 Tambahkan baris ini agar bisa diakses dari Blade
 window.renderTotalInnovatorWithGenderChart = renderTotalInnovatorWithGenderChart;

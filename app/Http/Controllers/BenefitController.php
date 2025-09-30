@@ -46,8 +46,13 @@ class BenefitController extends Controller
     {
 
         $row = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-            ->leftJoin('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->leftJoin('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->leftJoin(DB::raw("(
+                    SELECT pet.*
+                    FROM pvt_event_teams pet
+                    JOIN events e ON e.id = pet.event_id
+                    WHERE e.status != 'finish'
+                ) as active_pet"), 'active_pet.team_id', '=', 'teams.id')
+            ->leftJoin('events', 'events.id', '=', 'active_pet.event_id')
             ->select(
                 'papers.id as paper_id',
                 'teams.id as team_id',
@@ -107,7 +112,7 @@ class BenefitController extends Controller
         $gm = PvtMember::where('team_id', $row->team_id)->where('status', 'gm')->first();
         $gmName = null;
         if ($gm !== null) {
-            $gmName = User::where('employee_id', $gm->employee_id)->select('name', 'employee_id')->first();
+            $gmName = User::where('employee_id', $gm->employee_id)->select('name', 'employee_id', 'job_level')->first();
         } else {
             $gmName = null;
         }
@@ -135,7 +140,7 @@ class BenefitController extends Controller
                 $row->status == 'revision benefit by general manager' ||
                 $row->status == 'revision paper and benefit by general manager' ||
                 $row->status == 'revision paper and benefit by innovation admin' || $row->status == 'revision benefit by innovation admin') &&
-            $is_owner && $row->event_status == 'active'
+            $is_owner && $row->event_status != 'finish'
         ) {
             $is_disabled = false;
         } else {

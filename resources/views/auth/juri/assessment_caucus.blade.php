@@ -27,6 +27,22 @@
             margin-left: auto;
             width: 10rem;
         }
+        .ai-analyze-bar{
+            background: linear-gradient(90deg,#ef4444,#b91c1c);
+            border-radius: 999px;
+            padding: 10px 14px;
+            display:flex; align-items:center; justify-content:space-between;
+            box-shadow:0 6px 18px rgba(0,0,0,.07);
+        }
+
+        .ai-analyze-left{display:flex; align-items:center; gap:10px; color:#fff; font-weight:600; }
+        .ai-dot{width:6px; height:6px; background:#fff; border-radius:50%; display:inline-block}
+        .ai-title{opacity:.95}
+        .ai-actions{display:flex; align-items:center; gap:8px}
+        .ai-btn{
+            background:#fff; color:#111; border:none; border-radius:14px; padding:8px 14px;
+            font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.08);
+        }
     </style>
 @endpush
 @section('content')
@@ -97,11 +113,86 @@
                 </div>
                 <div class="col-md-6 col-sm-6 col-xs-6">
                     <x-assessment-matrix.show-image-button />
+                    <div class="d-flex flex-column align-items-start">
+                    @if ($datas->full_paper || $datas->file_review)
+                            <a href="{{ route('paper.watermarks', ['paper_id' => $datas->paper_id]) }}?rand={{ uniqid() }}" class="btn btn-sm text-white mt-2" style="background-color: #e84637" target="_blank">
+                                Lihat Makalah
+                            </a>
+                            <a href="{{ route('assessment.benefitView', ['paperId' => $datas->paper_id]) }}" class="btn btn-sm text-white mt-2" style="background-color: #e84637" target="_blank">
+                                Lihat Berita Acara Benefit
+                            </a>
+                            <button class="btn btn-sm text-white mt-2"
+                                style="background-color: #e84637"
+                                data-bs-toggle="modal"
+                                data-bs-target="#showDocument"
+                                onclick="show_document_modal({{ $datas->event_team_id }})">
+                                Lihat Dokumen Pendukung
+                            </button>
+
+                            @if ($datas->full_paper_updated_at)
+                                <small class="text-muted mt-2">
+                                    <small class="text-muted mt-2">
+                                        Makalah Terakhir diubah pada:
+                                        {{ \Carbon\Carbon::parse($datas->full_paper_updated_at)->translatedFormat('d F Y H:i') }}
+                                    </small>
+
+                                </small>
+                            @else
+                                <small class="text-muted mt-2">
+                                    Terakhir diubah pada: Tidak tersedia
+                                </small>
+                            @endif
+                        @else
+                            <p class="text-muted">File paper belum tersedia.</p>
+                        @endif
+                </div>
                 </div>
             </div>
         </div>
         <div class="card mb-4">
             <div class="card-header">Form Penilaian Caucus</div>
+            {{-- Analisis Makalah (AI) --}}
+            <!--<div class="ai-analyze-bar mb-3">-->
+            <!--<div class="ai-analyze-left">-->
+            <!--    <span class="ai-title">Analisis Makalah dengan AI</span>-->
+            <!--</div>-->
+
+            <!--<div class="ai-actions">-->
+            <!--    <a class="ai-btn" target="_blank"-->
+            <!--    href="{{ route('ai.analyze.paper.view', ['paperId' => $datas->paper_id]) }}">-->
+            <!--    Analisis Makalah-->
+            <!--    </a>-->
+
+            <!--    <form id="aiAnalyzeForm" class="d-none" target="_blank"-->
+            <!--        action="{{ route('ai.analyze.paper', ['paperId' => $datas->paper_id]) }}"-->
+            <!--        method="POST">-->
+            <!--    @csrf-->
+            <!--    </form>-->
+            <!--</div>-->
+            <!--</div>-->
+            
+            {{-- Analisis Makalah (AI) --}}
+            <div class="ai-analyze-bar mb-3">
+                <div class="ai-analyze-left">
+                    <span class="ai-title">Analisis Makalah dengan AI</span>
+                </div>
+
+                <div class="ai-actions">
+                    <a class="ai-btn" target="_blank"
+                    href="{{ route('ai.analyze.paper.view', ['paperId' => $datas->paper_id, 'stage' => 'presentation']) }}">
+                    Analisis Makalah
+                    </a>
+
+                    <form id="aiAnalyzeForm" class="d-none" target="_blank"
+                        action="{{ route('ai.analyze.paper', ['paperId' => $datas->paper_id]) }}"
+                        method="POST">
+                    @csrf
+                    <input type="hidden" name="stage" value="caucus">
+                    </form>
+                </div>
+            </div>
+
+             {{-- Form Penilaian Juri --}}
             <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
                 @csrf
                 @method('put')
@@ -134,6 +225,8 @@
                         <label class="small mb-1" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3">{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
+                    <input type="hidden" name="updated_at" value="{{ $datas->updated_at->format('Y-m-d H:i:s') }}">
+                    <input type="hidden" name="stage" value="assessment-caucus-value">
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputFinancialBenefit">Benefit Finansial</label>
                         <input 
@@ -143,9 +236,11 @@
                             class="form-control w-100" 
                             value="{{ number_format($datas->financial, 0, ',', '.') }}" 
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                            @if(auth()->user()->role === 'Admin') disabled @endif
+                            required
                         >
                     </div>
+
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputPotentialBenefit">Benefit Potensial</label>
                         <input 
@@ -155,7 +250,8 @@
                             class="form-control w-100" 
                             value="{{ number_format($datas->potential_benefit, 0, ',', '.') }}"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                            @if(auth()->user()->role === 'Admin') disabled @endif
+                            required
                         >
                     </div>
                 </div>
@@ -171,10 +267,11 @@
                                     data-bs-target="#deleteJuri">Hapus Juri</button>
                             </div>
                         </div>
-                    @elseif(Auth::user()->role == 'Juri')
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
-                        </div>
+                    @endif
+                    @if (Auth::user()->role == 'Juri' || $is_judge || Auth::user()->role == 'Superadmin')
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
+                    </div>
                     @endif
                 </div>
             </form>
@@ -195,10 +292,17 @@
                     <input type="text" name="stage" value="caucus" hidden>
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <label for="dataJudge">Pilih Juri</label>
-                            <select class="js-example-basic-single" name="judge_id" z-index="10" id="select2-juri">
-                            </select>
-                        </div>
+                        <label for="dataJudge">Pilih Juri</label>
+                        <select class="js-example-basic-multiple" 
+                                name="judge_id[]" 
+                                id="select2-juri" 
+                                multiple="multiple" 
+                                style="width: 100%">
+                            @foreach ($availableJudges as $judge)
+                                <option value="{{ $judge->id }}">{{ $judge->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -209,37 +313,45 @@
         </div>
     </div>
 
-    {{-- modal dekele juri --}}
-    <div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Hapus Juri</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('assessment.deleteJuri') }}" method="post">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="col-md-12">
-                            <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
-                            <input type="hidden" name="stage" value="caucus">
-                            <label for="dataJudge">Pilih Juri</label>
-                            <select name="judge_id" class="form-select" id="">
-                                @foreach ($datas_juri as $data_juri)
-                                    <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} -
-                                        {{ $data_juri->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-danger" type="submit">Hapus</button>
-                    </div>
-                </form>
+    {{-- modal delete juri --}}
+    <div class="modal fade" id="deleteJuri" tabindex="-1" aria-labelledby="deleteJuriLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteJuriLabel">Form Hapus Juri</h5>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+    
+          <form action="{{ route('assessment.deleteJuri') }}" method="post" id="formDeleteJuri">
+            @csrf
+            <div class="modal-body">
+              <input type="hidden" name="event_team_id" value="{{ $datas->event_team_id }}">
+              <input type="hidden" name="stage" value="caucus">
+    
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="deleteAll" name="delete_all" value="1">
+                <label class="form-check-label" for="deleteAll">
+                  Hapus semua juri pada stage ini
+                </label>
+              </div>
+    
+              <select name="judge_ids[]" id="judge_ids" class="form-select" multiple size="8">
+                @foreach ($datas_juri as $data_juri)
+                  <option value="{{ $data_juri->judge_id }}">
+                    {{ $data_juri->employee_id }} - {{ $data_juri->name }}
+                  </option>
+                @endforeach
+              </select>
+              <small class="text-muted">Gunakan Ctrl/Cmd untuk memilih banyak item.</small>
             </div>
+    
+            <div class="modal-footer">
+              <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>
+              <button class="btn btn-danger" type="submit">Hapus</button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
 @endsection
 @push('js')
@@ -330,6 +442,105 @@
         let column = updateColumnDataTable();
         // column = []
         let dataTable = initializeDataTable(column);
+
+        function show_document_modal(eventTeamId){
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'GET',
+                    url: '/assessment/view-supporting-document/' + eventTeamId, // Route langsung
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#resultContainer').empty();
+                        var container = $('#resultContainer');
+            
+                        response.forEach(function(item) {
+                            var fileUrl = '{{ route('query.getFile') }}' + '?directory=' + item.path;
+            
+                            // Menampilkan gambar
+                            if (item.file_name.toLowerCase().endsWith('.jpg') || item.file_name.toLowerCase().endsWith('.jpeg') || item.file_name.toLowerCase().endsWith('.png')) {
+                                var img = $('<img>', {
+                                    src: fileUrl,
+                                    class: 'w-100 my-2',
+                                    alt: item.file_name
+                                });
+                                container.append(img);
+                            }
+            
+                            // Menampilkan PDF
+                            else if (item.file_name.toLowerCase().endsWith('.pdf')) {
+                                var iframe = $('<iframe>', {
+                                    src: fileUrl,
+                                    width: '100%',
+                                    height: '720px',
+                                    class: 'my-2'
+                                });
+                                container.append(iframe);
+                            }
+            
+                            // Menampilkan video mp4
+                            else if (item.file_name.toLowerCase().endsWith('.mp4')) {
+                                var video = $('<video>', {
+                                    src: fileUrl,
+                                    class: 'w-100 my-2',
+                                    controls: true
+                                });
+                                container.append(video);
+                            }
+            
+                            // Format tidak didukung (mkv, avi, dll)
+                            else {
+                                container.append('<p>Format tidak didukung untuk preview: ' + item.file_name + '</p>');
+                                var downloadLink = $('<a>', {
+                                    href: fileUrl,
+                                    class: 'btn btn-primary mb-2',
+                                    download: item.file_name,
+                                    text: 'Download ' + item.file_name
+                                });
+                                container.append(downloadLink);
+                            }
+            
+                            // Form delete
+                            var form = $('<form>', {
+                                method: 'POST',
+                                action: '{{ route('paper.deleteDocument') }}'
+                            });
+            
+                            form.append($('<input>', {
+                                type: 'hidden',
+                                name: '_method',
+                                value: 'DELETE'
+                            }));
+            
+                            form.append($('<input>', {
+                                type: 'hidden',
+                                name: 'id',
+                                value: item.id
+                            }));
+            
+                            form.append($('<input>', {
+                                type: 'hidden',
+                                name: '_token',
+                                value: '{{ csrf_token() }}'
+                            }));
+            
+                            var deleteBtn = $('<button>', {
+                                type: 'submit',
+                                class: 'btn btn-danger my-3',
+                                text: 'Delete'
+                            });
+            
+                            form.append(deleteBtn);
+                            container.append(form);
+                            container.append('<hr>');
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error response:", xhr.responseText);
+                    }
+                });
+            }
     });
 
     // In your Javascript (external .js resource or <script> tag)
@@ -404,5 +615,11 @@
             $('#btnsubmit').prop('disabled', false)
         }
     }
+    
+     //AI
+        // document.getElementById('runAnalyzeBtn')?.addEventListener('click', function(){
+        // document.getElementById('aiAnalyzeForm')?.submit();
+        // });
+
 </script>
 @endpush

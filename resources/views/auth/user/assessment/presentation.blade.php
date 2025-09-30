@@ -80,7 +80,7 @@
     <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
         {{-- Component Navigation Bar Assessment --}}
-        @include('components.assessment.navbar')
+        @include('auth.user.paper.navbar')
 
         <div class="mb-3">
             @if (session('success'))
@@ -331,15 +331,27 @@
             $('#fix-all-pa').val($(`#filter-event`).val())
 
             $('#filter-event').on('change', function () {
-                dataTable.destroy();
-                dataTable.destroy();
-
-                document.getElementById('datatable-card').insertAdjacentHTML('afterbegin', `<table id="datatable-competition"></table>`);
-                $('#fix-all-pa').val($(`#filter-event`).val())
-
+                const selectedEventId = $(this).val();
+                console.log("ðŸ”„ Emit eventChanged ke Livewire dengan ID:", selectedEventId);
+            
+                // Emit ke Livewire
+                Livewire.emit('eventChanged', selectedEventId);
+            
+                // Update hidden input dan datatable
+                $('#fix-all-pa').val(selectedEventId);
+            
+                // Reset DataTable
+                if (dataTable) {
+                    dataTable.destroy();
+                }
+            
+                $('#datatable-competition').remove(); // hapus tabel lama
+                $('#datatable-card').prepend('<table id="datatable-competition"></table>');
+            
                 column = updateColumnDataTable();
                 dataTable = initializeDataTable(column);
             });
+            
             $('#filter-category').on('change', function () {
                 dataTable.destroy();
                 dataTable.destroy();

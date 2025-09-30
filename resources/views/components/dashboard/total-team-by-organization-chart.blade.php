@@ -19,18 +19,31 @@
         <button class="btn btn-sm btn-danger export-pdf">Export to PDF</button>
     </div>
 </div>
-@vite(['resources/js/totalTeamByOrganization.js']);
+{{-- <!--@vite(['resources/js/totalTeamByOrganization.js']);--> --}}
 
 <script type="module">
-    import {
-        initializeTotalTeamChart
-    } from "{{ Vite::asset('resources/js/totalTeamByOrganizationChart.js') }}";
+  document.addEventListener("DOMContentLoaded", () => {
     const chartData = @json($chartData);
-    const organizationUnitLabel = @json($labels[$organizationUnit] ?? 'Unit Organisasi');
     const company_name = @json($company_name);
-    window.chartData = chartData; // Store chart data globally
-    window.organizationUnitLabel = organizationUnitLabel; // Store organization unit label globally
-    window.company_name = company_name; // Store organization unit label globally
-    initializeTotalTeamChart(chartData); // Panggil fungsi dari file JS
+
+    // Simpan global (kalau perlu diakses file lain)
+    window.chartData = chartData;
+    window.company_name = company_name;
+
+    // Debug
+    // console.log("[totalTeam] chartData:", chartData);
+    // console.log("[totalTeam] company_name:", company_name);
+    // console.log("[totalTeam] typeof window.initializeTotalTeamChart =", typeof window.initializeTotalTeamChart);
+
+    // Render chart jika fungsi tersedia
+    if (typeof window.initializeTotalTeamChart === "function") {
+    //   console.log("[totalTeam] Memanggil initializeTotalTeamChart...");
+      window.initializeTotalTeamChart(chartData);
+    } else {
+    //   console.warn("[totalTeam] initializeTotalTeamChart belum tersedia! Cek bundel JS.");
+    }
+  });
 </script>
-@vite(['resources/js/exportTotalTeamByOrganization.js'])
+
+<script type="module" src="{{ asset('build/assets/totalTeamByOrganizationChart-fdef3c2c.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalTeamByOrganization-2b7c41f1.js') }}"></script>

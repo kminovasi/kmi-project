@@ -14,134 +14,207 @@ class DetailCompanyChartController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil nilai tahun dari request atau gunakan tahun sekarang jika null
-        $selectedYear = $request->input('year', Carbon::now()->year);
-
-        // Ambil data perusahaan
+        $selectedYear = (int) $request->input('year', Carbon::now()->year);
         $companies = Company::select('id', 'company_name', 'company_code')->get();
 
         foreach ($companies as $company) {
-            // Buat nama file logo yang sudah disanitasi
             $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
             $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
             $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
 
-            // Path logo
             $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
+            $company->logo_url = file_exists($logoPath)
+                ? asset('assets/logos/' . $sanitizedCompanyName . '.png')
+                : asset('assets/logos/pt_semen_indonesia_tbk.png');
 
-            // Pengecekan apakah file logo ada, jika tidak gunakan default
-            if (!file_exists($logoPath)) {
-                $company->logo_url = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Logo default
-            } else {
-                $company->logo_url = asset('assets/logos/' . $sanitizedCompanyName . '.png'); // Logo perusahaan
-            }
-
-            // Ambil total innovator dari setiap perusahaan per tahunnya
-            $company->total_innovators = PvtMember::whereHas('team', function ($query) use ($company, $selectedYear) {
-                $query->where('company_code', $company->company_code)
-                    ->whereYear('created_at', $selectedYear);
-            })->whereIn('status', ['leader', 'member'])->count();
+            $company->total_innovators = DB::table('pvt_members')
+                ->join('teams', 'pvt_members.team_id', '=', 'teams.id')
+                ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+                ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+                ->join('papers', 'papers.team_id', '=', 'teams.id')
+                ->leftJoin('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+                ->where('teams.company_code', $company->company_code)
+                ->where('events.year', '=', $selectedYear)
+                ->where('pvt_members.status', '!=', 'gm')
+                ->whereRaw("TRIM(LOWER(papers.status)) = 'accepted by innovation admin'")
+                ->selectRaw("COUNT(DISTINCT CONCAT(pvt_members.employee_id, '-', teams.id)) AS c")
+                ->value('c');
         }
 
-        // Ambil daftar tahun yang tersedia dari tabel Event
         $availableYears = Event::select('year')
             ->groupBy('year')
             ->orderBy('year', 'DESC')
             ->pluck('year')
             ->toArray();
-
 
         return view('detail_company_chart.index', compact('companies', 'availableYears', 'selectedYear'));
     }
-    
+
     public function show(Request $request, $companyId)
     {
-        // Ambil nama perusahaan dan company_code berdasarkan ID
-        $company = Company::select('company_name', 'id', 'company_code')->where('company_code', $companyId)->first();
-        
-        // dd($company);
-
-        // Ambil tahun yang tersedia untuk filter dropdown
+        $company = Company::select('company_name', 'id', 'company_code')
+            ->where('id', $companyId)
+            ->first();
+    
+        if (!$company) {
+            $company = Company::select('company_name', 'id', 'company_code')
+                ->where('company_code', $companyId)
+                ->firstOrFail();
+        }
+    
         $availableYears = Event::select('year')
             ->groupBy('year')
             ->orderBy('year', 'DESC')
             ->pluck('year')
             ->toArray();
-
-        // Ambil tahun dari request, jika tidak ada, pakai tahun sekarang
-        $year = $request->query('year') ?? Carbon::now()->year;
-
-        // Ambil unit organisasi yang dipilih
+    
+        $year = (int) ($request->query('year') ?? \Carbon\Carbon::now()->year);
         $organizationUnit = $request->query('organization-unit');
+    
+        $targetCompanyCode = trim((string) $company->company_code);           
+        $filteredCodes = in_array($targetCompanyCode, ['2000','7000'], true)  
+            ? ['2000','7000']
+            : [$targetCompanyCode];
 
-        // Hitung total inovator dan berdasarkan gender dengan filter tahun
-        $targetCompanyCode = $company->company_code;
+        $filteredCodes = array_map(fn($c) => trim((string)$c), $filteredCodes);
 
-        // Jika company_code 2000 atau 7000, jadikan gabungan 2000+7000
-        if (in_array($targetCompanyCode, [2000, 7000])) {
-            $filteredCodes = [2000, 7000];
-        } else {
-            $filteredCodes = [$targetCompanyCode];
-        }
-        
-        $innovatorData = DB::table('pvt_members')
+    
+    
+        // \Log::info('--- [DEBUG detailCompanyChart] ---');
+        // \Log::info('Param companyId: ' . $companyId);
+        // \Log::info('Resolved Company ID: ' . $company->id);
+        // \Log::info('Resolved Company Code: ' . $company->company_code);
+        // \Log::info('Filtered Company Codes: ', $filteredCodes);
+        // \Log::info('Selected Year (hanya untuk chart): ' . $year);
+    
+        $papersPerYear = \DB::table('papers')
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->whereIn('teams.company_code', $filteredCodes)
+            ->whereRaw("TRIM(LOWER(papers.status)) = 'accepted by innovation admin'")
+            ->selectRaw('events.year AS year, COUNT(DISTINCT papers.id) AS total')
+            ->groupBy('events.year')
+            ->orderBy('events.year')
+            ->pluck('total', 'year')
+            ->toArray();
+    
+        // \Log::info('[DetailCompany] papersPerYear', $papersPerYear);
+    
+        $totalPapersAllYears = (int) \DB::table('papers')
+            ->join('teams', 'papers.team_id', '=', 'teams.id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
+            ->whereIn('teams.company_code', $filteredCodes)
+            ->whereRaw("TRIM(LOWER(papers.status)) = 'accepted by innovation admin'")
+            ->distinct('papers.id')
+            ->count('papers.id');
+    
+        // \Log::info('[DetailCompany] totalPapersAllYears: ' . $totalPapersAllYears);
+    
+        $genderBuckets = \DB::table('pvt_members')
             ->join('teams', 'teams.id', '=', 'pvt_members.team_id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->join('papers', 'papers.team_id', '=', 'teams.id')
             ->leftJoin('users', 'users.employee_id', '=', 'pvt_members.employee_id')
             ->whereIn('teams.company_code', $filteredCodes)
-            ->where('papers.status', 'accepted by innovation admin')
+            ->whereRaw("TRIM(LOWER(papers.status)) = 'accepted by innovation admin'")
             ->where('pvt_members.status', '!=', 'gm')
-            ->select('users.gender', 'pvt_members.employee_id', 'teams.id as team_id')
-            ->distinct()
-            ->get()
-            ->unique(fn($row) => $row->employee_id . '-' . $row->team_id)
-            ->groupBy('gender');
-        
-        $outsourceInnovatorData = DB::table('ph2_members')
+            ->selectRaw("
+                CASE
+                    WHEN users.gender IS NULL OR TRIM(users.gender) = '' THEN 'Male'
+                    WHEN LOWER(TRIM(users.gender)) IN ('male','laki-laki','laki','m','1','unknown','0') THEN 'Male'
+                    WHEN LOWER(TRIM(users.gender)) IN ('female','perempuan','perempua','f') THEN 'Female'
+                    ELSE 'Male'
+                END AS gender_norm,
+                COUNT(DISTINCT CONCAT(pvt_members.employee_id, '-', teams.id)) AS cnt
+            ")
+            ->groupBy('gender_norm')
+            ->pluck('cnt', 'gender_norm');
+    
+        $maleCount   = (int) ($genderBuckets['Male'] ?? 0);
+        $femaleCount = (int) ($genderBuckets['Female'] ?? 0);
+        // \Log::info('Gender Buckets (ALL YEARS):', $genderBuckets->toArray());
+        // \Log::info('Male Count (ALL YEARS): ' . $maleCount);
+        // \Log::info('Female Count (ALL YEARS): ' . $femaleCount);
+    
+        $outsourceInnovatorData = (int) \DB::table('ph2_members')
             ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
+            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
+            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
             ->join('papers', 'papers.team_id', '=', 'teams.id')
             ->whereIn('teams.company_code', $filteredCodes)
-            ->where('papers.status', 'accepted by innovation admin')
-            ->select('ph2_members.name', 'teams.id as team_id')
-            ->get()
-            ->unique(fn($row) => $row->name . '-' . $row->team_id)
-            ->count();
-        
-        // Hitung total inovator pria & wanita unik berdasarkan employee_id
-        $maleCount = count($innovatorData['Male'] ?? []);
-        $femaleCount = count($innovatorData['Female'] ?? []);
+            // NOTE: Tidak dibatasi tahun → total seluruh tahun
+            ->whereRaw("TRIM(LOWER(papers.status)) = 'accepted by innovation admin'")
+            ->selectRaw("COUNT(DISTINCT CONCAT(LOWER(TRIM(ph2_members.name)), '-', teams.id)) AS cnt")
+            ->value('cnt');
+    
+        // \Log::info('Outsource Innovators Count (ALL YEARS): ' . $outsourceInnovatorData);
+    
         $totalInnovators = $maleCount + $femaleCount + $outsourceInnovatorData;
+    
+        $totalPotentialBenefit = \DB::query()
+            ->fromSub(function ($q) use ($filteredCodes) {
+                $q->from('papers as p')
+                ->join('teams as t', 't.id', '=', 'p.team_id')
+                ->whereIn('t.company_code', $filteredCodes)
+                ->whereRaw("TRIM(LOWER(p.status)) = 'accepted by innovation admin'")
+                ->whereExists(function ($qq) {
+                    $qq->select(\DB::raw(1))
+                        ->from('pvt_event_teams as pet')
+                        ->join('events as e', 'e.id', '=', 'pet.event_id')
+                        ->whereColumn('pet.team_id', 't.id')
+                        ->where('e.status', 'finish');
+                })
+                ->select('p.id', 'p.potential_benefit')
+                ->groupBy('p.id', 'p.potential_benefit');
+            }, 'once_papers')
+            ->sum('once_papers.potential_benefit');
 
-        // Hitung total manfaat inovasi dengan filter tahun
-        $totalPotentialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->whereIn('teams.company_code', $filteredCodes)
-            ->where('papers.status', 'accepted by innovation admin')
-            ->where('events.status', 'finish')
-            ->sum('papers.potential_benefit');
-        $formattedTotalPotentialBenefit = number_format($totalPotentialBenefit, 0, ',', '.');
+        $formattedTotalPotentialBenefit = number_format((float) $totalPotentialBenefit, 0, ',', '.');
+        // \Log::info('[DetailCompany] PotentialBenefit TOTAL (ALL YEARS): ' . $totalPotentialBenefit);
+    
+    
+        $totalFinancialBenefit = \DB::query()
+            ->fromSub(function ($q) use ($filteredCodes) {
+                $q->from('papers as p')
+                ->join('teams as t', 't.id', '=', 'p.team_id')
+                ->whereIn('t.company_code', $filteredCodes)
+                ->whereRaw("TRIM(LOWER(p.status)) = 'accepted by innovation admin'")
+                ->whereExists(function ($qq) {
+                    $qq->select(\DB::raw(1))
+                        ->from('pvt_event_teams as pet')
+                        ->join('events as e', 'e.id', '=', 'pet.event_id')
+                        ->whereColumn('pet.team_id', 't.id')
+                        ->where('e.status', 'finish');
+                })
+                ->select('p.id', 'p.financial')
+                ->groupBy('p.id', 'p.financial'); 
+            }, 'once_papers')
+            ->sum('once_papers.financial');
 
-        $totalFinancialBenefit = Paper::join('teams', 'papers.team_id', '=', 'teams.id')
-            ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->join('events', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->whereIn('teams.company_code', $filteredCodes)
-            ->where('papers.status', 'accepted by innovation admin')
-            ->where('events.status', 'finish')
-            ->sum('papers.financial');
-        $formattedTotalFinancialBenefit = number_format($totalFinancialBenefit, 0, ',', '.');
-
-        return view('detail_company_chart.show', compact(
-            'company',
-            'totalInnovators',
-            'maleCount',
-            'femaleCount',
-            'outsourceInnovatorData',
-            'organizationUnit',
-            'availableYears',
-            'year',
-            'formattedTotalPotentialBenefit',
-            'formattedTotalFinancialBenefit'
-        ));
+        $formattedTotalFinancialBenefit = number_format((float) $totalFinancialBenefit, 0, ',', '.');
+        // \Log::info('[DetailCompany] FinancialBenefit TOTAL (ALL YEARS): ' . $totalFinancialBenefit);
+        // \Log::info('--- [END DEBUG detailCompanyChart] ---');
+    
+    
+        return view('detail_company_chart.show', [
+            'company'                          => $company,
+            'availableYears'                   => $availableYears,
+            'year'                             => $year,
+            'papersPerYear'                    => $papersPerYear,
+            'totalPapersAllYears'              => $totalPapersAllYears,
+            'totalInnovators'                  => $totalInnovators,
+            'maleCount'                        => $maleCount,
+            'femaleCount'                      => $femaleCount,
+            'outsourceInnovatorData'           => $outsourceInnovatorData,
+            'formattedTotalPotentialBenefit'   => $formattedTotalPotentialBenefit,
+            'formattedTotalFinancialBenefit'   => $formattedTotalFinancialBenefit,
+            'organizationUnit'                 => $organizationUnit,
+        ]);
     }
+
+
+
 }

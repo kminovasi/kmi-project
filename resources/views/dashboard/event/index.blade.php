@@ -28,10 +28,12 @@
                         @foreach ($events as $event)
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $event->event_name }}</td>
+                                <td>{{ $event->event_name . ' Tahun ' . $event->year }}</td>
                                 <td>
-                                    @if ($event->status === 'active')
+                                @if ($event->status === 'active')
                                     <span class="badge bg-success">Aktif</span>
+                                @elseif ($event->status === 'finish')
+                                    <span class="badge bg-primary">Finish</span>
                                 @else
                                     <span class="badge bg-secondary">Tidak Aktif</span>
                                 @endif

@@ -41,6 +41,7 @@ class SummaryExecutiveController extends Controller
         $summary = PvtEventTeam::join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
             ->join('companies', 'teams.company_code', '=', 'companies.company_code')
             ->join('papers', 'teams.id', '=', 'papers.team_id')
+            ->leftJoin('summary_executives', 'pvt_event_teams.id', '=', 'summary_executives.pvt_event_teams_id')
             ->where('teams.id', $team_id)
             ->where('pvt_event_teams.id', $pvt_event_teams_id)
             ->select(
@@ -48,7 +49,10 @@ class SummaryExecutiveController extends Controller
                 'papers.innovation_title',
                 'teams.team_name',
                 'companies.company_name',
-                'pvt_event_teams.id as pvt_event_teams_id'
+                'pvt_event_teams.id as pvt_event_teams_id',
+                'summary_executives.problem_background',
+                'summary_executives.innovation_idea',
+                'summary_executives.benefit'
             )
             ->first();
         
@@ -60,7 +64,7 @@ class SummaryExecutiveController extends Controller
                 'benefit' => '',
             ]);
         }
-        
-        return response()->json($summary);
+    
+        return response()->json($summary ?: []);
     }
 }

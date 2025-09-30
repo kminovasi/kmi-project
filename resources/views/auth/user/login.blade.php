@@ -43,6 +43,6 @@
         <div class="foot">
             <img id="logo-tagline" src="{{ asset('assets/sig-tagline.png') }}" alt="">
         </div>
-        <p id="copyright">Copyright 2023 All rights reserved. PT. Semen Indonesia</p>
+        <p id="copyright">Copyright 2023 All rights reserved PT Semen Indonesia</p>
     </div>
 @endsection

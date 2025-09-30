@@ -6,6 +6,7 @@ use Illuminate\View\Component;
 use Carbon\Carbon;
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use Log;
 
 class TotalCompanyInnovatorChart extends Component
 {
@@ -51,7 +52,12 @@ class TotalCompanyInnovatorChart extends Component
             )
             ->distinct()
             ->get();
-    
+
+              Log::debug('[TotalCompanyInnovatorChart] rawData', [
+                'count' => $rawData->count(),
+                'sample' => $rawData->take(5)->toArray(),
+            ]);
+            
         // Kelompokkan data berdasarkan perusahaan dan tahun
         $groupedData = [];
         foreach ($rawData as $row) {
@@ -96,6 +102,11 @@ class TotalCompanyInnovatorChart extends Component
             )
             ->distinct()
             ->get();
+
+        Log::debug('[TotalCompanyInnovatorChart] ph2Data', [
+        'count' => $ph2Data->count(),
+        'sample' => $ph2Data->take(5)->toArray(),
+    ]);
             
         foreach ($ph2Data as $row) {
             $companyKey = in_array($row->company_code, [2000, 7000]) ? 2000 : $row->company_code;
@@ -126,6 +137,7 @@ class TotalCompanyInnovatorChart extends Component
             'labels' => [],
             'datasets' => [],
             'logos' => [],
+            'company_ids' => [],  // <— TAMBAHKAN INI
         ];
     
         foreach ($years as $i => $year) {
@@ -138,6 +150,7 @@ class TotalCompanyInnovatorChart extends Component
     
         foreach ($groupedData as $companyCode => $companyData) {
             $chartData['labels'][] = $companyData['company_name'];
+            $chartData['company_ids'][] = $companyCode; 
         
             // Sanitasi nama file logo
             $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($companyData['company_name']));
@@ -155,7 +168,13 @@ class TotalCompanyInnovatorChart extends Component
                 $chartData['datasets'][$i]['data'][] = $jumlah;
             }
         }
-        // dd($chartData);
+         Log::debug('[TotalCompanyInnovatorChart] chartData summary', [
+        'labels_count' => count($chartData['labels']),
+        'datasets_count' => count($chartData['datasets']),
+        'logos_count' => count($chartData['logos']),
+        'sample_labels' => array_slice($chartData['labels'], 0, 5),
+        'first_dataset' => $chartData['datasets'][0]['data'] ?? [],
+    ]);
         return $chartData;
     }
 
@@ -164,10 +183,24 @@ class TotalCompanyInnovatorChart extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
-    public function render()
-    {
-        return view('components.dashboard.total-company-innovator-chart', [
+   public function render()
+{
+    // 🔎 log debug isi chartData
+    if (empty($this->chartData) || empty($this->chartData['labels'])) {
+        Log::debug('[TotalCompanyInnovatorChart][render] chartData KOSONG', [
             'chartData' => $this->chartData,
         ]);
+    } else {
+        Log::debug('[TotalCompanyInnovatorChart][render] chartData TERISI', [
+            'labels_count'   => count($this->chartData['labels']),
+            'datasets_count' => count($this->chartData['datasets']),
+            'logos_count'    => count($this->chartData['logos']),
+            'sample_labels'  => array_slice($this->chartData['labels'], 0, 5),
+        ]);
     }
+
+    return view('components.dashboard.total-company-innovator-chart', [
+        'chartData' => $this->chartData,
+    ]);
+}
 }

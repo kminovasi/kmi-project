@@ -4,13 +4,8 @@
     <canvas id="financialBenefitChart"></canvas>
 </div>
 
-<script type="module">
-    import {
-        initFinancialBenefitChart
-    } from "{{ Vite::asset('resources/js/totalBenefit.js') }}";
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const chartData = @json($chartData);
-        initFinancialBenefitChart(chartData);
-    });
+<script>
+    const initFinancialBenefitChart = @json($chartData);
 </script>
+
+<script src="{{ asset('/build/assets/totalBenefit-3caf2e64.js') }}" type="module"></script>

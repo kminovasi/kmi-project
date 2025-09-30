@@ -11,12 +11,14 @@ use App\Models\PvtEventTeam;
 use Illuminate\Http\Request;
 use App\Mail\RevisionNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Models\pvtAssesmentTeamJudge;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -47,31 +49,20 @@ class ProfileController extends Controller
     
         $judgeEvents = DB::table('judges')
             ->join('events', 'judges.event_id', '=', 'events.id')
-            ->join('pvt_event_teams', 'events.id', '=', 'pvt_event_teams.event_id')
-            ->join('teams', 'pvt_event_teams.team_id', '=', 'teams.id')
-            ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id') // Join with certificates table
-            ->select('events.event_name', 'teams.team_name', 'certificates.template_path') // Include template_path in the select statement
+            ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
+            ->select(
+                'events.id as event_id',
+                'events.event_name',
+                'events.date_end as event_end',
+                'events.year',
+                'certificates.template_path'
+            )
             ->where('judges.employee_id', $user->employee_id)
             ->where('judges.status', 'active')
             ->where('events.status', 'finish')
-            ->first();
-    
-    
-    
-        $teamRanks = DB::table('teams')
-            ->select('teams.id', 'categories.category_name', 'events.event_name', 
-                    DB::raw('(SELECT COUNT(*) + 1 FROM teams AS t
-                            JOIN pvt_event_teams AS pet ON t.id = pet.team_id
-                            WHERE t.category_id = teams.category_id AND pet.event_id = events.id
-                            AND pet.status = pvt_event_teams.status AND t.id < teams.id) as rank'))
-            ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
-            ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
-            ->leftJoin('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
-            ->leftJoin('pvt_members', 'teams.id', '=', 'pvt_members.team_id')
-            ->where('pvt_members.employee_id', $user->employee_id)
-            ->first();
-    
+            ->distinct('events.id')
+            ->get();
+
         if (Session::get('data_query') != NULL) {
             $data_query = Session::get('data_query');
             Session::forget('data_query');
@@ -88,7 +79,8 @@ class ProfileController extends Controller
                 'unit' => $data_query[0]->unit_name,
                 'section' => $data_query[0]->section_name,
                 'jobLevel' => $data_query[0]->job_level,
-                'userId' => $data_query[0]->employee_id
+                'userId' => $data_query[0]->employee_id,
+                'profilePicture' => $data_query[0]->photo_profile
             ];
         } else {
             $manager = User::where('employee_id', auth()->user()->manager_id)->first();
@@ -104,18 +96,39 @@ class ProfileController extends Controller
                 'unit' => auth()->user()->unit_name,
                 'section' => auth()->user()->section_name,
                 'jobLevel' => auth()->user()->job_level,
-                'userId' => auth()->user()->employee_id
+                'userId' => auth()->user()->employee_id,
+                'profilePicture' => auth()->user()->photo_profile
             ];
         }
     
-        return view('auth.user.profile.index', compact('user', 'activeEvents', 'teamIds', 'isActiveJudge', 'judgeEvents', 'teamRanks', 'judgeEvents'))->with($_arr);
+        return view('auth.user.profile.index', compact('user', 'activeEvents', 'teamIds', 'isActiveJudge', 'judgeEvents', 'judgeEvents'))->with($_arr);
     }
+
+    public function updateUserDetails(Request $request, $employeeId)
+    {
+        $user = User::where('employee_id', $employeeId)->firstOrFail();
+
+        $validated = $request->validate([
+            'employee_id' => ['required','string','max:50'],
+            'username'    => ['nullable','string','max:255'],
+            'name'        => ['required','string','max:255'],
+            'email'       => ['required','email', Rule::unique('users','email')->ignore($user->id)],
+            'gender'      => ['nullable', Rule::in(['Laki-laki','Perempuan'])],
+            'date_of_birth' => ['nullable','regex:/^\d{2}-\d{2}-\d{2}$/'], 
+        ]);
+
+        $user->update($validated);
+
+        return back()->with('success', 'Detail pengguna berhasil diperbarui.');
+    }
+
 
     public function showPaperDetail($teamId)
     {
         $team = Team::with(['paper', 'pvtEventTeams'])->find($teamId);
         return view('auth.user.profile.paper-detail', compact('team'));
     }
+    
     
     public function updatePasswordUser($employeeId, Request $request)
     {
@@ -134,6 +147,48 @@ class ProfileController extends Controller
         ]);
     
         return redirect()->back()->with('success', 'Password berhasil diperbarui.');
+    }
+    
+    public function updateProfilePicture($employeeId, Request $request)
+    {
+        $validated = $request->validate([
+            'photo_profile' => 'required|file|mimes:jpg,png,jpeg|max:5120'
+        ]);
+    
+        $user = User::where('employee_id', $employeeId)->first();
+    
+        if (!$user) {
+            return redirect()->back()->with('error', 'User tidak ditemukan.');
+        }
+    
+        if ($request->hasFile('photo_profile')) {
+            try {
+                // Hapus file lama jika ada
+                if ($user->photo_profile && Storage::exists($user->photo_profile)) {
+                    Storage::delete($user->photo_profile);
+                }
+    
+                $extension = strtolower($request->file('photo_profile')->getClientOriginalExtension());
+                $randomNumber = mt_rand(1000, 9999);
+                $baseName = $user->employee_id . '_' . $randomNumber;
+                $fileName = $baseName . '.' . $extension;
+    
+                $relativePath = "photo_profile/" . str_replace(' ', '_', $user->name) . '/' . $fileName;
+
+                $request->file('photo_profile')->storeAs("public", $relativePath);
+                
+                $user->update([
+                    'photo_profile' => $relativePath
+                ]);
+
+    
+                return redirect()->back()->with('success', 'Photo Profile berhasil diperbarui.');
+            } catch (\Exception $e) {
+                return back()->with('error', 'Gagal mengunggah file. Error: ' . $e->getMessage());
+            }
+        }
+    
+        return redirect()->back()->with('error', 'Tidak ada file yang diunggah.');
     }
 
     public function revision($teamId, Request $request)

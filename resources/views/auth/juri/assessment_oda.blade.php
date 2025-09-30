@@ -33,6 +33,22 @@
             weight: 504px;
             height: 304px;
         }
+        .ai-analyze-bar{
+            background: linear-gradient(90deg,#ef4444,#b91c1c);
+            border-radius: 999px;
+            padding: 10px 14px;
+            display:flex; align-items:center; justify-content:space-between;
+            box-shadow:0 6px 18px rgba(0,0,0,.07);
+        }
+
+        .ai-analyze-left{display:flex; align-items:center; gap:10px; color:#fff; font-weight:600; }
+        .ai-dot{width:6px; height:6px; background:#fff; border-radius:50%; display:inline-block}
+        .ai-title{opacity:.95}
+        .ai-actions{display:flex; align-items:center; gap:8px}
+        .ai-btn{
+            background:#fff; color:#111; border:none; border-radius:14px; padding:8px 14px;
+            font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.08);
+        }
     </style>
 @endpush
 @section('content')
@@ -161,6 +177,27 @@
         </div>
         <div class="card mb-4">
             <div class="card-header">Form Penilaian On Desk</div>
+            {{-- Analisis Makalah (AI) --}}
+            <div class="ai-analyze-bar mb-3">
+            <div class="ai-analyze-left">
+                <span class="ai-title">Analisis Makalah dengan AI</span>
+            </div>
+
+            <div class="ai-actions">
+                <a class="ai-btn" target="_blank"
+                href="{{ route('ai.analyze.paper.view', ['paperId' => $datas->paper_id]) }}">
+                Analisis Makalah
+                </a>
+
+                <form id="aiAnalyzeForm" class="d-none" target="_blank"
+                    action="{{ route('ai.analyze.paper', ['paperId' => $datas->paper_id]) }}"
+                    method="POST">
+                @csrf
+                </form>
+            </div>
+            </div>
+
+             {{-- Form Penilaian Juri --}}
             <form action="{{ route('assessment.submitJuri', ['id' => Request::segments()[2]]) }}" method="post">
                 @csrf
                 @method('put')
@@ -176,23 +213,25 @@
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputRecomCategory">Rekomendasi Kategori</label>
                         <textarea name="recommendation" id="inputRecomCategory" cols="30" rows="3" class="form-control"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->recommend_category }}</textarea>
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->recommend_category }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputStrength">Keunggulan Inovasi</label>
                         <textarea name="sofi_strength" id="inputStrength" cols="30" rows="3" class="form-control"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->strength }}</textarea>
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->strength }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputOpportunity">Peluang Inovasi</label>
                         <textarea name="sofi_opportunity" id="inputOpportunity" class="form-control" cols="30" rows="3"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->opportunity_for_improvement }}</textarea>
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->opportunity_for_improvement }}</textarea>
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputCommentBenefit">Komentar Benefit</label>
                         <textarea name="suggestion_for_benefit" id="inputCommentBenefit" class="form-control" cols="30" rows="3"
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->suggestion_for_benefit }}</textarea>
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : '' }} require>{{ $sofiData->suggestion_for_benefit }}</textarea>
                     </div>
+                    <input type="hidden" name="updated_at" value="{{ $datas->updated_at->format('Y-m-d H:i:s') }}">
+                    <input type="hidden" name="stage" value="assessment-ondesk-value">
                     <div class="col-md-12 mb-3">
                         <label class="small mb-1 fw-600" for="inputFinancialBenefit">Benefit Finansial</label>
                         <input 
@@ -201,7 +240,8 @@
                             id="inputFinancialBenefit" 
                             class="form-control w-100" 
                             value="{{ number_format($datas->financial, 0, ',', '.') }}" 
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
                         >
                     </div>
                     <div class="col-md-12 mb-3">
@@ -211,8 +251,9 @@
                             name="potential_benefit" 
                             id="inputPotentialBenefit" 
                             class="form-control w-100" 
-                            value="{{ number_format($datas->potential_benefit, 0, ',', '.') }}" 
-                            {{ auth()->user()->role === 'Superadmin' || auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
+                            value="{{ number_format($datas->potential_benefit, 0, ',', '.') }}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            {{ auth()->user()->role === 'Admin' ? 'disabled' : 'required' }}
                         >
                     </div>
                 </div>
@@ -229,7 +270,7 @@
                             </div>
                         </div>
                     @endif
-                    @if (Auth::user()->role == 'Juri' || $is_judge)
+                    @if (Auth::user()->role == 'Juri' || $is_judge || Auth::user()->role == 'Superadmin')
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary" id="btnsubmit">Submit Nilai</button>
                         </div>
@@ -253,10 +294,17 @@
                     <input type="text" name="stage" value="on desk" hidden>
                     <div class="modal-body">
                         <div class="col-md-12">
-                            <label for="dataJudge">Pilih Juri</label>
-                            <select class="js-example-basic-single" name="judge_id" z-index="10" id="select2-juri">
-                            </select>
-                        </div>
+                        <label for="dataJudge">Pilih Juri</label>
+                        <select class="js-example-basic-multiple" 
+                                name="judge_id[]" 
+                                id="select2-juri" 
+                                multiple="multiple" 
+                                style="width: 100%">
+                            @foreach ($availableJudges as $judge)
+                                <option value="{{ $judge->id }}">{{ $judge->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" type="button" data-bs-dismiss="modal">Tutup</button>
@@ -267,37 +315,78 @@
         </div>
     </div>
 
+    <!--{{-- modal delete juri --}}-->
+    <!--<div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"-->
+    <!--    aria-hidden="true">-->
+    <!--    <div class="modal-dialog modal-dialog-centered" role="document">-->
+    <!--        <div class="modal-content">-->
+    <!--            <div class="modal-header">-->
+    <!--                <h5 class="modal-title" id="exampleModalCenterTitle">Form Hapus Juri</h5>-->
+    <!--                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>-->
+    <!--            </div>-->
+    <!--            <form action="{{ route('assessment.deleteJuri') }}" method="post">-->
+    <!--                @csrf-->
+    <!--                <div class="modal-body">-->
+    <!--                    <div class="col-md-12">-->
+    <!--                        <label for="dataJudge">Pilih Juri</label>-->
+    <!--                        <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>-->
+    <!--                        <input type="hidden" name="stage" value="on desk">-->
+    <!--                        <select name="judge_id" class="form-select" id="">-->
+    <!--                            @foreach ($datas_juri as $data_juri)-->
+    <!--                                <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} --->
+    <!--                                    {{ $data_juri->name }}</option>-->
+    <!--                            @endforeach-->
+    <!--                        </select>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div class="modal-footer">-->
+    <!--                    <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>-->
+    <!--                    <button class="btn btn-danger" type="submit">Hapus</button>-->
+    <!--                </div>-->
+    <!--            </form>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--</div>-->
+    
     {{-- modal delete juri --}}
-    <div class="modal fade" id="deleteJuri" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Form Hapus Juri</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ route('assessment.deleteJuri') }}" method="post">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="col-md-12">
-                            <label for="dataJudge">Pilih Juri</label>
-                            <input type="text" name="event_team_id" value="{{ $datas->event_team_id }}" hidden>
-                            <input type="hidden" name="stage" value="on desk">
-                            <select name="judge_id" class="form-select" id="">
-                                @foreach ($datas_juri as $data_juri)
-                                    <option value="{{ $data_juri->judge_id }}"> {{ $data_juri->employee_id }} -
-                                        {{ $data_juri->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-danger" type="submit">Hapus</button>
-                    </div>
-                </form>
+    <div class="modal fade" id="deleteJuri" tabindex="-1" aria-labelledby="deleteJuriLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteJuriLabel">Form Hapus Juri</h5>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+    
+          <form action="{{ route('assessment.deleteJuri') }}" method="post" id="formDeleteJuri">
+            @csrf
+            <div class="modal-body">
+              <input type="hidden" name="event_team_id" value="{{ $datas->event_team_id }}">
+              <input type="hidden" name="stage" value="on desk">
+    
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="deleteAll" name="delete_all" value="1">
+                <label class="form-check-label" for="deleteAll">
+                  Hapus semua juri pada stage ini
+                </label>
+              </div>
+    
+              <select name="judge_ids[]" id="judge_ids" class="form-select" multiple size="8">
+                @foreach ($datas_juri as $data_juri)
+                  <option value="{{ $data_juri->judge_id }}">
+                    {{ $data_juri->employee_id }} - {{ $data_juri->name }}
+                  </option>
+                @endforeach
+              </select>
+              <small class="text-muted">Gunakan Ctrl/Cmd untuk memilih banyak item.</small>
             </div>
+    
+            <div class="modal-footer">
+              <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Tutup</button>
+              <button class="btn btn-danger" type="submit">Hapus</button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
     
     {{-- Modal show beberapa dokumen --}}
@@ -564,5 +653,10 @@
             $('#btnsubmit').prop('disabled', false)
         }
     }
+    
+     //AI
+        // document.getElementById('runAnalyzeBtn')?.addEventListener('click', function(){
+        // document.getElementById('aiAnalyzeForm')?.submit();
+        // });
 </script>
 @endpush

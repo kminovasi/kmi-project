@@ -25,6 +25,7 @@ class TotalTeamCardCompany extends Component
             ->join('pvt_event_teams', 'pvt_event_teams.team_id', '=', 'teams.id')
             ->where('pvt_event_teams.event_id', $eventId)
             ->select('companies.company_code', 'companies.company_name', 'teams.id as team_id')
+            ->distinct()
             ->get()
             ->map(function ($team) use ($event) {
                 // Jika tipe event adalah group dan company_code 7000, ubah ke 2000

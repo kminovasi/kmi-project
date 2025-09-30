@@ -14,17 +14,20 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartDataTotalInnovatorWithGenderChart = @json($chartData);
+        const company_name = @json($company_name);
+        
+        window.chartDataTotalInnovatorWithGenderChart = chartDataTotalInnovatorWithGenderChart;
+        window.company_name = company_name;
 
-<script type="module">
-    import {
-        renderTotalInnovatorWithGenderChart
-    } from "{{ Vite::asset('resources/js/company/totalInnovatorWithGenderChart.js') }}";
-
-    const chartDataTotalInnovatorWithGenderChart = @json($chartData);
-    const company_name = @json($company_name);
-    window.chartDataTotalInnovatorWithGenderChart = chartDataTotalInnovatorWithGenderChart; // Store chart data globally
-    window.company_name = company_name; // Store organization unit label globally
-    renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart);
+        // Kalau kamu ingin langsung render dari sini (optional):
+        if (typeof window.renderTotalInnovatorWithGenderChart === 'function') {
+            window.renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart);
+        }
+    });
 </script>
 
-@vite(['resources/js/company/exportTotalInnovatorWithGender.js'])
+<script type="module" src="{{ asset('build/assets/totalInnovatorWithGenderChart-789eb346.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalInnovatorWithGender-a159c879.js') }}"></script>

@@ -124,10 +124,11 @@ class PvtEventTeamController extends Controller
                 'pvt_event_teams.id as event_team_id_removed',
                 'pvt_event_teams.is_best_of_the_best',
                 'pvt_event_teams.is_honorable_winner',
+                DB::raw('MAX(pvt_event_teams.keputusan_bod) as keputusan_bod'), 
                 'pvt_event_teams.final_score as Score',
                 'categories.id as category_id_removed'
             ];
-    
+
             $data_row = Team::query()
                 ->select($arr_select_case)
                 ->join('papers', 'papers.team_id', '=', 'teams.id')
@@ -193,11 +194,9 @@ class PvtEventTeamController extends Controller
                     }
             });
             
-            // Tambahkan kolom Pilih Juara Harapan
             $dataTable->addColumn('Juara Harapan', function ($data_row) {
                 $eventTeamId = $data_row->event_team_id_removed;
             
-                // Contoh: tambahkan logika jika kamu punya flag khusus seperti is_juara_harapan
                 $checked = isset($data_row->is_honorable_winner) && $data_row->is_honorable_winner ? 'checked' : '';
             
                 if (auth()->user()->role === 'Admin' || auth()->user()->role === 'Superadmin') {
@@ -213,15 +212,39 @@ class PvtEventTeamController extends Controller
             
                 return '-';
             });
+            
+                $dataTable->addColumn('Keputusan BOD', function ($row) {
+                $id  = $row->event_team_id_removed;
+                $val = $row->keputusan_bod ?? '';
+            
+                $checked     = $val !== '' ? ' checked' : '';
+                $hiddenClass = $val === '' ? ' d-none' : '';
+                $disabled    = $val === '' ? ' disabled' : '';
+            
+                return '
+                <div class="d-flex align-items-center gap-2">
+                    <div class="form-check m-0">
+                        <input class="form-check-input keputusan-bod-check" type="checkbox"
+                               id="checkbox-keputusan-bod-'.$id.'"
+                               data-target="#input-keputusan-bod-'.$id.'"'.$checked.'>
+                        <label class="form-check-label" for="checkbox-keputusan-bod-'.$id.'">Isi</label>
+                    </div>
+                    <input type="text"
+                           class="form-control form-control-sm keputusan-bod-input'.$hiddenClass.'"
+                           name="keputusan_bod['.$id.']"
+                           id="input-keputusan-bod-'.$id.'"
+                           value="'.e($val).'"
+                           placeholder="Contoh: Juara Terbaik"'.$disabled.'>
+                </div>';
+            });
 
     
-            // Tentukan kolom yang mengandung HTML
-            $dataTable->rawColumns(['Ranking', 'Best Of The Best', 'Juara Harapan']);
+            $dataTable->rawColumns(['Ranking', 'Best Of The Best', 'Juara Harapan', 'Keputusan BOD']);
     
-            // Hapus kolom yang tidak diperlukan dari output JSON
             $dataTable->removeColumn('team_id');
             $dataTable->removeColumn('is_best_of_the_best');
             $dataTable->removeColumn('is_honorable_winner');
+             $dataTable->removeColumn('keputusan_bod');
             
             $remove_column = [];
                 foreach ($dataTable->original as $data_column) {
@@ -245,34 +268,39 @@ class PvtEventTeamController extends Controller
     
     public function determiningTheBestOfTheBestTeam(Request $request)
     {
-        // Get the selected team IDs from the request
-        $selectedBestOfTheBest = $request->input('pvt_event_team_id');
-        $selectedHonorableWiner = $request->input('juara_harapan_id');
+        $request->validate([
+        'pvt_event_team_id' => 'required|array|size:1',
+        'juara_harapan_id'  => 'nullable|array',
+        'keputusan_bod'     => 'nullable|array',
+        'keputusan_bod.*'   => 'nullable|string|max:100',
+        ]);
 
-        // Check if there are selected teams
+        $selectedBestOfTheBest = $request->input('pvt_event_team_id');     
+        $selectedHonorableWiner = $request->input('juara_harapan_id', []); 
+        $keputusanBodMap = $request->input('keputusan_bod', []);           
+
         if (empty($selectedBestOfTheBest) || count($selectedBestOfTheBest) !== 1) {
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('error', 'Silahkan Pilih Satu Tim Untuk Dinominasikan');
         }
 
         try {
-            // First, set all existing "Best of the Best" teams to false
             PvtEventTeam::where('is_best_of_the_best', true)
                 ->update(['is_best_of_the_best' => false]);
-    
-            // Now, update the selected team to mark it as the best of the best
             PvtEventTeam::whereIn('id', $selectedBestOfTheBest)
                 ->update(['is_best_of_the_best' => true]);
-            
             if(!empty($selectedHonorableWiner)){
-                // Reset dulu semuanya (cukup sekali, di luar loop)
                 PvtEventTeam::where('is_honorable_winner', true)
                     ->update(['is_honorable_winner' => false]);
-                
-                // update Honorable Winner
                  PvtEventTeam::whereIn('id', $selectedHonorableWiner)
                     ->update(['is_honorable_winner' => true]);
             }
 
+            foreach ($keputusanBodMap as $id => $text) {
+            $text = trim((string)$text);
+            PvtEventTeam::where('id', $id)->update([
+                'keputusan_bod' => ($text === '' ? null : mb_substr($text, 0, 100)),
+            ]);
+        }
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->with('success', 'Penetapan Akhir Telah Berhasil');
         } catch (\Exception $e) {
             return redirect()->route('assessment.showDeterminingTheBestOfTheBestTeam')->withErrors('Error: ' . $e->getMessage());

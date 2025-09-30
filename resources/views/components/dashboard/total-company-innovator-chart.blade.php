@@ -13,4 +13,5 @@
         const chartData = @json($chartData);
     </script>
 </div>
-@vite(['resources/js/totalInnovatorChart.js'])
+
+<script src="{{ asset('build/assets/totalInnovatorChart-55485a52.js') }}" type="module"></script>

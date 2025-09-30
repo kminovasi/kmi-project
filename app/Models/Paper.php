@@ -38,7 +38,8 @@ class Paper extends Model
         'status',
         'status_event',
         'rejection_comments',
-        'created_at'
+        'created_at',
+        'updated_at'
     ];
 
     protected static function boot()

@@ -11,7 +11,6 @@
     </div>
 </div>
 
-<!-- Modal Filter -->
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -43,17 +42,23 @@
     </div>
 </div>
 
-@vite(['resources/js/totalInnovatorEventChart.js'])
-
 <script type="module">
-    import { initializeTotalInnovatorEventChart } from "{{ Vite::asset('resources/js/event/totalInnovatorEventChart.js') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        const chartData = @json($chartData);
+        const organizationUnit = @json($organizationUnit);
+        const event_name = @json($event_name);
+        const canvasId = @json($canvasId);
 
-    const chartDataTotalInnovatorOrganization = @json($chartData);
-    const organizationUnit = @json($organizationUnit);
-    const event_name = @json($event_name);
-    window.chartDataTotalInnovatorOrganization = chartDataTotalInnovatorOrganization; // Store chart data globally
-    window.organizationUnit = organizationUnit; // Store organization unit globally
-    window.event_name = event_name; // Store event name globally
-    initializeTotalInnovatorEventChart(chartDataTotalInnovatorOrganization,  @json($canvasId), organizationUnit);
+        window.chartDataTotalInnovatorOrganization = chartData;
+        window.organizationUnit = organizationUnit;
+        window.event_name = event_name;
+
+        if (typeof window.initializeTotalInnovatorEventChart === 'function') {
+            window.initializeTotalInnovatorEventChart(chartData, canvasId, organizationUnit);
+        }
+    });
 </script>
-@vite(['resources/js/event/exportTotalInnovatorEventChart.js'])
+
+<script type="module" src="{{ asset('build/assets/totalInnovatorEventChart-36b7b985.js') }}"></script>
+<script type="module" src="{{ asset('build/assets/exportTotalInnovatorEventChart-c99f386d.js') }}"></script>
+

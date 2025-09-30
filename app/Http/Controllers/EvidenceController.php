@@ -10,12 +10,17 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 use TCPDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
 
 class EvidenceController extends Controller
 {
     function index()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('category_name', 'asc')->get();
 
         return view('auth.admin.dokumentasi.evidence.index', compact('categories'));
     }
@@ -25,10 +30,6 @@ class EvidenceController extends Controller
     {
 
         $category = Category::find($categoryId);
-
-        // mendapatkan semua data paper dengan kategori dan event yang status finish
-
-
         return view('auth.admin.dokumentasi.evidence.list-innovations', compact('category'));
     }
 
@@ -36,6 +37,22 @@ class EvidenceController extends Controller
     {
 
         $team = Team::findOrFail($id);
+        $loggedEmployeeId = Auth::user()->employee_id;
+
+        //  Log::debug('paper_detail called', [
+        // 'logged_user_id' => Auth::id(),
+        // 'logged_employee_id' => $loggedEmployeeId,
+        // 'team_id' => $team->id,
+        // ]);
+
+        $isMember = DB::table('pvt_members')
+            ->where('team_id', $team->id)
+            ->where('employee_id', $loggedEmployeeId)
+            ->exists();
+
+        //  Log::debug('Check if logged user is team member', [
+        // 'is_member' => $isMember,
+        // ]);
 
         // Ambil tim berdasarkan team_id
         $papers = DB::table('teams')
@@ -80,26 +97,99 @@ class EvidenceController extends Controller
             'papers', 
             'teamId', 
             'team',
-            'outsourceMember'
+            'outsourceMember',
+            'isMember'
         ));
     }
 
-    public function download($id)
+        public function download($id)
+        {
+            if (!in_array(Auth::user()->role, ['Admin', 'Superadmin'])) {
+                abort(403, 'Anda tidak memiliki izin untuk mengunduh file ini.');
+            }
+    
+            $paper = Paper::findOrFail($id);
+    
+            // --- WATERMARK INFO ---
+            $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+            $userEmail = auth()->user()->email;
+            $userIp = request()->ip();
+            $watermarkText = "{$currentDateTime}\nDidownload oleh {$userEmail}\nIP: {$userIp}";
+    
+            // --- NORMALISASI PATH & VALIDASI FILE ---
+            $rawPath = (string) $paper->full_paper;
+            $normalizedRel = ltrim(str_replace(['f: ', 'F: '], '', $rawPath), '/');
+            $absPath = Storage::disk('public')->path($normalizedRel);
+    
+            if (!file_exists($absPath)) abort(404, 'File tidak ditemukan.');
+            if (!is_readable($absPath)) abort(500, 'File tidak dapat dibaca server.');
+            $ext  = strtolower(pathinfo($absPath, PATHINFO_EXTENSION));
+            $mime = @mime_content_type($absPath) ?: null;
+            if ($ext !== 'pdf' || ($mime && stripos($mime, 'pdf') === false)) {
+                abort(415, 'File bukan PDF / format tidak didukung.');
+            }
+    
+            try {
+                $pdf = new Fpdi();
+    
+                $pageCount = $pdf->setSourceFile($absPath);
+    
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                    $tplIdx = $pdf->importPage($pageNo);
+                    $pdf->AddPage();
+                    $pdf->useTemplate($tplIdx, 0, 0);
+    
+                    if (method_exists($pdf, 'SetAlpha')) $pdf->SetAlpha(0.1);
+                    $pdf->SetFont('helvetica', 'B', 40);
+                    $pdf->SetTextColor(255, 0, 0);
+                    if (method_exists($pdf, 'StartTransform')) {
+                        $pdf->StartTransform();
+                        $pdf->Rotate(45, 150, 50);
+                    }
+                    $pdf->MultiCell(160, 180, $watermarkText, 0, 'C');
+                    if (method_exists($pdf, 'StopTransform')) $pdf->StopTransform();
+                    if (method_exists($pdf, 'SetAlpha')) $pdf->SetAlpha(1);
+                }
+    
+                $outName = ($paper->innovation_title ?? 'paper') . '_watermarked.pdf';
+    
+                return response()->make($pdf->Output($outName, 'I'), 200, [
+                    'Content-Type'        => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $outName . '"',
+                    'X-Watermark'         => 'applied',
+                ]);
+    
+            } catch (\Throwable $e) {
+                $outName = ($paper->innovation_title ?? 'paper') . '.pdf';
+                return response()->download($absPath, $outName, [
+                    'Content-Type'  => 'application/pdf',
+                    'X-Watermark'   => 'skipped',
+                    'X-Reason'      => 'fpdi_parse_failed',
+                ]);
+            }
+        }
+
+        public function preview($id)
     {
         $paper = Paper::findOrFail($id);
+        $fileUrl = route('evidence.pdf-stream-watermarked', ['id' => $paper->id]);
+        return view('auth.admin.dokumentasi.evidence.preview', compact('paper', 'fileUrl'));
+    }
 
-
-        // Ambil informasi untuk watermark
-        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s'); // Tanggal dan jam
-        $userEmail = auth()->user()->email; // Email pengguna
-        $userIp = request()->ip(); // IP pengguna
-
-        // Gabungkan semua informasi ke dalam satu string watermark
-        $watermarkText = "{$currentDateTime}\nDidownload oleh {$userEmail}\nIP: {$userIp}";
-
+        public function pdfStreamWatermarked($id)
+    {
+        $paper = Paper::findOrFail($id);
         $filePath = storage_path('app/public/' . str_replace('f: ', '', $paper->full_paper));
 
-        // Buat objek FPDI
+        if (!file_exists($filePath)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $currentDateTime = Carbon::now()->format('l, d F Y H:i:s');
+        $userEmail = auth()->user()->email;
+        $userIp = request()->ip();
+        $watermarkText = "{$currentDateTime}\nDilihat oleh {$userEmail}\nIP: {$userIp}";
+
         $pdf = new Fpdi();
         $pageCount = $pdf->setSourceFile($filePath);
 
@@ -109,23 +199,20 @@ class EvidenceController extends Controller
             $pdf->useTemplate($tplIdx, 0, 0);
 
             // Tambahkan watermark
-            $pdf->SetAlpha(0.1); // Transparansi watermark
+            $pdf->SetAlpha(0.1);
             $pdf->SetFont('helvetica', 'B', 40);
             $pdf->SetTextColor(255, 0, 0);
-
-            // Memulai transformasi untuk rotasi
             $pdf->StartTransform();
-            $pdf->Rotate(45, 150, 50); // Atur sudut, x, y sesuai kebutuhan
-            $pdf->MultiCell(160, 180, $watermarkText, 0, 'C'); // Atur posisi watermark
-            $pdf->StopTransform(); // Akhiri transformasi
-
-            $pdf->SetAlpha(1); // Reset transparansi
+            $pdf->Rotate(45, 150, 50);
+            $pdf->MultiCell(160, 180, $watermarkText, 0, 'C');
+            $pdf->StopTransform();
+            $pdf->SetAlpha(1);
         }
 
-        // Berikan file PDF langsung sebagai respons unduhan
-        return response()->make($pdf->Output($paper->innovation_title . '_watermarked.pdf', 'I'), 200, [
+        return response()->make($pdf->Output($paper->innovation_title . '_preview.pdf', 'I'), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $paper->innovation_title . '_watermarked.pdf"'
+            'Content-Disposition' => 'inline; filename="' . $paper->innovation_title . '_preview.pdf"',
         ]);
     }
+
 }

@@ -16,7 +16,7 @@
                     @foreach ($posts as $post )
                     <div class="item">
                         <div class="p-2 border rounded-2">
-                            <img class="img-fluid rounded-2" src="{{ asset('storage/' . $post->cover_image) }}"
+                            <img class="img-fluid rounded-2" src="{{ route('query.getFile') }}?directory={{ urlencode($post->cover_image) }}"
                                 alt="post image" style="width: 100%; height: auto; aspect-ratio: 4 / 3;">
                             <div class="p-2">
                                 <a href="{{ route('post.show', $post->slug) }}" class="text-decoration-none text-dark"><h4>{{ $post->title }}</h4></a>

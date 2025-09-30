@@ -8,29 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class PatentTable extends Component
 {
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
+    public $patentData;
+
     public function __construct()
     {
-        //
+        // Load data langsung di constructor
+        $this->patentData = Patent::with(['paper', 'employee', 'patenMaintenance'])
+            ->visibleTo(Auth::user())
+            ->paginate(10);
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
     public function render()
     {
-        $patentData = Patent::with(['paper', 'employee', 'patenMaintenance'])
-            ->visibleTo(Auth::user()) // Assuming visibleTo() scope is defined in the Patent model
-            ->paginate(10);
-        
-        return view('components.patent.patent-table', compact(
-            'patentData'
-        ));
+        return view('components.patent.patent-table');
     }
 }

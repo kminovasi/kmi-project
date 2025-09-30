@@ -21,12 +21,9 @@ class ImportUserDataExcel extends Controller
             $import = new ImportUserData();
             Excel::import($import, $file);
     
-            return redirect()->back()->with('success', 'Data berhasil diimport.');
+            return redirect()->back()->with('success', 'Data Pengguna berhasil diimport.');
         } catch (Exception $e) {
-            return response()->json([
-                'error' => 'Terjadi kesalahan saat proses import.',
-                'message' => $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('success', 'Terjadi Kesalahan: '.$e->getMessage());
         }
     }
 }

@@ -31,6 +31,7 @@ class ManagamentSystemController extends Controller
         $datas_event = Event::all();
         $currentYear = Carbon::now()->year;
         $years = range($currentYear - 5, $currentYear + 5);
+
         return view('auth.admin.management_system.assign_event_index', [
             'datas_company' => $datas_company,
             'datas_event' => $datas_event,
@@ -108,6 +109,50 @@ class ManagamentSystemController extends Controller
     }
 
 
+    // public function changeEvent(Request $request, $id)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+
+    //         // Ambil event berdasarkan ID
+    //         $event = Event::findOrFail($id);
+
+    //         // Ambil semua perusahaan terkait event
+    //         $companies = $event->companies;
+
+    //         // Jika status yang ingin diubah menjadi 'active'
+    //         if ($request->status === 'active') {
+    //             foreach ($companies as $company) {
+    //                 // Cek apakah ada event lain yang aktif untuk perusahaan yang sama
+    //                 $activeEventExists = DB::table('events')
+    //                     ->join('company_event', 'events.id', '=', 'company_event.event_id')
+    //                     ->where('events.year', $event->year)
+    //                     ->where('company_event.company_id', $company->id)
+    //                     ->where('events.status', 'active')
+    //                     ->where('events.id', '!=', $id) // Hindari ambiguitas dengan menambahkan alias tabel
+    //                     ->exists();
+
+    //                 if ($activeEventExists) {
+    //                     return redirect()->route('management-system.assign.event')
+    //                         ->withErrors('Error: Perusahaan hanya dapat memiliki satu event aktif pada satu waktu.');
+    //                 }
+    //             }
+    //         }
+
+    //         // Update status event
+    //         $event->update([
+    //             'status' => $request->status,
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('management-system.assign.event')->with('success', 'Event Telah Berhasil Diperbarui');
+    //     } catch (\Exception $e) {
+    //         DB::rollback();
+    //         return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
+    //     }
+    // }
+    
     public function changeEvent(Request $request, $id)
     {
         try {
@@ -116,39 +161,19 @@ class ManagamentSystemController extends Controller
             // Ambil event berdasarkan ID
             $event = Event::findOrFail($id);
 
-            // Ambil semua perusahaan terkait event
-            $companies = $event->companies;
-
-            // Jika status yang ingin diubah menjadi 'active'
-            if ($request->status === 'active') {
-                foreach ($companies as $company) {
-                    // Cek apakah ada event lain yang aktif untuk perusahaan yang sama
-                    $activeEventExists = DB::table('events')
-                        ->join('company_event', 'events.id', '=', 'company_event.event_id')
-                        ->where('company_event.company_id', $company->id)
-                        ->where('events.year', $event->year)
-                        ->where('events.status', 'active')
-                        ->where('events.id', '!=', $id) // Hindari ambiguitas dengan menambahkan alias tabel
-                        ->exists();
-
-                    if ($activeEventExists) {
-                        return redirect()->route('management-system.assign.event')
-                            ->withErrors('Error: Perusahaan hanya dapat memiliki satu event aktif pada satu waktu.');
-                    }
-                }
-            }
-
-            // Update status event
+            // Update status event langsung tanpa pengecekan
             $event->update([
                 'status' => $request->status,
             ]);
 
             DB::commit();
 
-            return redirect()->route('management-system.assign.event')->with('success', 'Event Telah Berhasil Diperbarui');
+            return redirect()->route('management-system.assign.event')
+                ->with('success', 'Event Telah Berhasil Diperbarui');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('management-system.assign.event')->withErrors('Error: ' . $e->getMessage());
+            return redirect()->route('management-system.assign.event')
+                ->withErrors('Error: ' . $e->getMessage());
         }
     }
 

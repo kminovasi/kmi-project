@@ -30,10 +30,10 @@ class Patent extends Model
     // This function is used to filter the patents based on the user's role
     public function scopeVisibleTo($query, $user)
     {
-        if ($user->role !== 'Superadmin') {
+        if ($user->role !== 'Superadmin' && $user->role !== 'Admin') {
             $userId = $user->id;
 
-            return $query->whereIn('person_in_charge', $userId);
+            return $query->whereIn('person_in_charge', [$userId]);
         }
 
         return $query;

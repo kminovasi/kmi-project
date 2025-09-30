@@ -3,6 +3,7 @@
 @section('content')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <style>
     .ui-autocomplete {
         z-index: 999999 !important;
@@ -39,13 +40,13 @@
                 <div class="d-flex justify-content-end mb-2">
                     <input type="text" id="search" class="form-control search-input" placeholder="Cari Daftar Paten">
                 </div>
-                @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin')
+                @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
                 <div class="btn-container mb-3 text-end">
                     <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#patent-application">Buat Usulan Paten</button>
                     <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#document-template">Perbarui Template Dukomen</button>
                 </div>
                 @endif
-                <x-patent.patent-table />
+                @include('components.patent.patent-table', ['patentData' => \App\Models\Patent::with(['paper', 'employee', 'patenMaintenance'])->visibleTo(Auth::user())->paginate(10)])
             </div>
         </div>
     </div>
@@ -63,16 +64,21 @@
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
-                            <label for="draft_paten" class="form-label">Draft Patent</label>
-                            <input type="file" class="form-control" id="draft_paten" name="draft_paten" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                            <label for="draft_paten" class="form-label">Draft Patentt</label>
+                            <input type="file" class="form-control" id="draft_paten" name="draft_paten"
+                                   accept=".pdf, .ppt, .pptx">
                         </div>
+                        
                         <div class="mb-3">
                             <label for="ownership_letter" class="form-label">Surat Kepemilikan</label>
-                            <input type="file" class="form-control" id="ownership_letter" name="ownership_letter" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                            <input type="file" class="form-control" id="ownership_letter" name="ownership_letter"
+                                   accept=".pdf, .ppt, .pptx">
                         </div>
+                        
                         <div class="mb-3">
                             <label for="statement_of_transfer_rights" class="form-label">Surat Pengalihan Hak</label>
-                            <input type="file" class="form-control" id="statement_of_transfer_rights" name="statement_of_transfer_rights" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                            <input type="file" class="form-control" id="statement_of_transfer_rights" name="statement_of_transfer_rights"
+                                   accept=".pdf, .ppt, .pptx">
                         </div>
                         <div class="text-end mt-4">
                             <button type="submit" class="btn btn-primary">Submit</button>
@@ -125,6 +131,8 @@
 @endsection
 
 @push('js')
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script>
     $("#inputInnovationTittle").autocomplete({

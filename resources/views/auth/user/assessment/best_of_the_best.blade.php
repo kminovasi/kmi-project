@@ -30,17 +30,13 @@
 
         .small-input {
             width: 100px;
-            /* Sesuaikan lebar sesuai kebutuhan */
             padding: 7px;
-            /* Sesuaikan padding sesuai kebutuhan */
             font-size: 12px;
-            /* Sesuaikan ukuran font sesuai kebutuhan */
         }
 
         .display thead th,
         .display tbody td {
             border: 0.5px solid #ddd;
-            /* Atur warna dan ketebalan garis sesuai kebutuhan */
         }
     </style>
 @endpush
@@ -61,10 +57,8 @@
         </div>
     </header>
 
-    <!-- Main page content-->
     <div class="container-xl px-4 mt-4">
-        {{-- Component Navigation Bar Assessment --}}
-        @include('components.assessment.navbar')
+        @include('auth.user.paper.navbar')
         
         <div class="mb-3">
             @if (session('success'))
@@ -124,14 +118,11 @@
         <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <!-- Modal Header -->
                     <div class="modal-header border-0">
                         <h5 class="modal-title fw-bold" id="filterModalLabel">Pengaturan Filter</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <!-- Modal Body -->
                     <div class="modal-body">
-                        <!-- Filter Category -->
                         <div class="form-floating mb-4">
                             <select id="filter-category" name="filter-category" class="form-select">
                                 <option value="" selected>Semua Kategori</option>
@@ -156,10 +147,8 @@
                             <label for="filter-event">Event</label>
                         </div>
                     </div>
-                    <!-- Modal Footer -->
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary">Terapkan Filter</button>
                     </div>
                 </div>
             </div>
@@ -193,7 +182,6 @@
                 },
                 "data": function (d) {
                     d.filterEvent = $('#filter-event').val();
-                    // d.filterYear = $('#filter-year').val();
                     d.filterCategory = $('#filter-category').val();
                 }
 
@@ -206,7 +194,7 @@
             "createdRow": function(row, data, dataIndex) {
                 $('thead th').each(function(index) {
                     if ($(this).text().trim() === 'Ranking') {
-                        $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); // Set text center untuk <td>
+                        $(row).find('td:nth-child(' + (index + 1) + ')').addClass('text-center'); 
                     }
                 });
             }
@@ -221,19 +209,15 @@
         document.getElementById('event-title').innerHTML = eventName;
         newColumn = []
         $.ajax({
-            url: "{{ route('query.getBestOfTheBest') }}", // Misalnya, URL untuk mengambil kolom yang dinamis
+            url: "{{ route('query.getBestOfTheBest') }}", 
             method: 'GET',
-            // dataType: 'json',
             data:{
                 filterEvent: $('#filter-event').val(),
-                // filterYear: $('#filter-year').val(),
                 filterCategory: $('#filter-category').val()
             },
             async: false,
             success: function (data) {
-                // newColumn = []
                 console.log(data.data)
-                // console.log(count(data.data));
                 if(data.data.length){
                     let row_column = {};
                     row_column['data'] = "DT_RowIndex"
@@ -295,21 +279,37 @@
 
     function toggleRadio(selectedRadio) {
     $('input[type="radio"][name="pvt_event_team_id"]').click(function() {
-            // Jika radio button yang dipilih sudah terpilih, uncheck
             if ($(this).is(':checked')) {
-                // Cek apakah radio button yang sama diklik lagi
                 if ($(this).data('clicked')) {
-                    $(this).prop('checked', false); // Uncheck jika diklik lagi
-                    $(this).data('clicked', false); // Reset data clicked
+                    $(this).prop('checked', false); 
+                    $(this).data('clicked', false);
                 } else {
-                    $(this).data('clicked', true); // Tandai sebagai diklik
+                    $(this).data('clicked', true); 
                 }
             } else {
-                // Jika radio button tidak terpilih, reset data clicked
                 $(this).data('clicked', false);
             }
         });
     }
+
+    document.addEventListener('change', function (e) {
+      if (!e.target.classList.contains('keputusan-bod-check')) return;
+      const input = document.querySelector(e.target.dataset.target);
+      if (!input) return;
+    
+      if (e.target.checked) {
+        input.disabled = false;
+        input.classList.remove('d-none');  
+        input.style.removeProperty('display'); 
+        input.focus();
+      } else {
+        input.value = '';
+        input.disabled = true;
+        input.classList.add('d-none');     
+        input.style.display = 'none';      
+      }
+    });
+
 
 </script>
 @endpush

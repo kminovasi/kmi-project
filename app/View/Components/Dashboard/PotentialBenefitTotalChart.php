@@ -19,68 +19,105 @@ class PotentialBenefitTotalChart extends Component
     public function __construct()
     {
         $currentYear = Carbon::now()->year;
-        $years = range($currentYear - 4, $currentYear);
+        $years = range($currentYear - 3, $currentYear);
         $isSuperadmin = Auth::user()->role === 'Superadmin';
         $company_code = Auth::user()->company_code;
-
-        $companiesQuery = Company::with(['teams.paper' => function ($query) use ($currentYear) {
-            $query->where('status', 'accepted by innovation admin')
-                ->whereBetween('created_at', [
-                    now()->startOfYear(),
-                    now()->endOfYear()
-                ]);
-        }]);
+    
+        // Ambil perusahaan beserta teams dan papers yang diterima
+        $companiesQuery = Company::with([
+            'teams.papers' => function ($query) {
+                $query->where('status', 'accepted by innovation admin');
+            },
+            'teams.events' => function ($query) use ($years) {
+                $query->whereIn('events.year', $years);
+                $query->where('events.status', 'finish');
+            }
+        ]);
+    
         if (!$isSuperadmin) {
             $companiesQuery->where('company_code', $company_code);
         }
+    
         $companies = $companiesQuery->get();
-
+    
         $this->chartData = [
-            'labels' => [], // Nama perusahaan
-            'datasets' => [], // Dataset untuk setiap tahun
-            'logos' => [], // Path logo perusahaan
-            'isSuperadmin' => $isSuperadmin
+            'labels' => [],
+            'datasets' => [],
+            'logos' => [],
+            'isSuperadmin' => $isSuperadmin,
         ];
-
-        // Warna untuk setiap tahun
-        $colors = "#9966FF";
-
-        $this->chartData['datasets'][] = [
-            'label' => $currentYear,
-            'backgroundColor' => $colors,
-            'data' => []
-        ];
-
+    
+        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
+    
+        foreach ($years as $i => $year) {
+            $this->chartData['datasets'][] = [
+                'label' => $year,
+                'backgroundColor' => $colors[$i % count($colors)],
+                'data' => [],
+            ];
+        }
+    
+        // Koleksi perusahaan digabung
+        $mergedCompanies = collect();
+    
         foreach ($companies as $company) {
-            // Proses nama perusahaan menjadi nama file logo
-            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($company->company_name));
+            $code = $company->company_code;
+            $actualCode = ($code == '7000') ? '2000' : $code;
+    
+            if (!$mergedCompanies->has($actualCode)) {
+                $companyObj = new \stdClass();
+                $companyObj->company_name = ($actualCode == '2000')
+                    ? 'PT Semen Indonesia (Persero)'
+                    : $company->company_name;
+                $companyObj->teams = collect();
+                $mergedCompanies->put($actualCode, $companyObj);
+            }
+    
+            $mergedCompanies[$actualCode]->teams = $mergedCompanies[$actualCode]->teams->merge($company->teams);
+        }
+    
+        $mergedCompanies = $mergedCompanies->filter(function ($company) {
+            return $company->teams->reduce(function ($carry, $team) {
+                return $carry + $team->papers->sum('potential_benefit');
+            }, 0) > 0;
+        });
+    
+        // Proses chartData
+        foreach ($mergedCompanies as $company) {
+            $companyName = $company->company_name;
+            $teams = $company->teams;
+    
+            // Proses nama logo
+            $sanitizedCompanyName = preg_replace('/[^a-zA-Z0-9_()]+/', '_', strtolower($companyName));
             $sanitizedCompanyName = preg_replace('/_+/', '_', $sanitizedCompanyName);
             $sanitizedCompanyName = trim($sanitizedCompanyName, '_');
+    
             $logoPath = public_path('assets/logos/' . $sanitizedCompanyName . '.png');
-
-            // Cek jika file logo ada, jika tidak gunakan default logo
-            if (!file_exists($logoPath)) {
-                $logoPath = asset('assets/logos/pt_semen_indonesia_tbk.png'); // Ganti dengan logo default
-            } else {
-                $logoPath = asset('assets/logos/' . $sanitizedCompanyName . '.png');
+            $logoPath = file_exists($logoPath)
+                ? asset('assets/logos/' . $sanitizedCompanyName . '.png')
+                : asset('assets/logos/pt_semen_indonesia_tbk.png');
+    
+            $this->chartData['labels'][] = $companyName;
+            $this->chartData['logos'][] = $logoPath;
+    
+            foreach ($years as $index => $year) {
+                $financialTotal = $teams->reduce(function ($carry, $team) use ($year) {
+                    // Cek apakah tim ini ikut event pada tahun tersebut
+                    $hasEventInYear = $team->events->contains(function ($event) use ($year) {
+                        return $event->year == $year && $event->status == 'finish';
+                    });
+            
+                    if (!$hasEventInYear) {
+                        return $carry;
+                    }
+            
+                    // Jika ya, tambahkan semua paper-nya
+                    return $carry + $team->papers->sum('potential_benefit');
+                }, 0);
+            
+                $this->chartData['datasets'][$index]['data'][] = $financialTotal;
             }
-
-            $this->chartData['labels'][] = $company->company_name; // Nama perusahaan
-            $this->chartData['logos'][] = $logoPath; // Path logo perusahaan
-
-            // Hitung total financial benefit per tahun
-            $financialThisYear = [];
-            $financialThisYear = $company->teams->reduce(function ($carry, $team) use ($currentYear) {
-                // Gunakan relasi papers
-                $teamFinancial = $team->papers->whereBetween('created_at', [
-                    "$currentYear-01-01",
-                    "$currentYear-12-31"
-                ])->sum('potential_benefit');
-
-                return $carry + $teamFinancial;
-            }, 0);
-
-                $this->chartData['datasets'][0]['data'][] = $financialThisYear ?? 0;
+    
         }
     }
 

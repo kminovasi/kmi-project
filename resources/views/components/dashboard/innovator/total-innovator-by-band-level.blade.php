@@ -4,7 +4,7 @@
     </div>
     <div class="card-body">
         @php
-            $allBands = ['Band 1', 'Band 2', 'Band 3', 'Band 4', 'Band 5'];
+            $allBands = ['Band 2', 'Band 3', 'Band 4', 'Band 5'];
         @endphp
         
         <table class="table table-striped table-hover">

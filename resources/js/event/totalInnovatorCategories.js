@@ -67,4 +67,4 @@ export function renderTotalInnovatorChart(canvasId, chartData) {
     });
 }
 
-window.renderTotalInnovatorChart = renderTotalInnovatorChart;
+

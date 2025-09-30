@@ -85,7 +85,7 @@
                 </div>
                 <div class="row">
                     <div class="benefit-card">
-                        <h3 class="benefit-title">Total Potential Benefit</h3>
+                        <h3 class="benefit-title">Total Potential Benefitt</h3>
                         <div class="benefit-stat">
                             <span class="benefit-value">Rp {{ $formattedTotalPotentialBenefit }}</span>
                         </div>
@@ -152,5 +152,5 @@
         </div>
 
     </div>
-    <script src="{{ asset('build/assets/companyDashboardChart-69e6f61b.js') }}" type="module"></script>
+    <script src="{{ asset('build/assets/companyDashboardChart-fec9160b.js') }}" type="module"></script>
 @endsection

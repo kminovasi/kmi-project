@@ -170,6 +170,10 @@
 
 @section('content')
 
+    @php
+        $authEmpId = $employee->employee_id ?? null;
+    @endphp
+
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-2">
         <div class="container-xl px-4">
             <div class="page-header-content">
@@ -191,6 +195,51 @@
         </div>
     </header>
 
+    <div class="container-xl mb-3">
+        <form method="GET" action="{{ route('cv.index') }}" class="d-flex flex-wrap align-items-center gap-2">
+            {{-- Event --}}
+            <select name="event" class="form-select w-auto">
+                <option value="">-- Semua Event --</option>
+                @foreach($events as $event)
+                    <option value="{{ $event->id }}" {{ request('event') == $event->id ? 'selected' : '' }}>
+                        {{ $event->event_name }} {{ $event->year }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Kategori --}}
+            <select name="category" class="form-select w-auto">
+                <option value="">-- Semua Kategori --</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>
+                        {{ $cat }}
+                    </option>
+                @endforeach
+            </select>
+
+            {{-- Search Team --}}
+            <input type="text" name="search" class="form-control w-auto" placeholder="Cari Team..."
+                value="{{ request('search') }}">
+
+            {{-- Entries per page --}}
+            <div class="d-flex align-items-center gap-1">
+                {{-- <label class="mb-0">Show</label> --}}
+                <select name="per_page" class="form-select w-auto" onchange="this.form.submit()">
+                    @foreach([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}" {{ request('per_page', 10) == $size ? 'selected' : '' }}>
+                            {{ $size }}
+                        </option>
+                    @endforeach
+                </select>
+                <label class="mb-0">entries per page</label>
+            </div>
+
+            {{-- Submit --}}
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+
+
     <div class="container-xl p-2">
         <div class="table-responsive min-vh-100">
             <table class="table table-borderless table-hover text-sm rounded bg-white">
@@ -198,6 +247,10 @@
                     <tr>
                         <th scope="col">No</th>
                         <th scope="col">Team</th>
+                        {{-- @if($employee->role == 'Superadmin')
+                            <th scope="col">Anggota</th>
+                        @endif --}}
+                        {{-- <th scope="col">Anggota</th> --}}
                         <th scope="col">Judul</th>
                         <th scope="col">Tema</th>
                         <th scope="col">Event</th>
@@ -214,16 +267,36 @@
                         </tr>
                     @else
                         @foreach ($innovations as $inovasi)
+                        @php
+                             $isGMForThisTeam = false;
+                        
+                            if ($authEmpId) {
+                                $statuses = \DB::table('pvt_members')
+                                    ->where('team_id', $inovasi->team_id)
+                                    ->where('employee_id', $authEmpId)
+                                    ->pluck('status');
+                        
+                                // sembunyikan tombol hanya jika ADA membership dan SEMUANYA == 'gm'
+                                if ($statuses->isNotEmpty()) {
+                                     $isGMForThisTeam = $statuses->every(function($s){
+                                        return strtolower(trim((string)$s)) === 'gm';
+                                    });
+                                }
+                            }
+                        @endphp
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $inovasi->team_name }}</td>
+                                {{-- @if($user->role == 'Superadmin')
+                                     <td>{{ $inovasi->member_name ?? '-' }}</td>
+                                @endif --}}
                                 <td>{{ $inovasi->innovation_title }}</td>
                                 <td>{{ $inovasi->theme_name }}</td>
                                 <td>{{ $inovasi->event_name }} Tahun {{ $inovasi->year }}</td>
                                 <td>{{ $inovasi->category }}</td>
                                 <td>{{ $inovasi->potensi_replikasi }}</td>
                                 @php
-                                    $rankData = $teamRanks->get($inovasi->team_id);
+                                     $rankData = $teamRanks[$inovasi->team_id] ?? null;
                                 @endphp
                                 
                                 <td>
@@ -247,13 +320,19 @@
                                         </button>
 
                                         <ul class="dropdown-menu ">
+                                            @php
+                                                $hideForEvent = in_array((int) $inovasi->event_id, [3,4], true);
+                                            @endphp
+
                                             <li>
                                                 <a href="{{ route('cv.detail', $inovasi->team_id) }}"
                                                     class="dropdown-item btn btn-sm btn-primary">
                                                     <i class="fas fa-info-circle dropdown-item-icon"></i>Detail Inovasi
                                                 </a>
                                             </li>
+
                                             {{-- Button Download Certificate Individual --}}
+                                             @if(!$hideForEvent && !$isGMForThisTeam)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -269,10 +348,35 @@
                                                         <i class="dropdown-item-icon" data-feather="download"></i>
                                                         Sertifikat Peserta
                                                     </button>
+                                                    {{-- Button Download / Preview Certificate Individual --}}
+                                                    {{-- <li>
+                                                        <form action="{{ route('cv.generateCertificate') }}" method="POST">
+                                                            @csrf
+
+                                                            <input type="hidden" name="inovasi" value="{{ json_encode($inovasi) }}">
+                                                            <input type="hidden" name="employee" value="{{ json_encode($employee) }}">
+                                                            <input type="hidden" name="team_rank" value="{{ json_encode($rankData->rank) }}">
+                                                            <input type="hidden" name="certificate_type" value="participant">
+
+                                                            @if($user->role == 'Superadmin')
+                                                                <button type="submit" class="btn btn-sm btn-info dropdown-item">
+                                                                    <i class="dropdown-item-icon" data-feather="download"></i>
+                                                                    Sertifikat Peserta
+                                                                </button>
+                                                            @else
+                                                                <button type="submit" class="btn btn-sm btn-warning dropdown-item">
+                                                                    <i class="dropdown-item-icon" data-feather="download"></i>
+                                                                    Sertifikat Peserta
+                                                                </button>
+                                                            @endif
+                                                        </form>
+                                                    </li> --}}
                                                 </form>
                                             </li>
+                                            @endif
+
                                             {{-- Button Downlod Certificate Team --}}
-                                            @if($rankData->rank <= 3 && !$inovasi->is_honorable_winner)
+                                            @if(!$hideForEvent && ($rankData && ($rankData->rank ?? 0) <= 3) && !$inovasi->is_honorable_winner)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -291,7 +395,9 @@
                                                 </form>
                                             </li>
                                             @endif
-                                            @if($inovasi->is_best_of_the_best)
+
+                                            {{-- Button Downlod Certificate Best of the Best --}}
+                                            @if(!$hideForEvent && $inovasi->is_best_of_the_best)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -308,7 +414,7 @@
                                                     </button>
                                                 </form>
                                             </li>
-                                            @elseif($inovasi->is_honorable_winner)
+                                            @elseif(!$hideForEvent && $inovasi->is_honorable_winner)
                                             <hr class="dropdown-divider">
                                             <li>
                                                 <form action="{{ route('cv.generateCertificate') }}" method="POST">
@@ -327,9 +433,7 @@
                                             </li>
                                             @endif
                                         </ul>
-
                                     </div>
-
                                 </td>
                             </tr>
                         @endforeach

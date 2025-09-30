@@ -385,8 +385,7 @@
                     search_select2('id_leader', member.employee_id,
                         `${member.employee_id} - ${member.name}`)
                 } else if (member.status == 'facilitator') {
-                    search_select2('id_fasil', member.employee_id, 
-                        `${member.employee_id} - ${member.name}`)
+                    search_select2('id_fasil', member.employee_id, `${member.employee_id} - ${member.name}`)
                 } else {
                     member_ke++
                     search_select2(`id_anggota_${member_ke}`, member.employee_id,

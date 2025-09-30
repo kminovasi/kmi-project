@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     logoImages[i] = img;
                     resolve();
                 };
-                img.onerror = (e) => {
+                img.onerror = () => {
                     console.warn(`Gagal load logo ke-${i}`, url);
                     resolve();
                 };
@@ -55,17 +55,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 const { ctx, chartArea, scales } = chart;
                 const xScale = scales.x;
 
+                // --- kontrol posisi & ukuran logo ---
+                const OFFSET_Y = 10;      // + turun dari sumbu X (px)
+                const FIXED_HEIGHT = 28;  // semua logo setinggi 28px (sama)
+
                 chart.data.labels.forEach((_, i) => {
                     const img = logoImages[i];
                     if (!img) return;
 
                     const x = xScale.getPixelForValue(i);
-                    const y = chartArea.bottom;
-                    const aspectRatio = img.width / img.height;
-                    const imgWidth = 40; // Lebar gambar
-                    const imgHeight = imgWidth / aspectRatio; // Tinggi gambar berdasarkan rasio aspek
+                    const yTop = chartArea.bottom + OFFSET_Y;
 
-                    ctx.drawImage(img, x - imgWidth / 2, y, imgWidth, imgHeight); // Gambar logo
+                    // tinggi seragam, lebar mengikuti rasio
+                    const aspectRatio = img.width / img.height || 1;
+                    const imgHeight = FIXED_HEIGHT;
+                    const imgWidth  = imgHeight * aspectRatio;
+
+                    ctx.save();
+                    ctx.imageSmoothingQuality = "high";
+                    ctx.drawImage(img, x - imgWidth / 2, yTop, imgWidth, imgHeight);
+                    ctx.restore();
                 });
             }
         };
@@ -91,46 +100,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 layout: {
-                    padding: {
-                        bottom: 50
-                    }
+                    // pastikan cukup ruang untuk logo di bawah
+                    // (FIXED_HEIGHT + OFFSET_Y ≈ 38, padding 50 aman)
+                    padding: { bottom: 50 }
                 },
                 plugins: {
-                    legend: {
-                        position: "top"
-                    },
+                    legend: { position: "top" },
                     tooltip: {
                         callbacks: {
-                            title: (tooltipItems) => {
-                                return labels[tooltipItems[0].dataIndex];
-                            }
+                            title: (tooltipItems) => labels[tooltipItems[0].dataIndex]
                         }
                     },
                     datalabels: {
                         anchor: "center",
                         align: "center",
-                        font: {
-                            size: 14,
-                            weight: "bold"
-                        },
+                        font: { size: 14, weight: "bold" },
                         color: "#000"
                     }
                 },
                 scales: {
                     x: {
-                        ticks: {
-                            display: false
-                        },
-                        grid: {
-                            display: false
-                        }
+                        ticks: { display: false },
+                        grid: { display: false }
                     },
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: "Jumlah Inovasi"
-                        }
+                        title: { display: true, text: "Jumlah Inovasi" }
                     }
                 }
             },

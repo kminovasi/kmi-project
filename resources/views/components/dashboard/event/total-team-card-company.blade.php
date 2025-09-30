@@ -3,7 +3,7 @@
         <h4>Total Team per Perusahaan</h4>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row d-flex justify-content-center">
             <?php
             // Define a set of light colors
             $lightColors = [

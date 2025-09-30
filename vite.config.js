@@ -27,7 +27,7 @@ export default defineConfig({
                 "resources/js/totalPotentialBenefitByOrganizationChart.js",
                 "resources/js/totalTeamChart.js", // File total-team-chart.blade.php
                 "resources/js/totalTeamChartInternal.js",
-                "resources/js/totalTeamByOrganizationChart.js",
+                 "resources/js/totalTeamByOrganizationChart",
                 "resources/js/company/companyDashboardChart.js",
                 "resources/js/company/detailCompanyChart.js",
                 "resources/js/company/exportExcel.js",
@@ -76,7 +76,7 @@ export default defineConfig({
                 "resources/js/totalPotentialBenefitByOrganizationChart.js",
                 "resources/js/totalTeamChart.js", // File total-team-chart.blade.php
                 "resources/js/totalTeamChartInternal.js",
-                "resources/js/totalTeamByOrganizationChart.js",
+                "resources/js/totalTeamByOrganizationChart",
                 "resources/js/company/companyDashboardChart.js",
                 "resources/js/company/detailCompanyChart.js",
                 "resources/js/company/exportExcel.js",

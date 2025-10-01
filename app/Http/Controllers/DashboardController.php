@@ -29,7 +29,6 @@ class DashboardController extends Controller
             $filteredCompanyCodeUser = [$userCompanyCode];
         }
 
-        // Status untuk masing-masing grup
         $implementedStatuses = ['Implemented'];
         $ideaBoxStatuses = ['Progress', 'Not Implemented'];
 
@@ -50,6 +49,7 @@ class DashboardController extends Controller
         ])->get();
 
         $implemented = [];
+        $metodologi = [];
         $ideaBox = [];
 
         $totalImplementedInnovations = 0;
@@ -57,9 +57,11 @@ class DashboardController extends Controller
 
         foreach ($categories as $category) {
             $implementedTeamIds = [];
+            $metodologiTeamIds = [];
             $ideaBoxTeamIds = [];
 
             $implementedCount = 0;
+            $metodologiCount = 0;
             $ideaBoxCount = 0;
 
             foreach ($category->teams as $team) {
@@ -125,17 +127,40 @@ class DashboardController extends Controller
             ->count();
         
         $totalInnovatoresOutsource = DB::table('ph2_members')
-        ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
-        ->join('papers', 'papers.team_id', '=', 'teams.id')
-        ->when(!$isSuperadmin, function ($query) use ($filteredCompanyCodeUser) {
-            $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
-        })
-        ->where('papers.status', '!=', 'rejected by innovation admin')
-        ->distinct()
-        ->count();
+            ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
+            ->join('papers', 'papers.team_id', '=', 'teams.id')
+            ->when(!$isSuperadmin, function ($query) use ($filteredCompanyCodeUser) {
+                $query->whereIn('teams.company_code', $filteredCompanyCodeUser);
+            })
+            ->where('papers.status', '!=', 'rejected by innovation admin')
+            ->distinct()
+            ->count();
 
         $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale + $totalInnovatoresOutsource;
         $totalActiveEvents = Event::where('status', 'active')->count();
+
+        $paperSub = DB::table('papers as p')
+            ->join('teams as t', 't.id', '=', 'p.team_id')
+            ->when(!$isSuperadmin, function ($q) use ($filteredCompanyCodeUser) {
+                $q->whereIn('t.company_code', $filteredCompanyCodeUser);
+            })
+            ->where('p.status', '!=', 'rejected by innovation admin')
+            ->select('p.team_id', 'p.metodologi_paper_id');
+
+        $metodologi = DB::table('metodologi_papers as m')
+            ->leftJoinSub($paperSub, 'pp', function ($join) {
+                $join->on('pp.metodologi_paper_id', '=', 'm.id');
+            })
+            ->select('m.id','m.name', DB::raw('COUNT(DISTINCT pp.team_id) AS count'))
+            ->groupBy('m.id','m.name')
+            ->orderBy('m.name')
+            ->get()
+            ->map(fn($row) => [
+                'id'            => (int) $row->id,     
+                'category_name' => $row->name,
+                'count'         => (int) $row->count,
+            ])
+            ->toArray();
 
         return view('auth.user.home', compact(
             'listCompany',
@@ -152,7 +177,8 @@ class DashboardController extends Controller
             'implemented',
             'ideaBox',
             'totalImplementedInnovations',
-            'totalIdeaBoxInnovations'
+            'totalIdeaBoxInnovations',
+            'metodologi'
         ));
     }
     
@@ -194,9 +220,11 @@ class DashboardController extends Controller
 
         foreach ($categories as $category) {
             $implementedTeamIds = [];
+            $metodologiTeamIds = [];
             $ideaBoxTeamIds = [];
 
             $implementedCount = 0;
+            $metodologiCount = 0;
             $ideaBoxCount = 0;
 
             foreach ($category->teams as $team) {
@@ -258,20 +286,35 @@ class DashboardController extends Controller
             ->count();
         
         $totalInnovatoresOutsource = DB::table('ph2_members')
-        ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
-        ->join('papers', 'papers.team_id', '=', 'teams.id')
-        ->whereIn('teams.company_code', $filteredCompanyCodeUser)
-        ->where('papers.status', '!=', 'rejected by innovation admin')
-        ->distinct()
-        ->count();
+            ->join('teams', 'teams.id', '=', 'ph2_members.team_id')
+            ->join('papers', 'papers.team_id', '=', 'teams.id')
+            ->whereIn('teams.company_code', $filteredCompanyCodeUser)
+            ->where('papers.status', '!=', 'rejected by innovation admin')
+            ->distinct()
+            ->count();
 
         $totalInnovators = $totalInnovatorsMale + $totalInnovatorsFemale + $totalInnovatoresOutsource;
         $totalActiveEvents = Event::where('status', 'active')->count();
-        
+
+        $metodologi = DB::table('metodologi_papers as m')
+            ->leftJoinSub($paperSub, 'pp', function ($join) {
+                $join->on('pp.metodologi_paper_id', '=', 'm.id');
+            })
+            ->select('m.id','m.name', DB::raw('COUNT(DISTINCT pp.team_id) AS count'))
+            ->groupBy('m.id','m.name')
+            ->orderBy('m.name')
+            ->get()
+            ->map(fn($row) => [
+                'id'            => (int) $row->id,     
+                'category_name' => $row->name,
+                'count'         => (int) $row->count,
+            ])
+            ->toArray();
+
         $html = view('components.dashboard.filtered_dashboard_card', compact(
             'implemented', 'totalInnovators', 'totalInnovatorsMale', 'totalInnovatorsFemale',
             'totalInnovatoresOutsource', 'totalActiveEvents', 'ideaBox',
-            'totalImplementedInnovations', 'totalIdeaBoxInnovations'
+            'totalImplementedInnovations', 'totalIdeaBoxInnovations', 'metodologi'
         ))->render();
     
         return response()->json(['html' => $html]);
@@ -330,6 +373,48 @@ class DashboardController extends Controller
     
         return view('components.dashboard.list-paper', compact('categories', 'category', 'status', 'hasData'));
     }
+
+    public function listPaperByMetodologi(Request $request)
+    {
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
+        $userCompany  = Auth::user()->company_code;
+
+        $metodologiId = (int) $request->query('metodologi_id');
+        abort_unless($metodologiId > 0, 404);
+
+        $metodologi = DB::table('metodologi_papers')->where('id', $metodologiId)->first();
+        abort_unless($metodologi, 404);
+
+        $companyCode   = $request->query('company_code');
+        $companyFilter = $companyCode
+            ? (in_array($companyCode, [2000,7000]) ? [2000,7000] : [$companyCode])
+            : (in_array($userCompany, [2000,7000]) ? [2000,7000] : [$userCompany]);
+
+        $papers = DB::table('papers as p')
+            ->join('teams as t', 't.id', '=', 'p.team_id')
+            ->leftJoin('companies as c', 'c.company_code', '=', 't.company_code')
+            ->where('p.metodologi_paper_id', $metodologiId)
+            ->where('p.status', '!=', 'rejected by innovation admin')
+            ->when(!$isSuperadmin, fn($q) => $q->whereIn('t.company_code', $companyFilter))
+            ->select([
+                'p.id',
+                'p.innovation_title as title',
+                't.team_name',
+                't.company_code',
+                DB::raw('COALESCE(c.company_name, "-") as company_name'),
+                'p.status as status',            
+                'p.status_inovasi',
+            ])
+            ->orderBy('p.id', 'desc')
+            ->get(); 
+
+
+        return view('components.dashboard.list_paper_metodologi', [
+            'metodologi' => $metodologi,
+            'papers'     => $papers,
+        ]);
+    }
+
 
     public function showTotalTeamChart()
     {

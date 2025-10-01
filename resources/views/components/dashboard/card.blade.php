@@ -85,12 +85,45 @@
             .list-group-item {
                 background-color: transparent;
             }
+
+            .card-icon i{
+                font-size:22px; line-height:1; color:#fff;   /* ukuran & warna konsisten */
+                opacity:.95;
+            }
+
+            .metric-card .card-body{
+                position: relative;
+                padding-right: 5.25rem;   
+                padding-bottom: 3.75rem;  
+            }
+            .metric-card .icon-circle{
+                position: absolute;
+                right: 16px;
+                bottom: 16px;             /* ⟵ dari top:16px jadi bottom:16px */
+                width: 56px; height: 56px; border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                background-color: rgba(255,255,255,.22);
+                backdrop-filter: saturate(140%) blur(1px);
+            }
+            .metric-card .icon-circle i{
+                display: inline-flex;
+                font-size: 28px; line-height: 1; color: #fff; opacity: .95;
+            }
+
+            .bg-innovations, .bg-event, .bg-gradient-green { background:#D84040; }
+
+            /* Responsive */
+            @media (max-width:768px){
+                .metric-card .card-body{ padding-right: 4.25rem; padding-bottom: 3.25rem; }
+                .metric-card .icon-circle{ right: 12px; bottom: 12px; width: 48px; height: 48px; }
+                .metric-card .icon-circle i{ font-size: 22px; }
+            }
         </style>
     @endpush
 
     {{-- Total Innovation --}}
-    <div class="col-lg-4 col-xl-5 mb-4 mx-auto">
-        <div class="card bg-innovations text-white h-100 shadow-lg">
+    <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-4"> 
+        <div class="card bg-innovations text-white h-100 shadow-lg metric-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3">
@@ -173,9 +206,84 @@
         </div>
     </div>
 
+    {{-- Inovasi Metodologi --}}
+    <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-4">
+    <div class="card bg-innovations text-white h-100 shadow-lg metric-card">
+        <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="me-3">
+            <div class="small mb-1" style="font-weight:700;font-size:1rem;color:#fff"
+                data-bs-toggle="modal" data-bs-target="#metodologiModal">
+                Inovasi Metodologi
+            </div>
+            <div class="text-lg fw-bold d-flex align-items-center">
+                {{ collect($metodologi)->sum('count') }}   
+            </div>
+            </div>
+            <div class="icon-circle bg-white-25 flex-shrink-0">
+            <i class="fa-solid fa-flask fa-xl text-white"
+                style="font-size:30px;font-weight:bolder;text-shadow:2px 2px 4px rgba(0,0,0,.3);"></i>
+            </div>
+        </div>
+        </div>
+        <div class="card-footer d-flex align-items-center justify-content-between small">
+        <a class="text-white stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#metodologiModal">
+            Lihat Detail
+        </a>
+        <div class="text-white"><i class="fas fa-angle-right"></i></div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal Detail Metodologi -->
+    <div class="modal fade" id="metodologiModal" tabindex="-1" aria-labelledby="metodologiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+        <div class="modal-header text-white">
+            <h5 class="modal-title fw-bold d-flex align-items-center" id="metodologiModalLabel">
+            <i class="fa-solid fa-flask me-2"></i> <span class="fw-bold">Detail Inovasi Metodologi</span>
+            </h5>
+            <button type="button" class="btn-close" style="color:black" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body bg-light">
+            <div class="row">
+            @foreach ($metodologi as $item)
+            @php
+                $colors = ['text-success','text-warning','text-info','text-primary','text-secondary'];
+                $icons  = ['flask','target','activity','layers','aperture'];
+                $color  = $colors[$loop->index % count($colors)];
+                $icon   = $icons[$loop->index % count($icons)];
+            @endphp
+
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('dashboard.listPaperMetodologi', ['metodologi_id' => $item['id']]) }}"
+                class="text-decoration-none list-paper-link">   
+                <div class="card shadow-sm border-0 rounded">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                    <h5 class="m-0 fw-bold {{ $color }}">{{ $item['category_name'] }}</h5>
+                    <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                        {{ $item['count'] ?? 0 }}
+                    </span>
+                    </div>
+                </div>
+                </a>
+            </div>
+            @endforeach
+            </div>
+        </div>
+        <div class="modal-footer bg-gradient-light">
+            <button type="button" class="btn btn-outline-primary fw-bold" data-bs-dismiss="modal">
+            <i class="fa-solid fa-x-circle me-1"></i> Tutup
+            </button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     {{-- Idea Box --}}
-    <div class="col-lg-6 col-xl-5 mb-4 mx-auto">
-        <div class="card bg-innovations text-white h-100 shadow-lg">
+    <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-4">
+        <div class="card bg-innovations text-white h-100 shadow-lg metric-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="me-3 flex-grow-1">
@@ -261,8 +369,9 @@
 
     {{-- Total Event Active --}}
     @if ($isSuperadmin || $isAdmin)
-        <div class="col-lg-11 col-xl-11 mb-9 mx-auto">
-            <div class="card bg-event text-white h-100">
+        <div class="col-12 mb-4">
+            <div class="card bg-event text-white h-100 metric-card">
+
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
@@ -291,8 +400,9 @@
 
     <div class="col-12 mb-4"></div>
 
-    <div class="col-lg-11 col-xl-11 mb-8 mx-auto">
-        <div class="card bg-gradient-green text-white h-100">
+   <div class="col-12 mb-4">
+  <div class="card bg-gradient-green text-white h-100 metric-card">
+
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <!-- Informasi Teks -->

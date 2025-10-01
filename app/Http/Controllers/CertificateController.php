@@ -71,126 +71,90 @@ class CertificateController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'event_id' => 'required|exists:events,id',
-    //         'template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-    //         'special_template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-    //         'badge_rank_1' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-    //         'badge_rank_2' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-    //         'badge_rank_3' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-    //         'certificate_date' => 'required|date',
-    //     ]);
-    
-    //     $certificateTemplatePath = $request->file('template_certificate')->store('certificate', 'public');
-    //     $specialCertificateTemplatePath = $request->file('special_template_certificate')->store('certificate', 'public');
-    //     $date = Carbon::parse($request->certificate_date)->toDateString();
-    //     $badgeRank1Path = $request->file('badge_rank_1')->store('certificate/badge', 'public');
-    //     $badgeRank2Path = $request->file('badge_rank_2')->store('certificate/badge', 'public');
-    //     $badgeRank3Path = $request->file('badge_rank_3')->store('certificate/badge', 'public');
-
-           
-    //     Certificate::create([
-    //         'event_id' => $request->event_id,
-    //         'template_path' => $certificateTemplatePath,
-    //         'special_template_path' => $specialCertificateTemplatePath,
-    //         'badge_rank_1' => $badgeRank1Path,
-    //         'badge_rank_2' => $badgeRank2Path,
-    //         'badge_rank_3' => $badgeRank3Path,
-    //         'certificate_date' => $date,
-    //     ]);
-    
-    //     return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dibuat.');
-    // }
-    
+        
     public function store(Request $request)
-{
-    // Validasi + pesan kustom (opsional)
-    $request->validate([
-        'event_id' => 'required|exists:events,id',
-        'template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        'special_template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        'badge_rank_1' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        'badge_rank_2' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        'badge_rank_3' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-        'certificate_date' => 'required|date',
-    ], [
-        'required' => ':attribute wajib diisi.',
-        'mimes'    => ':attribute harus berupa file JPG/PNG.',
-        'max'      => 'Ukuran :attribute maksimal 5MB.',
-        'exists'   => 'Event tidak ditemukan.',
-    ], [
-        'template_certificate' => 'Template Sertifikat',
-        'special_template_certificate' => 'Template Sertifikat Khusus',
-        'badge_rank_1' => 'Badge Juara 1',
-        'badge_rank_2' => 'Badge Juara 2',
-        'badge_rank_3' => 'Badge Juara 3',
-        'certificate_date' => 'Tanggal Sertifikat',
-    ]);
-
-    $disk = Storage::disk('public');
-    $saved = []; // simpan path yang berhasil, untuk cleanup jika gagal
-
-    DB::beginTransaction();
-    try {
-        // Simpan semua file. Kalau salah satu gagal, lempar exception manual.
-        $certificateTemplatePath = $request->file('template_certificate')
-            ->store('certificate', 'public');
-        if (!$certificateTemplatePath) throw new \RuntimeException('Gagal upload template sertifikat.');
-        $saved[] = $certificateTemplatePath;
-
-        $specialCertificateTemplatePath = $request->file('special_template_certificate')
-            ->store('certificate', 'public');
-        if (!$specialCertificateTemplatePath) throw new \RuntimeException('Gagal upload template sertifikat khusus.');
-        $saved[] = $specialCertificateTemplatePath;
-
-        $badgeRank1Path = $request->file('badge_rank_1')->store('certificate/badge', 'public');
-        if (!$badgeRank1Path) throw new \RuntimeException('Gagal upload badge juara 1.');
-        $saved[] = $badgeRank1Path;
-
-        $badgeRank2Path = $request->file('badge_rank_2')->store('certificate/badge', 'public');
-        if (!$badgeRank2Path) throw new \RuntimeException('Gagal upload badge juara 2.');
-        $saved[] = $badgeRank2Path;
-
-        $badgeRank3Path = $request->file('badge_rank_3')->store('certificate/badge', 'public');
-        if (!$badgeRank3Path) throw new \RuntimeException('Gagal upload badge juara 3.');
-        $saved[] = $badgeRank3Path;
-
-        $date = Carbon::parse($request->certificate_date)->toDateString();
-
-        Certificate::create([
-            'event_id'             => $request->event_id,
-            'template_path'        => $certificateTemplatePath,
-            'special_template_path'=> $specialCertificateTemplatePath,
-            'badge_rank_1'         => $badgeRank1Path,
-            'badge_rank_2'         => $badgeRank2Path,
-            'badge_rank_3'         => $badgeRank3Path,
-            'certificate_date'     => $date,
+    {
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'special_template_certificate' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_1' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_2' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'badge_rank_3' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'certificate_date' => 'required|date',
+        ], [
+            'required' => ':attribute wajib diisi.',
+            'mimes'    => ':attribute harus berupa file JPG/PNG.',
+            'max'      => 'Ukuran :attribute maksimal 5MB.',
+            'exists'   => 'Event tidak ditemukan.',
+        ], [
+            'template_certificate' => 'Template Sertifikat',
+            'special_template_certificate' => 'Template Sertifikat Khusus',
+            'badge_rank_1' => 'Badge Juara 1',
+            'badge_rank_2' => 'Badge Juara 2',
+            'badge_rank_3' => 'Badge Juara 3',
+            'certificate_date' => 'Tanggal Sertifikat',
         ]);
 
-        DB::commit();
-        return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dibuat.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
+        $disk = Storage::disk('public');
+        $saved = []; 
 
-        // Hapus file yang sudah sempat ter-upload
-        foreach ($saved as $path) {
-            try { $disk->delete($path); } catch (\Throwable $ex) {}
+        DB::beginTransaction();
+        try {
+            $certificateTemplatePath = $request->file('template_certificate')
+                ->store('certificate', 'public');
+            if (!$certificateTemplatePath) throw new \RuntimeException('Gagal upload template sertifikat.');
+            $saved[] = $certificateTemplatePath;
+
+            $specialCertificateTemplatePath = $request->file('special_template_certificate')
+                ->store('certificate', 'public');
+            if (!$specialCertificateTemplatePath) throw new \RuntimeException('Gagal upload template sertifikat khusus.');
+            $saved[] = $specialCertificateTemplatePath;
+
+            $badgeRank1Path = $request->file('badge_rank_1')->store('certificate/badge', 'public');
+            if (!$badgeRank1Path) throw new \RuntimeException('Gagal upload badge juara 1.');
+            $saved[] = $badgeRank1Path;
+
+            $badgeRank2Path = $request->file('badge_rank_2')->store('certificate/badge', 'public');
+            if (!$badgeRank2Path) throw new \RuntimeException('Gagal upload badge juara 2.');
+            $saved[] = $badgeRank2Path;
+
+            $badgeRank3Path = $request->file('badge_rank_3')->store('certificate/badge', 'public');
+            if (!$badgeRank3Path) throw new \RuntimeException('Gagal upload badge juara 3.');
+            $saved[] = $badgeRank3Path;
+
+            $date = Carbon::parse($request->certificate_date)->toDateString();
+
+            Certificate::create([
+                'event_id'             => $request->event_id,
+                'template_path'        => $certificateTemplatePath,
+                'special_template_path'=> $specialCertificateTemplatePath,
+                'badge_rank_1'         => $badgeRank1Path,
+                'badge_rank_2'         => $badgeRank2Path,
+                'badge_rank_3'         => $badgeRank3Path,
+                'certificate_date'     => $date,
+            ]);
+
+            DB::commit();
+            return redirect()->route('certificates.index')->with('success', 'Sertifikat berhasil dibuat.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            foreach ($saved as $path) {
+                try { $disk->delete($path); } catch (\Throwable $ex) {}
+            }
+
+            Log::error('Gagal membuat sertifikat', [
+                'event_id' => $request->event_id,
+                'error'    => $e->getMessage(),
+                'trace'    => $e->getTraceAsString(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Sertifikat tidak berhasil diunggah. Silakan coba lagi atau hubungi admin. (' . $e->getMessage() . ')');
         }
-
-        Log::error('Gagal membuat sertifikat', [
-            'event_id' => $request->event_id,
-            'error'    => $e->getMessage(),
-            'trace'    => $e->getTraceAsString(),
-        ]);
-
-        // Kirim pesan ramah ke user
-        return back()
-            ->withInput()
-            ->with('error', 'Sertifikat tidak berhasil diunggah. Silakan coba lagi atau hubungi admin. (' . $e->getMessage() . ')');
     }
-}
 
 
     /**
@@ -249,7 +213,6 @@ class CertificateController extends Controller
     {
         $eventId = $request->input('event_id');
 
-        // Data juri (boleh difilter event)
         $judges = DB::table('judges')
             ->join('users',  'users.employee_id', '=', 'judges.employee_id')
             ->join('events', 'events.id',         '=', 'judges.event_id')
@@ -268,7 +231,6 @@ class CertificateController extends Controller
             ->orderBy('users.name')
             ->get();
 
-        // Dropdown Event (nama + tahun) hanya dari event yang ada jurinya
         $events = DB::table('events')
             ->join('judges', 'judges.event_id', '=', 'events.id')
             ->where('judges.status', 'active')
@@ -277,7 +239,6 @@ class CertificateController extends Controller
             ->orderBy('events.event_name')
             ->get(['events.id', 'events.event_name', 'events.year']);
 
-        // kirim 'event' => null agar layout/partial yang refer $event aman
         return view('admin.certificate.list-judge-certificate', [
             'judges'  => $judges,
             'events'  => $events,

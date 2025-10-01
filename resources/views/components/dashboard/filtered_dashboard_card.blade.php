@@ -1,5 +1,6 @@
 <x-dashboard.card 
     :implemented="$implemented" 
+    :metodologi="$metodologi"
     :total-innovators="$totalInnovators" 
     :total-innovators-male="$totalInnovatorsMale"
     :total-innovators-female="$totalInnovatorsFemale" 

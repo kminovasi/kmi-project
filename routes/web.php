@@ -385,6 +385,8 @@ Route::middleware('auth')->group(function () {
         
         // List Paper Form Category
         Route::get('/dashboard/list-paper/{category}/{status}', [DashboardController::class, 'showDashboardPaperList'])->name('dashboard.listPaper');
+        Route::get('/dashboard/list-paper-metodologi', [DashboardController::class, 'listPaperByMetodologi'])->name('dashboard.listPaperMetodologi');
+
 
         // Rute Flyer
         Route::resource('flyer', FlyerController::class)->only(['index', 'store', 'destroy']);

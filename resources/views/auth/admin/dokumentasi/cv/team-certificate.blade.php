@@ -20,7 +20,7 @@
           src:url('file://{{ public_path('assets/fonts/ProximaNova/ProximaNova-Bold.ttf') }}') format('truetype');
           font-weight:700; font-style:normal;
         }
-        /* >>> Tambahkan ini <<< */
+
         @font-face{
           font-family:'Proxima Nova';
           src:url('file://{{ public_path('assets/fonts/ProximaNova/ProximaNova-Italic.ttf') }}') format('truetype');
@@ -62,7 +62,7 @@
 
         .title {
             position: absolute;
-            top: 44%;
+            top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -90,7 +90,7 @@
 
         .category-head {
             position: absolute;
-            top: 56%;
+            top: 53%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -101,7 +101,7 @@
 
         .footer {
             position: absolute;
-            top: 59%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -237,11 +237,11 @@
             <div class="innovation-title">{{ $innovation_title }}</div>
         </div>
         
-        <div class="company">
+        {{-- <div class="company">
           <div class="company-name text-capitalize">
             {{ str_replace([',', '.'], ' ', $company_name) }}
           </div>
-        </div>
+        </div> --}}
         
         <div class="category-head">KATEGORI</div>
         <div class="footer">

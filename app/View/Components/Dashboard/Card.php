@@ -5,6 +5,7 @@ namespace App\View\Components\Dashboard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 use Log;
+use Illuminate\Support\Collection; 
 
 class Card extends Component
 {
@@ -18,6 +19,7 @@ class Card extends Component
     public $implemented;
     public $totalImplementedInnovations;
     public $totalIdeaBoxInnovations;
+     public $metodologi; 
     /**
      * Create a new component instance.
      *
@@ -26,6 +28,7 @@ class Card extends Component
     public function __construct(
         $ideaBox = null,
         $implemented,
+        $metodologi = [],
         $totalInnovators = null,
         $totalInnovatorsMale = null,
         $totalInnovatorsFemale = null,
@@ -36,6 +39,7 @@ class Card extends Component
     ) {
         $this->ideaBox = $ideaBox;
         $this->implemented = $implemented;
+         $this->metodologi   = $this->toArraySafe($metodologi);
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
@@ -43,6 +47,13 @@ class Card extends Component
         $this->totalActiveEvents = $totalActiveEvents;
         $this->totalImplementedInnovations = $totalImplementedInnovations;
         $this->totalIdeaBoxInnovations = $totalIdeaBoxInnovations;
+    }
+
+    private function toArraySafe($value): array
+    {
+        if (is_array($value)) return $value;
+        if ($value instanceof Collection) return $value->toArray();
+        return $value ? (array) $value : [];
     }
 
 

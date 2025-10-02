@@ -87,7 +87,7 @@
             }
 
             .card-icon i{
-                font-size:22px; line-height:1; color:#fff;   /* ukuran & warna konsisten */
+                font-size:22px; line-height:1; color:#fff;   
                 opacity:.95;
             }
 
@@ -99,7 +99,7 @@
             .metric-card .icon-circle{
                 position: absolute;
                 right: 16px;
-                bottom: 16px;             /* ⟵ dari top:16px jadi bottom:16px */
+                bottom: 16px;             
                 width: 56px; height: 56px; border-radius: 50%;
                 display: flex; align-items: center; justify-content: center;
                 background-color: rgba(255,255,255,.22);
@@ -235,50 +235,57 @@
     </div>
     </div>
 
-    <!-- Modal Detail Metodologi -->
+    <!-- Detail Methodology Innovation -->
     <div class="modal fade" id="metodologiModal" tabindex="-1" aria-labelledby="metodologiModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content border-0 shadow-lg rounded-3">
-        <div class="modal-header text-white">
-            <h5 class="modal-title fw-bold d-flex align-items-center" id="metodologiModalLabel">
-            <i class="fa-solid fa-flask me-2"></i> <span class="fw-bold">Detail Inovasi Metodologi</span>
-            </h5>
-            <button type="button" class="btn-close" style="color:black" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body bg-light">
-            <div class="row">
-            @foreach ($metodologi as $item)
-            @php
-                $colors = ['text-success','text-warning','text-info','text-primary','text-secondary'];
-                $icons  = ['flask','target','activity','layers','aperture'];
-                $color  = $colors[$loop->index % count($colors)];
-                $icon   = $icons[$loop->index % count($icons)];
-            @endphp
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header  text-white">
+                    <h5 class="modal-title fw-bold d-flex align-items-center" id="metodologiModalLabel">
+                        <i data-feather="zap" class="me-2"></i> <span class="fw-bold">Detail Inovasi</span>
+                    </h5>
+                    <button type="button" class="btn-close" style="color: black;" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-            <div class="col-md-6 mb-4">
-                <a href="{{ route('dashboard.listPaperMetodologi', ['metodologi_id' => $item['id']]) }}"
-                class="text-decoration-none list-paper-link">   
-                <div class="card shadow-sm border-0 rounded">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
-                    <h5 class="m-0 fw-bold {{ $color }}">{{ $item['category_name'] }}</h5>
-                    <span class="badge bg-primary rounded-pill fs-5 fw-bold">
-                        {{ $item['count'] ?? 0 }}
-                    </span>
+                <div class="modal-body bg-light">
+                    <div class="row">
+                        @foreach ($metodologi as $item)
+                            @php
+                                $colors = [
+                                    'text-success',
+                                    'text-warning',
+                                    'text-info',
+                                    'text-primary',
+                                    'text-secondary',
+                                ];
+                                $icons = ['zap', 'layers', 'box', 'shield', 'star'];
+                                $color = $colors[$loop->index % count($colors)];
+                                $icon = $icons[$loop->index % count($icons)];
+                            @endphp
+                            <div class="col-md-6 mb-4">
+                                <a href="{{ route('dashboard.listPaperMetodologi', ['metodologi_id' => $item['id']]) }}"
+                                class="text-decoration-none list-paper-link">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                            <i data-feather="{{ $icon }}" class="me-2 {{ $color }}"></i>
+                                            <h5 class="m-0 fw-bold {{ $color }}">{{ $item["category_name"] }}</h5>
+                                            <span class="badge bg-primary rounded-pill fs-5 fw-bold">
+                                                {{ $item["count"] ?? 0 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-                </a>
+                <div class="modal-footer bg-gradient-light">
+                    <button type="button" class="btn btn-outline-primary fw-bold" data-bs-dismiss="modal">
+                        <i data-feather="x-circle" class="me-1"></i> Tutup
+                    </button>
+                </div>
             </div>
-            @endforeach
-            </div>
         </div>
-        <div class="modal-footer bg-gradient-light">
-            <button type="button" class="btn btn-outline-primary fw-bold" data-bs-dismiss="modal">
-            <i class="fa-solid fa-x-circle me-1"></i> Tutup
-            </button>
-        </div>
-        </div>
-    </div>
     </div>
 
     {{-- Idea Box --}}

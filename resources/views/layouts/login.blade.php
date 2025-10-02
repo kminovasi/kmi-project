@@ -48,7 +48,7 @@
               @csrf
               <div class="mb-3">
                 <label for="login_email" class="form-label">Email</label>
-                <input type="email" class="form-control @error('username') is-invalid @enderror" id="login_email" name="username" value="{{ old('username') }}" required placeholder="email@sig.id">
+                <input type="email" class="form-control @error('username') is-invalid @enderror" id="login_email" name="username" value="{{ old('username') }}" required placeholder="Masukkan email terdaftar">
                 @error('username') <div class="invalid-feedback">{{ $message }}</div> @enderror
               </div>
 
@@ -66,15 +66,15 @@
                   <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember">
                   <label class="form-check-label" for="remember">Remember me</label>
                 </div>
-                {{-- <a href="{{ route('password.request') }}" class="small">Lupa password?</a> --}}
+                <a href="{{ route('password.request') }}" class="small">Lupa password?</a>
               </div>
 
               <button type="submit" class="btn w-100" style="background-color:red; color:#fff;">Login</button>
 
-              <p class="text-center mt-3 form-help">
+              {{-- <p class="text-center mt-3 form-help">
                 Belum memiliki akun?
                 <span class="text-primary link-toggle" data-target="register">Register</span>
-              </p>
+              </p> --}}
             </form>
           </div>
 
@@ -86,7 +86,7 @@
 
                 <div class="col-12">
                   <label for="reg_email" class="form-label">Email</label>
-                  <input type="email" class="form-control @error('email') is-invalid @enderror" id="reg_email" name="email" value="{{ old('email') }}" required placeholder="email@sig.id">
+                  <input type="email" class="form-control @error('email') is-invalid @enderror" id="reg_email" name="email" value="{{ old('email') }}" required placeholder="Masukkan email terdaftar">
                   @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 

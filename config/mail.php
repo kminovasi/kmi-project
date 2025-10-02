@@ -35,15 +35,16 @@ return [
 
     'mailers' => [
         'smtp' => [
-            'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'sandbox.smtp.mailtrap.io'),
-            'port' => env('MAIL_PORT', 2525),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            'transport'  => 'smtp',
+            'host'       => env('MAIL_HOST'),
+            'port'       => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'username'   => env('MAIL_USERNAME'),
+            'password'   => env('MAIL_PASSWORD'),
+            'timeout'    => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
+
 
         'ses' => [
             'transport' => 'ses',
@@ -91,10 +92,11 @@ return [
     |
     */
 
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'renataverina@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
-    ],
+        'from' => [
+            'address' => env('MAIL_FROM_ADDRESS', 'no-reply@portal-inovasi-sig.my.id'),
+            'name'    => env('MAIL_FROM_NAME', 'Portal Inovasi'),
+        ],
+
 
     /*
     |--------------------------------------------------------------------------

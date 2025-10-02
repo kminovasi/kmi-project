@@ -43,6 +43,9 @@ use App\Http\Controllers\ImportUserDataExcel;
 use App\Http\Controllers\AiAssessmentController;
 use App\Http\Controllers\QaMessageController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+
 
 
 /*
@@ -61,6 +64,13 @@ Route::get('/login', [SessionController::class, 'index'])->name('login')->middle
 Route::post('/login', [SessionController::class, 'login'])->name('postLogin');
 Route::post('/register', [SessionController::class, 'register'])->name('postRegister');
 Route::post('/logout', [SessionController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('throttle:6,1')->name('password.email');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+});
 
 // route for dashboard
 Route::get('dashboard', [

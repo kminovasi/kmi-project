@@ -14,16 +14,13 @@ class TotalTeamCard extends Component
 
     public function __construct()
     {
-        // Ambil data total tim yang diterima dalam 4 tahun terakhir
         $this->teamData = $this->getTotalTeamsByYear();
     }
 
     private function getTotalTeamsByYear()
     {
         $companyCode = Auth::user()->company_code;
-
-        // Ambil 4 tahun terakhir
-        $years = range(Carbon::now()->year - 3, Carbon::now()->year);
+        $years = range(Carbon::now()->year - 2, Carbon::now()->year);
         $paperStatus = 'accepted by innovation admin';
         
         if(in_array($companyCode, [2000, 7000])) {
@@ -47,7 +44,6 @@ class TotalTeamCard extends Component
             ->orderBy('year')
             ->get();
 
-        // Pastikan semua tahun memiliki data
         $result = collect($years)->mapWithKeys(function ($year) use ($teamCounts) {
             $count = $teamCounts->firstWhere('year', $year)?->total_teams ?? 0;
             return [$year => $count];

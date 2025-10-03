@@ -21,7 +21,7 @@ class TotalTeamCard extends Component
     private function getTotalTeamsByYear($eventType)
     {
         // Ambil 4 tahun terakhir
-        $years = range(Carbon::now()->year - 3, Carbon::now()->year);
+        $years = range(Carbon::now()->year - 2, Carbon::now()->year);
 
         $teamCounts = DB::table('teams')
             ->join('papers', 'teams.id', '=', 'papers.team_id')

@@ -5,45 +5,39 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="row g-3">
-            @php
-                $colors = [
-                    [
-                        'bg' => '#8e1616',
-                        'text' => '#eeeeee',
-                    ],
-                    [
-                        'bg' => '#d84040',
-                        'text' => '#eeeeee',
-                    ],
-                    [
-                        'bg' => '#8e1616',
-                        'text' => '#eeeeee',
-                    ],
-                    [
-                        'bg' => '#d84040',
-                        'text' => '#eeeeee',
-                    ],
-                ];
-            @endphp
-            @foreach ($teamData as $year => $count)
-                <div class="col-6 col-md-3">
-                    <div class="card shadow-sm rounded-4 position-relative overflow-hidden" style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
-                        <div class="card-body py-4 position-relative z-1 text-center text-white">
-                            <h6 class="text-uppercase mb-2 opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
-                            <div class="display-6 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ $count }}</div>
-                            <div class="mt-2 small opacity-75"  style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
-                        </div>
-                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-10"></div>
-                    </div>
-                </div>
-            @endforeach
+    @php
+    $colors = [
+        ['bg' => '#8e1616','text' => '#eeeeee'],
+        ['bg' => '#d84040','text' => '#eeeeee'],
+        ['bg' => '#8e1616','text' => '#eeeeee'],
+        ['bg' => '#d84040','text' => '#eeeeee'],
+    ];
+    @endphp
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-3">
+    @foreach ($teamData as $year => $count)
+        <div class="col">
+        <div class="card stat-card h-100 rounded-4 shadow-sm"
+            style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
+            <div class="card-body py-4 text-center text-white">
+            <h6 class="text-uppercase mb-2 opacity-75"
+                style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
+            <div class="display-5 fw-bold"
+                style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ number_format($count,0,',','.') }}</div>
+            <div class="mt-2 small opacity-75"
+                style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-10"></div>
         </div>
+        </div>
+    @endforeach
+    </div>
+
     </div>
     <div class="card-footer bg-light border-0 text-center">
         <small class="text-muted text-capitalize">
             <i class="bi bi-info-circle me-1"></i>
-            Total tim yang diterima dalam 4 tahun terakhir
+            Total tim yang diterima dalam 3 tahun terakhir
         </small>
         <br>
         <a href="{{ route('dashboard.showTotalTeamChart') }}" class="btn btn-md mt-3 teams-chart-btn" style="border-radius: 10px;">

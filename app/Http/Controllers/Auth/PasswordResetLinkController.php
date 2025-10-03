@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use App\Models\User;
+use Illuminate\Support\HtmlString;
+
 
 class PasswordResetLinkController extends Controller
 {
@@ -17,45 +19,33 @@ class PasswordResetLinkController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'identifier' => ['required','string','max:191'], // email ATAU username
+            'identifier' => ['required','string','max:191'], 
         ]);
 
         $identifier = trim($data['identifier']);
-
-        // Deteksi email vs username
         $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL) !== false;
 
-        // Cari user berdasarkan email/username
         $user = User::query()
             ->when($isEmail, fn($q) => $q->where('email', $identifier))
             ->when(!$isEmail, fn($q) => $q->where('username', $identifier))
             ->first();
 
-        // Tidak ditemukan → warning eksplisit
         if (!$user) {
-            return back()
-                ->withInput()
-                ->with('error', $isEmail
-                    ? 'Email tidak terdaftar.'
-                    : 'Username tidak terdaftar.');
+            return back()->withInput()->with('error', new HtmlString(
+        'Email tidak terdaftar. Silakan hubungi <a href="mailto:kminovasi@sig.id">kminovasi@sig.id</a> untuk bantuan pendaftaran/aktivasi.'
+        ));
         }
 
-        // User ada tapi tidak punya email (kasus username login tanpa email)
         if (empty($user->email)) {
-            return back()
-                ->withInput()
-                ->with('error', 'Akun ini belum memiliki email terdaftar. Hubungi admin untuk menambahkan email.');
+            return back()->withInput()->with('error', new HtmlString(
+        'Email tidak terdaftar. Silakan hubungi <a href="mailto:kminovasi@sig.id">kminovasi@sig.id</a> untuk bantuan pendaftaran/aktivasi.'
+        ));
         }
 
-        // Kirim link reset ke email user
         $status = Password::sendResetLink(['email' => $user->email]);
-
         if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('success', 'Tautan reset telah dikirim ke ' . $user->email . '.');
+            return back()->with('success', 'Tautan reset telah dikirim ke ' . $user->email . '. Silakan cek folder inbox maupun spam');
         }
-
-        // Tangani kemungkinan throttle/invalid, dll.
-        // (Laravel 9 biasanya mengembalikan pesan terjemahan bawaan)
         return back()->with('error', __($status));
     }
 }

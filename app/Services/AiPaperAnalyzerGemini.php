@@ -88,7 +88,6 @@ class AiPaperAnalyzerGemini
                     if ($txt !== '') return $txt;
                 }
             } catch (\Throwable $e) {
-                // abaikan & coba kandidat berikutnya
             }
         }
 

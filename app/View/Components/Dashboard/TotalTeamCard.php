@@ -13,14 +13,12 @@ class TotalTeamCard extends Component
 
     public function __construct()
     {
-        // Ambil data total tim yang diterima dalam 4 tahun terakhir
         $this->teamDataInternal = $this->getTotalTeamsByYear('internal');
         $this->teamDataGroup = $this->getTotalTeamsByYear('group');
     }
 
     private function getTotalTeamsByYear($eventType)
     {
-        // Ambil 4 tahun terakhir
         $years = range(Carbon::now()->year - 2, Carbon::now()->year);
 
         $teamCounts = DB::table('teams')
@@ -38,7 +36,6 @@ class TotalTeamCard extends Component
             ->orderBy('events.year')
             ->get();
 
-        // Pastikan semua tahun memiliki data
         $result = collect($years)->mapWithKeys(function ($year) use ($teamCounts) {
             $count = $teamCounts->firstWhere('year', $year)?->total_teams ?? 0;
             return [$year => $count];

@@ -5,56 +5,63 @@
         </div>
     </div>
     <div class="card-body">
-@php
-  // Lebar kolom adaptif
-  $colsFor = function ($count) {
-      if ($count === 1) return 'col-12 col-md-10 col-lg-8 mx-auto';
-      if ($count === 2) return 'col-12 col-md-6 col-lg-6';
-      if ($count === 3) return 'col-12 col-md-6 col-lg-4';
-      return 'col-12 col-md-6 col-lg-3'; // 4 atau lebih
-  };
-  $internalCols = $colsFor($teamDataInternal->count() ?? count($teamDataInternal));
-  $groupCols    = $colsFor($teamDataGroup->count() ?? count($teamDataGroup));
-@endphp
-
-<div class="row g-4 px-3">
-  <div class="fs-5 fw-bold">Total Tim Event Internal</div>
-  @foreach ($teamDataInternal as $year => $count)
-    <div class="{{ $internalCols }}">
-      <div class="card stat-card h-100 rounded-4 shadow-sm"
-           style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
-        <div class="card-body py-4 text-center text-white">
-          <h6 class="text-uppercase mb-2 opacity-75"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
-          <div class="display-5 fw-bold"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ number_format($count,0,',','.') }}</div>
-          <div class="mt-2 small opacity-75"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
-        </div>
-      </div>
+    @php
+      $colors = [
+        ['bg' => '#8e1616','text' => '#eeeeee'],
+        ['bg' => '#d84040','text' => '#eeeeee'],
+        ['bg' => '#8e1616','text' => '#eeeeee'],
+        ['bg' => '#d84040','text' => '#eeeeee'],
+      ];
+    @endphp
+    
+    <div class="row g-3 p-3">
+      <div class="fs-5 fw-bold">Total Tim Event Internal</div>
     </div>
-  @endforeach
-</div>
-
-<div class="row g-4 px-3">
-  <div class="fs-5 fw-bold">Total Tim Event Group</div>
-  @foreach ($teamDataGroup as $year => $count)
-    <div class="{{ $groupCols }}">
-      <div class="card stat-card h-100 rounded-4 shadow-sm"
-           style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
-        <div class="card-body py-4 text-center text-white">
-          <h6 class="text-uppercase mb-2 opacity-75"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tahun {{ $year }}</h6>
-          <div class="display-5 fw-bold"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">{{ number_format($count,0,',','.') }}</div>
-          <div class="mt-2 small opacity-75"
-              style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">Tim Terdaftar</div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-3">
+      @foreach (($teamDataInternal ?? []) as $year => $count)
+        <div class="col d-flex">
+          <div class="card stat-card rounded-4 shadow-sm flex-grow-1"
+               style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
+            <div class="card-body py-4 text-center text-white">
+              <h6 class="text-uppercase mb-2 opacity-75" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                Tahun {{ $year }}
+              </h6>
+              <div class="display-5 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                {{ number_format($count,0,',','.') }}
+              </div>
+              <div class="mt-2 small opacity-75" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                Tim Terdaftar
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      @endforeach
     </div>
-  @endforeach
-</div>
-
+    
+    <div class="row g-3 p-3">
+      <div class="fs-5 fw-bold">Total Tim Event Group</div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 px-3">
+      @foreach (($teamDataGroup ?? []) as $year => $count)
+        <div class="col d-flex">
+          <div class="card stat-card rounded-4 shadow-sm flex-grow-1"
+               style="background: {{ $colors[$loop->index % count($colors)]['bg'] }};">
+            <div class="card-body py-4 text-center text-white">
+              <h6 class="text-uppercase mb-2 opacity-75" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                Tahun {{ $year }}
+              </h6>
+              <div class="display-5 fw-bold" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                {{ number_format($count,0,',','.') }}
+              </div>
+              <div class="mt-2 small opacity-75" style="color: {{ $colors[$loop->index % count($colors)]['text'] }};">
+                Tim Terdaftar
+              </div>
+            </div>
+          </div>
+        </div>
+      @endforeach
     </div>
     <div class="card-footer bg-light border-0 text-center">
         <small class="text-muted text-capitalize">

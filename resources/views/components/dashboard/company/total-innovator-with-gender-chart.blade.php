@@ -14,20 +14,31 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const chartDataTotalInnovatorWithGenderChart = @json($chartData);
-        const company_name = @json($company_name);
-        
-        window.chartDataTotalInnovatorWithGenderChart = chartDataTotalInnovatorWithGenderChart;
-        window.company_name = company_name;
-
-        // Kalau kamu ingin langsung render dari sini (optional):
-        if (typeof window.renderTotalInnovatorWithGenderChart === 'function') {
-            window.renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart);
-        }
-    });
-</script>
-
-<script type="module" src="{{ asset('build/assets/totalInnovatorWithGenderChart-789eb346.js') }}"></script>
+{{-- 1) LOAD MODULES DULU --}}
+<script type="module" src="{{ asset('build/assets/totalInnovatorWithGenderChart-90dc7d1e.js') }}"></script>
 <script type="module" src="{{ asset('build/assets/exportTotalInnovatorWithGender-a159c879.js') }}"></script>
+
+{{-- 2) BARU INISIALISASI + PASS growthPerEventData --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const chartDataTotalInnovatorWithGenderChart = @json($chartData ?? []);
+    const company_name = @json($company_name ?? '');
+    // >>> data pertumbuhan per event (dari method PHP baru)
+    window.growthPerEventData = @json($growthPerEventData ?? []);
+
+    window.chartDataTotalInnovatorWithGenderChart = chartDataTotalInnovatorWithGenderChart;
+    window.company_name = company_name;
+
+    if (typeof window.renderTotalInnovatorWithGenderChart === 'function') {
+        // fungsi ini sekarang akan memanggil renderSummary(chartData, window.growthPerEventData)
+        window.renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart);
+    } else {
+        // fallback kalau modul belum siap (jarang kejadian, tapi aman)
+        window.addEventListener('load', () => {
+            if (typeof window.renderTotalInnovatorWithGenderChart === 'function') {
+                window.renderTotalInnovatorWithGenderChart(chartDataTotalInnovatorWithGenderChart);
+            }
+        });
+    }
+});
+</script>

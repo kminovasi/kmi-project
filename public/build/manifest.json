@@ -115,7 +115,7 @@
     "src": "resources/js/company/exportTotalInnovatorWithGender.js"
   },
   "resources/js/company/totalInnovatorWithGenderChart.js": {
-    "file": "assets/totalInnovatorWithGenderChart-789eb346.js",
+    "file": "assets/totalInnovatorWithGenderChart-90dc7d1e.js",
     "imports": [
       "resources/js/event/totalInnovatorCategories.js",
       "_chartjs-plugin-datalabels.esm-766c20d8.js"

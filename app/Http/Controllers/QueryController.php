@@ -472,10 +472,11 @@ class QueryController extends Controller
                 'papers.step_3 as step_3_initial',
                 'papers.step_4 as step_4_initial',
                 'papers.step_5 as step_5_initial',
-                'papers.step_6 as step__initial',
-                'papers.step_2 as step_2_initial',
+                'papers.step_6 as step_6_initial',
+                // 'papers.step_2 as step_2_initial',
                 'papers.step_8 as step_8_initial',
                 'papers.status as paper_status',
+                'papers.full_paper as full_paper_raw',
 
             ];
             
@@ -543,57 +544,55 @@ class QueryController extends Controller
 
             //button untuk full paper
             $rawColumns[] = 'full_paper';
-            $dataTable->addColumn('full_paper', function ($data_row) use ($currentUserId, &$ownerCache, $isSuperadmin, $isAdmin) {
+            $dataTable->addColumn('full_paper', function ($data_row) use ($currentUserId, &$ownerCache, $isSuperadmin) {
                 if (!isset($ownerCache[$data_row->paper_id])) {
                     $ownerCache[$data_row->paper_id] = Paper::where('id', $data_row->paper_id)
-                        ->whereHas('team.pvtMembers', function ($query) use ($currentUserId) {
-                            $query->where('employee_id', $currentUserId)
-                                ->whereIn('status', ['leader', 'member']);
-                        })
-                        ->exists();
+                        ->whereHas('team.pvtMembers', function ($q) use ($currentUserId) {
+                            $q->where('employee_id', $currentUserId)->whereIn('status', ['leader','member']);
+                        })->exists();
                 }
-
                 $isOwner = $ownerCache[$data_row->paper_id];
                 $html = '';
-                if ($data_row->full_paper != null) {
-                    $html .= "
-                            <a class=\"btn btn-info btn-sm mb-2\" href=\"" . route('paper.show.stages', ['id' => $data_row->paper_id, 'stage' => 'full']) . " \" target=\"_blank\">Detail</a>
-                            ";
+            
+                $hasFile = !empty($data_row->full_paper_raw); // <-- kunci
+            
+                if ($hasFile) {
+                    $html .= '<a class="btn btn-info btn-sm mb-2" target="_blank" href="' .
+                             route('paper.show.stages', ['id'=>$data_row->paper_id,'stage'=>'full']) . '">Detail</a>';
+            
                     $maxStep = MetodologiPaper::findOrFail($data_row->metodologi_paper_id)->step;
-                    $allStepsCompleted = true; // Asumsi semua langkah terisi
-
-                    for ($i = 1; $i <= $maxStep; $i++) {
-                        $stepField = "step_$i";
-
-                        // Jika ada langkah yang masih null atau bernilai '-', maka tidak selesai
-                        if ($data_row->$stepField === null || $data_row->$stepField === '-') {
-                            $allStepsCompleted = false;
-                            break;
-                        }
+                    $allStepsCompleted = true;
+                    for ($i=1; $i<=$maxStep; $i++) {
+                        $f = "step_$i";
+                        if ($data_row->$f === null || $data_row->$f === '-') { $allStepsCompleted = false; break; }
                     }
-
-                    if ($allStepsCompleted && ($data_row->status === 'not finish' || $data_row->status === 'revision paper by facilitator' || $data_row->status === 'revision paper by general manager' || $data_row->status === 'revision paper and benefit by general manager' || $data_row->status === 'revision paper and benefit by innovation admin' || $data_row->status === 'revision paper by innovation admin')) {
-                        if ($isOwner || $isSuperadmin) {
-                            $html .= "
-                                <button class=\"btn btn-success btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#fixationModal\" data-paper-id=\"{$data_row->paper_id}\" >Final Submit Makalah</button>
-                            ";
-                        } else {
-                            $html .= "
-                                <button class=\"btn btn-warning btn-sm\" disabled >Makalah belum fix</button>
-                            ";
-                        }
+            
+                    if ($allStepsCompleted && in_array($data_row->status, [
+                        'not finish',
+                        'revision paper by facilitator',
+                        'revision paper by general manager',
+                        'revision paper and benefit by general manager',
+                        'revision paper and benefit by innovation admin',
+                        'revision paper by innovation admin',
+                    ])) {
+                        $html .= $isOwner || $isSuperadmin
+                            ? '<button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#fixationModal" data-paper-id="'.$data_row->paper_id.'">Final Submit Makalah</button>'
+                            : '<button class="btn btn-warning btn-sm" disabled>Makalah belum fix</button>';
                     }
-                    
-                    if($data_row->status === 'accepted by innovation admin' && $data_row->event_status == 'active'){
-                        $html .= '<button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )">Update Paper</button>';
+            
+                    if ($data_row->status === 'accepted by innovation admin' && $data_row->event_status == 'active') {
+                        $html .= '<button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('.$data_row->paper_id.', \'uploadStepForm\', \'full_paper\')">Update Paper</button>';
                     }
-                    
+            
                     if ($data_row->status_rollback == 'rollback paper') {
-                        $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
+                        $html .= '<button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('.$data_row->paper_id.', \'uploadStepForm\', \'full_paper\')">Upload Full Paper</button>';
                     }
                 } else {
-                    if ($isOwner || $isSuperadmin)
-                        $html .= '<button class="btn btn-purple btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step(' . $data_row->paper_id . ', \'uploadStepForm\' ' . ', \'full_paper\' )" >Upload Full Paper</button>';
+                    if ($isOwner || $isSuperadmin) {
+                        $html .= '<button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#uploadStep" onclick="change_url_step('.$data_row->paper_id.', \'uploadStepForm\', \'full_paper\')">Upload Full Paper</button>';
+                    } else {
+                        $html .= '-';
+                    }
                 }
                 return $html;
             });
@@ -3709,4 +3708,4 @@ class QueryController extends Controller
 
         return response()->json($results);
     }
-}
+}yield

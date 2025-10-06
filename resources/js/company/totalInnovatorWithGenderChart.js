@@ -196,6 +196,59 @@ function renderSummary(chartData) {
                         </table>
                     </div>
                 </div>
+                <div class="mt-4">
+                <h4 class="font-medium mb-2">Pertumbuhan Inovator per Event:</h4>
+                ${
+                    (() => {
+                    const data = Array.isArray(window.growthPerEventData) ? [...window.growthPerEventData] : [];
+
+                    // Urutkan: event ASC, tahun ASC
+                    data.sort((a, b) => {
+                        if (String(a.event) === String(b.event)) {
+                        return (a.year ?? 0) - (b.year ?? 0);
+                        }
+                        return String(a.event).localeCompare(String(b.event));
+                    });
+
+                    if (!data.length) {
+                        return `<div class="text-muted small px-2">Belum ada data pertumbuhan per event.</div>`;
+                    }
+
+                    const tbody = data.map((r, idx) => {
+                        const zebra = idx % 2 === 0 ? "bg-white" : "bg-gray-200";
+                        const growAbs = (r.growth_abs === null || r.growth_abs === undefined)
+                        ? "-"
+                        : `${Number(r.growth_abs) >= 0 ? "+" : ""}${Number(r.growth_abs).toLocaleString()}`;
+                        const growPct = (r.growth_pct === null || r.growth_pct === undefined)
+                        ? "-"
+                        : `${Number(r.growth_pct).toFixed(1)}%`;
+
+                        return `
+                        <tr class="${zebra}">
+                            <td class="px-4 py-2">${r.event ?? "-"}</td>
+                            <td class="px-4 py-2">${Number(r.total ?? 0).toLocaleString()} (${r.year ?? "-"})</td>
+                            <td class="px-4 py-2">${growAbs}</td>
+                            <td class="px-4 py-2">${growPct}</td>
+                        </tr>`;
+                    }).join("");
+
+                    return `
+                        <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                            <tr class="bg-gray-2 00">
+                                <th class="px-4 py-2">Event</th>
+                                <th class="px-4 py-2">Jumlah (Tahun)</th>
+                                <th class="px-4 py-2">Pertumbuhan</th>
+                                <th class="px-4 py-2">Persentase</th>
+                            </tr>
+                            </thead>
+                            <tbody>${tbody}</tbody>
+                        </table>
+                        </div>`;
+                    })()
+                }
+                </div>
             </div>
         </div>
     `;

@@ -155,26 +155,24 @@ class AssessmentController extends Controller
     }
 
 
-    public function showAssessmentPoint()
-    {
-        $checkStatus = Auth::user()->role;
-        $userCompanyCode = Auth::user()->company_code;
+   public function showAssessmentPoint()
+{
+    $role        = Auth::user()->role;
+    $companyCode = Auth::user()->company_code;
 
-        if ($checkStatus == 'Admin') {
-            $data_event = Event::whereHas('companies', function ($query) use ($userCompanyCode) {
-                $query->where('company_code', $userCompanyCode);
-            })
-            ->where('status', '!=', 'finish')
-            ->where('type', ['internal', 'AP'])
-            ->get();
-        } elseif ($checkStatus == 'Superadmin') {
-            $data_event = Event::where('status', '!=', 'finish')->get();
-        }
+    // hanya event aktif & jenis yang dipakai untuk assessment, dan terhubung ke company user
+    $data_event = Event::query()
+        ->where('status', '!=', 'finish')
+        ->whereIn('type', ['internal', 'AP'])
+        ->whereHas('companies', function ($q) use ($companyCode) {
+            $q->where('company_code', $companyCode);
+        })
+        ->orderByDesc('year')
+        ->get(['id', 'event_name', 'year', 'type', 'status']);
 
-        return view('auth.admin.assessment.assessment_point', [
-            'data_event' => $data_event,
-        ]);
-    }
+    return view('auth.admin.assessment.assessment_point', compact('data_event'));
+}
+
 
     public function updateAssessmentPoint(assessmentPointRequests $request, $id)
     {
@@ -1422,13 +1420,13 @@ public function assesmentValue_caucus($id)
     
     public function oda_fix(Request $request)
     {
-    //     \Log::debug('🔎 Kiriman dari form ODA:', [
+    //     \Log::debug('ðŸ”Ž Kiriman dari form ODA:', [
     //     'event_team_ids' => $request->pvt_event_team_id,
     //     'total_scores' => $request->total_score_on_desk,
     // ]);
         try {
             DB::beginTransaction();
-            //   \Log::debug('🔎 Event team id:', [
+            //   \Log::debug('ðŸ”Ž Event team id:', [
             // 'event_id' => $request->event_id]);
             if (isset($request->event_id)) {
                 $teams_id = PvtEventTeam::where('event_id', $request->event_id)
@@ -1465,7 +1463,7 @@ public function assesmentValue_caucus($id)
                 $passedStatus = 'Presentation';
                 $failedStatus = 'tidak lolos Presentation';
 
-                // \Log::debug('🔎 Nilai :', [
+                // \Log::debug('ðŸ”Ž Nilai :', [
                 //     'nilai_oda_bi' => $nilai_oda_bi,
                 //     'assessment_event_poin_bi' => $assessment_event_poin_bi,
                 // ]);
@@ -1503,7 +1501,7 @@ public function assesmentValue_caucus($id)
                         ]);
                 }
 
-                // \Log::debug('🔎 Nilai :', [
+                // \Log::debug('ðŸ”Ž Nilai :', [
                 //     'nilai_oda_idea' => $nilai_oda_idea,
                 //     'assessment_event_poin_idea' => $assessment_event_poin_idea,
                 // ]);
@@ -1633,7 +1631,7 @@ public function assesmentValue_caucus($id)
                     ->pluck('score_minimum_oda')
                     ->toArray()[0];
 
-                // \Log::debug('🔎 pvt_event_team_id :', [
+                // \Log::debug('ðŸ”Ž pvt_event_team_id :', [
                 //     'category' => $category,
                 //     'event_id' => $event_id,
                 //     'score_oda' =>  $score_oda,
@@ -1649,7 +1647,7 @@ public function assesmentValue_caucus($id)
                         ->select('teams.team_name', 'teams.id as team_id')
                         ->first();
                     
-                    //  \Log::debug('🔎 pvt_event_team_id :', [
+                    //  \Log::debug('ðŸ”Ž pvt_event_team_id :', [
                     // 'event_team' => $event_team,
                     // 'team' =>  $team,
                     // ]);
@@ -1682,7 +1680,7 @@ public function assesmentValue_caucus($id)
                         ->pluck('status')
                         ->toArray();
                     
-                    //  \Log::debug('🔎 team_status :', [
+                    //  \Log::debug('ðŸ”Ž team_status :', [
                     // 'team_status' =>  $team_status,
                     // ]);
 
@@ -1699,7 +1697,7 @@ public function assesmentValue_caucus($id)
                             ->pluck('event_id')
                             ->toArray();
                         
-                    //     \Log::debug('🔎 nilai :', [
+                    //     \Log::debug('ðŸ”Ž nilai :', [
                     // 'data_assessment_team_judge' =>  $data_assessment_team_judge,
                     // 'event_id' =>  $event_id,
                     // ]);
@@ -1724,10 +1722,10 @@ public function assesmentValue_caucus($id)
 
                         $cat_assessment_point = $parent === "IDEA BOX" ? "IDEA" : "BI/II";
 
-                    //                     \Log::debug('🔎 parent :', [
+                    //                     \Log::debug('ðŸ”Ž parent :', [
                     //     'parent' =>  $parent,
                     // ]);
-                    //         \Log::debug('🔎 cat_assessment_point :', [
+                    //         \Log::debug('ðŸ”Ž cat_assessment_point :', [
                     //     'cat_assessment_point' =>  $cat_assessment_point,
                     // ]);
                         if ($cat_assessment_point == 'IDEA') {
@@ -2175,7 +2173,7 @@ public function assesmentValue_caucus($id)
             //     'assessment_event_poin_bi' => $assessment_event_poin_bi,
             // ]);
 
-            // Proses BI/II � contoh sederhana (pertahankan logika update/having sesuai kebutuhanmu)
+            // Proses BI/II — contoh sederhana (pertahankan logika update/having sesuai kebutuhanmu)
             if (isset($nilai_pa_bi[0]) && isset($assessment_event_poin_bi[0])) {
                 $nilai_pa_bi_val = $nilai_pa_bi[0];
                 $assessment_event_poin_bi_val = $assessment_event_poin_bi[0];
@@ -2198,7 +2196,7 @@ public function assesmentValue_caucus($id)
                 }
             }
 
-            // Proses IDEA � sama seperti di atas, tapi untuk IDEA
+            // Proses IDEA — sama seperti di atas, tapi untuk IDEA
             if (isset($nilai_pa_idea[0]) && isset($assessment_event_poin_idea[0])) {
                 $nilai_pa_idea_val = $nilai_pa_idea[0];
                 $assessment_event_poin_idea_val = $assessment_event_poin_idea[0];

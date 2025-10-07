@@ -14,23 +14,6 @@ use App\Mail\ReplicationSubmitted;
 
 class ReplicationController extends Controller
 {
-    // public function index()
-    // {
-    //     $user = Auth::user();
-
-    //     $query = \App\Models\ReplicationRequest::with(['team','paper','creator'])
-    //         ->orderByDesc('created_at');
-
-    //     // Superadmin/Admin lihat semua; user biasa hanya yang ia ajukan
-    //     if (!in_array($user->role, ['Superadmin','Admin'])) {
-    //         $query->where('created_by', $user->id);
-    //     }
-
-    //     $replications = $query->paginate(10);
-
-    //     return view('replications.index', compact('replications'));
-    // }
-
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -68,14 +51,14 @@ class ReplicationController extends Controller
         $paper = Paper::where('team_id', $team->id)->orderByDesc('id')->firstOrFail();
 
         // BENAR (hanya mencegah duplikasi pending dari user yg sama pada tim yg sama)
-$existsPending = ReplicationRequest::where('team_id', $team->id)
-    ->where('created_by', Auth::id())
-    ->where('status', 'pending')
-    ->exists();
+        $existsPending = ReplicationRequest::where('team_id', $team->id)
+            ->where('created_by', Auth::id())
+            ->where('status', 'pending')
+            ->exists();
 
-if ($existsPending) {
-    return back()->with('warning', 'Anda masih memiliki pengajuan replikasi yang pending untuk tim ini.');
-}
+        if ($existsPending) {
+            return back()->with('warning', 'Anda masih memiliki pengajuan replikasi yang pending untuk tim ini.');
+        }
 
 
         $data = $request->validate([

@@ -26,7 +26,7 @@ class Paper extends Model
         'file_review',
         'non_financial',
         'team_id',
-        'metodologi_paper_id', // new column
+        'metodologi_paper_id', 
         'abstract',
         'problem',
         'main_cause',
@@ -40,6 +40,12 @@ class Paper extends Model
         'rejection_comments',
         'created_at',
         'updated_at'
+    ];
+
+    protected $casts = [
+        'financial'         => 'string',
+        'potential_benefit' => 'string',
+        'non_financial'     => 'string',
     ];
 
     protected static function boot()
@@ -92,57 +98,46 @@ class Paper extends Model
 
     public function setFinancialAttribute($value)
     {
-        if ($value != "")
-            $this->attributes['financial'] = intval(str_replace('.', '', $value));
-        else
+        if ($value === null || $value === '') {
             $this->attributes['financial'] = null;
+            return;
+        }
+        $digits = preg_replace('/\D+/', '', (string)$value); 
+        $this->attributes['financial'] = ($digits === '') ? null : $digits; 
     }
 
     public function setPotentialBenefitAttribute($value)
     {
-        if ($value != "")
-            $this->attributes['potential_benefit'] = intval(str_replace('.', '', $value));
-        else
+        if ($value === null || $value === '') {
             $this->attributes['potential_benefit'] = null;
+            return;
+        }
+        $digits = preg_replace('/\D+/', '', (string)$value);
+        $this->attributes['potential_benefit'] = ($digits === '') ? null : $digits; // STRING
     }
 
+    private function formatRibuanString(?string $digits): string
+    {
+        if ($digits === null || $digits === '') return '';
+        $digits = preg_replace('/\D+/', '', $digits);
+        if ($digits === '') return '';
 
+        $rev = strrev($digits);
+        $chunks = str_split($rev, 3);
+        return strrev(implode('.', $chunks)); 
+    }
 
     public function getFinancialFormattedAttribute()
     {
-        $value = $this->attributes['financial'];
-        if ($value !== null) {
-            $nilai = floatval(preg_replace('/[^\d]/', '', $value));
-
-            if (!is_nan($nilai)) {
-                $formattedNumber = number_format($nilai, 0, ',', '.');
-                return $formattedNumber;
-            } else {
-                return '';
-            }
-        } else {
-            return '';
-        }
+        $raw = $this->attributes['financial'] ?? null; 
+        return $this->formatRibuanString($raw);
     }
 
     public function getPotentialBenefitFormattedAttribute()
     {
-        $value = $this->attributes['potential_benefit'];
-        if ($value !== null) {
-            $nilai = floatval(preg_replace('/[^\d]/', '', $value));
-
-            if (!is_nan($nilai)) {
-                $formattedNumber = number_format($nilai, 0, ',', '.');
-                return $formattedNumber;
-            } else {
-                return '';
-            }
-        } else {
-            return '';
-        }
+        $raw = $this->attributes['potential_benefit'] ?? null; 
+        return $this->formatRibuanString($raw);
     }
-
-
 
     public function documentSupport()
     {

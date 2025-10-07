@@ -45,7 +45,7 @@ use App\Http\Controllers\QaMessageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
-
+use App\Http\Controllers\ReplicationController;
 
 
 /*
@@ -554,5 +554,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/ai/chat/fetch',     [ChatController::class, 'fetch'])->name('ai.chat.fetch'); 
     Route::post('/ai/chat/send',     [ChatController::class, 'send'])->name('ai.chat.send');   
     Route::post('/ai/chat/upload',   [ChatController::class, 'upload'])->name('ai.chat.upload');
-
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/replications', [ReplicationController::class, 'index'])->name('replications.index');
+    Route::get('/teams/{team}/replications/create', [ReplicationController::class, 'create'])->name('replications.create');
+    Route::post('/teams/{team}/replications', [ReplicationController::class, 'store'])->name('replications.store');
+
+    Route::patch('/replications/{replication}/approve', [ReplicationController::class, 'approve'])->name('replications.approve');
+    Route::patch('/replications/{replication}/reject',  [ReplicationController::class, 'reject'])->name('replications.reject');
+});
+

@@ -3708,4 +3708,4 @@ class QueryController extends Controller
 
         return response()->json($results);
     }
-}yield
+}

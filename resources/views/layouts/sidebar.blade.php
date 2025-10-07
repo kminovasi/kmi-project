@@ -56,6 +56,11 @@
                     <div class="nav-link-icon"><i data-feather="award"></i></div>
                     Paten
                 </a>
+                <a class="nav-link {{ request()->routeIs('replications.index') ? 'active' : '' }}"
+                    href="{{ route('replications.index') }}">
+                    <div class="nav-link-icon"><i data-feather="refresh-ccw"></i></div>
+                    Replikasi
+                </a>
                 <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}"
                     href="{{ route('profile.index') }}">
                     <div class="nav-link-icon"><i data-feather="user-check"></i></div>

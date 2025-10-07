@@ -18,6 +18,11 @@
                             <i class="me-1" data-feather="arrow-left"></i>
                             Kembali
                         </a>
+                        <button type="button"
+                                class="btn btn-sm btn-warning ms-2"
+                                onclick="confirmReplicationSwal('{{ route('replications.create', $teamId) }}')">
+                                <i class="fas fa-share-square me-1"></i> Ajukan Replikasi
+                        </button>
                         @if(Auth::user()->role == 'Superadmin')
                         <a href="{{ route('evidence.downloadWord', $teamId) }}" class="btn btn-sm btn-outline-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-word-fill me-1" viewBox="0 0 16 16">
@@ -339,9 +344,45 @@
 
 @endsection
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function goBack() {
             window.history.back();
         }
+
+        function confirmReplicationSwal(url) {
+        Swal.fire({
+            title: 'Ajukan Replikasi?',
+            text: 'Apakah anda ingin mengajukan replikasi makalah ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, ajukan',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            focusCancel: true,
+            buttonsStyling: true,
+            confirmButtonColor: '#D84040',  // merah SIG
+            cancelButtonColor: '#6c757d',   // secondary
+            backdrop: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+            showLoaderOnConfirm: true,
+            preConfirm: async () => {
+            // Bisa ditambah pre-check async di sini kalau perlu
+            return true;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+            // Opsional: kasih feedback singkat sebelum pindah
+            Swal.fire({
+                title: 'Membuka Form Replikasi…',
+                timer: 600,
+                didOpen: () => Swal.showLoading()
+            }).then(() => {
+                window.location.href = url;
+            });
+            }
+        });
+        }
     </script>
 @endpush
+

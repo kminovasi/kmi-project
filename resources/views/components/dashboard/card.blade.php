@@ -382,8 +382,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="me-3 flex-grow-1">
-                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Total
-                                Event Aktif</div>
+                            <div class="small mb-1" style="font-weight: 700; font-size: 1rem; color: #ffffff;">Data Statistik Event</div>
                             <div class="text-lg fw-bold d-flex align-items-center">
                                 {{ $totalActiveEvents }}
                                 <small class="ms-2">(Event)</small>
@@ -397,7 +396,7 @@
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between small">
                     <a class="text-white stretched-link" href="{{ route('dashboard-event.list') }}">
-                        Lihat Daftar Event
+                        Lihat Daftar Statistik Event
                     </a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>

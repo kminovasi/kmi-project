@@ -8,9 +8,11 @@ use App\Models\Paper;
 use App\Models\ReplicationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\ReplicationSubmitted;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ReplicationController extends Controller
 {
@@ -18,8 +20,6 @@ class ReplicationController extends Controller
     {
         $user = Auth::user();
         $isSuper = ($user->role === 'Superadmin');
-
-        // Superadmin bisa filter status via ?status=pending|approved|rejected (default pending)
         $status = $isSuper ? ($request->get('status', 'pending')) : null;
 
         $q = ReplicationRequest::with(['team','paper','creator'])->orderByDesc('created_at');
@@ -49,8 +49,6 @@ class ReplicationController extends Controller
     public function store(Request $request, Team $team)
     {
         $paper = Paper::where('team_id', $team->id)->orderByDesc('id')->firstOrFail();
-
-        // BENAR (hanya mencegah duplikasi pending dari user yg sama pada tim yg sama)
         $existsPending = ReplicationRequest::where('team_id', $team->id)
             ->where('created_by', Auth::id())
             ->where('status', 'pending')
@@ -59,8 +57,6 @@ class ReplicationController extends Controller
         if ($existsPending) {
             return back()->with('warning', 'Anda masih memiliki pengajuan replikasi yang pending untuk tim ini.');
         }
-
-
         $data = $request->validate([
             'pic_name'      => ['required','string','max:191'],
             'pic_phone'     => ['required','string','max:30'],
@@ -87,7 +83,6 @@ class ReplicationController extends Controller
             'created_by'       => Auth::id(),
         ]);
 
-        // === email (seperti versi kamu sebelumnya) ===
         $leaderMember = $team->pvtMembers()->with('user')->where('status','leader')->first();
         $leaderEmail  = optional(optional($leaderMember)->user)->email;
         $leaderName   = optional(optional($leaderMember)->user)->name;
@@ -114,18 +109,17 @@ class ReplicationController extends Controller
             'return_to'          => route('replications.index'),
         ];
 
-        // try {
-        //     if ($leaderEmail) Mail::to($leaderEmail)->send(new ReplicationSubmitted($payload));
-        //     Mail::to($replicatorEmail)->send(new ReplicationSubmitted($payload));
-        //     if (!empty($superadmins)) Mail::to($superadmins)->send(new ReplicationSubmitted($payload));
-        // } catch (\Throwable $e) {
-        //     Log::error('Email replikasi gagal', ['replication_id' => $rep->id, 'error' => $e->getMessage()]);
-        //     return redirect()->route('replications.index')
-        //         ->with('success', 'Pengajuan replikasi terkirim, namun email gagal dikirim.')
-        //         ->with('warning', $e->getMessage());
-        // }
+        try {
+            if ($leaderEmail) Mail::to($leaderEmail)->send(new ReplicationSubmitted($payload));
+            Mail::to($replicatorEmail)->send(new ReplicationSubmitted($payload));
+            if (!empty($superadmins)) Mail::to($superadmins)->send(new ReplicationSubmitted($payload));
+        } catch (\Throwable $e) {
+            Log::error('Email replikasi gagal', ['replication_id' => $rep->id, 'error' => $e->getMessage()]);
+            return redirect()->route('replications.index')
+                ->with('success', 'Pengajuan replikasi terkirim, namun email gagal dikirim.')
+                ->with('warning', $e->getMessage());
+        }
 
-        // redirect ke halaman baru
         return redirect()->route('replications.index')
             ->with('success','Pengajuan replikasi berhasil dikirim dan email notifikasi telah dikirim.');
     }
@@ -133,10 +127,16 @@ class ReplicationController extends Controller
     public function approve(ReplicationRequest $replication)
     {
         abort_unless(Auth::user()->role === 'Superadmin', 403);
+
         if ($replication->status !== 'pending') {
             return back()->with('warning','Pengajuan ini sudah diproses.');
         }
-        $replication->update(['status' => 'approved']);
+
+        $replication->update([
+            'status'             => 'approved',
+            'replication_status' => 'replicated', 
+        ]);
+
         return back()->with('success','Pengajuan replikasi disetujui.');
     }
 
@@ -149,4 +149,100 @@ class ReplicationController extends Controller
         $replication->update(['status' => 'rejected']);
         return back()->with('success','Pengajuan replikasi ditolak.');
     }
+
+    public function manage(ReplicationRequest $replication)
+    {
+        $user = Auth::user();
+        abort_unless(
+            $replication->status === 'approved' &&
+            ($replication->created_by === $user->id || $user->role === 'Superadmin'),
+            403
+        );
+
+        // pastikan array files tersedia agar blade aman
+        $replication->files = $replication->files ?? [];
+
+        return view('replications.manage', compact('replication'));
+    }
+
+    public function manageUpdate(Request $request, ReplicationRequest $replication)
+    {
+        $user = Auth::user();
+
+        // Hanya creator yang boleh update (superadmin read-only)
+        abort_unless(
+            $replication->status === 'approved' &&
+            $replication->created_by === $user->id,
+            403
+        );
+
+        $data = $request->validate([
+            'financial_benefit' => ['nullable','integer','min:0'],
+            'potential_benefit' => ['nullable','integer','min:0'],
+            'files'             => ['nullable','array'],
+            'files.*'           => ['file','mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png','max:20480'],
+        ]);
+
+        $replication->fill([
+            'financial_benefit' => $data['financial_benefit'] ?? $replication->financial_benefit,
+            'potential_benefit' => $data['potential_benefit'] ?? $replication->potential_benefit,
+        ]);
+
+        $filesJson = $replication->files ?? [];
+        if (!empty($data['files'])) {
+            $dir = "replications/{$replication->id}"; // JANGAN ada "public/" di depan
+
+            foreach ($data['files'] as $file) {
+                $name = Str::limit(Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)), 60, '');
+                $ext  = strtolower($file->getClientOriginalExtension());
+
+                // simpan ke DISK PUBLIC
+                $path = $file->storeAs($dir, now()->format('Ymd_His')."_{$name}.{$ext}", 'public');
+
+                $filesJson[] = [
+                    'name'        => $file->getClientOriginalName(),
+                    'path'        => $path,                 // contoh: replications/12/20251008_xxx.pdf
+                    'mime'        => $file->getClientMimeType(),
+                    'size'        => $file->getSize(),
+                    'uploaded_at' => now()->toDateTimeString(),
+                    'uploaded_by' => $user->id,
+                ];
+            }
+        }
+
+        $replication->files = $filesJson;
+        $replication->save();
+
+        return back()->with('success','Data replikasi berhasil disimpan.');
+    }
+
+
+    public function viewFile(Request $request, ReplicationRequest $replication)
+    {
+        // path diencode base64 supaya aman di URL
+        $b64  = $request->query('p');
+        $path = $b64 ? base64_decode($b64) : null;
+        abort_if(!$path, 404);
+
+        // Validasi: path harus ada di daftar files milik pengajuan ini
+        $allowed = collect($replication->files ?? [])->contains(function ($f) use ($path) {
+            return ($f['path'] ?? null) === $path;
+        });
+        abort_unless($allowed, 403);
+
+        // Coba disk public dulu (file baru), lalu disk local (file lama)
+        if (Storage::disk('public')->exists($path)) {
+            $downloadName = basename($path);
+            return Storage::disk('public')->response($path, $downloadName);
+        }
+        if (Storage::disk('local')->exists($path)) {
+            $downloadName = basename($path);
+            return Storage::disk('local')->response($path, $downloadName);
+        }
+
+        abort(404);
+    }
+
+
+
 }

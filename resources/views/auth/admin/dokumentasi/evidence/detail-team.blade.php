@@ -340,6 +340,88 @@
             </div>
         </div>
         @endif
+
+        <!-- Telah di Replikasi Oleh -->
+<div class="card mb-4">
+    <div class="card-header bg-danger">
+        <h5 class="card-header-title text-white">Telah di Replikasi Oleh</h5>
+    </div>
+    <div class="card-body">
+        @if(($replicatedBy ?? collect())->isEmpty())
+            <div class="text-muted">Belum ada replikasi</div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>PIC Replikator</th>
+                            <th>Kontak</th>
+                            <th>Unit / Plant</th>
+                            <th>Tgl Rencana</th>
+                            <th>Benefit (Fin / Pot)</th>
+                            <th>Berkas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($replicatedBy as $rep)
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ $rep->pic_name }}</div>
+                                    {{-- <small class="badge bg-primary">Replicated</small> --}}
+                                </td>
+                                <td>
+                                    <div>{{ $rep->pic_phone ?: '—' }}</div>
+                                    <small class="text-muted">
+                                        {{ optional($rep->creator)->email ?? '—' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div>{{ $rep->unit_name ?: '—' }}</div>
+                                    <small class="text-muted">{{ $rep->plant_name ?: '—' }}</small>
+                                </td>
+                                <td>
+                                    {{ $rep->planned_date ? \Carbon\Carbon::parse($rep->planned_date)->format('d M Y') : '—' }}
+                                </td>
+                                <td>
+                                    Rp {{ number_format($rep->financial_benefit ?? 0, 0, ',', '.') }}
+                                    /
+                                    Rp {{ number_format($rep->potential_benefit ?? 0, 0, ',', '.') }}
+                                </td>
+                                <td>
+                                    @php
+                                        $files = is_array($rep->files) ? $rep->files : [];
+                                    @endphp
+                                    @if(empty($files))
+                                        <span class="text-muted">—</span>
+                                    @else
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach($files as $f)
+                                                @php
+                                                    $path = $f['path'] ?? null;
+                                                    $name = $f['name'] ?? basename($path ?? '');
+                                                    // gunakan Storage::url kalau pakai disk public
+                                                    $url  = $path ? Storage::url($path) : null;
+                                                @endphp
+                                                <li class="mb-1">
+                                                    @if($url)
+                                                        <a href="{{ $url }}" target="_blank">{{ $name }}</a>
+                                                    @else
+                                                        <span class="text-muted">{{ $name }}</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+
     </div>
 
 @endsection

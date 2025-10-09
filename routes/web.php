@@ -46,6 +46,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ReplicationController;
+use App\Http\Controllers\EventInsightController;
 
 
 /*
@@ -505,6 +506,7 @@ Route::middleware(['role:Superadmin,Admin'])->prefix('dashboard-event')->name('d
     Route::get('/list', [DashboardEventController::class, 'getActiveEvent'])->name('list');
     Route::get('/dashboard-event/{id}/show', [DashboardEventController::class, 'show'])->name('show');
     Route::get('/dashboard-event/{id}/statistics', [DashboardEventController::class, 'statistics'])->name('statistics');
+    Route::get('/event/{event}/category-innovators', [EventInsightController::class, 'categoryInnovators'])->name('event.category-innovators');
 });
 
 
@@ -563,5 +565,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/replications/{replication}/approve', [ReplicationController::class, 'approve'])->name('replications.approve');
     Route::patch('/replications/{replication}/reject',  [ReplicationController::class, 'reject'])->name('replications.reject');
+
+    Route::get('/replications/{replication}/manage',  [ReplicationController::class, 'manage'])->name('replications.manage');
+    Route::post('/replications/{replication}/manage', [ReplicationController::class, 'manageUpdate'])->name('replications.manage.update');
+    Route::get('/replications/{replication}/file', [ReplicationController::class, 'viewFile'])->name('replications.file');
 });
 

@@ -46,10 +46,27 @@
               </td>
               <td>{{ $r->planned_date ? $r->planned_date->format('d M Y') : '—' }}</td>
               <td>
-                @php $badge = ['pending'=>'warning','approved'=>'success','rejected'=>'danger'][$r->status] ?? 'secondary'; @endphp
+                @php
+                  $badge = ['pending'=>'warning','approved'=>'success','rejected'=>'danger'][$r->status] ?? 'secondary';
+                @endphp
                 <span class="badge bg-{{ $badge }}">{{ ucfirst($r->status) }}</span>
-              </td>
 
+                @if($r->status === 'approved')
+                  @if(auth()->id() === $r->created_by)
+                    <div class="mt-2">
+                      <a href="{{ route('replications.manage', $r->id) }}" class="btn btn-sm btn-outline-primary">
+                        Lengkapi Replikasi
+                      </a>
+                    </div>
+                  @elseif($isSuper ?? false)
+                    <div class="mt-2">
+                      <a href="{{ route('replications.manage', $r->id) }}" class="btn btn-sm btn-outline-secondary">
+                        Lihat Kelengkapan
+                      </a>
+                    </div>
+                  @endif
+                @endif
+              </td>
               @if($isSuper ?? false)
                 <td>
                   @if($r->status === 'pending')

@@ -5,6 +5,8 @@ namespace App\View\Components\Dashboard\Event;
 use App\Models\Event;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route as Router;
+
 
 class TotalInnovatorCategories extends Component
 {
@@ -59,9 +61,16 @@ class TotalInnovatorCategories extends Component
 
     public function render()
     {
+        $name = 'dashboard-event.event.category-innovators';
+        $categoryRoute = Router::has($name)
+            ? route($name, $this->eventId)
+            : url("/dashboard-event/event/{$this->eventId}/category-innovators");
+
         return view('components.dashboard.event.total-innovator-categories', [
-            'chartData' => $this->chartData,
-            'event_name' => $this->event_name
+            'chartData'     => $this->chartData,
+            'event_name'    => $this->event_name,
+            'eventId'       => $this->eventId,
+            'categoryRoute' => $categoryRoute,
         ]);
     }
 }

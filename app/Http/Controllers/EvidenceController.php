@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ReplicationRequest;
 
 
 class EvidenceController extends Controller
@@ -92,13 +93,21 @@ class EvidenceController extends Controller
             ->get()
             ->toArray();
 
+        $replicatedBy = ReplicationRequest::with('creator')
+            ->where('team_id', $teamId)
+            ->where('status', 'approved')
+            ->where('replication_status', 'replicated')
+            ->orderByDesc('created_at')
+            ->get();
+
         return view('auth.admin.dokumentasi.evidence.detail-team', compact(
             'teamMember', 
             'papers', 
             'teamId', 
             'team',
             'outsourceMember',
-            'isMember'
+            'isMember',
+            'replicatedBy'
         ));
     }
 

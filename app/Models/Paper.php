@@ -165,4 +165,19 @@ class Paper extends Model
     {
         return $this->hasOne(Patent::class, 'paper_id', 'id');
     }
+
+    public function replications()
+    {
+        return $this->hasMany(\App\Models\ReplicationRequest::class, 'paper_id');
+    }
+
+
+    public function getIsReplicatedAttribute(): bool
+    {
+        return $this->replications()
+            ->where('status','approved')
+            ->where('replication_status','replicated')
+            ->exists();
+    }
+
 }

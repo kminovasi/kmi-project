@@ -326,7 +326,7 @@ class PaperController extends Controller
             }
 
             // Fungsi untuk buat anggota tim (snapshot posisi, jabatan, dst)
-            function createTeamMember($teamId, User $user, $status) {
+            function createTeamMember($teamId, User $user, $status, $isInitiator = 0) {
                 PvtMember::create([
                     'team_id' => $teamId,
                     'employee_id' => $user->employee_id,
@@ -339,6 +339,7 @@ class PaperController extends Controller
                     'section_name' => $user->section_name,
                     'sub_section_of' => $user->sub_section_of,
                     'company_code' => $user->company_code,
+                    'is_initiator' => (int) $isInitiator,
                 ]);
             }
 
@@ -355,24 +356,25 @@ class PaperController extends Controller
             }
 
             // Buat anggota jika ada
-            $anggotaList = $request->input('anggota');
-            if ($anggotaList) {
-                foreach ($anggotaList as $anggotaId) {
-                    $member = User::where('employee_id', $anggotaId)->first();
-                    if ($member) {
-                        createTeamMember($newTeam->id, $member, 'member');
-                    }
+            $anggotaList        = $request->input('anggota', []);
+            $anggotaIsInitiator = $request->input('anggota_is_initiator', []);
+            
+            foreach ($anggotaList as $i => $anggotaId) {
+                $member = User::where('employee_id', $anggotaId)->first();
+                if ($member) {
+                    $isInitiator = (int) ($anggotaIsInitiator[$i] ?? 0);
+                    createTeamMember($newTeam->id, $member, 'member', $isInitiator);
                 }
             }
 
-            if ($request->input('anggota_outsource') != null) {
+            if ($request->filled('anggota_outsource')) {
                 foreach ($request->input('anggota_outsource') as $input_anggota_outsource) {
-                    if ($input_anggota_outsource != null) {
+                    if ($input_anggota_outsource) {
                         $new_ph2 = ph2Member::create([
-                            'name' => $input_anggota_outsource,
+                            'name'    => $input_anggota_outsource,
                             'team_id' => $newTeam->id
                         ]);
-
+            
                         ph2Member::where('id', $new_ph2->id)->update([
                             'ph2_id' => "ph2-" .  $now->year . $now->month . $now->day . "-" . $new_ph2->id
                         ]);

@@ -25,8 +25,14 @@ class PvtMember extends Model
         'section_name',
         'sub_section_of',
         'company_code',
-        'created_at'
+        'created_at',
+        'is_initiator'
     ];
+
+    protected $casts = [
+        'is_initiator' => 'boolean', 
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'employee_id', 'employee_id');

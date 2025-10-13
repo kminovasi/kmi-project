@@ -8,9 +8,21 @@ use Smalot\PdfParser\Parser as PdfParser;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use App\Services\AiGuard;
+use Log;
+use GuzzleHttp\Exception\RequestException;
+use Throwable;
+
 
 class AiPaperAnalyzerGemini
 {
+    private AiGuard $guard; 
+
+    public function __construct(AiGuard $guard)  
+    {
+        $this->guard = $guard;
+    }
+
     public function getRubricForEvent(int $eventId, string $category = null, int $teamId = 0, int $eventTeamId = 0): array {
         $tbl  = 'pvt_assessment_events';
         $cols = \Illuminate\Support\Facades\Schema::getColumnListing($tbl);
@@ -186,8 +198,9 @@ class AiPaperAnalyzerGemini
 
     public function answerQuestion(string $paperText, string $question, array $history = [], string $model = null): string
     {
-        $model   = $model ?: env('GEMINI_MODEL', 'gemini-2.5-flash');
-        $excerpt = mb_substr($paperText, 0, 16000);
+        $model = $this->guard->validateModel($model ?: env('GEMINI_MODEL','gemini-2.5-flash'));
+        $excerpt = $this->guard->sanitizeContext($paperText);
+
 
         $parts = [];
         foreach ($history as $turn) {
@@ -196,7 +209,7 @@ class AiPaperAnalyzerGemini
         }
         $parts[] = ['text' =>
             "Konteks makalah (ringkas):\n" . $excerpt .
-            "\n\nInstruksi:\n- Jawab spesifik dari isi makalah.\n- Bila tidak ada di makalah, tulis singkat 'Tidak ditemukan dari makalah.'"
+            "\n\nInstruksi:\n- Jawab spesifik dari isi makalah.\n- Bila tidak ada di makalah, tulis singkat 'Maaf, saya tidak bisa memahami input tersebut. Bisa dijelaskan maksudnya?.'"
             . " dan lanjutkan dengan bagian 'Saran:' yang berisi rekomendasi langkah praktis.\n"
             . "Pertanyaan:\n" . $question
         ];
@@ -279,7 +292,7 @@ class AiPaperAnalyzerGemini
                     'contents' => [[ 'parts' => [ ['text' => $user] ] ]],
                     'generationConfig' => [
                         'temperature'     => 0.2,
-                        'maxOutputTokens' => 1500,
+                        'maxOutputTokens' => 500,
                         'responseMimeType'=> 'text/plain',
                     ],
                 ],
@@ -304,85 +317,197 @@ class AiPaperAnalyzerGemini
 
     public function answerGeneralInnovator(string $question, array $opts = []): array
     {
-        $model   = $opts['model'] ?? env('GEMINI_MODEL', 'gemini-2.5-flash');
-        $apiKey  = env('GEMINI_API_KEY');
-        $baseUri = rtrim(env('GEMINI_API_BASE', 'https://generativelanguage.googleapis.com'), '/') . '/v1beta/';
+        $t0       = microtime(true);
+        $reqId    = (string) Str::uuid();
+        $session  = session('siino.session_id');
+        $model    = $opts['model'] ?? env('GEMINI_MODEL', 'gemini-2.5-flash');
+        $apiKey   = env('GEMINI_API_KEY');
+        $baseUri  = rtrim(env('GEMINI_API_BASE', 'https://generativelanguage.googleapis.com'), '/') . '/v1beta/';
+        $cleanQuestion = $this->guard->sanitizeUserInput($question);
+        [$contextText, $citations] = $this->safeCompileContext($opts);
+        $cleanContext = $this->guard->sanitizeContext((string) $contextText);
 
-        $opts['__question'] = $question;
-
-        $contextText = '';
-        $citations   = [];
-
-        $systemCtx = implode(' ', [
-            "Anda adalah asisten Portal Inovasi SIG.",
-            "Gunakan data dari konteks internal jika tersedia.",
-            "Jika konteks terbatas, tetap jawab sebaik mungkin.",
-            "Jawab ringkas (1–3 paragraf) + bullet seperlunya. Bahasa Indonesia."
+        Log::channel('ai_guard')->info('ai.general.start', [
+            'req'         => $reqId,
+            'session'     => $session,
+            'model'       => $model,
+            'has_api_key' => (bool) $apiKey,
+            'base'        => $baseUri,
+            'q_len'       => mb_strlen($cleanQuestion),
+            'ctx_len'     => mb_strlen($cleanContext),
+            'opts'        => array_diff_key($opts, ['__question' => true]),
         ]);
 
-        $systemGeneral = implode(' ', [
-            "Anda adalah asisten yang memberikan jawaban umum terbaik berbasis pengetahuan dan praktik umum.",
-            "Abaikan konteks internal bila kosong.",
-            "Jawab ringkas (1–3 paragraf) + bullet seperlunya. Bahasa Indonesia."
-        ]);
-
+        // Jika tidak ada API key → pesan jelas + log
         if (!$apiKey) {
-            [$contextText, $citations] = $this->safeCompileContext($opts);
-            $answer = $contextText !== ''
-                ? $this->jawabLokal($question, $contextText)
-                : "Saya belum dapat mengakses layanan AI. Coba lagi beberapa saat atau sebutkan detail tambahan agar saya bisa bantu lebih spesifik.";
-            return ['answer'=>$answer,'followups'=>$this->followups(),'citations'=>$citations,'raw'=>''];
+            Log::channel('ai_guard')->warning('ai.general.no_api_key', [
+                'req' => $reqId, 'session' => $session,
+            ]);
+            $msg = "Layanan AI belum aktif (API key kosong).";
+            if ($cleanContext !== '') {
+                $msg .= "\n\nRingkasan internal (singkat):\n" . Str::limit($cleanContext, 800);
+            }
+            return [
+                'answer'    => $msg,
+                'followups' => $this->followups(),
+                'citations' => $citations,
+                'raw'       => [],
+                'mode'      => 'no-key',
+            ];
         }
 
-        $client = new \GuzzleHttp\Client(['base_uri'=>$baseUri,'timeout'=>60]);
+        $client = new \GuzzleHttp\Client(['base_uri' => $baseUri, 'timeout' => 60]);
+
+        $systemCtx = implode(' ', [
+            "Anda asisten Portal Inovasi SIG.",
+            "Gunakan data dari konteks internal jika relevan.",
+            "Jika konteks tidak menjawab, jawab umum terbaik.",
+            "Jawab ringkas (1–3 paragraf) + bullet seperlunya. Bahasa Indonesia."
+        ]);
 
         try {
-            [$contextText, $citations] = $this->safeCompileContext($opts);
+            // 1) Coba dengan konteks internal
+            $answer1 = $this->callGeminiOnce($client, $model, $apiKey, $systemCtx, $cleanQuestion, $cleanContext);
 
-            $answer = $this->callGeminiOnce($client, $model, $apiKey, $systemCtx, $question, $contextText);
+            // Log respons pertama
+            Log::channel('ai_guard')->info('ai.general.first_try', [
+                'req'        => $reqId,
+                'session'    => $session,
+                'ans_len'    => mb_strlen($answer1),
+                'too_short'  => (mb_strlen(trim($answer1)) < 20),
+            ]);
 
-            if ($answer === '' || mb_strlen($answer) < 20) {
-                $answer = $this->callGeminiOnce($client, $model, $apiKey, $systemGeneral, $question, '');
+            $final = $answer1;
+
+            // 2) Jika kosong/terlalu pendek → coba tanpa konteks (prompt general)
+            if (trim($final) === '' || mb_strlen($final) < 20) {
+                $systemGeneral = "Anda asisten yang menjawab umum terbaik. Bahasa Indonesia, ringkas.";
+                $answer2 = $this->callGeminiOnce($client, $model, $apiKey, $systemGeneral, $cleanQuestion, '');
+                Log::channel('ai_guard')->info('ai.general.second_try', [
+                    'req'       => $reqId,
+                    'session'   => $session,
+                    'ans_len'   => mb_strlen($answer2),
+                    'from_empty'=> (trim($final) === ''),
+                ]);
+                $final = $answer2;
             }
 
-            if ($answer === '' || mb_strlen($answer) < 10) {
-                $answer = "Saya belum menemukan jawaban yang layak ditampilkan. Silakan beri sedikit konteks (mis. tujuan, unit, contoh kasus) agar jawaban lebih tepat.";
+            // 3) Jika tetap tidak layak tampil → fallback dengan pesan jelas + potongan konteks
+            if (trim($final) === '' || mb_strlen($final) < 10) {
+                Log::channel('ai_guard')->warning('ai.general.fallback_too_short', [
+                    'req'      => $reqId,
+                    'session'  => $session,
+                    'ans_len'  => mb_strlen($final),
+                ]);
+                $fallback = "Saya belum dapat menghasilkan jawaban dari model saat ini.";
+                if ($cleanContext !== '') {
+                    $fallback .= "\n\nBerikut ringkasan internal (singkat):\n" . Str::limit($cleanContext, 800);
+                }
+                $final = $fallback;
+                $mode  = 'fallback-short';
+            } else {
+                $mode  = 'model';
             }
 
-            return ['answer'=>$answer,'followups'=>$this->followups(),'citations'=>$citations,'raw'=>[]];
+            // Log: done
+            Log::channel('ai_guard')->info('ai.general.done', [
+                'req'      => $reqId,
+                'session'  => $session,
+                'mode'     => $mode,
+                'duration' => round((microtime(true) - $t0) * 1000) . 'ms',
+                'ans_len'  => mb_strlen($final),
+            ]);
 
-        } catch (\Throwable $e) {
-            $fallback = $contextText !== ''
-                ? $this->jawabLokal($question, $contextText)
-                : "Saya mengalami kendala teknis. Boleh jelaskan tujuan/ konteks singkat agar saya bisa memberi jawaban umum yang relevan?";
-            return ['answer'=>$fallback,'followups'=>$this->followups(),'citations'=>$citations,'raw'=>''];
+            return [
+                'answer'    => $final,
+                'followups' => $this->followups(),
+                'citations' => $citations,
+                'raw'       => [],
+                'mode'      => $mode,
+            ];
+
+        } catch (RequestException $e) {
+            $status = $e->getResponse()?->getStatusCode();
+            $body   = $e->getResponse()?->getBody()?->getContents();
+            // Potong body agar log aman
+            $bodySh = $body ? Str::limit($this->guard->redactPII($body), 900) : null;
+
+            Log::channel('ai_guard')->warning('ai.general.http_error', [
+                'req'      => $reqId,
+                'session'  => $session,
+                'status'   => $status,
+                'error'    => $e->getMessage(),
+                'body'     => $bodySh,
+                'duration' => round((microtime(true) - $t0) * 1000) . 'ms',
+            ]);
+
+            $fallback = "Terjadi kendala memanggil layanan AI.";
+            if ($cleanContext !== '') {
+                $fallback .= "\n\nRingkasan internal (singkat):\n" . Str::limit($cleanContext, 800);
+            }
+
+            return [
+                'answer'    => $fallback,
+                'followups' => $this->followups(),
+                'citations' => $citations,
+                'raw'       => ['status' => $status],
+                'mode'      => 'http-error',
+            ];
+
+        } catch (Throwable $e) {
+            Log::channel('ai_guard')->warning('ai.general.throwable', [
+                'req'      => $reqId,
+                'session'  => $session,
+                'error'    => $e->getMessage(),
+                'duration' => round((microtime(true) - $t0) * 1000) . 'ms',
+            ]);
+
+            $fallback = "Terjadi kendala memanggil layanan AI.";
+            if ($cleanContext !== '') {
+                $fallback .= "\n\nRingkasan internal (singkat):\n" . Str::limit($cleanContext, 800);
+            }
+
+            return [
+                'answer'    => $fallback,
+                'followups' => $this->followups(),
+                'citations' => $citations,
+                'raw'       => [],
+                'mode'      => 'exception',
+            ];
         }
     }
 
     private function callGeminiOnce(\GuzzleHttp\Client $client, string $model, string $apiKey, string $system, string $question, string $context): string
     {
+        $question = (new AiGuard())->sanitizeUserInput($question);
+        $context  = (new AiGuard())->sanitizeContext($context);
+
         $resp = $client->post('models/'.$model.':generateContent', [
             'headers' => ['x-goog-api-key'=>$apiKey,'Content-Type'=>'application/json'],
             'json' => [
-                'system_instruction' => ['parts' => [['text' => $system]]],
+                'system_instruction' => ['parts' => [['text' => (new AiGuard())->safetySystemText()."\n".$system]]],
                 'contents' => [[
                     'role'  => 'user',
                     'parts' => [[ 'text' => json_encode([
                         'question' => $question,
-                        'context'  => mb_substr((string)$context, 0, 18000),
+                        'context'  => $context,
                         'note'     => 'Jawab ringkas dan langsung ke inti. Berikan langkah/ide praktis bila cocok.'
                     ], JSON_UNESCAPED_UNICODE)]],
                 ]],
                 'generationConfig' => [
-                    'temperature'=>0.3, 'topP'=>0.9,
-                    'maxOutputTokens'=>1500, 'responseMimeType'=>'text/plain',
+                    'temperature'=>0.3,'topP'=>0.9,
+                    'maxOutputTokens'=>(int) env('SIINO_AI_MAX_TOKENS',1500),
+                    'responseMimeType'=>'text/plain',
                 ],
+                'safetySettings' => (new AiGuard())->safetySettings(),
             ],
         ]);
 
-        $data = json_decode($resp->getBody()->getContents(), true);
-        return trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+        $data   = json_decode($resp->getBody()->getContents(), true);
+        $answer = trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+        return (new AiGuard())->sanitizeModelOutput($answer);
     }
+
 
     private function safeCompileContext(array $opts): array
     {

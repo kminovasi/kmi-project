@@ -47,7 +47,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\EventInsightController;
-
+use App\Http\Controllers\LearnShareController;
 
 /*
 |--------------------------------------------------------------------------
@@ -570,4 +570,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/replications/{replication}/manage', [ReplicationController::class, 'manageUpdate'])->name('replications.manage.update');
     Route::get('/replications/{replication}/file', [ReplicationController::class, 'viewFile'])->name('replications.file');
 });
+
+Route::middleware(['auth']) ->name('learnshare.')->prefix('learn-share')->group(function () {
+        Route::get('/',        [LearnShareController::class, 'index'])->name('index');
+        Route::get('/create',  [LearnShareController::class, 'create'])->name('create');
+        Route::post('/',       [LearnShareController::class, 'store'])->name('store');
+        Route::get('/{learnShareRequest}', [LearnShareController::class, 'show'])->name('show');
+        Route::patch('/{learnshare}/status', [LearnShareController::class, 'updateStatus'])->name('updateStatus');
+        Route::get('/{learnshare}/file/{token}', [LearnShareController::class, 'file'])->name('file');
+        Route::get('/{learnShareRequest}/edit', [LearnShareController::class, 'edit'])->name('edit');
+        Route::patch('/{learnShareRequest}', [LearnShareController::class, 'update'])->name('update');
+
+});
+
 

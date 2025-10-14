@@ -161,6 +161,65 @@ class DashboardController extends Controller
                 'count'         => (int) $row->count,
             ])
             ->toArray();
+        
+        // ===== AGE =====
+$ageStep = 3; // ganti ke 5 kalau mau 5 tahunan
+
+$base = DB::table('pvt_members as pm')
+    ->join('users as u','u.employee_id','=','pm.employee_id')
+    ->join('teams as t','t.id','=','pm.team_id')
+    ->join('papers as p','p.team_id','=','t.id')
+    ->when(!$isSuperadmin, fn($q)=>$q->whereIn('t.company_code', $filteredCompanyCodeUser))
+    ->where('pm.status','!=','gm')
+    ->where('p.status','!=','rejected by innovation admin');
+
+$ages = (clone $base)
+    ->whereNotNull('u.date_of_birth')
+    ->selectRaw('DISTINCT u.employee_id, TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age')
+    ->pluck('age')
+    ->filter(fn($v) => is_numeric($v))   // buang null / non-numeric
+    ->map(fn($v) => (int) $v)            // pastikan integer
+    ->values()
+    ->all();
+
+// frekuensi umur (aman: semua int)
+$freq = array_count_values($ages);
+
+
+$unknown = (clone $base)
+    ->whereNull('u.date_of_birth')
+    ->select('u.employee_id')->distinct()
+    ->count();
+
+// Bangun bucket dinamis
+$ageLabels = []; $ageCounts = []; $ageTotal = 0;
+if (count($ages)) {
+    $minAge = min($ages);
+    $maxAge = max($ages);
+    $start  = max(0, (int) floor($minAge / $ageStep) * $ageStep);
+    $end    = (int) ceil(($maxAge + 1) / $ageStep) * $ageStep - 1;
+
+    // frekuensi umur
+    $freq = array_count_values($ages);
+
+    for ($lo = $start; $lo <= $end; $lo += $ageStep) {
+        $hi = min($end, $lo + $ageStep - 1);
+        $label = ($lo === $hi) ? "{$lo}" : "{$lo}-{$hi}";
+
+        $sum = 0;
+        for ($a = $lo; $a <= $hi; $a++) $sum += $freq[$a] ?? 0;
+
+        $ageLabels[] = $label;
+        $ageCounts[] = $sum;
+        $ageTotal   += $sum;
+    }
+}
+// Tambah Unknown jika ada
+if ($unknown > 0) {
+    $ageLabels[] = 'Unknown';
+    $ageCounts[] = $unknown;
+    $ageTotal   += $unknown;
+}
 
         return view('auth.user.home', compact(
             'listCompany',
@@ -178,7 +237,10 @@ class DashboardController extends Controller
             'ideaBox',
             'totalImplementedInnovations',
             'totalIdeaBoxInnovations',
-            'metodologi'
+            'metodologi',
+            'ageLabels',
+            'ageCounts',
+            'ageTotal'
         ));
     }
     
@@ -414,7 +476,6 @@ class DashboardController extends Controller
             'papers'     => $papers,
         ]);
     }
-
 
     public function showTotalTeamChart()
     {

@@ -107,6 +107,15 @@
     <option value="{{ $r_fasil->id }}">{{ $r_fasil->employee_id }} - {{ $r_fasil->name }}</option>
     @endforeach    -->
                                 </select>
+
+                                <div class="form-check mt-2">
+                                    <input type="hidden" name="leader_is_initiator" value="0">
+                                    <input class="form-check-input" type="checkbox"
+                                            id="leader_is_initiator" name="leader_is_initiator" value="1">
+                                    <label class="form-check-label" for="leader_is_initiator">Inisiator?</label>
+                                </div>
+
+
                             </div>
                             <div class="mb-4">
                                 <h6 class="small mb-1">Fasilitator</h6>
@@ -412,15 +421,33 @@
 
             const select_anggota_field = `
                 <div class="row ">
-                                                <h6 class="small">Anggota ${anggota_ke}</h6>
-                                                <div class="col-9 ">
-                                                    <select name="anggota[]" class="form-select" id="id_anggota_${anggota_ke}" onChange="check_select(this)" ></select>
-                                                </div>
-                                                <div class="col-3  d-flex flex-column justify-content-center align-items-center">
-                                                    <button id="btnOutsourcing" type="button" class="btn btn-primary btn-sm" style="width:100%" onclick="change_to_outsource(this)">Outsourcing</button>
-                                                </div>
-                                            </div>
+                    <h6 class="small">Anggota ${anggota_ke}</h6>
+
+                    <div class="col-9 ">
+                    <select name="anggota[]" class="form-select"
+                            id="id_anggota_${anggota_ke}"
+                            onChange="check_select(this)"></select>
+
+                    <div class="form-check mt-2">
+                        <!-- default 0 supaya index sejajar dgn anggota[] -->
+                        <input type="hidden" name="anggota_is_initiator[]" value="0">
+                        <input class="form-check-input" type="checkbox"
+                            id="id_anggota_inisiator_${anggota_ke}"
+                            name="anggota_is_initiator[]" value="1">
+                        <label class="form-check-label" for="id_anggota_inisiator_${anggota_ke}">
+                        Inisiator?
+                        </label>
+                    </div>
+                    </div>
+
+                    <div class="col-3 d-flex flex-column justify-content-center align-items-center">
+                    <button id="btnOutsourcing" type="button" class="btn btn-primary btn-sm" style="width:100%"
+                            onclick="change_to_outsource(this)">Outsourcing</button>
+                    </div>
+                </div>
                 `;
+
+
 
             document.getElementById(id).innerHTML += select_anggota_field;
             await new Promise(resolve => setTimeout(resolve, anggota_ke * 1));

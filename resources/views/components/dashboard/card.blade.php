@@ -112,6 +112,12 @@
 
             .bg-innovations, .bg-event, .bg-gradient-green { background:#D84040; }
 
+            /* key-value garis rata kiri–kanan, anti patah */
+            .kv-line{display:flex;justify-content:space-between;align-items:center;gap:.75rem}
+            .kv-label,.kv-value{white-space:nowrap}
+            .kv-value{font-weight:700}
+            .text-nowrap{white-space:nowrap}
+
             /* Responsive */
             @media (max-width:768px){
                 .metric-card .card-body{ padding-right: 4.25rem; padding-bottom: 3.25rem; }
@@ -505,6 +511,24 @@
             </div>
         </div>
     </div>
+
+<div class="col-12 mb-4">
+    <div class="card bg-gradient-green text-white h-100 metric-card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="me-3 flex-grow-1">
+                <div class="small mb-1" style="font-weight:700;font-size:1rem;color:#fff">Inovator per Usia</div>
+                <div class="text-lg fw-bold d-flex align-items-center">
+                    {{ $ageTotal ?? 0 }} <small class="ms-2">(Orang)</small>
+                </div>
+                </div>
+                <div class="chart-container" style="width:420px;height:260px;background:transparent;">
+                <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -566,4 +590,44 @@
         const outsource = parseInt(document.getElementById('totalInnovatorsOutsource').textContent.replace(/\D/g, ''));
         renderInnovatorChart(total, male, female, outsource);
     });
+
+    (function(){
+        const labels = @json($ageLabels ?? []);
+        const data    = @json($ageCounts ?? []);
+        const total   = @json($ageTotal ?? 0);
+
+        const ctx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{
+                label: 'Orang',
+                data,
+                backgroundColor: ['#fff','#c0c0c0','#71888e','#9aa7ad','#d6dfe2','#bcbcbc'],
+                borderColor: '#fff',
+                borderWidth: 1,
+                borderRadius: 6,
+                maxBarThickness: 44
+            }]},
+            options: {
+                maintainAspectRatio:false,
+                plugins:{
+                    legend:{display:false},
+                    tooltip:{callbacks:{label:(c)=>{
+                        const v=c.raw||0; const p= total? Math.round(v/total*1000)/10 : 0;
+                        return ` ${v} orang (${p}%)`;
+                    }}},
+                    datalabels:{
+                        anchor:'end',align:'end',offset:4,color:'#fff',
+                        font:{size:12,weight:'bold'},
+                        formatter:(v)=> total&&v? `${v} (${Math.round(v/total*1000)/10}%)` : ''
+                    }
+                },
+                scales:{
+                    x:{grid:{display:false},ticks:{color:'#fff'}},
+                    y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.15)'},ticks:{color:'#fff'}}
+                }
+            },
+            plugins:[ChartDataLabels]
+        });
+    })();
 </script>

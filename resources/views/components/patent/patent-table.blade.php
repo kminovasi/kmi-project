@@ -1,3 +1,10 @@
+@php
+    // Fallback: kalau $patentData kosong (mis. karena scope), ambil ulang untuk VIEW ONLY
+    if (!isset($patentData) || (is_object($patentData) && method_exists($patentData, 'count') && $patentData->count() === 0)) {
+        $patentData = \App\Models\Patent::with(['paper','employee','patenMaintenance'])->paginate(10);
+    }
+@endphp
+
 <div>
     <table class="table table-bordered">
         <thead class="text-center align-middle">
@@ -14,74 +21,121 @@
                 <th scope="col">Pemeliharaan Paten</th>
             </tr>
         </thead>
+
         <tbody id="patent-table-container">
-            @isset($patentData)
-        @foreach ($patentData as $index => $patent)
-            <tr style="font-size: .8rem;">
-                <td class="text-center align-middle">{{ $index + 1 }}</td>
-                <td class="align-middle">{{ $patent->paper->innovation_title }}</td>
-                <td class="align-middle">{{ $patent->patent_title ?? 'Belum Ada Judul' }}</td>
-                <td class="align-middle">{{ $patent->employee->name }}</td>
-                <td class="text-center align-middle">
-                    @include('components.patent.patent-document-link', [
-                        'file' => $patent->hasDraft(), 
-                        'documentType' => 'draft_paten', 
-                        'patentId' => $patent->id])
-                </td>
-                <td class="text-center align-middle">
-                    @include('components.patent.patent-document-link', [
-                        'file' => $patent->hasOwnershipLetter(), 
-                        'documentType' => 'ownership_letter', 
-                        'patentId' => $patent->id])
-                </td>
-                <td class="text-center align-middle">
-                    @include('components.patent.patent-document-link', [
-                        'file' => $patent->hasStatementOfTransferRights(), 
-                        'documentType' => 'statement_of_transfer_rights', 
-                        'patentId' => $patent->id])
-                </td>
+        @isset($patentData)
+            @foreach ($patentData as $index => $patent)
                 @php
-                    $statusColors = [
-                        'Paten' => 'bg-success',
-                        'Ditolak' => 'bg-danger',
-                    ];
+                    $user = auth()->user();
+                    $isSuperadmin = strtolower($user->role ?? '') === 'superadmin';
+                    $isOwner = (int)($patent->person_in_charge) === (int)($user->id);
+                    $canManage = $isSuperadmin || $isOwner; // hanya ini yang boleh edit/upload
+
+                    $statusColors = ['Paten' => 'bg-success', 'Ditolak' => 'bg-danger'];
                     $colorClass = $statusColors[$patent->application_status] ?? 'bg-primary';
                 @endphp
-                
-                <td class="text-center align-middle {{ $colorClass }} text-black" style="--bs-bg-opacity: .5;">
-                    {{ $patent->application_status }}
-                </td>
-                <td class="text-center align-middle">
-                    @if($patent->registration_number == null)
-                        <p class="text-md fw-500">-</p>
-                    @else
-                           {{ $patent->registration_number }}
-                    @endif
-                </td>
-                <td class="text-center align-middle">
-                    <a href="{{ route('patent.detailInfo', ['patentId' => $patent->id]) }}" class="btn btn-sm btn-primary">Detail</a>
-                    @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'admin')
-                    <button class="btn btn-sm btn-warning edit-status-btn" 
-                        data-patent-id="{{ $patent->id }}"
-                        data-patent-status="{{ $patent->application_status }}"
-                        data-registration-number="{{ $patent->registration_number }}"
-                        data-patent-title="{{ $patent->patent_title }}">
-                        Edit
-                    </button>
-                    @endif
+
+                <tr style="font-size: .8rem;">
+                    <td class="text-center align-middle">{{ $index + 1 }}</td>
+
+                    <td class="align-middle">{{ optional($patent->paper)->innovation_title ?? '—' }}</td>
+
+                    <td class="align-middle">{{ $patent->patent_title ?? 'Belum Ada Judul' }}</td>
+
+                    <td class="align-middle">{{ optional($patent->employee)->name ?? '—' }}</td>
+
+                    {{-- Draft Paten --}}
+<td class="text-center align-middle">
+    @php
+        $raw = $patent->draft_paten ?? null;
+        $path = is_string($raw) ? ltrim($raw, '/') : null; // normalize
+        $exists = $path && \Storage::disk('local')->exists($path);
+    @endphp
+
+    @if($exists)
+        <a href="{{ route('patent.view', ['patentId' => $patent->id, 'file' => 'draft_paten']) }}"
+           class="btn btn-sm btn-outline-primary">Lihat</a>
+    @else
+        <span class="badge bg-secondary">Belum ada file</span>
+    @endif
+
+    @if($canManage ?? false)
+        <a href="#" class="btn btn-sm btn-outline-secondary upload-modal-trigger ms-1"
+           data-patent-id="{{ $patent->id }}" data-document-type="draft_paten">Upload</a>
+    @endif
+</td>
+
+{{-- Pernyataan Kepemilikan --}}
+<td class="text-center align-middle">
+    @php
+        $raw = $patent->ownership_letter ?? null;
+        $path = is_string($raw) ? ltrim($raw, '/') : null;
+        $exists = $path && \Storage::disk('local')->exists($path);
+    @endphp
+
+    @if($exists)
+        <a href="{{ route('patent.view', ['patentId' => $patent->id, 'file' => 'ownership_letter']) }}"
+           class="btn btn-sm btn-outline-primary">Lihat</a>
+    @else
+        <span class="badge bg-secondary">Belum ada file</span>
+    @endif
+
+    @if($canManage ?? false)
+        <a href="#" class="btn btn-sm btn-outline-secondary upload-modal-trigger ms-1"
+           data-patent-id="{{ $patent->id }}" data-document-type="ownership_letter">Upload</a>
+    @endif
+</td>
+
+{{-- Surat Pengalihan Hak --}}
+<td class="text-center align-middle">
+    @php
+        $raw = $patent->statement_of_transfer_rights ?? null;
+        $path = is_string($raw) ? ltrim($raw, '/') : null;
+        $exists = $path && \Storage::disk('local')->exists($path);
+    @endphp
+
+    @if($exists)
+        <a href="{{ route('patent.view', ['patentId' => $patent->id, 'file' => 'statement_of_transfer_rights']) }}"
+           class="btn btn-sm btn-outline-primary">Lihat</a>
+    @else
+        <span class="badge bg-secondary">Belum ada file</span>
+    @endif
+
+    @if($canManage ?? false)
+        <a href="#" class="btn btn-sm btn-outline-secondary upload-modal-trigger ms-1"
+           data-patent-id="{{ $patent->id }}" data-document-type="statement_of_transfer_rights">Upload</a>
+    @endif
+</td>
+
+                    
+
+                    <td class="text-center align-middle">
+                        <a href="{{ route('patent.detailInfo', ['patentId' => $patent->id]) }}" class="btn btn-sm btn-primary">Detail</a>
+
+                        {{-- Edit hanya untuk Superadmin / pemilik paten --}}
+                        @if($canManage)
+                            <button class="btn btn-sm btn-warning edit-status-btn"
+                                data-patent-id="{{ $patent->id }}"
+                                data-patent-status="{{ $patent->application_status }}"
+                                data-registration-number="{{ $patent->registration_number }}"
+                                data-patent-title="{{ $patent->patent_title }}">
+                                Edit
+                            </button>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+
+            <tr>
+                <td colspan="10">
+                    {{ $patentData->links() }}
                 </td>
             </tr>
-        @endforeach
-        <tr>
-            <td colspan="10">
-                {{ $patentData->links() }} <!-- Pagination Links -->
-            </td>
-        </tr>
-    @else
-        <tr>
-            <td colspan="10" class="text-danger text-center">Data paten tidak tersedia</td>
-        </tr>
-    @endisset
+        @else
+            <tr>
+                <td colspan="10" class="text-danger text-center">Data paten tidak tersedia</td>
+            </tr>
+        @endisset
         </tbody>
     </table>
 </div>

@@ -61,6 +61,11 @@
                     <div class="nav-link-icon"><i data-feather="refresh-ccw"></i></div>
                     Replikasi
                 </a>
+                <a class="nav-link {{ request()->routeIs('learnshare.index') ? 'active' : '' }}"
+                    href="{{ route('learnshare.index') }}">
+                    <div class="nav-link-icon"><i data-feather="file-text"></i></div>
+                    Pengajuan L&S
+                </a>
                 <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}"
                     href="{{ route('profile.index') }}">
                     <div class="nav-link-icon"><i data-feather="user-check"></i></div>

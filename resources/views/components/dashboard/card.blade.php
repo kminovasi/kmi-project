@@ -530,6 +530,84 @@
         </div>
     </div>
 </div>
+<div class="card border-0 shadow-lg mt-4">
+    <div class="card-header bg-gradient-primary">
+        <h5 class="card-title text-white">Statistik Inovator Berdasarkan Usia</h5>
+    </div>
+    <div class="card-body">
+        @php
+            // Daftar kelompok usia
+            $ageGroups = [
+                '24 - 26 Tahun',
+                '27 - 29 Tahun',
+                '30 - 32 Tahun',
+                '33 - 35 Tahun',
+                '36 - 38 Tahun',
+                '39 - 41 Tahun',
+                '42 - 44 Tahun',
+                '45 - 47 Tahun',
+                '48 - 50 Tahun',
+                '51 - 53 Tahun',
+                '54 - 56 Tahun',
+                '> 57 Tahun',
+            ];
+
+            // ✅ Daftar tahun
+            $years = [2023, 2024, 2025];
+
+        
+            // Inisialisasi array untuk menyimpan total per kolom (per tahun)
+            $columnTotals = array_fill_keys($years, 0);
+            $grandTotal = 0;
+        @endphp
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>Kelompok Usia</th>
+                        @foreach ($years as $year)
+                            <th>{{ $year }}</th>
+                        @endforeach
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($ageGroups as $group)
+                        <tr class="text-center">
+                            <td class="text-start fw-bold">{{ $group }}</td>
+                            @php $rowTotal = 0; @endphp
+                            @foreach ($years as $year)
+                                @php
+                                    // Ambil nilai data, default 0 jika tidak ada
+                                    $value = $ageData[$group][$year] ?? 0;
+                                    
+                                    // Hitung Total Baris (Horizontal)
+                                    $rowTotal += $value;
+                                    
+                                    // Hitung Total Kolom (Vertikal)
+                                    $columnTotals[$year] += $value;
+                                @endphp
+                                <td>{{ $value }}</td>
+                            @endforeach
+                            <td class="fw-bold bg-light">{{ $rowTotal }}</td> {{-- Hasil Total Baris --}}
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot class="table-light text-center">
+                    <tr>
+                        <th class="text-start">Total per Tahun</th>
+                        @foreach ($years as $year)
+                            @php $grandTotal += $columnTotals[$year]; @endphp
+                            <th>{{ $columnTotals[$year] }}</th> {{-- Hasil Total Kolom --}}
+                        @endforeach
+                        <th class="table-primary text-white">{{ $grandTotal }}</th> {{-- Hasil Grand Total --}}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>

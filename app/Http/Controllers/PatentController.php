@@ -54,7 +54,7 @@ class PatentController extends Controller
         $query = $request->get('query');
         $data = Paper::where('innovation_title', 'like', '%' . $query . '%')
             ->select('id', 'innovation_title')
-            ->take(5)
+            ->take(1000)
             ->get();
 
         return response()->json($data);

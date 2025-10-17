@@ -9,7 +9,7 @@
   }
 
   .section-title{
-    font-weight: 600; font-size: .95rem; color:#6b7280; /* gray-500 */
+    font-weight: 600; font-size: .95rem; color:#6b7280; 
     text-transform: uppercase; letter-spacing:.04em; margin-bottom:.5rem;
   }
 
@@ -99,7 +99,7 @@
       <div class="card-body">
         <div class="addfile-header mb-2">
           <div class="section-title mb-0">Tambah File Baru (opsional)</div>
-          {{-- <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddFile">+ Tambah File</button> --}}
+          <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddFile">+ Tambah File</button>
         </div>
 
         <div class="dropzone-like mb-2">
@@ -129,7 +129,7 @@
   @endforeach
 </div>
 
-@push('scripts')
+@push('js')
   <script>
     (function() {
       const btnAdd = document.getElementById('btnAddFile');

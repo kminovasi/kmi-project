@@ -22,7 +22,7 @@
 
     <div class="mb-2 d-flex justify-content-between align-items-center">
       <label class="form-label mb-0">Lampiran</label>
-      {{-- <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddFile">+ Tambah File</button> --}}
+      <button class="btn btn-sm btn-outline-primary" type="button" id="btnAddFile">+ Tambah File</button>
     </div>
 
     <div id="fileList">
@@ -39,7 +39,7 @@
   </form>
 </div>
 
-@push('scripts')
+@push('js')
 <script>
 (function () {
   function addFileRow() {

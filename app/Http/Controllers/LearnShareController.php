@@ -140,7 +140,6 @@ class LearnShareController extends Controller
 
         $row = LearnShare::create($data);
 
-        // Unggah File
         $stored   = [];
         $uploaded = Arr::wrap($request->file('ls_files')); 
         foreach ($uploaded as $file) {
@@ -149,7 +148,6 @@ class LearnShareController extends Controller
             }
         }
 
-        //Simpan path file ke kolom JSON 'attachments' 
         if (\Illuminate\Support\Facades\Schema::hasColumn($row->getTable(), 'attachments')) {
             $row->attachments = array_values(array_filter((array)($row->attachments ?? [])));
             $row->attachments = array_merge($row->attachments, $stored);

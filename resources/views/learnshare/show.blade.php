@@ -23,7 +23,6 @@
     </div>
 
     @php
-        // SPEAKERS: mix organic (employee_id) & outsource (OUT::name::inst::title::email)
         $raw = (array) ($learnshare->speakers ?? []);
         $employeeIds = [];
         $outs = [];
@@ -96,7 +95,6 @@
                 <dt class="col-md-3">Opening Speech</dt>
                 <dd class="col-md-9">
                     @php
-                        // opening_speech berisi employee_id (berdasar implementasi terbaru)
                         $opener = null;
                         if ($learnshare->opening_speech) {
                             $opener = \App\Models\User::where('employee_id',$learnshare->opening_speech)
@@ -196,8 +194,7 @@
     </div>
 </div>
 
-{{-- ==== Admin Toolbar (di bawah) ==== --}}
-{{-- ==== Admin Toolbar (di bawah) ==== --}}
+{{-- ==== Admin Toolbar ==== --}}
 @if(auth()->check() && auth()->user()->role === 'Superadmin')
     @push('css')
     <style>
@@ -209,47 +206,45 @@
         <div class="container">
             <div class="row g-3 align-items-end">
                 <div class="col-md-3 status-btns d-flex gap-2 flex-wrap">
-                   {{-- Tombol pemicu modal --}}
-<button type="button"
-        class="btn btn-success {{ ($learnshare->status ?? 'Pending') === 'Approved' ? 'disabled' : '' }}"
-        data-status="Approved"
-        data-bs-toggle="modal"
-        data-bs-target="#statusModal"
-        onclick="window.setLsStatus && window.setLsStatus('Approved')">
-  Approved
-</button>
+                    <button type="button"
+                            class="btn btn-success {{ ($learnshare->status ?? 'Pending') === 'Approved' ? 'disabled' : '' }}"
+                            data-status="Approved"
+                            data-bs-toggle="modal"
+                            data-bs-target="#statusModal"
+                            onclick="window.setLsStatus && window.setLsStatus('Approved')">
+                    Approved
+                    </button>
 
-<button type="button"
-        class="btn btn-danger {{ ($learnshare->status ?? 'Pending') === 'Rejected' ? 'disabled' : '' }}"
-        data-status="Rejected"
-        data-bs-toggle="modal"
-        data-bs-target="#statusModal"
-        onclick="window.setLsStatus && window.setLsStatus('Rejected')">
-  Rejected
-</button>
+                    <button type="button"
+                            class="btn btn-danger {{ ($learnshare->status ?? 'Pending') === 'Rejected' ? 'disabled' : '' }}"
+                            data-status="Rejected"
+                            data-bs-toggle="modal"
+                            data-bs-target="#statusModal"
+                            onclick="window.setLsStatus && window.setLsStatus('Rejected')">
+                    Rejected
+                    </button>
 
-<button type="button"
-        class="btn btn-secondary {{ ($learnshare->status ?? 'Pending') === 'Pending' ? 'disabled' : '' }}"
-        data-status="Pending"
-        data-bs-toggle="modal"
-        data-bs-target="#statusModal"
-        onclick="window.setLsStatus && window.setLsStatus('Pending')">
-  Pending
-</button>
+                    <button type="button"
+                            class="btn btn-secondary {{ ($learnshare->status ?? 'Pending') === 'Pending' ? 'disabled' : '' }}"
+                            data-status="Pending"
+                            data-bs-toggle="modal"
+                            data-bs-target="#statusModal"
+                            onclick="window.setLsStatus && window.setLsStatus('Pending')">
+                    Pending
+                    </button>
 
                 </div>
             </div>
         </div>
     </div>
 
-{{-- Modal Form Komentar (1 tombol Kirim) --}}
+{{-- Modal Form Komentar --}}
 <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form method="POST" action="{{ route('learnshare.updateStatus', $learnshare->id) }}" class="modal-content">
       @csrf
       @method('PATCH')
 
-      {{-- status terpilih dari tombol pemicu --}}
       <input type="hidden" name="status" id="statusInput" value="{{ old('status') }}">
 
       <div class="modal-header">
@@ -257,21 +252,21 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
       </div>
 
-<div class="modal-body">
-  <div class="mb-2">
-    <span class="small text-muted">Status terpilih:</span>
-    <span id="statusBadge" class="badge">—</span>
-  </div>
+    <div class="modal-body">
+    <div class="mb-2">
+        <span class="small text-muted">Status terpilih:</span>
+        <span id="statusBadge" class="badge">—</span>
+    </div>
 
-  <div class="mb-3">
-    <label class="form-label">Komentar/Alasan <span class="text-danger">*</span></label>
-    <textarea name="comment" rows="4"
-      class="form-control @error('comment') is-invalid @enderror"
-      placeholder="Tuliskan alasan memilih status ini..." required>{{ old('comment') }}</textarea>
-    @error('comment') <div class="invalid-feedback">{{ $message }}</div> @enderror
-    <div class="form-text">Minimal 3 karakter.</div>
-  </div>
-</div>
+    <div class="mb-3">
+        <label class="form-label">Komentar/Alasan <span class="text-danger">*</span></label>
+        <textarea name="comment" rows="4"
+        class="form-control @error('comment') is-invalid @enderror"
+        placeholder="Tuliskan alasan memilih status ini..." required>{{ old('comment') }}</textarea>
+        @error('comment') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        <div class="form-text">Minimal 3 karakter.</div>
+    </div>
+    </div>
 
 
       <div class="modal-footer d-flex justify-content-between flex-wrap gap-2">
@@ -284,7 +279,7 @@
   </div>
 </div>
 
-@push('scripts')
+@push('js')
 <script>
 (function () {
   const statusModal = document.getElementById('statusModal');
@@ -309,14 +304,12 @@
     statusBadge.textContent = st;
   }
 
-  // EXPOSE: dipanggil dari onclick tombol toolbar
   window.setLsStatus = function (st) {
     if (!statusInput) return;
     statusInput.value = st;
     paint(st);
   };
 
-  // Fallback: kalau dibuka via data-bs-* kita ambil status dari relatedTarget
   statusModal.addEventListener('show.bs.modal', function (ev) {
     const st = (ev.relatedTarget && ev.relatedTarget.getAttribute('data-status'))
                || statusInput.value || 'Pending';
@@ -324,7 +317,6 @@
     paint(st);
   });
 
-  // Jika validasi gagal, buka lagi modal dengan old('status')
   @if ($errors->any() && old('status'))
     document.addEventListener('DOMContentLoaded', function () {
       const st = @json(old('status'));

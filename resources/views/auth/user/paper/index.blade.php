@@ -317,6 +317,19 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <!-- TAHUN -->
+                        <div class="mb-3">
+                            <label for="filter-year" class="form-label fw-semibold">Tahun</label>
+                            <select id="filter-year" name="year" class="form-select">
+                            <option value="">-- Pilih Tahun --</option>
+                            @foreach (($years ?? collect(range(now()->year, now()->year - 5))) as $y)
+                                <option value="{{ $y }}" {{ (string)request('year') === (string)$y ? 'selected' : '' }}>
+                                {{ $y }}
+                                </option>
+                            @endforeach
+                            </select>
+                        </div>
                     </form> <!-- ✅ Penutup form di tempat yang benar -->
                 </div>
 

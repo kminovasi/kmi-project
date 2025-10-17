@@ -40,10 +40,12 @@
                 <div class="d-flex justify-content-end mb-2">
                     <input type="text" id="search" class="form-control search-input" placeholder="Cari Daftar Paten">
                 </div>
-                @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
                 <div class="btn-container mb-3 text-end">
                     <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#patent-application">Buat Usulan Paten</button>
-                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#document-template">Perbarui Template Dukomen</button>
+                </div>
+                @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
+                <div class="btn-container mb-3 text-end">
+\                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#document-template">Perbarui Template Dukomen</button>
                 </div>
                 @endif
                 @include('components.patent.patent-table', ['patentData' => \App\Models\Patent::with(['paper', 'employee', 'patenMaintenance'])->visibleTo(Auth::user())->paginate(10)])
@@ -131,14 +133,13 @@
 @endsection
 
 @push('js')
-@push('js')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <script>
     $("#inputInnovationTittle").autocomplete({
         source: function(request, response) {
             $.ajax({
-                url: "{{ route('patent.tittleSuggestion') }}",
+            url: "{{ route('patent.tittleSuggestion') }}",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {

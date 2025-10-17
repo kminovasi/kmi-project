@@ -48,6 +48,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\EventInsightController;
 use App\Http\Controllers\LearnShareController;
+use App\Http\Controllers\ProsedurController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -580,7 +582,19 @@ Route::middleware(['auth']) ->name('learnshare.')->prefix('learn-share')->group(
         Route::get('/{learnshare}/file/{token}', [LearnShareController::class, 'file'])->name('file');
         Route::get('/{learnShareRequest}/edit', [LearnShareController::class, 'edit'])->name('edit');
         Route::patch('/{learnShareRequest}', [LearnShareController::class, 'update'])->name('update');
-
 });
+
+Route::middleware(['auth'])->name('prosedur.')->prefix('prosedur')->group(function () {
+    Route::get('/',                [ProsedurController::class, 'index'])->name('index');
+    Route::get('/create',          [ProsedurController::class, 'create'])->name('create');
+    Route::post('/',               [ProsedurController::class, 'store'])->name('store');
+    Route::get('/{prosedur}',      [ProsedurController::class, 'show'])->name('show');   
+    Route::get('/{prosedur}/edit', [ProsedurController::class, 'edit'])->name('edit');
+    Route::put('/{prosedur}',      [ProsedurController::class, 'update'])->name('update');
+    Route::delete('/{prosedur}',   [ProsedurController::class, 'destroy'])->name('destroy');
+    Route::delete('/{prosedur}/files/{index}', [ProsedurController::class, 'destroyFile'])->name('files.destroy');
+    Route::get('/{prosedur}/files/{index}',    [ProsedurController::class, 'getFile'])->name('getfile');
+});
+
 
 

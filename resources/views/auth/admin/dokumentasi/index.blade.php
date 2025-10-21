@@ -75,9 +75,9 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="me-3">
                                         <i class="fas fa-trophy fa-lg text-warning mb-3"></i>
-                                        <h5 class="text-warning">Riwayat Kompetisi Peserta</h5>
+                                        <h5 class="text-warning">Prestasi Peserta</h5>
                                         <div class="text-muted small">
-                                            Data riwayat kepesertaan & download sertifikat Peserta. </div>
+                                            Data prestasi & download sertifikat Peserta. </div>
                                     </div>
                                 </div>
                             </div>
@@ -125,6 +125,25 @@
                                     <div class="me-3">
                                         <i class="feather-lg text-primary mb-3" data-feather="info"></i>
                                         <h5 class="text-primary">Couching Clinic</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                     <div class="col-xl-4 mb-4">
+                        {{-- Card Prosedur --}}
+                        <a class="card lift border-start-lg border-start-secondary" href="{{ route('prosedur.index') }}">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="me-3">
+                                        <i class="feather-lg text-secondary mb-3" data-feather="info"></i>
+                                        <h5 class="text-secondary">Prosedur</h5>
+                                        {{-- <div class="text-muted small">
+                                        Pengelola Inovasi masing-masing perusahaan yang akan memnentukan role pada
+                                        Inovator, Juri,
+                                        BOD serta menentukan aturan kegiatan kompetisi inovasi
+                                    </div> --}}
                                     </div>
                                 </div>
                             </div>

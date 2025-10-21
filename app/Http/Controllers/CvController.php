@@ -19,12 +19,46 @@ class CvController extends Controller
     public function index(Request $request) 
     {
         $employee = Auth::user();
+        $myUnit  = strtoupper(trim((string) ($employee->unit_name ?? '')));
+        $myComp    = trim((string) ($employee->company_code ?? ''));
+        $perPage = (int) $request->get('per_page', 10);
+
+        $myTeamIds = DB::table('pvt_members')
+            ->where('employee_id', $employee->employee_id)
+            ->distinct()
+            ->pluck('team_id');
+
+        $sameUnitBase = DB::table('pvt_members as pm')
+            ->join('users as u', 'u.employee_id', '=', 'pm.employee_id')
+            ->whereNotNull('u.unit_name')
+            ->whereRaw("TRIM(u.unit_name) <> ''")
+            ->whereRaw('UPPER(TRIM(u.unit_name)) = UPPER(TRIM(?))', [$myUnit]);
+
+        if ($myComp !== '') {
+            $sameUnitBase->where('u.company_code', $myComp);
+        }
+
+        $sameUnitTeamIds = $sameUnitBase->distinct()->pluck('pm.team_id');
+        $visibleTeamIds = $myTeamIds->merge($sameUnitTeamIds)->unique()->values();
+
+        if ($visibleTeamIds->isEmpty()) {
+            $innovations = new \Illuminate\Pagination\LengthAwarePaginator([], 0, $perPage, 1, [
+                'path'  => $request->url(),
+                'query' => $request->query(),
+            ]);
+
+            $events     = DB::table('events')->where('status','finish')->select('id','event_name','year')->orderBy('year','desc')->get();
+            $years      = DB::table('events')->where('status','finish')->pluck('year')->unique();
+            $categories = DB::table('categories')->pluck('category_name');
+            $teamRanks  = collect();
+
+            return view('auth.admin.dokumentasi.cv.index', compact('innovations','employee','teamRanks','events','years','categories'));
+        }
 
         $innovations = DB::table('pvt_members')
             ->select(
                 'papers.id',
                 'papers.innovation_title',
-                'papers.inovasi_lokasi',
                 'papers.potensi_replikasi',
                 'teams.id as team_id',
                 'teams.team_name',
@@ -34,23 +68,24 @@ class CvController extends Controller
                 'events.year',
                 'events.date_end as event_end',
                 DB::raw('(SELECT company_name FROM companies
-                    JOIN company_event ON companies.id = company_event.company_id
-                    WHERE company_event.event_id = events.id
-                    LIMIT 1) as company_name'),
+                          JOIN company_event ON companies.id = company_event.company_id
+                          WHERE company_event.event_id = events.id
+                          LIMIT 1) as company_name'),
                 'certificates.template_path as certificate',
                 'certificates.special_template_path as special_certificate',
-                'certificates.badge_rank_1 as badge_rank_1',
-                'certificates.badge_rank_2 as badge_rank_2',
-                'certificates.badge_rank_3 as badge_rank_3',
+                'certificates.badge_rank_1',
+                'certificates.badge_rank_2',
+                'certificates.badge_rank_3',
                 'pvt_event_teams.status as status',
                 'themes.theme_name',
                 'pvt_event_teams.is_best_of_the_best',
                 'pvt_event_teams.is_honorable_winner',
-                'pvt_event_teams.event_id',
-                'pvt_members.status as member_status',
-                'users.name as member_name', 
-                'users.employee_id'          
+                'pvt_event_teams.event_id as event_id',   
+                DB::raw('MIN(pvt_members.status) as member_status'),
+                DB::raw('MIN(users.name) as member_name')
+                // HAPUS: DB::raw('MIN(users.employee_id) as employee_id')
             )
+
             ->leftJoin('teams', 'pvt_members.team_id', '=', 'teams.id')
             ->leftJoin('papers', 'teams.id', '=', 'papers.team_id')
             ->leftJoin('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
@@ -58,40 +93,55 @@ class CvController extends Controller
             ->leftJoin('certificates', 'events.id', '=', 'certificates.event_id')
             ->leftJoin('themes', 'teams.theme_id', '=', 'themes.id')
             ->leftJoin('categories', 'teams.category_id', '=', 'categories.id')
-            ->leftJoin('users', 'users.employee_id', '=', 'pvt_members.employee_id') 
-            ->where('pvt_members.employee_id', $employee->employee_id)
-            ->where('events.status', 'finish');
+            ->leftJoin('users', 'users.employee_id', '=', 'pvt_members.employee_id')
+            ->where('events.status', 'finish')
+            ->whereIn('teams.id', $visibleTeamIds->toArray());
 
-        if ($employee->role != 'Superadmin') {
-            $innovations->where('pvt_members.employee_id', $employee->employee_id);
-        }
+        if ($request->filled('event'))    { $innovations->where('events.id', (int) $request->event); }
+        if ($request->filled('year'))     { $innovations->where('events.year', (int) $request->year); }
+        if ($request->filled('category')) { $innovations->where('categories.category_name', $request->category); }
+        if ($request->filled('search'))   { $innovations->where('teams.team_name', 'like', '%'.$request->search.'%'); }
 
-        if ($request->filled('event')) {
-           $innovations->where('events.id', $request->event);
-        }
+        $innovations->whereExists(function ($q) use ($employee, $myUnit, $myComp) {
+            $q->select(DB::raw(1))
+            ->from('pvt_members as pm2')
+            ->join('users as u2', 'u2.employee_id', '=', 'pm2.employee_id')
+            ->whereColumn('pm2.team_id', 'teams.id')
+            ->where(function ($qq) use ($employee, $myUnit, $myComp) {
+                $qq->where('pm2.employee_id', $employee->employee_id)
+                    ->orWhere(function ($qq2) use ($myUnit, $myComp) {
+                        $qq2->whereNotNull('u2.unit_name')
+                            ->whereRaw("TRIM(u2.unit_name) <> ''")
+                            ->whereRaw('UPPER(TRIM(u2.unit_name)) = ?', [$myUnit]);
+                        if ($myComp !== '') {
+                            $qq2->where('u2.company_code', $myComp);
+                        }
+                    });
+            });
+        });
 
-        if ($request->filled('year')) {
-            $innovations->where('events.year', $request->year);
-        }
+        $innovations->groupBy(
+            'papers.id','papers.innovation_title','papers.potensi_replikasi',
+            'teams.id','teams.team_name','teams.status_lomba',
+            'categories.category_name',
+            'events.id',                
+            'events.event_name','events.year','events.date_end',
+            'pvt_event_teams.status','themes.theme_name',
+            'pvt_event_teams.is_best_of_the_best','pvt_event_teams.is_honorable_winner','pvt_event_teams.event_id',
+            'certificates.template_path','certificates.special_template_path',
+            'certificates.badge_rank_1','certificates.badge_rank_2','certificates.badge_rank_3'
+        );
 
-        if ($request->filled('category')) {
-            $innovations->where('categories.category_name', $request->category);
-        }
-
-        if ($request->filled('search')) {
-            $innovations->where('teams.team_name', 'like', '%'.$request->search.'%');
-        }
-
-        $perPage = $request->get('per_page', 10);
         $innovations = $innovations
-            ->orderBy('events.year', 'desc')
+            ->orderBy('events.year','desc')
             ->orderBy('teams.team_name')
-            ->orderBy('users.name') 
+            ->orderBy('member_name')
             ->paginate($perPage)
             ->appends($request->query());
 
-        $events = DB::table('events')->where('status', 'finish')->select('id', 'event_name', 'year')->orderBy('year', 'desc')->get();
-        $years = DB::table('events')->where('status', 'finish')->pluck('year')->unique();
+        $events     = DB::table('events')->where('status', 'finish')
+                        ->select('id','event_name','year')->orderBy('year','desc')->get();
+        $years      = DB::table('events')->where('status', 'finish')->pluck('year')->unique();
         $categories = DB::table('categories')->pluck('category_name');
 
         $teamRanks = DB::table('teams')
@@ -106,21 +156,15 @@ class CvController extends Controller
                     FROM teams AS t
                     JOIN pvt_event_teams AS pet2 ON t.id = pet2.team_id
                     WHERE t.category_id = teams.category_id
-                        AND pet2.event_id = events.id
-                        AND COALESCE(pet2.final_score, 0) > COALESCE(pvt_event_teams.final_score, 0)
+                    AND pet2.event_id = events.id
+                    AND COALESCE(pet2.final_score, 0) > COALESCE(pvt_event_teams.final_score, 0)
                 ) AS `rank`')
             )
             ->join('pvt_event_teams', 'teams.id', '=', 'pvt_event_teams.team_id')
             ->join('categories', 'teams.category_id', '=', 'categories.id')
             ->join('events', 'pvt_event_teams.event_id', '=', 'events.id')
-            ->where('pvt_members.employee_id', $employee->employee_id)
-            ->join('pvt_members', 'teams.id', '=', 'pvt_members.team_id');
-
-        if ($employee->role != 'Superadmin') {
-            $teamRanks->where('pvt_members.employee_id', $employee->employee_id);
-        }
-
-        $teamRanks = $teamRanks->get()->keyBy('team_id');
+            ->whereIn('teams.id', $visibleTeamIds->toArray())
+            ->get()->keyBy('team_id');
 
         return view('auth.admin.dokumentasi.cv.index', compact('innovations', 'employee', 'teamRanks', 'events', 'years', 'categories'));
     }
@@ -523,9 +567,6 @@ class CvController extends Controller
             $view = 'auth.admin.dokumentasi.cv.team-certificate';
             $certificateName = $inovasi['team_name'] ?? 'Tim';
         }
-
-
-
 
         
         //BEST OF THE BEST

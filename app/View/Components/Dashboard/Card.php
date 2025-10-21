@@ -19,7 +19,13 @@ class Card extends Component
     public $implemented;
     public $totalImplementedInnovations;
     public $totalIdeaBoxInnovations;
-     public $metodologi; 
+    public $metodologi; 
+    public array $years = [];
+    public array $ageGroups = [];
+    public array $ageData = [];
+    public array $ageLabels = [];
+    public array $ageCounts = [];
+    public int   $ageTotal = 0;
     /**
      * Create a new component instance.
      *
@@ -35,11 +41,18 @@ class Card extends Component
         $totalInnovatoresOutsource = null,
         $totalActiveEvents = null,
         $totalImplementedInnovations = null,
-        $totalIdeaBoxInnovations = null
+        $totalIdeaBoxInnovations = null,
+
+        $years = [],
+        $ageGroups = [],
+        $ageData = [],
+        $ageLabels = [],
+        $ageCounts = [],
+        $ageTotal = 0
     ) {
         $this->ideaBox = $ideaBox;
         $this->implemented = $implemented;
-         $this->metodologi   = $this->toArraySafe($metodologi);
+        $this->metodologi   = $this->toArraySafe($metodologi);
         $this->totalInnovators = $totalInnovators;
         $this->totalInnovatorsMale = $totalInnovatorsMale;
         $this->totalInnovatorsFemale = $totalInnovatorsFemale;
@@ -47,6 +60,12 @@ class Card extends Component
         $this->totalActiveEvents = $totalActiveEvents;
         $this->totalImplementedInnovations = $totalImplementedInnovations;
         $this->totalIdeaBoxInnovations = $totalIdeaBoxInnovations;
+        $this->years     = $this->toArraySafe($years);
+        $this->ageGroups = $this->toArraySafe($ageGroups);
+        $this->ageData   = $this->toArraySafe($ageData);
+        $this->ageLabels = $this->toArraySafe($ageLabels);
+        $this->ageCounts = $this->toArraySafe($ageCounts);
+        $this->ageTotal  = (int) $ageTotal;
     }
 
     private function toArraySafe($value): array

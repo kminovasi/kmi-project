@@ -52,7 +52,7 @@ class PaperController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index()
+    public function index(Request $request)
     {
         $checkStatus = Auth::user()->role;
         if ($checkStatus == 'Admin') {
@@ -62,18 +62,43 @@ class PaperController extends Controller
         } else {
             $data_company = [];
         }
-        $data_category = Category::all();
-        $data_theme = Theme::all();
+
+        $data_category  = Category::all();
+        $data_theme     = Theme::all();
         $status_inovasi = Paper::distinct('status_inovasi')->pluck('status_inovasi');
         $userEmployeeId = Auth::user()->employee_id;
-        $is_judge = Judge::where('employee_id', $userEmployeeId)->exists();
+        $is_judge       = Judge::where('employee_id', $userEmployeeId)->exists();
+
+        $years = Paper::selectRaw('YEAR(created_at) as y')
+            ->distinct()->orderByDesc('y')->pluck('y');
+
+        $papers = Paper::query()
+            ->leftJoin('teams', 'teams.id', '=', 'papers.team_id')
+            ->select('papers.*')
+            ->when($checkStatus === 'Admin', function ($q) {
+                $q->where('teams.company_code', Auth::user()->company_code);
+            })
+            ->when(!in_array($checkStatus, ['Admin','Superadmin']), function ($q) use ($userEmployeeId) {
+                $q->whereIn('papers.team_id', function ($sub) use ($userEmployeeId) {
+                    $sub->from('pvt_members')->select('team_id')->where('employee_id', $userEmployeeId);
+                });
+            })
+            ->when($request->filled('year'), function ($q) use ($request) {
+                $q->whereYear('papers.created_at', $request->year);
+            })
+            ->orderByRaw('(papers.full_paper IS NULL OR papers.full_paper = "") DESC')
+            ->orderByDesc('papers.created_at')
+            ->paginate(15)
+            ->appends($request->query()); 
 
         return view('auth.user.paper.index', [
-            'data_company' => $data_company,
+            'data_company'  => $data_company,
             'data_category' => $data_category,
-            'data_theme' => $data_theme,
-            'status_inovasi' => $status_inovasi,
-            'is_judge' => $is_judge,
+            'data_theme'    => $data_theme,
+            'status_inovasi'=> $status_inovasi,
+            'is_judge'      => $is_judge,
+            'papers'        => $papers,
+            'years'         => $years, 
         ]);
     }
 

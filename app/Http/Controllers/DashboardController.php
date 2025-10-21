@@ -162,70 +162,81 @@ class DashboardController extends Controller
             ])
             ->toArray();
         
-        // ===== AGE =====
-$ageStep = 3; // ganti ke 5 kalau mau 5 tahunan
+        //  AGE 
+        $base = DB::table('pvt_members as pm')
+            ->join('users as u','u.employee_id','=','pm.employee_id')
+            ->join('teams as t','t.id','=','pm.team_id')
+            ->join('papers as p','p.team_id','=','t.id')
+            ->when(!$isSuperadmin, fn($q)=>$q->whereIn('t.company_code', $filteredCompanyCodeUser))
+            ->where('pm.status','!=','gm')
+            ->where('p.status','!=','rejected by innovation admin');
 
-$base = DB::table('pvt_members as pm')
-    ->join('users as u','u.employee_id','=','pm.employee_id')
-    ->join('teams as t','t.id','=','pm.team_id')
-    ->join('papers as p','p.team_id','=','t.id')
-    ->when(!$isSuperadmin, fn($q)=>$q->whereIn('t.company_code', $filteredCompanyCodeUser))
-    ->where('pm.status','!=','gm')
-    ->where('p.status','!=','rejected by innovation admin');
+        $empYear = DB::query()->fromSub(
+        $base->cloneWithoutBindings(['columns', 'orders'])
+                ->selectRaw("
+                    DISTINCT u.employee_id AS employee_id,
+                    YEAR(p.created_at) AS year,
+                    TIMESTAMPDIFF(
+                    YEAR,
+                    CASE
+                        WHEN u.date_of_birth REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$' THEN STR_TO_DATE(u.date_of_birth, '%d/%m/%Y')
+                        WHEN u.date_of_birth REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN STR_TO_DATE(u.date_of_birth, '%Y-%m-%d')
+                        ELSE NULL
+                    END,
+                    STR_TO_DATE(CONCAT(YEAR(p.created_at),'-12-31'), '%Y-%m-%d')
+                    ) AS age
+                "),
+            'empYear'
+        );
 
-$ages = (clone $base)
-    ->whereNotNull('u.date_of_birth')
-    ->selectRaw('DISTINCT u.employee_id, TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age')
-    ->pluck('age')
-    ->filter(fn($v) => is_numeric($v))   // buang null / non-numeric
-    ->map(fn($v) => (int) $v)            // pastikan integer
-    ->values()
-    ->all();
+        $rowsAgg = DB::query()->fromSub(
+            $empYear->selectRaw('
+                employee_id,
+                year,
+                age,
+                FLOOR(age/10)*10           AS low,
+                FLOOR(age/10)*10 + 9       AS high,
+                CONCAT(FLOOR(age/10)*10, " - ", FLOOR(age/10)*10 + 9, " Tahun") AS bucket
+            '),
+            'b'
+        )
+        ->selectRaw('bucket, low, year, COUNT(*) AS cnt')
+        ->groupBy('bucket','low','year')
+        ->orderBy('low')
+        ->orderBy('year')
+        ->get();
 
-// frekuensi umur (aman: semua int)
-$freq = array_count_values($ages);
+        $years = $rowsAgg->pluck('year')->unique()->sort()->values()->all();
+        if (empty($years)) {
+            $years = range(date('Y')-2, date('Y'));
+        }
 
+        $ageGroups = $rowsAgg->sortBy('low')->pluck('bucket')->unique()->values()->all();
+        if (empty($ageGroups)) {
+            $ageGroups = ['0 - 9 Tahun'];
+        }
 
-$unknown = (clone $base)
-    ->whereNull('u.date_of_birth')
-    ->select('u.employee_id')->distinct()
-    ->count();
+        $ageData = [];
+        foreach ($ageGroups as $g) foreach ($years as $y) $ageData[$g][$y] = 0;
+        foreach ($rowsAgg as $r) {
+            $ageData[$r->bucket][$r->year] = (int) $r->cnt;
+        }
 
-// Bangun bucket dinamis
-$ageLabels = []; $ageCounts = []; $ageTotal = 0;
-if (count($ages)) {
-    $minAge = min($ages);
-    $maxAge = max($ages);
-    $start  = max(0, (int) floor($minAge / $ageStep) * $ageStep);
-    $end    = (int) ceil(($maxAge + 1) / $ageStep) * $ageStep - 1;
-
-    // frekuensi umur
-    $freq = array_count_values($ages);
-
-    for ($lo = $start; $lo <= $end; $lo += $ageStep) {
-        $hi = min($end, $lo + $ageStep - 1);
-        $label = ($lo === $hi) ? "{$lo}" : "{$lo}-{$hi}";
-
-        $sum = 0;
-        for ($a = $lo; $a <= $hi; $a++) $sum += $freq[$a] ?? 0;
-
-        $ageLabels[] = $label;
-        $ageCounts[] = $sum;
-        $ageTotal   += $sum;
-    }
-}
-// Tambah Unknown jika ada
-if ($unknown > 0) {
-    $ageLabels[] = 'Unknown';
-    $ageCounts[] = $unknown;
-    $ageTotal   += $unknown;
-}
+        $bucketTotals = [];
+        $ageTotal = 0;
+        foreach ($ageGroups as $g) {
+            $bucketTotals[$g] = array_sum($ageData[$g]);
+            $ageTotal += $bucketTotals[$g];
+        }
+        $ageLabels = array_values($ageGroups);
+        $ageCounts = array_values($bucketTotals);
 
         return view('auth.user.home', compact(
             'listCompany',
             'totalActiveEvents',
             'categories',
             'year',
+            'years',
             'availableYears',
             'totalInnovators',
             'totalInnovatorsMale',
@@ -240,7 +251,9 @@ if ($unknown > 0) {
             'metodologi',
             'ageLabels',
             'ageCounts',
-            'ageTotal'
+            'ageTotal',
+            'ageGroups',
+            'ageData'
         ));
     }
     
@@ -373,12 +386,96 @@ if ($unknown > 0) {
             ])
             ->toArray();
 
+        $base = DB::table('pvt_members as pm')
+            ->join('users as u','u.employee_id','=','pm.employee_id')
+            ->join('teams as t','t.id','=','pm.team_id')
+            ->join('papers as p','p.team_id','=','t.id')
+            ->whereIn('t.company_code',$filteredCompanyCodeUser)
+            ->where('pm.status','!=','gm')
+            ->where('p.status','!=','rejected by innovation admin');
+
+        $empYear = DB::query()->fromSub(
+        $base->cloneWithoutBindings(['columns','orders'])->selectRaw("
+                DISTINCT u.employee_id AS employee_id,
+                YEAR(p.created_at)     AS year,
+                TIMESTAMPDIFF(
+                YEAR,
+                CASE
+                    WHEN u.date_of_birth REGEXP '^[0-9]{2}/[0-9]{2}/[0-9]{4}$' THEN STR_TO_DATE(u.date_of_birth, '%d/%m/%Y')
+                    WHEN u.date_of_birth REGEXP '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN STR_TO_DATE(u.date_of_birth, '%Y-%m-%d')
+                    ELSE NULL
+                END,
+                STR_TO_DATE(CONCAT(YEAR(p.created_at),'-12-31'),'%Y-%m-%d')
+                ) AS age
+            "),
+            'empYear'
+        );
+
+        $rowsAgg = DB::query()->fromSub(
+            $empYear->selectRaw('
+                employee_id, year, age,
+                FLOOR(age/10)*10 AS low,
+                FLOOR(age/10)*10 + 9 AS high,
+                CONCAT(FLOOR(age/10)*10," - ",FLOOR(age/10)*10 + 9," Tahun") AS bucket
+            '),
+            'b'
+        )
+        ->selectRaw('bucket, low, year, COUNT(*) AS cnt')
+        ->groupBy('bucket','low','year')
+        ->orderBy('low')->orderBy('year')->get();
+
+        $valid         = $rowsAgg->whereNotNull('bucket');
+        $unknownByYear = $rowsAgg->whereNull('bucket')->groupBy('year')->map->sum('cnt')->all();
+
+        $years = array_values(array_unique(array_merge(
+            $valid->pluck('year')->all(),
+            array_keys($unknownByYear)
+        )));
+        sort($years);
+
+        $ageGroups = $valid->sortBy('low')->pluck('bucket')->unique()->values()->all();
+        if (!empty($unknownByYear)) {
+            $ageGroups[] = 'Unknown';
+        }
+
+        $ageData = [];
+        foreach ($ageGroups as $g) foreach ($years as $y) $ageData[$g][$y] = 0;
+
+        foreach ($valid as $r) {
+            $ageData[$r->bucket][$r->yr] = (int) $r->cnt;
+        }
+        foreach ($unknownByYear as $yr => $cnt) {
+            $ageData['Unknown'][$yr] = (int) $cnt;
+        }
+
+        $bucketTotals = [];
+        $ageTotal = 0;
+        foreach ($ageGroups as $g) {
+            $bucketTotals[$g] = array_sum($ageData[$g]);
+            $ageTotal += $bucketTotals[$g];
+        }
+        $ageLabels = array_values($ageGroups);
+        $ageCounts = array_values($bucketTotals);
+
         $html = view('components.dashboard.filtered_dashboard_card', compact(
-            'implemented', 'totalInnovators', 'totalInnovatorsMale', 'totalInnovatorsFemale',
-            'totalInnovatoresOutsource', 'totalActiveEvents', 'ideaBox',
-            'totalImplementedInnovations', 'totalIdeaBoxInnovations', 'metodologi'
+            'implemented',
+            'ideaBox',
+            'totalImplementedInnovations',
+            'totalIdeaBoxInnovations',
+            'metodologi',
+            'totalInnovators',
+            'totalInnovatorsMale',
+            'totalInnovatorsFemale',
+            'totalInnovatoresOutsource',
+            'totalActiveEvents',
+            'years',
+            'ageGroups',
+            'ageData',
+            'ageLabels',
+            'ageCounts',
+            'ageTotal'
         ))->render();
-    
+
         return response()->json(['html' => $html]);
     }
 
@@ -570,54 +667,51 @@ if ($unknown > 0) {
         return view('dashboard.total-team-chart', ['chartDataTotalTeam' => $chartData]);
     }
     
-   public function showTotalBenefitChart()
-{
-    $currentYear = now()->year;
-    $years = range($currentYear - 3, $currentYear);
-    $isSuperadmin = Auth::user()->role === 'Superadmin';
+    public function showTotalBenefitChart()
+    {
+        $currentYear = now()->year;
+        $years = range($currentYear - 3, $currentYear);
+        $isSuperadmin = Auth::user()->role === 'Superadmin';
 
-    // Pakai logic yang sudah benar (mengalikan dengan jumlah event finish)
-    $rows = self::getFinancialBenefitsByCompany(); // <-- already array
+        // Pakai logic yang sudah benar (mengalikan dengan jumlah event finish)
+        $rows = self::getFinancialBenefitsByCompany(); // <-- already array
 
-    // Susun chartData => labels, datasets per tahun, logos
-    $labels = array_map(fn($r) => $r['company_name'], $rows);
+        // Susun chartData => labels, datasets per tahun, logos
+        $labels = array_map(fn($r) => $r['company_name'], $rows);
 
-    // logos dari nama perusahaan (fallback ke default)
-    $logos = [];
-    foreach ($labels as $name) {
-        $slug = preg_replace('/[^a-zA-Z0-9_()]+/','_', strtolower($name));
-        $slug = preg_replace('/_+/', '_', trim($slug, '_'));
-        $path = public_path("assets/logos/{$slug}.png");
-        $logos[] = file_exists($path)
-            ? asset("assets/logos/{$slug}.png")
-            : asset('assets/logos/pt_semen_indonesia_tbk.png');
-    }
+        // logos dari nama perusahaan (fallback ke default)
+        $logos = [];
+        foreach ($labels as $name) {
+            $slug = preg_replace('/[^a-zA-Z0-9_()]+/','_', strtolower($name));
+            $slug = preg_replace('/_+/', '_', trim($slug, '_'));
+            $path = public_path("assets/logos/{$slug}.png");
+            $logos[] = file_exists($path)
+                ? asset("assets/logos/{$slug}.png")
+                : asset('assets/logos/pt_semen_indonesia_tbk.png');
+        }
 
-    $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
-    $datasets = [];
-    foreach ($years as $i => $y) {
-        $datasets[] = [
-            'label' => $y,
-            'backgroundColor' => $colors[$i % count($colors)],
-            'data' => array_map(fn($r) => (int)($r['financials'][$y] ?? 0), $rows),
+        $colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"];
+        $datasets = [];
+        foreach ($years as $i => $y) {
+            $datasets[] = [
+                'label' => $y,
+                'backgroundColor' => $colors[$i % count($colors)],
+                'data' => array_map(fn($r) => (int)($r['financials'][$y] ?? 0), $rows),
+            ];
+        }
+
+        $chartData = [
+            'labels'       => $labels,
+            'datasets'     => $datasets,
+            'logos'        => $logos,
+            'isSuperadmin' => $isSuperadmin,
         ];
+
+        return view('dashboard.total-financial-benefit-chart', [
+            'chartDataTotalBenefit' => $chartData,
+            'isSuperadmin'          => $isSuperadmin,
+        ]);
     }
-
-    $chartData = [
-        'labels'       => $labels,
-        'datasets'     => $datasets,
-        'logos'        => $logos,
-        'isSuperadmin' => $isSuperadmin,
-    ];
-
-    return view('dashboard.total-financial-benefit-chart', [
-        'chartDataTotalBenefit' => $chartData,
-        'isSuperadmin'          => $isSuperadmin,
-    ]);
-}
-
-
-
 
     public function showTotalBenefitChartData()
     {
@@ -668,7 +762,6 @@ if ($unknown > 0) {
         $currentYear = now()->year;
         $years = range($currentYear - 3, $currentYear);
     
-        // total paper accepted per TIM (all-time) + merge 7000 -> 2000
         $base = DB::table('teams as t')
             ->join('papers as p', function ($j) {
                 $j->on('p.team_id', '=', 't.id')
@@ -688,15 +781,13 @@ if ($unknown > 0) {
         $allCodes = [];
     
         foreach ($years as $y) {
-            // ✅ Hitung SEKALI SAJA per tim di tahun y (boolean presence), bukan jumlah event
             $finishCount = DB::table('pvt_event_teams as pet')
                 ->join('events as e', 'e.id', '=', 'pet.event_id')
                 ->where('e.status', 'finish')
                 ->where('e.year', $y)
-                ->selectRaw('pet.team_id, 1 AS has_finish')      // cukup 1 jika ada minimal 1 event finish
+                ->selectRaw('pet.team_id, 1 AS has_finish')      
                 ->groupBy('pet.team_id');
     
-            // kontribusi per perusahaan per tahun = SUM(team_financial × has_finish[0/1])
             $rows = DB::query()
                 ->fromSub($base, 'tp')
                 ->joinSub($finishCount, 'fc', 'fc.team_id', '=', 'tp.team_id')
@@ -711,13 +802,11 @@ if ($unknown > 0) {
             }
         }
     
-        // nama perusahaan (override 2000)
         $codes = array_keys($allCodes);
         $names = \App\Models\Company::whereIn('company_code', $codes)
             ->pluck('company_name', 'company_code')->toArray();
         $names['2000'] = $names['2000'] ?? 'PT Semen Indonesia (Persero)Tbk';
     
-        // rakit payload untuk chart
         $out = [];
         foreach ($codes as $code) {
             $byYear = [];

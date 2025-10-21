@@ -9,4 +9,11 @@
     :idea-box="$ideaBox" 
     :total-implemented-innovations="$totalImplementedInnovations" 
     :total-idea-box-innovations="$totalIdeaBoxInnovations"
+
+    :years="$years"
+    :age-groups="$ageGroups"
+    :age-data="$ageData"
+    :age-labels="$ageLabels"
+    :age-counts="$ageCounts"
+    :age-total="$ageTotal"
 />

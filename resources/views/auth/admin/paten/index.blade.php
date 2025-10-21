@@ -45,7 +45,7 @@
                 </div>
                 @if(Auth::user()->role == 'Superadmin' || Auth::user()->role == 'Admin')
                 <div class="btn-container mb-3 text-end">
-\                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#document-template">Perbarui Template Dukomen</button>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#document-template">Perbarui Template Dukomen</button>
                 </div>
                 @endif
                 @include('components.patent.patent-table', ['patentData' => \App\Models\Patent::with(['paper', 'employee', 'patenMaintenance'])->visibleTo(Auth::user())->paginate(10)])

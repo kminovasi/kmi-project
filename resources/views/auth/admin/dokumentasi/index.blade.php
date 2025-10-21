@@ -39,7 +39,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="me-3">
                                         <i class="feather-lg text-primary mb-3" data-feather="award"></i>
-                                        <h5 class="text-primary">Evidence</h5>
+                                        <h5 class="text-primary">Makalah</h5>
                                         <div class="text-muted small">
                                             Kumpulan makalah, list kepersetaan, serta dokumen atau informasi pendukung
                                             lainnya

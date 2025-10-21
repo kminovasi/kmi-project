@@ -176,8 +176,7 @@
                     <div class="col-auto mb-3">
                         <h1 class="page-header-title">
                             <div class="page-header-icon"><i data-feather="book"></i></div>
-                            Dokumentasi - Evidence
-                        </h1>
+                            Dokumentasi - Makalah                        </h1>
                     </div>
                     <div class="col-12 col-xl-auto mb-3">
                         <a class="btn btn-sm btn-outline-primary" href="{{ route('dokumentasi.index') }}">

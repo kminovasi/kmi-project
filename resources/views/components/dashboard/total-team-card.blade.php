@@ -39,7 +39,7 @@
       @endforeach
     </div>
     
-    <div class="row g-3 p-3">
+    {{-- <div class="row g-3 p-3">
       <div class="fs-5 fw-bold">Total Tim Event Group</div>
     </div>
     
@@ -62,7 +62,7 @@
           </div>
         </div>
       @endforeach
-    </div>
+    </div> --}}
     <div class="card-footer bg-light border-0 text-center">
         <small class="text-muted text-capitalize">
             <i class="bi bi-info-circle me-1"></i>

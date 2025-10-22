@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\LearnShareSubmitted;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
-use Log;
+// use Log;
 
 class LearnShareController extends Controller
 {
@@ -188,97 +188,30 @@ class LearnShareController extends Controller
         return view('learnshare.show', compact('learnshare','speakerUsers'));
     }
 
-public function updateStatus(Request $request, LearnShare $learnshare)
-{
-    if (!auth()->check() || auth()->user()->role !== 'Superadmin') {
-        Log::warning('LS:updateStatus unauthorized', [
-            'learnshare_id' => $learnshare->id,
-            'user' => auth()->check() ? auth()->user()->only('id','name','role') : null,
-        ]);
-        abort(403, 'Unauthorized');
-    }
-
-    // --- REQUEST INSPECTION (sebelum validasi) ---
-    $rid = (string) Str::uuid(); // request id untuk mengelompokkan log
-    $filesBrief = collect($request->allFiles())->map(function ($f, $key) {
-        if (is_array($f)) {
-            return [$key => array_map(fn($x) => [
-                'client_name' => $x->getClientOriginalName(),
-                'size'        => $x->getSize(),
-                'mime'        => $x->getClientMimeType(),
-                'is_valid'    => $x->isValid(),
-            ], $f)];
+    public function updateStatus(Request $request, LearnShare $learnshare)
+    {
+        if (!auth()->check() || auth()->user()->role !== 'Superadmin') {
+            abort(403, 'Unauthorized');
         }
-        return [$key => [
-            'client_name' => $f->getClientOriginalName(),
-            'size'        => $f->getSize(),
-            'mime'        => $f->getClientMimeType(),
-            'is_valid'    => $f->isValid(),
-        ]];
-    })->collapse();
 
-    Log::debug('LS:updateStatus incoming request', [
-        'rid'           => $rid,
-        'learnshare_id' => $learnshare->id,
-        'method'        => $request->method(),
-        'url'           => $request->fullUrl(),
-        // Jangan log token/cookie
-        'inputs'        => $request->except(['_token','_method']),
-        'has'           => [
-            'status'       => $request->has('status'),
-            'comment'      => $request->has('comment'),
-            'scheduled_at' => $request->has('scheduled_at'),
-        ],
-        'files'         => $filesBrief,
-        'user'          => auth()->user()->only('id','name','role'),
-        'headers'       => [
-            'User-Agent' => $request->userAgent(),
-            'Referer'    => $request->headers->get('referer'),
-            'Origin'     => $request->headers->get('origin'),
-        ],
-    ]);
-
-    try {
         $validated = $request->validate([
             'status'       => ['required', 'in:Pending,Approved,Rejected'],
             'comment'      => ['required', 'string', 'min:3'],
             'scheduled_at' => ['nullable', 'date'],
         ]);
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Log alasan gagal validasi + input mentahnya (tanpa token)
-        Log::warning('LS:updateStatus validation failed', [
-            'rid'      => $rid,
-            'errors'   => $e->errors(),
-            'oldInput' => $request->except(['_token','_method']),
-        ]);
-        throw $e; // biar balik ke form dengan error bag Laravel
+
+        $payload = [
+            'status'         => $validated['status'],
+            'status_comment' => $validated['comment'],
+        ];
+        if (!empty($validated['scheduled_at'])) {
+            $payload['scheduled_at'] = $validated['scheduled_at'];
+        }
+
+        $learnshare->update($payload);
+
+        return back()->with('success', "Status diperbarui menjadi {$validated['status']}.");
     }
-
-    $payload = [
-        'status'         => $validated['status'],
-        'status_comment' => $validated['comment'],
-    ];
-    if (!empty($validated['scheduled_at'])) {
-        $payload['scheduled_at'] = $validated['scheduled_at'];
-    }
-
-    Log::info('LS:updateStatus applying payload', [
-        'rid'           => $rid,
-        'learnshare_id' => $learnshare->id,
-        'payload'       => $payload,
-    ]);
-
-    $learnshare->update($payload);
-
-    Log::info('LS:updateStatus success', [
-        'rid'           => $rid,
-        'learnshare_id' => $learnshare->id,
-        'new_status'    => $learnshare->status,
-    ]);
-
-    return back()->with('success', "Status diperbarui menjadi {$validated['status']}.");
-}
-
 
     public function file(LearnShare $learnshare, string $token)
     {
@@ -308,13 +241,6 @@ public function updateStatus(Request $request, LearnShare $learnshare)
     public function edit(LearnShare $learnShareRequest)
     {
         $learnshare = $learnShareRequest->load('requester');
-
-        // Guard: hanya Superadmin atau pengaju yang boleh edit
-        // if (!auth()->check() ||
-        //     ! (auth()->user()->role === 'Superadmin' || auth()->user()->employee_id === $learnshare->employee_id)) {
-        //     abort(403);
-        // }
-
         $files = [];
         try {
             if (Schema::hasColumn($learnshare->getTable(),'attachments') && is_array($learnshare->attachments)) {
@@ -334,13 +260,6 @@ public function updateStatus(Request $request, LearnShare $learnshare)
     public function update(Request $request, LearnShare $learnShareRequest)
     {
         $row = $learnShareRequest;
-
-        // Guard: hanya Superadmin atau pengaju
-        // if (!auth()->check() ||
-        //     ! (auth()->user()->role === 'Superadmin' || auth()->user()->employee_id === $row->employee_id)) {
-        //     abort(403);
-        // }
-
         $data = $request->validate([
             'title'                 => ['required','string','max:255'],
             'job_function'          => ['nullable','string','max:255'],

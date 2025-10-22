@@ -49,6 +49,7 @@ use App\Http\Controllers\ReplicationController;
 use App\Http\Controllers\EventInsightController;
 use App\Http\Controllers\LearnShareController;
 use App\Http\Controllers\ProsedurController;
+use App\Http\Controllers\PrestasiController;
 
 
 /*
@@ -594,6 +595,13 @@ Route::middleware(['auth'])->name('prosedur.')->prefix('prosedur')->group(functi
     Route::delete('/{prosedur}',   [ProsedurController::class, 'destroy'])->name('destroy');
     Route::delete('/{prosedur}/files/{index}', [ProsedurController::class, 'destroyFile'])->name('files.destroy');
     Route::get('/{prosedur}/files/{index}',    [ProsedurController::class, 'getFile'])->name('getfile');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
+    Route::get('/prestasi/{employeeId}/{tipe}', [PrestasiController::class, 'listByEmployee'])
+        ->whereIn('tipe', ['inovasi','paten','replikasi'])
+        ->name('prestasi.list');
 });
 
 

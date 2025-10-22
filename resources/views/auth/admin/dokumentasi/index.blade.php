@@ -70,7 +70,7 @@
 
                     <div class="col-xl-4 mb-4">
                         <!-- Card Riwayat Kompetisi Peserta-->
-                        <a class="card lift border-start-lg border-start-warning" href="{{ route('cv.index') }}">
+                        <a class="card lift border-start-lg border-start-warning" href="{{ route('prestasi.index') }}">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="me-3">

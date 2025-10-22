@@ -26,6 +26,48 @@
     </div>
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-gradient bg-primary text-white">
+        <h5 class="mb-0 font-weight-bold text-white">Prestasi</h5>
+    </div>
+
+    <div class="card-body p-0">
+        {{-- Section: Internal --}}
+        <div class="item-row">
+            <div class="d-flex justify-content-between align-items-start w-100">
+                <div>
+                    <div class="fw-semibold mb-1">Internal</div>
+                    <ol class="mb-0 ps-3 small text-body">
+                        @forelse(($prestasiInternal ?? []) as $row)
+                            <li class="mb-1">{{ $row }}</li>
+                        @empty
+                            <li class="text-muted">Belum ada data.</li>
+                        @endforelse
+                    </ol>
+                </div>
+                {{-- <span class="badge badge-soft-teal">Internal</span> --}}
+            </div>
+        </div>
+
+        {{-- Section: Eksternal --}}
+        <div class="item-row">
+            <div class="d-flex justify-content-between align-items-start w-100">
+                <div>
+                    <div class="fw-semibold mb-1">Eksternal</div>
+                    <ol class="mb-0 ps-3 small text-body">
+                        @forelse(($prestasiEksternal ?? []) as $row)
+                            <li class="mb-1">{{ $row }}</li>
+                        @empty
+                            <li class="text-muted">Belum ada data.</li>
+                        @endforelse
+                    </ol>
+                </div>
+                {{-- <span class="badge badge-soft-indigo">Eksternal</span> --}}
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .card-header {
         font-size: 1.25rem;
@@ -93,4 +135,32 @@
         font-size: 1rem;
         color: #495057;
     }
+
+    .item-row{
+        padding: 16px 18px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .item-row:last-child{ border-bottom: 0; }
+
+    .badge-soft-teal{
+        background: #e6fffb;
+        color: #0aa2c0;
+        border: 1px solid #b6f4ee;
+        border-radius: .5rem;
+        padding: .25rem .5rem;
+        font-weight: 600;
+        font-size: .78rem;
+    }
+    .badge-soft-indigo{
+        background: #eef2ff;
+        color: #3f51b5;
+        border: 1px solid #d6dcff;
+        border-radius: .5rem;
+        padding: .25rem .5rem;
+        font-weight: 600;
+        font-size: .78rem;
+    }
 </style>
+
+
+

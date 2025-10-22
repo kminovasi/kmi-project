@@ -599,9 +599,7 @@ Route::middleware(['auth'])->name('prosedur.')->prefix('prosedur')->group(functi
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi.index');
-    Route::get('/prestasi/{employeeId}/{tipe}', [PrestasiController::class, 'listByEmployee'])
-        ->whereIn('tipe', ['inovasi','paten','replikasi'])
-        ->name('prestasi.list');
+    Route::get('/prestasi/{employeeId}/{tipe}', [PrestasiController::class, 'listByEmployee'])->whereIn('tipe', ['inovasi','paten','replikasi'])->name('prestasi.list');
 });
 
 

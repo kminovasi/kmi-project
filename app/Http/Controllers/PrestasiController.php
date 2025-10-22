@@ -11,16 +11,16 @@ class PrestasiController extends Controller
     public function index(Request $request)
     {
         $userLogin      = Auth::user();
-        $isSuperadmin = $userLogin->role === 'Superadmin'; 
+        $isSuperadmin   = $userLogin->role === 'Superadmin';
         $unitLogin      = strtoupper(trim((string) ($userLogin->unit_name ?? '')));
         $kodePerusahaan = trim((string) ($userLogin->company_code ?? ''));
         $perPage        = (int) $request->get('per_page', 25);
         $kataKunci      = trim((string) $request->get('q', ''));
 
         $basisKaryawan = DB::table('users as u')
-            ->select('u.employee_id','u.name','u.unit_name','u.company_code')
-            ->where(function($w) use ($unitLogin, $kodePerusahaan, $userLogin) {
-                $w->where(function($q) use ($unitLogin, $kodePerusahaan){
+            ->select('u.employee_id', 'u.name', 'u.unit_name', 'u.company_code')
+            ->when(!$isSuperadmin, function ($w) use ($unitLogin, $kodePerusahaan, $userLogin) {
+                $w->where(function($q) use ($unitLogin, $kodePerusahaan) {
                     $q->whereNotNull('u.unit_name')
                     ->whereRaw("TRIM(u.unit_name) <> ''")
                     ->whereRaw('UPPER(TRIM(u.unit_name)) = ?', [$unitLogin]);
@@ -30,14 +30,13 @@ class PrestasiController extends Controller
                     }
                 })
                 ->orWhere('u.employee_id', $userLogin->employee_id);
-        });
-
-        if ($kataKunci !== '') {
-            $basisKaryawan->where(function($q) use ($kataKunci){
-                $q->where('u.name','like',"%{$kataKunci}%")
-                ->orWhere('u.employee_id','like',"%{$kataKunci}%");
+            })
+            ->when($kataKunci !== '', function($q) use ($kataKunci) {
+                $q->where(function($qq) use ($kataKunci){
+                    $qq->where('u.name', 'like', "%{$kataKunci}%")
+                    ->orWhere('u.employee_id', 'like', "%{$kataKunci}%");
+                });
             });
-        }
 
         $subInovasi = DB::table('pvt_members as pm')
             ->join('papers as p','p.team_id','=','pm.team_id')
@@ -55,7 +54,7 @@ class PrestasiController extends Controller
         $ringkasan = DB::query()->fromSub($basisKaryawan, 'k')
             ->leftJoinSub($subInovasi,  'inv', 'inv.employee_id',     '=', 'k.employee_id')
             ->leftJoinSub($subPaten,    'pt',  'pt.person_in_charge', '=', 'k.employee_id')
-            ->leftJoinSub($subReplikasi,'rep', 'rep.pic_name',     '=', 'k.employee_id')
+            ->leftJoinSub($subReplikasi,'rep', 'rep.pic_name',         '=', 'k.employee_id')
             ->selectRaw("
                 k.employee_id,
                 k.name,
@@ -64,13 +63,14 @@ class PrestasiController extends Controller
                 COALESCE(rep.replikasi_total, 0) AS replikasi_total
             ")
             ->orderBy('k.name');
+
         $data = $ringkasan->paginate($perPage)->appends($request->query());
 
         if ($request->ajax()) {
             return view('prestasi.index', [
                 'data'      => $data,
                 'userLogin' => $userLogin,
-                'onlyTable' => true, 
+                'onlyTable' => true,
             ])->render();
         }
 

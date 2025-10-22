@@ -55,12 +55,12 @@ class ImportUserData implements ToCollection
                 'department_name' => $department,
                 'unit_name' => $unit,
                 'section_name' => $section,
-                'sub_section_name' => $subSection,
-                'birth_of_date' => $birthDate,
+                'sub_section_of' => $subSection,
+                'date_of_birth' => $this->dobToDdMmYyyy($birthDate),
                 'gender' => $gender,
                 'job_level' => $bandLevel,
                 'contract_type' => $contract,
-                'company_home' => $companyHome,
+                'home_company' => $companyHome,
                 'manager_id' => $managerId,
                 'company_code' => $companyCode,
                 'role' => $role
@@ -79,4 +79,42 @@ class ImportUserData implements ToCollection
             }
         }
     }
+
+    private function dobToDdMmYyyy($v): ?string
+    {
+        if ($v === null) return null;
+        if (is_string($v) && trim($v) === '') return null;
+
+        if (is_numeric($v)) {
+            try {
+                $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($v);
+                return \Carbon\Carbon::instance($dt)->format('d/m/Y');
+            } catch (\Throwable $e) { /* ignore */ }
+        }
+
+        $s = str_replace(['.', '\\'], '/', (string) $v);
+
+        if (preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $s)) {
+            return \Carbon\Carbon::parse($s)->format('d/m/Y');
+        }
+
+        if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $s)) {
+            [$a, $b, $c] = array_map('intval', explode('/', $s));
+            $fmt = ($a > 12) ? 'd/m/Y' : (($b > 12) ? 'm/d/Y' : 'd/m/Y');
+            return \Carbon\Carbon::createFromFormat($fmt, $s)->format('d/m/Y');
+        }
+
+        $sDash = str_replace('/', '-', (string) $v);
+        if (preg_match('/^\d{1,2}-\d{1,2}-\d{4}$/', $sDash)) {
+            return \Carbon\Carbon::createFromFormat('d-m-Y', $sDash)->format('d/m/Y');
+        }
+
+        try {
+            return \Carbon\Carbon::parse((string)$v)->format('d/m/Y');
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+
 }

@@ -148,8 +148,9 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Tanggal Lahir</label>
-                                <input type="date" name="date_of_birth" class="form-control" value="{{ $user->date_of_birth }}">
+                                <label for="date_of_birth">Tanggal Lahir</label>
+                                <input type="text" name="date_of_birth" id="date_of_birth" class="form-control" placeholder="dd/mm/YYYY" inputmode="numeric" value="{{ old('date_of_birth', $user->date_of_birth ?? '') }}">
+                                <small class="text-muted">Contoh: 05/09/1994</small>
                             </div>
                         </div>
                     </div>
